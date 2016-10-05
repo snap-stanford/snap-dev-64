@@ -58,7 +58,7 @@ public:
 
 /////////////////////////////////////////////////
 // BTAlarms-Device-Definition-Base
-typedef THash<TStr, TInt, TStrHashF_OldGLib> TStrOldH;
+typedef THash<TStr, TInt, int, TStrHashF_OldGLib> TStrOldH;
 
 ClassTP(TBtaDevDefBs, PBtaDevDefBs)//{
 private:

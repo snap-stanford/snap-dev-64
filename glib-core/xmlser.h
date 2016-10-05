@@ -123,14 +123,14 @@ template <class TKey, class TDat>
 void THashKeyDat< TKey, TDat>::SaveXml(TSOut& SOut, const TStr& Nm) const {
 	XSaveHd(Nm); XSave(Key); XSave(Dat);}
 
-template<class TKey, class TDat, class THashFunc>
-void THash< TKey, TDat, THashFunc>::LoadXml(const PXmlTok& XmlTok, const TStr& Nm){
+template<class TKey, class TDat, class TSizeTy , class THashFunc>
+void THash< TKey, TDat, TSizeTy, THashFunc>::LoadXml(const PXmlTok& XmlTok, const TStr& Nm){
   XLoadHd(Nm); TVec<THashKeyDat<TKey, TDat> > KeyDatV; XLoad(KeyDatV); XLoad(AutoSizeP);
 	for (int KeyDatN=0; KeyDatN<KeyDatV.Len(); KeyDatN++){
 		AddDat(KeyDatV[KeyDatN].Key, KeyDatV[KeyDatN].Dat);}}
 
-template<class TKey, class TDat, class THashFunc>
-void THash< TKey, TDat, THashFunc>::SaveXml(TSOut& SOut, const TStr& Nm){
+template<class TKey, class TDat, class TSizeTy, class THashFunc>
+void THash< TKey, TDat, TSizeTy, THashFunc>::SaveXml(TSOut& SOut, const TStr& Nm){
   Defrag(); XSaveHd(Nm); XSave(KeyDatV); XSave(AutoSizeP);}
 
 #endif

@@ -29,7 +29,7 @@ private:
   int MinSup;
   THash<TInt, TIntV> NIdSetH; // node on the left and the neighbors on the right (contains only nodes with in-deg > MinSup)
   THash<TInt, TIntV> SetNIdH; // set to node ids
-  THash<TIntV, TInt, TIntVHashFunc> CandItemH, CurItemH;
+  THash<TIntV, TInt, int, TIntVHashFunc> CandItemH, CurItemH;
   TVec<TIntV> MxFqItemSetV;
 public:
   TTrawling(const PNGraph& Graph, const int& MinSupport);

@@ -441,7 +441,7 @@ private:
   PStemmer Stemmer; // stemmer
   TStrStrH DocNmToDescStrH; // document-names & descriptions (key-id==doc-id)
   THash<TStr, TBowWordDesc> WordStrToDescH; // word-strings (key-id==word-id)
-  //THash<TStr, TBowWordDesc, TStrHashF_OldGLib> WordStrToDescH; // word-strings (key-id==word-id) ...for old GLib
+  //THash<TStr, TBowWordDesc, int, TStrHashF_OldGLib> WordStrToDescH; // word-strings (key-id==word-id) ...for old GLib
   TStrIntH CatNmToFqH; // category-name to frequency (key-id==cat-id)
   TBowSpVV DocSpVV; // vector of document word-id vectors (DocSpVV[DId])
   TStrV DocStrV; // vector of original document strings
