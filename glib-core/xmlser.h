@@ -115,12 +115,12 @@ void TVec<TVal, TSizeTy>::SaveXml(TSOut& SOut, const TStr& Nm) const {
   for (TSizeTy ValN=0; ValN<Vals; ValN++){ValT[ValN].SaveXml(SOut, TStr());}
 }
 
-template <class TKey, class TDat>
-void THashKeyDat< TKey, TDat>::LoadXml(const PXmlTok& XmlTok, const TStr& Nm){
+template <class TKey, class TDat, class TSizeTy>
+void THashKeyDat< TKey, TDat, TSizeTy>::LoadXml(const PXmlTok& XmlTok, const TStr& Nm){
 	XLoadHd(Nm); XLoad(Key); XLoad(Dat);}
 
-template <class TKey, class TDat>
-void THashKeyDat< TKey, TDat>::SaveXml(TSOut& SOut, const TStr& Nm) const {
+template <class TKey, class TDat, class TSizeTy>
+void THashKeyDat< TKey, TDat, TSizeTy>::SaveXml(TSOut& SOut, const TStr& Nm) const {
 	XSaveHd(Nm); XSave(Key); XSave(Dat);}
 
 template<class TKey, class TDat, class TSizeTy , class THashFunc>

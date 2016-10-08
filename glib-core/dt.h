@@ -909,6 +909,8 @@ public:
   TNum operator++(int){ TNum oldVal = Val; Val++; return oldVal; } // postfix
   TNum operator--(int){ TNum oldVal = Val; Val--; return oldVal; } // postfix
   int GetMemUsed() const { return sizeof(TNum); }
+  int GetPrimHashCd() const {return Val;}
+  int GetSecHashCd() const {return Val/0x10;}
 
 #ifdef GLib_WIN
   TStr GetStr() const { return TStr::Fmt("%I64", Val); }
