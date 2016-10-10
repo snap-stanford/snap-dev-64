@@ -897,6 +897,8 @@ public:
   TNum() : Val(0){}
   TNum(const TNum& Int) : Val(Int.Val){}
   TNum(const int64& Int) : Val(Int){}
+  TNum(const TInt& Int) : Val(Int.Val){}
+  TNum(const int& Int) : Val(Int){}
   operator int64() const { return Val; }
   explicit TNum(TSIn& SIn){ SIn.Load(Val); }
   void Load(TSIn& SIn){ SIn.Load(Val); }
