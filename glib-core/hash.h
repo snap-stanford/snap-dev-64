@@ -635,32 +635,32 @@ typedef THash<TStrV, TStrV> TStrVStrVH;
 
 /////////////////////////////////////////////////
 // Hash-Pointer
-template <class TKey, class TDat>
+template <class TKey, class TDat, class TSizeTy = int>
 class PHash{
 private:
   TCRef CRef;
 public:
-  THash<TKey, TDat> H;
+  THash<TKey, TDat, TSizeTy> H;
 public:
-  PHash<TKey, TDat>(): H(){}
-  static TPt<PHash<TKey, TDat> > New(){
-    return new PHash<TKey, TDat>();}
-  PHash<TKey, TDat>(const int& MxVals, const int& Vals): H(MxVals, Vals){}
-  static TPt<PHash<TKey, TDat> > New(const int& MxVals, const int& Vals){
-    return new PHash<TKey, TDat>(MxVals, Vals);}
-  PHash<TKey, TDat>(const THash<TKey, TDat>& _V): H(_V){}
-  static TPt<PHash<TKey, TDat> > New(const THash<TKey, TDat>& H){
-    return new PHash<TKey, TDat>(H);}
-  explicit PHash<TKey, TDat>(TSIn& SIn): H(SIn){}
-  static TPt<PHash<TKey, TDat> > Load(TSIn& SIn){return new PHash<TKey, TDat>(SIn);}
+  PHash<TKey, TDat, TSizeTy>(): H(){}
+  static TPt<PHash<TKey, TDat, TSizeTy> > New(){
+    return new PHash<TKey, TDat, TSizeTy>();}
+  PHash<TKey, TDat, TSizeTy>(const TSizeTy& MxVals, const TSizeTy& Vals): H(MxVals, Vals){}
+  static TPt<PHash<TKey, TDat, TSizeTy> > New(const TSizeTy& MxVals, const TSizeTy& Vals){
+    return new PHash<TKey, TDat, TSizeTy>(MxVals, Vals);}
+  PHash<TKey, TDat, TSizeTy>(const THash<TKey, TDat, TSizeTy>& _V): H(_V){}
+  static TPt<PHash<TKey, TDat, TSizeTy> > New(const THash<TKey, TDat, TSizeTy>& H){
+    return new PHash<TKey, TDat, TSizeTy>(H);}
+  explicit PHash<TKey, TDat, TSizeTy>(TSIn& SIn): H(SIn){}
+  static TPt<PHash<TKey, TDat, TSizeTy> > Load(TSIn& SIn){return new PHash<TKey, TDat, TSizeTy>(SIn);}
   void Save(TSOut& SOut) const {H.Save(SOut);}
 
-  PHash<TKey, TDat>& operator=(const PHash<TKey, TDat>& Vec){
+  PHash<TKey, TDat, TSizeTy>& operator=(const PHash<TKey, TDat, TSizeTy>& Vec){
     if (this!=&Vec){H=Vec.H;} return *this;}
-  bool operator==(const PHash<TKey, TDat>& Vec) const {return H==Vec.H;}
-  bool operator<(const PHash<TKey, TDat>& Vec) const {return H<Vec.H;}
+  bool operator==(const PHash<TKey, TDat, TSizeTy>& Vec) const {return H==Vec.H;}
+  bool operator<(const PHash<TKey, TDat, TSizeTy>& Vec) const {return H<Vec.H;}
 
-  friend class TPt<PHash<TKey, TDat> >;
+  friend class TPt<PHash<TKey, TDat, TSizeTy> >;
 };
 
 /////////////////////////////////////////////////

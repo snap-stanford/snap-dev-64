@@ -439,7 +439,7 @@ bool Cmp(const int& RelOp, const TRec& Rec1, const TRec& Rec2){
 // Reference-Count
 class TCRef{
 private:
-  int Refs;
+  int64 Refs;
 private:
   TCRef& operator=(const TCRef&);
   TCRef(const TCRef&);
@@ -450,7 +450,7 @@ public:
   void MkRef(){Refs++;}
   void UnRef(){Assert(Refs>0); Refs--;}
   bool NoRef() const {return Refs==0;}
-  int GetRefs() const {return Refs;}
+  int64 GetRefs() const {return Refs;}
 };
 
 /////////////////////////////////////////////////
