@@ -884,6 +884,111 @@ public:
 };
 
 /////////////////////////////////////////////////
+// Integer
+class TInt{
+public:
+  int Val;
+public:
+  static const int Mn;
+  static const int Mx;
+  static const int Kilo;
+  static const int Mega;
+  static const int Giga;
+  static TRnd Rnd;
+
+  TInt(): Val(0){}
+  TInt(const int& _Val): Val(_Val){}
+  operator int() const {return Val;}
+  explicit TInt(TSIn& SIn){SIn.Load(Val);}
+  void Load(TSIn& SIn){SIn.Load(Val);}
+  void Save(TSOut& SOut) const {SOut.Save(Val);}
+  void LoadXml(const PXmlTok& XmlTok, const TStr& Nm);
+  void SaveXml(TSOut& SOut, const TStr& Nm) const;
+
+  TInt& operator=(const TInt& Int){Val=Int.Val; return *this;}
+  TInt& operator=(const int& Int){Val=Int; return *this;}
+  bool operator==(const TInt& Int) const {return Val==Int.Val;}
+  bool operator==(const int& Int) const {return Val==Int;}
+  bool operator!=(const int& Int) const {return Val!=Int;}
+  bool operator<(const TInt& Int) const {return Val<Int.Val;}
+  bool operator<(const int& Int) const {return Val<Int;}
+  int operator()() const {return Val;}
+  TInt& operator+=(const int& Int){Val+=Int; return *this;}
+  TInt& operator-=(const int& Int){Val-=Int; return *this;}
+  TInt operator++(int){Val++; return *this;}
+  TInt operator--(int){Val--; return *this;}
+  int GetMemUsed() const {return sizeof(TInt);}
+
+  int GetPrimHashCd() const {return Val;}
+  int GetSecHashCd() const {return Val/0x10;}
+
+  static int Abs(const int& Int){return Int<0?-Int:Int;}
+  static int Sign(const int& Int){return Int<0?-1:(Int>0?1:0);}
+  static void Swap(int& Int1, int& Int2){
+    int SwapInt1=Int1; Int1=Int2; Int2=SwapInt1;}
+  static int GetRnd(const int& Range=0){return Rnd.GetUniDevInt(Range);}
+
+  static bool IsOdd(const int& Int){return ((Int%2)==1);}
+  static bool IsEven(const int& Int){return ((Int%2)==0);}
+
+  static int GetMn(const int& Int1, const int& Int2){
+    return Int1<Int2?Int1:Int2;}
+  static int GetMx(const int& Int1, const int& Int2){
+    return Int1>Int2?Int1:Int2;}
+  static int GetMn(const int& Int1, const int& Int2, const int& Int3){
+    return GetMn(Int1, GetMn(Int2, Int3));}
+  static int GetMn(const int& Int1, const int& Int2,
+   const int& Int3, const int& Int4){
+    return GetMn(GetMn(Int1, Int2), GetMn(Int3, Int4));}
+  static int GetMx(const int& Int1, const int& Int2, const int& Int3){
+    return GetMx(Int1, GetMx(Int2, Int3));}
+  static int GetMx(const int& Int1, const int& Int2,
+   const int& Int3, const int& Int4){
+    return GetMx(GetMx(Int1, Int2), GetMx(Int3, Int4));}
+  static int GetInRng(const int& Val, const int& Mn, const int& Mx){
+    IAssert(Mn<=Mx); return Val<Mn?Mn:(Val>Mx?Mx:Val);}
+
+  TStr GetStr() const {return TInt::GetStr(Val);}
+
+  static TStr GetStr(const int& Val){ return TStr::Fmt("%d", Val); }
+  static TStr GetStr(const TInt& Int){ return GetStr(Int.Val);}
+  static TStr GetStr(const int& Val, const char* FmtStr);
+  static TStr GetStr(const int& Val, const TStr& FmtStr){ return GetStr(Val, FmtStr.CStr());}
+
+  //J: So that TInt can convert any kind of integer to a string
+  static TStr GetStr(const uint& Val){ return TStr::Fmt("%u", Val); }
+  #ifdef GLib_WIN
+  static TStr GetStr(const int64& Val) {return TStr::Fmt("%I64d", Val);}
+  static TStr GetStr(const uint64& Val) {return TStr::Fmt("%I64u", Val);}
+  #else
+  static TStr GetStr(const int64& Val) {return TStr::Fmt("%lld", Val);}
+  static TStr GetStr(const uint64& Val) {return TStr::Fmt("%llu", Val);}
+  #endif
+
+  static TStr GetHexStr(const int& Val){
+    char Bf[255]; sprintf(Bf, "%X", Val); return TStr(Bf);}
+  static TStr GetHexStr(const TInt& Int){
+    return GetHexStr(Int.Val);}
+
+  static TStr GetKiloStr(const int& Val){
+    if (Val>=100*1000){return GetStr(Val/1000)+"K";}
+    else if (Val>=1000){return GetStr(Val/1000)+"."+GetStr((Val%1000)/100)+"K";}
+    else {return GetStr(Val);}}
+  static TStr GetMegaStr(const int& Val){
+    if (Val>=100*1000000){return GetStr(Val/1000000)+"M";}
+    else if (Val>=1000000){
+      return GetStr(Val/1000000)+"."+GetStr((Val%1000000)/100000)+"M";}
+    else {return GetKiloStr(Val);}}
+
+  // frugal
+  static char* SaveFrugalInt(char *pDest, int i);
+  static char* LoadFrugalInt(char *pSrc, int& i);
+  static void TestFrugalInt();
+  static void SaveFrugalIntV(TSOut& SOut, const TVec<TInt, int>& IntV);
+  static void LoadFrugalIntV(TSIn& SIn, TVec<TInt, int>& IntV, bool ClrP=true);
+};
+
+/////////////////////////////////////////////////
 // Signed-Integer-64Bit
 typedef TNum<int64> TInt64;
 template<>
@@ -897,6 +1002,8 @@ public:
   TNum() : Val(0){}
   TNum(const TNum& Int) : Val(Int.Val){}
   TNum(const int64& Int) : Val(Int){}
+  TNum(const TInt& Int) : Val(Int.Val){}
+  TNum(const int& Int) : Val(Int){}
   operator int64() const { return Val; }
   explicit TNum(TSIn& SIn){ SIn.Load(Val); }
   void Load(TSIn& SIn){ SIn.Load(Val); }
@@ -1131,111 +1238,7 @@ public:
 };
 
 /////////////////////////////////////////////////
-// Integer
-class TInt{
-public:
-  int Val;
-public:
-  static const int Mn;
-  static const int Mx;
-  static const int Kilo;
-  static const int Mega;
-  static const int Giga;
-  static TRnd Rnd;
 
-  TInt(): Val(0){}
-  TInt(const int& _Val): Val(_Val){}
-  operator int() const {return Val;}
-  explicit TInt(TSIn& SIn){SIn.Load(Val);}
-  void Load(TSIn& SIn){SIn.Load(Val);}
-  void Save(TSOut& SOut) const {SOut.Save(Val);}
-  void LoadXml(const PXmlTok& XmlTok, const TStr& Nm);
-  void SaveXml(TSOut& SOut, const TStr& Nm) const;
-
-  TInt& operator=(const TInt& Int){Val=Int.Val; return *this;}
-  TInt& operator=(const int& Int){Val=Int; return *this;}
-  bool operator==(const TInt& Int) const {return Val==Int.Val;}
-  bool operator==(const int& Int) const {return Val==Int;}
-  bool operator!=(const int& Int) const {return Val!=Int;}
-  bool operator<(const TInt& Int) const {return Val<Int.Val;}
-  bool operator<(const int& Int) const {return Val<Int;}
-  int operator()() const {return Val;}
-  TInt& operator+=(const int& Int){Val+=Int; return *this;}
-  TInt& operator-=(const int& Int){Val-=Int; return *this;}
-  TInt operator++(int){Val++; return *this;}
-  TInt operator--(int){Val--; return *this;}
-  int GetMemUsed() const {return sizeof(TInt);}
-
-  int GetPrimHashCd() const {return Val;}
-  int GetSecHashCd() const {return Val/0x10;}
-
-  static int Abs(const int& Int){return Int<0?-Int:Int;}
-  static int Sign(const int& Int){return Int<0?-1:(Int>0?1:0);}
-  static void Swap(int& Int1, int& Int2){
-    int SwapInt1=Int1; Int1=Int2; Int2=SwapInt1;}
-  static int GetRnd(const int& Range=0){return Rnd.GetUniDevInt(Range);}
-
-  static bool IsOdd(const int& Int){return ((Int%2)==1);}
-  static bool IsEven(const int& Int){return ((Int%2)==0);}
-
-  static int GetMn(const int& Int1, const int& Int2){
-    return Int1<Int2?Int1:Int2;}
-  static int GetMx(const int& Int1, const int& Int2){
-    return Int1>Int2?Int1:Int2;}
-  static int GetMn(const int& Int1, const int& Int2, const int& Int3){
-    return GetMn(Int1, GetMn(Int2, Int3));}
-  static int GetMn(const int& Int1, const int& Int2,
-   const int& Int3, const int& Int4){
-    return GetMn(GetMn(Int1, Int2), GetMn(Int3, Int4));}
-  static int GetMx(const int& Int1, const int& Int2, const int& Int3){
-    return GetMx(Int1, GetMx(Int2, Int3));}
-  static int GetMx(const int& Int1, const int& Int2,
-   const int& Int3, const int& Int4){
-    return GetMx(GetMx(Int1, Int2), GetMx(Int3, Int4));}
-  static int GetInRng(const int& Val, const int& Mn, const int& Mx){
-    IAssert(Mn<=Mx); return Val<Mn?Mn:(Val>Mx?Mx:Val);}
-
-  TStr GetStr() const {return TInt::GetStr(Val);}
-  
-  static TStr GetStr(const int& Val){ return TStr::Fmt("%d", Val); }
-  static TStr GetStr(const TInt& Int){ return GetStr(Int.Val);}
-  static TStr GetStr(const int& Val, const char* FmtStr);
-  static TStr GetStr(const int& Val, const TStr& FmtStr){ return GetStr(Val, FmtStr.CStr());}
-
-  //J: So that TInt can convert any kind of integer to a string
-  static TStr GetStr(const uint& Val){ return TStr::Fmt("%u", Val); }
-  #ifdef GLib_WIN
-  static TStr GetStr(const int64& Val) {return TStr::Fmt("%I64d", Val);}
-  static TStr GetStr(const uint64& Val) {return TStr::Fmt("%I64u", Val);}
-  #else
-  static TStr GetStr(const int64& Val) {return TStr::Fmt("%lld", Val);}
-  static TStr GetStr(const uint64& Val) {return TStr::Fmt("%llu", Val);}
-  #endif
-
-  static TStr GetHexStr(const int& Val){
-    char Bf[255]; sprintf(Bf, "%X", Val); return TStr(Bf);}
-  static TStr GetHexStr(const TInt& Int){
-    return GetHexStr(Int.Val);}
-
-  static TStr GetKiloStr(const int& Val){
-    if (Val>=100*1000){return GetStr(Val/1000)+"K";}
-    else if (Val>=1000){return GetStr(Val/1000)+"."+GetStr((Val%1000)/100)+"K";}
-    else {return GetStr(Val);}}
-  static TStr GetMegaStr(const int& Val){
-    if (Val>=100*1000000){return GetStr(Val/1000000)+"M";}
-    else if (Val>=1000000){
-      return GetStr(Val/1000000)+"."+GetStr((Val%1000000)/100000)+"M";}
-    else {return GetKiloStr(Val);}}
-
-  // frugal
-  static char* SaveFrugalInt(char *pDest, int i);
-  static char* LoadFrugalInt(char *pSrc, int& i);
-  static void TestFrugalInt();
-  static void SaveFrugalIntV(TSOut& SOut, const TVec<TInt, int>& IntV);
-  static void LoadFrugalIntV(TSIn& SIn, TVec<TInt, int>& IntV, bool ClrP=true);
-};
-
-/////////////////////////////////////////////////
 // Unsigned-Integer
 class TUInt{
 public:

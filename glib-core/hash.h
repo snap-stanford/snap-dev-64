@@ -158,10 +158,10 @@ public:
   TDat& operator()(const TKey& Key){return AddDat(Key);}
   ::TSize GetMemUsed() const {
     // return PortV.GetMemUsed()+KeyDatV.GetMemUsed()+sizeof(bool)+2*sizeof(int);}
-      int64 MemUsed = sizeof(bool)+2*sizeof(int);
+      int64 MemUsed = sizeof(bool)+2*sizeof(int64);
       MemUsed += int64(PortV.Reserved()) * int64(sizeof(TInt64));
       for (TSizeTy KeyDatN = 0; KeyDatN < KeyDatV.Len(); KeyDatN++) {
-          MemUsed += int64(2 * sizeof(TInt));
+          MemUsed += int64(2 * sizeof(TInt64));
           MemUsed += int64(KeyDatV[KeyDatN].Key.GetMemUsed());
           MemUsed += int64(KeyDatV[KeyDatN].Dat.GetMemUsed());
       }
@@ -739,13 +739,13 @@ public:
   //typedef typename PStringPool::TObj TStringPool;
   typedef TPt<TStringPool> PStringPool;
 private:
-  typedef THashKeyDat<TInt, TDat> THKeyDat;
-  typedef TPair<TInt, TDat> TKeyDatP;
+  typedef THashKeyDat<TInt64, TDat> THKeyDat;
+  typedef TPair<TInt64, TDat> TKeyDatP;
   typedef TVec<THKeyDat> THKeyDatV;
-  TIntV PortV;
+  TInt64V PortV;
   THKeyDatV KeyDatV;
   TBool AutoSizeP;
-  TInt FFreeKeyId, FreeKeys;
+  TInt64 FFreeKeyId, FreeKeys;
   PStringPool Pool;
 private:
   uint GetNextPrime(const uint& Val) const;
