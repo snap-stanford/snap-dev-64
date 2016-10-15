@@ -56,8 +56,8 @@ public:
     return KeyDatI==HashKeyDatI.KeyDatI;}
   bool operator<(const THashKeyDatI& HashKeyDatI) const {
     return KeyDatI<HashKeyDatI.KeyDatI;}
-  THashKeyDatI& operator++(TSizeTy){ KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return *this; }
-  THashKeyDatI& operator--(TSizeTy){ do { KeyDatI--; } while (KeyDatI->HashCd==-1); return *this;}
+  THashKeyDatI& operator++(int){ KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return *this; }
+  THashKeyDatI& operator--(int){ do { KeyDatI--; } while (KeyDatI->HashCd==-1); return *this;}
   THKeyDat& operator*() const { return *KeyDatI; }
   THKeyDat& operator()() const { return *KeyDatI; }
   THKeyDat* operator->() const { return KeyDatI; }
@@ -566,11 +566,14 @@ typedef THash<TInt, TInt> TIntH;
 typedef THash<TUInt64, TInt> TUInt64H;
 typedef THash<TInt, TBool> TIntBoolH;
 typedef THash<TInt, TInt> TIntIntH;
+typedef THash<TInt64, TInt64, int64> TIntInt64H;
 typedef THash<TInt, TUInt64> TIntUInt64H;
 typedef THash<TInt, TIntFltPr> TIntIntFltPrH;
 typedef THash<TInt, TIntV> TIntIntVH;
+typedef THash<TInt64, TInt64V, int64> TIntInt64V64H;
 typedef THash<TInt, TIntH> TIntIntHH;
 typedef THash<TInt, TFlt> TIntFltH;
+typedef THash<TInt64, TFlt, int64> TIntFlt64H;
 typedef THash<TInt, TFltPr> TIntFltPrH;
 typedef THash<TInt, TFltTr> TIntFltTrH;
 typedef THash<TInt, TFltV> TIntFltVH;
@@ -605,14 +608,18 @@ typedef THash<TStr, TBool> TStrBoolH;
 typedef THash<TStr, TInt> TStrIntH;
 typedef THash<TStr, TIntPr> TStrIntPrH;
 typedef THash<TStr, TIntV> TStrIntVH;
+typedef THash<TStr, TInt64V, int64> TStrInt64V64H;
 typedef THash<TStr, TUInt64> TStrUInt64H;
 typedef THash<TStr, TUInt64V> TStrUInt64VH;
 typedef THash<TStr, TIntPrV> TStrIntPrVH;
 typedef THash<TStr, TFlt> TStrFltH;
 typedef THash<TStr, TFltV> TStrFltVH;
+typedef THash<TStr, TFlt64V, int64> TStrFlt64V64H;
 typedef THash<TStr, TStr> TStrStrH;
 typedef THash<TStr, TStrPr> TStrStrPrH;
 typedef THash<TStr, TStrV> TStrStrVH;
+typedef THash<TStr, TStr64V, int64> TStrStr64V64H;
+typedef THash<TStr, TStr, int64> TStrStr64V64H;
 typedef THash<TStr, TStrPrV> TStrStrPrVH;
 typedef THash<TStr, TStrKdV> TStrStrKdVH;
 typedef THash<TStr, TIntFltPr> TStrIntFltPrH;

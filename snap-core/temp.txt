@@ -1,0 +1,447 @@
+g++ -c -std=c++98 -Wall -O3 -DNDEBUG -fopenmp Snap.cpp -I../glib-core
+In file included from ../glib-core/base.h:184,
+                 from Snap.h:9,
+                 from Snap.cpp:4:
+../glib-core/hash.h:622: error: conflicting declaration ‘typedef class THash<TStr, TStr, long int, TDefaultHashFunc<TStr, long int> > TStrStr64V64H’
+../glib-core/hash.h:621: error: ‘TStrStr64V64H’ has a previous declaration as ‘typedef class THash<TStr, TVec<TStr, long int>, long int, TDefaultHashFunc<TStr, long int> > TStrStr64V64H’
+In file included from Snap.h:52,
+                 from Snap.cpp:4:
+table.h:1576: error: prototype for ‘void TTable::UpdateGrouping(THashMP<T, TVec<TNum<long int>, long int>, TDefaultHashFunc<TKey, int> >&, T, TInt64) const’ does not match any in class ‘TTable’
+table.h:736: error: candidates are: template<class T> void TTable::UpdateGrouping(THashMP<T, TVec<TInt, int>, TDefaultHashFunc<TKey, int> >&, T, TInt64) const
+table.h:732: error:                 template<class T> void TTable::UpdateGrouping(THash<T, TVec<TNum<long int>, long int>, long int, TDefaultHashFunc<T, long int> >&, T, TInt64) const
+In file included from Snap.cpp:47:
+table.cpp: In static member function ‘static void TTable::LoadSSPar(PTable&, const Schema&, const TStr&, const TInt64V&, const char&, TBool)’:
+table.cpp:573: error: conversion from ‘TVec<long unsigned int, int>’ to non-scalar type ‘TVec<long unsigned int, long int>’ requested
+table.cpp:578: error: no matching function for call to ‘TSsParserMP::NextFromIndex(long unsigned int&, TVec<char*, long int>&)’
+../glib-core/ssmp.cpp:128: note: candidates are: void TSsParserMP::NextFromIndex(uint64, TVec<char*, int>&)
+table.cpp:591: error: no matching function for call to ‘TSsParserMP::GetIntFromFldV(TVec<char*, long int>&, TInt64&)’
+../glib-core/ssmp.cpp:152: note: candidates are: int TSsParserMP::GetIntFromFldV(TVec<char*, int>&, const int&)
+table.cpp:594: error: no matching function for call to ‘TSsParserMP::GetIntFromFldV(TVec<char*, long int>&, const TNum<long int>&)’
+../glib-core/ssmp.cpp:152: note: candidates are: int TSsParserMP::GetIntFromFldV(TVec<char*, int>&, const int&)
+table.cpp:601: error: no matching function for call to ‘TSsParserMP::GetFltFromFldV(TVec<char*, long int>&, TInt64&)’
+../glib-core/ssmp.cpp:170: note: candidates are: double TSsParserMP::GetFltFromFldV(TVec<char*, int>&, const int&)
+table.cpp:604: error: no matching function for call to ‘TSsParserMP::GetFltFromFldV(TVec<char*, long int>&, const TNum<long int>&)’
+../glib-core/ssmp.cpp:170: note: candidates are: double TSsParserMP::GetFltFromFldV(TVec<char*, int>&, const int&)
+table.cpp: In member function ‘void TTable::GroupByIntColMP(const TStr&, THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >&, TBool) const’:
+table.cpp:1235: error: no matching function for call to ‘TTable::UpdateGrouping(THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >&, TInt64, TInt64&) const’
+table.cpp: In member function ‘void TTable::Aggregate(const TStr64V&, TAttrAggr, const TStr&, const TStr&, TBool)’:
+table.cpp:1605: error: no match for ‘operator=’ in ‘GroupByIntMPKeys.TVec<TVal, TSizeTy>::operator[] [with TVal = TNum<long int>, TSizeTy = long int](((const long int&)((const long int*)(& x)))) = it.THashMPKeyDatI<TKey, TDat>::GetKey [with TKey = TInt, TDat = TVec<TInt, int>]()’
+../glib-core/dt.h:904: note: candidates are: TNum<long int>& TNum<long int>::operator=(const TNum<long int>&)
+table.cpp:1690: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::GetDat(TNum<long int>&)’
+../glib-core/hashmp.h:195: note: candidates are: const TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:196: note:                 TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+In file included from Snap.cpp:47:
+table.cpp: In member function ‘PTable TTable::Join(const TStr&, const TTable&, const TStr&)’:
+table.cpp:2310: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::IsKey(TInt64&)’
+../glib-core/hashmp.h:191: note: candidates are: bool THashMP<TKey, TDat, THashFunc>::IsKey(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:192: note:                 bool THashMP<TKey, TDat, THashFunc>::IsKey(const TKey&, int&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+table.cpp:2311: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::GetDat(TInt64&)’
+../glib-core/hashmp.h:195: note: candidates are: const TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:196: note:                 TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+table.cpp:2336: error: no matching function for call to ‘TTable::GroupByFltCol(TStr&, THashMP<TFlt, TVec<TInt, int>, TDefaultHashFunc<TFlt, int> >&, TIntV, bool) const’
+table.cpp:2351: error: invalid initialization of reference of type ‘TInt64V&’ from expression of type ‘TVec<TInt, int>’
+table.cpp:2369: error: no matching function for call to ‘TTable::GroupByStrCol(TStr&, THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >&, TIntV, bool) const’
+table.cpp:2383: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::IsKey(TInt64&)’
+../glib-core/hashmp.h:191: note: candidates are: bool THashMP<TKey, TDat, THashFunc>::IsKey(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:192: note:                 bool THashMP<TKey, TDat, THashFunc>::IsKey(const TKey&, int&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+table.cpp:2384: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::GetDat(TInt64&)’
+../glib-core/hashmp.h:195: note: candidates are: const TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:196: note:                 TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+table.cpp: In member function ‘PTable TTable::ThresholdJoinPerJoinKeyOutputTable(const THash<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int, TDefaultHashFunc<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int> >&, TInt64, const TTable&)’:
+table.cpp:2617: error: no matching function for call to ‘THashSet<TPair<TInt, TInt>, TDefaultHashFunc<TPair<TInt, TInt>, int> >::IsKey(TInt64Pr&)’
+../glib-core/shash.h:1148: note: candidates are: bool THashSet<TKey, THashFunc>::IsKey(const TKey&) const [with TKey = TPair<TInt, TInt>, THashFunc = TDefaultHashFunc<TPair<TInt, TInt>, int>]
+../glib-core/shash.h:1149: note:                 bool THashSet<TKey, THashFunc>::IsKey(const TKey&, int&) const [with TKey = TPair<TInt, TInt>, THashFunc = TDefaultHashFunc<TPair<TInt, TInt>, int>]
+table.cpp:2618: error: no matching function for call to ‘THashSet<TPair<TInt, TInt>, TDefaultHashFunc<TPair<TInt, TInt>, int> >::AddKey(TInt64Pr&)’
+../glib-core/shash.h:1254: note: candidates are: int THashSet<TKey, THashFunc>::AddKey(const TKey&) [with TKey = TPair<TInt, TInt>, THashFunc = TDefaultHashFunc<TPair<TInt, TInt>, int>]
+table.cpp: At global scope:
+table.cpp:3376: error: prototype for ‘void TTable::CheckAndAddIntNode(PNEANet, THashSet<TInt, TDefaultHashFunc<TInt, int> >&, TInt64)’ does not match any in class ‘TTable’
+table.h:684: error: candidate is: void TTable::CheckAndAddIntNode(PNEANet, THashSet<TNum<long int>, TDefaultHashFunc<TNum<long int>, int> >&, TInt64)
+table.cpp: In member function ‘void TTable::AddEdgeAttributes(PNEANet&, int64)’:
+table.cpp:3390: error: no matching function for call to ‘TNEANet::AddIntAttrDatE(int64&, TNum<long int>&, TStr&)’
+network.h:2159: note: candidates are: int TNEANet::AddIntAttrDatE(const TNEANet::TEdgeI&, const TInt&, const TStr&)
+network.cpp:939: note:                 int TNEANet::AddIntAttrDatE(const int&, const TInt&, const TStr&)
+table.cpp: In member function ‘PNEANet TTable::BuildGraph(const TInt64V&, TAttrAggr)’:
+table.cpp:3483: error: no matching function for call to ‘TTable::AddNodeAttributes(TInt64&, TStr64V&, TInt64&, THash<TNum<long int>, THash<TStr, TVec<TNum<long int>, long int>, long int, TDefaultHashFunc<TStr, long int> >, int, TDefaultHashFunc<TNum<long int>, int> >&, THash<TNum<long int>, THash<TStr, TVec<TFlt, long int>, long int, TDefaultHashFunc<TStr, long int> >, int, TDefaultHashFunc<TNum<long int>, int> >&, THash<TNum<long int>, THash<TStr, TVec<TStr, long int>, long int, TDefaultHashFunc<TStr, long int> >, int, TDefaultHashFunc<TNum<long int>, int> >&)’
+table.cpp:3402: note: candidates are: void TTable::AddNodeAttributes(TInt64, TStr64V, TInt64, THash<TNum<long int>, THash<TStr, TVec<TNum<long int>, long int>, long int, TDefaultHashFunc<TStr, long int> >, long int, TDefaultHashFunc<TNum<long int>, long int> >&, THash<TNum<long int>, THash<TStr, TVec<TFlt, long int>, long int, TDefaultHashFunc<TStr, long int> >, long int, TDefaultHashFunc<TNum<long int>, long int> >&, THash<TNum<long int>, THash<TStr, TVec<TStr, long int>, long int, TDefaultHashFunc<TStr, long int> >, long int, TDefaultHashFunc<TNum<long int>, long int> >&)
+table.cpp:3486: error: no matching function for call to ‘TTable::AddNodeAttributes(TInt64&, TStr64V&, TInt64&, THash<TNum<long int>, THash<TStr, TVec<TNum<long int>, long int>, long int, TDefaultHashFunc<TStr, long int> >, int, TDefaultHashFunc<TNum<long int>, int> >&, THash<TNum<long int>, THash<TStr, TVec<TFlt, long int>, long int, TDefaultHashFunc<TStr, long int> >, int, TDefaultHashFunc<TNum<long int>, int> >&, THash<TNum<long int>, THash<TStr, TVec<TStr, long int>, long int, TDefaultHashFunc<TStr, long int> >, int, TDefaultHashFunc<TNum<long int>, int> >&)’
+table.cpp:3402: note: candidates are: void TTable::AddNodeAttributes(TInt64, TStr64V, TInt64, THash<TNum<long int>, THash<TStr, TVec<TNum<long int>, long int>, long int, TDefaultHashFunc<TStr, long int> >, long int, TDefaultHashFunc<TNum<long int>, long int> >&, THash<TNum<long int>, THash<TStr, TVec<TFlt, long int>, long int, TDefaultHashFunc<TStr, long int> >, long int, TDefaultHashFunc<TNum<long int>, long int> >&, THash<TNum<long int>, THash<TStr, TVec<TStr, long int>, long int, TDefaultHashFunc<TStr, long int> >, long int, TDefaultHashFunc<TNum<long int>, long int> >&)
+table.cpp:3498: error: no matching function for call to ‘TNEANet::AddIntAttrDatN(TInt64&, TInt64&, const TStr&)’
+network.h:2141: note: candidates are: int TNEANet::AddIntAttrDatN(const TNEANet::TNodeI&, const TInt&, const TStr&)
+network.cpp:813: note:                 int TNEANet::AddIntAttrDatN(const int&, const TInt&, const TStr&)
+table.cpp: In member function ‘void TTable::FillBucketsByWindow(TStr, TInt64, TInt64, TInt64, TInt64)’:
+table.cpp:3583: error: no matching function for call to ‘TVec<TInt, int>::Add(TInt64&)’
+../glib-core/ds.h:545: note: candidates are: TSizeTy TVec<TVal, TSizeTy>::Add() [with TVal = TInt, TSizeTy = int]
+../glib-core/ds.h:549: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&) [with TVal = TInt, TSizeTy = int]
+../glib-core/ds.h:551: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(TVal&) [with TVal = TInt, TSizeTy = int]
+../glib-core/ds.h:554: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&, const TSizeTy&) [with TVal = TInt, TSizeTy = int]
+table.cpp: In member function ‘void TTable::FillBucketsByInterval(TStr, TIntPr64V)’:
+table.cpp:3598: error: no matching function for call to ‘TVec<TInt, int>::Add(TInt64&)’
+../glib-core/ds.h:545: note: candidates are: TSizeTy TVec<TVal, TSizeTy>::Add() [with TVal = TInt, TSizeTy = int]
+../glib-core/ds.h:549: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&) [with TVal = TInt, TSizeTy = int]
+../glib-core/ds.h:551: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(TVal&) [with TVal = TInt, TSizeTy = int]
+../glib-core/ds.h:554: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&, const TSizeTy&) [with TVal = TInt, TSizeTy = int]
+table.cpp: In member function ‘TVec<TPt<TNEANet>, long int> TTable::GetGraphsFromSequence(TAttrAggr)’:
+table.cpp:3609: error: no matching function for call to ‘TTable::BuildGraph(TVec<TInt, int>&, TAttrAggr&)’
+table.cpp:3433: note: candidates are: PNEANet TTable::BuildGraph(const TInt64V&, TAttrAggr)
+table.cpp: In member function ‘PNEANet TTable::GetNextGraphFromSequence()’:
+table.cpp:3628: error: no matching function for call to ‘TTable::BuildGraph(TVec<TInt, int>&, TAttrAggr&)’
+table.cpp:3433: note: candidates are: PNEANet TTable::BuildGraph(const TInt64V&, TAttrAggr)
+table.cpp: At global scope:
+table.cpp:3650: error: prototype for ‘TVec<TPt<TNEANet>, long int> TTable::ToGraphPerGroup(TStr, TAttrAggr)’ does not match any in class ‘TTable’
+table.h:1035: error: candidate is: TVec<TPt<TNEANet>, int> TTable::ToGraphPerGroup(TStr, TAttrAggr)
+table.cpp: In static member function ‘static PTable TTable::GetNodeTable(const PNEANet&, TTableContext*)’:
+table.cpp:3686: error: no matching function for call to ‘TNEANet::TNodeI::GetIntAttrNames(TStr64V&)’
+network.h:1596: note: candidates are: void TNEANet::TNodeI::GetIntAttrNames(TStrV&) const
+table.cpp:3687: error: no matching function for call to ‘TNEANet::TNodeI::GetFltAttrNames(TStr64V&)’
+network.h:1608: note: candidates are: void TNEANet::TNodeI::GetFltAttrNames(TStrV&) const
+table.cpp:3688: error: no matching function for call to ‘TNEANet::TNodeI::GetStrAttrNames(TStr64V&)’
+network.h:1604: note: candidates are: void TNEANet::TNodeI::GetStrAttrNames(TStrV&) const
+table.cpp:3706: error: no matching function for call to ‘TVec<TNum<long int>, long int>::Add(TInt)’
+../glib-core/ds.h:545: note: candidates are: TSizeTy TVec<TVal, TSizeTy>::Add() [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:549: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&) [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:551: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(TVal&) [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:554: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&, const TSizeTy&) [with TVal = TNum<long int>, TSizeTy = long int]
+table.cpp: In static member function ‘static PTable TTable::GetEdgeTable(const PNEANet&, TTableContext*)’:
+table.cpp:3740: error: no matching function for call to ‘TNEANet::TEdgeI::GetIntAttrNames(TStr64V&)’
+network.h:1639: note: candidates are: void TNEANet::TEdgeI::GetIntAttrNames(TStrV&) const
+table.cpp:3741: error: no matching function for call to ‘TNEANet::TEdgeI::GetFltAttrNames(TStr64V&)’
+network.h:1651: note: candidates are: void TNEANet::TEdgeI::GetFltAttrNames(TStrV&) const
+table.cpp:3742: error: no matching function for call to ‘TNEANet::TEdgeI::GetStrAttrNames(TStr64V&)’
+network.h:1647: note: candidates are: void TNEANet::TEdgeI::GetStrAttrNames(TStrV&) const
+table.cpp:3763: error: no matching function for call to ‘TVec<TNum<long int>, long int>::Add(TInt)’
+../glib-core/ds.h:545: note: candidates are: TSizeTy TVec<TVal, TSizeTy>::Add() [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:549: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&) [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:551: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(TVal&) [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:554: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&, const TSizeTy&) [with TVal = TNum<long int>, TSizeTy = long int]
+table.cpp: In static member function ‘static PTable TTable::GetFltNodePropertyTable(const PNEANet&, const TIntFlt64H&, const TStr&, const TAttrType&, const TStr&, TTableContext*)’:
+table.cpp:3854: error: no matching function for call to ‘TVec<TNum<long int>, long int>::Add(TInt)’
+../glib-core/ds.h:545: note: candidates are: TSizeTy TVec<TVal, TSizeTy>::Add() [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:549: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&) [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:551: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(TVal&) [with TVal = TNum<long int>, TSizeTy = long int]
+../glib-core/ds.h:554: note:                 TSizeTy TVec<TVal, TSizeTy>::Add(const TVal&, const TSizeTy&) [with TVal = TNum<long int>, TSizeTy = long int]
+table.cpp: At global scope:
+table.cpp:4003: error: prototype for ‘void TTable::GetCollidingRows(const TTable&, THashSet<TInt, TDefaultHashFunc<TInt, int> >&)’ does not match any in class ‘TTable’
+table.h:856: error: candidate is: void TTable::GetCollidingRows(const TTable&, THashSet<TNum<long int>, TDefaultHashFunc<TNum<long int>, int> >&)
+table.cpp: In member function ‘void TTable::UpdateFltFromTableMP(const TStr&, const TStr&, const TTable&, const TStr&, const TStr&, TFlt)’:
+table.cpp:4206: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::IsKey(TInt64&)’
+../glib-core/hashmp.h:191: note: candidates are: bool THashMP<TKey, TDat, THashFunc>::IsKey(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:192: note:                 bool THashMP<TKey, TDat, THashFunc>::IsKey(const TKey&, int&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+table.cpp:4207: error: no matching function for call to ‘THashMP<TInt, TVec<TInt, int>, TDefaultHashFunc<TInt, int> >::GetDat(TInt64&)’
+../glib-core/hashmp.h:195: note: candidates are: const TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) const [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+../glib-core/hashmp.h:196: note:                 TDat& THashMP<TKey, TDat, THashFunc>::GetDat(const TKey&) [with TKey = TInt, TDat = TVec<TInt, int>, THashFunc = TDefaultHashFunc<TInt, int>]
+table.cpp: At global scope:
+table.cpp:4432: error: prototype for ‘void TTable::AddNJointRowsMP(const TTable&, const TTable&, const TVec<TVec<TPair<TNum<long int>, TNum<long int> >, long int>, int>&)’ does not match any in class ‘TTable’
+table.h:815: error: candidate is: void TTable::AddNJointRowsMP(const TTable&, const TTable&, const TVec<TVec<TPair<TNum<long int>, TNum<long int> >, long int>, long int>&)
+table.cpp:4462: error: expected declaration before end of line
+In file included from Snap.h:52,
+                 from Snap.cpp:4:
+table.h: In function ‘void TSnap::MapPageRank(const TVec<PGraph, long int>&, TVec<TPt<TTable>, long int>&, TTableContext*, const double&, const double&, const int64&) [with PGraph = TPt<TNEANet>]’:
+table.h:1389:   instantiated from here
+table.h:1613: error: no matching function for call to ‘GetPageRank(const TPt<TNEANet>&, TIntFlt64H&, const double&, const double&, const long int&)’
+table.h: In function ‘void TSnap::MapHits(const TVec<PGraph, long int>&, TVec<TPt<TTable>, long int>&, TTableContext*, const int64&) [with PGraph = TPt<TNEANet>]’:
+table.h:1397:   instantiated from here
+table.h:1628: error: no matching function for call to ‘GetHits(const TPt<TNEANet>&, TIntFlt64H&, TIntFlt64H&, const long int&)’
+In file included from ../glib-core/base.h:184,
+                 from Snap.h:9,
+                 from Snap.cpp:4:
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:344:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+table.cpp:344:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+table.cpp:344:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:344:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:848:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TAttrType_, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+table.cpp:848:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TAttrType_, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+table.cpp:848:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TAttrType_, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:848:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TStr, TPair<TAttrType_, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*, THashKeyDat<TStr, TPair<TAttrType_, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TPair<TAttrType_, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TNum<long int>, long int>]’:
+table.cpp:1254:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:1254:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:1254:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TNum<long int>, long int>]’:
+table.cpp:1254:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TNum<long int>, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TFlt, long int>]’:
+table.cpp:1262:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TFlt, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:1262:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TFlt, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:1262:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TFlt, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TFlt, long int>]’:
+table.cpp:1262:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TFlt, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TFlt, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TFlt, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, long int>]’:
+table.cpp:1404:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+table.cpp:1404:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+table.cpp:1404:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, long int>]’:
+table.cpp:1404:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TPair<TNum<long int>, TVec<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TPair<TNum<long int>, TVec<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, long int>]’:
+table.cpp:1772:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:1772:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:1772:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, long int>]’:
+table.cpp:1772:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TVec<TNum<long int>, long int>, TVec<TFlt, long int> >, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TNum<long int>, long int>]’:
+table.cpp:2127:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*, THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+table.cpp:2127:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*, THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+table.cpp:2127:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*, THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TNum<long int>, long int>]’:
+table.cpp:2127:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*, THashKeyDat<TNum<long int>, THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = THash<TNum<long int>, TNum<long int>, long int, TDefaultHashFunc<TNum<long int>, long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TNum<long int>, long int>]’:
+table.cpp:2136:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TNum<long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TNum<long int>, long int>*, THashKeyDat<TNum<long int>, TNum<long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+table.cpp:2136:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TNum<long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TNum<long int>, long int>*, THashKeyDat<TNum<long int>, TNum<long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+table.cpp:2136:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TNum<long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TNum<long int>, long int>*, THashKeyDat<TNum<long int>, TNum<long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TNum<long int>, long int>]’:
+table.cpp:2136:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TNum<long int>, TNum<long int>, long int>::THashKeyDatI(THashKeyDat<TNum<long int>, TNum<long int>, long int>*, THashKeyDat<TNum<long int>, TNum<long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TNum<long int>, TDat = TNum<long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TPair<TNum<long int>, TNum<long int> >, long int>]’:
+table.cpp:2597:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+table.cpp:2597:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+table.cpp:2597:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TPair<TNum<long int>, TNum<long int> >, long int>]’:
+table.cpp:2597:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TPair<TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TPair<TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>]’:
+table.cpp:2610:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+table.cpp:2610:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+table.cpp:2610:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int, THashFunc = TDefaultHashFunc<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>]’:
+table.cpp:2610:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>::THashKeyDatI(THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*, THashKeyDat<TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TDat = TTriple<TNum<long int>, TNum<long int>, TNum<long int> >, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:3496:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:3496:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+table.cpp:3496:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:3496:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TNum<long int>, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*, THashKeyDat<TStr, TVec<TNum<long int>, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TNum<long int>, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:3503:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TFlt, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TFlt, long int>, long int>*, THashKeyDat<TStr, TVec<TFlt, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+table.cpp:3503:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TFlt, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TFlt, long int>, long int>*, THashKeyDat<TStr, TVec<TFlt, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+table.cpp:3503:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TFlt, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TFlt, long int>, long int>*, THashKeyDat<TStr, TVec<TFlt, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:3503:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TFlt, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TFlt, long int>, long int>*, THashKeyDat<TStr, TVec<TFlt, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TFlt, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::BegI() const [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:3510:   instantiated from here
+../glib-core/hash.h:172: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TStr, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TStr, long int>, long int>*, THashKeyDat<TStr, TVec<TStr, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+table.cpp:3510:   instantiated from here
+../glib-core/hash.h:173: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TStr, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TStr, long int>, long int>*, THashKeyDat<TStr, TVec<TStr, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+table.cpp:3510:   instantiated from here
+../glib-core/hash.h:175: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TStr, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TStr, long int>, long int>*, THashKeyDat<TStr, TVec<TStr, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h: In member function ‘THashKeyDatI<TKey, TDat, TSizeTy> THash<TKey, TDat, TSizeTy, THashFunc>::EndI() const [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int, THashFunc = TDefaultHashFunc<TStr, long int>]’:
+table.cpp:3510:   instantiated from here
+../glib-core/hash.h:176: error: no matching function for call to ‘THashKeyDatI<TStr, TVec<TStr, long int>, long int>::THashKeyDatI(THashKeyDat<TStr, TVec<TStr, long int>, long int>*, THashKeyDat<TStr, TVec<TStr, long int>, long int>*)’
+../glib-core/hash.h:50: note: candidates are: THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDat<TKey, TDat, int>*, const THashKeyDat<TKey, TDat, int>*) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:48: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI(const THashKeyDatI<TKey, TDat, TSizeTy>&) [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+../glib-core/hash.h:47: note:                 THashKeyDatI<TKey, TDat, TSizeTy>::THashKeyDatI() [with TKey = TStr, TDat = TVec<TStr, long int>, TSizeTy = long int]
+In file included from ../glib-core/base.h:184,
+                 from Snap.h:9,
+                 from Snap.cpp:4:
+../glib-core/hash.h: In member function ‘void TStrHash<TDat, TStringPool, THashFunc>::Resize() [with TDat = TInt, TStringPool = TStrPool, THashFunc = TDefaultHashFunc<TStr, int>]’:
+../glib-core/hash.h:906:   instantiated from ‘int TStrHash<TDat, TStringPool, THashFunc>::AddKey(const char*) [with TDat = TInt, TStringPool = TStrPool, THashFunc = TDefaultHashFunc<TStr, int>]’
+timenet.cpp:1407:   instantiated from here
+../glib-core/hash.h:883: error: no match for ‘operator=’ in ‘KeyDat->THashKeyDat<TInt, TInt, int>::Next = ((TStrHash<TInt, TStrPool, TDefaultHashFunc<TStr, int> >*)this)->TStrHash<TInt, TStrPool, TDefaultHashFunc<TStr, int> >::PortV.TVec<TVal, TSizeTy>::operator[] [with TVal = TInt, TSizeTy = int](((const int&)(& Port)))’
+../glib-core/dt.h:904: note: candidates are: TNum<long int>& TNum<long int>::operator=(const TNum<long int>&)
+../glib-core/hash.h: In member function ‘void TStrHash<TDat, TStringPool, THashFunc>::Resize() [with TDat = TNum<long int>, TStringPool = TBigStrPool, THashFunc = TDefaultHashFunc<TStr, int>]’:
+../glib-core/hash.h:906:   instantiated from ‘int TStrHash<TDat, TStringPool, THashFunc>::AddKey(const char*) [with TDat = TNum<long int>, TStringPool = TBigStrPool, THashFunc = TDefaultHashFunc<TStr, int>]’
+../glib-core/hash.h:786:   instantiated from ‘int TStrHash<TDat, TStringPool, THashFunc>::AddKey(const TStr&) [with TDat = TNum<long int>, TStringPool = TBigStrPool, THashFunc = TDefaultHashFunc<TStr, int>]’
+table.h:210:   instantiated from here
+../glib-core/hash.h:883: error: no match for ‘operator=’ in ‘KeyDat->THashKeyDat<TInt, TNum<long int>, int>::Next = ((TStrHash<TNum<long int>, TBigStrPool, TDefaultHashFunc<TStr, int> >*)this)->TStrHash<TNum<long int>, TBigStrPool, TDefaultHashFunc<TStr, int> >::PortV.TVec<TVal, TSizeTy>::operator[] [with TVal = TInt, TSizeTy = int](((const int&)(& Port)))’
+../glib-core/dt.h:904: note: candidates are: TNum<long int>& TNum<long int>::operator=(const TNum<long int>&)
+make: *** [Snap.o] Error 1

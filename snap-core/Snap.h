@@ -50,8 +50,8 @@
 
 // table data structures and algorithms
 #include "table.h"         // table
-#include "conv.h" 	   // conversion functions - table to graph
+//#include "conv.h" 	   // conversion functions - table to graph
 #include "numpy.h" 	   // numpy conversion
-#include "casc.h"          // cascade detection^M
+//#include "casc.h"          // cascade detection^M
 
 #endif // SNAP_H
