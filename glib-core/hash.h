@@ -669,42 +669,42 @@ public:
 ClassTP(TBigStrPool, PBigStrPool)//{
 private:
   TSize MxBfL, BfL;
-  uint GrowBy;
+  uint64 GrowBy;
   char *Bf;
-  TVec<TSize> IdOffV; // string ID to offset
+  TVec<TSize, int64> IdOffV; // string ID to offset
 private:
   void Resize(TSize _MxBfL);
 public:
-  TBigStrPool(TSize MxBfLen = 0, uint _GrowBy = 16*1024*1024);
+  TBigStrPool(TSize MxBfLen = 0, uint64 _GrowBy = 16*1024*1024);
   TBigStrPool(TSIn& SIn, bool LoadCompact = true);
   TBigStrPool(const TBigStrPool& Pool) : MxBfL(Pool.MxBfL), BfL(Pool.BfL), GrowBy(Pool.GrowBy) {
     Bf = (char *) malloc(Pool.MxBfL); IAssert(Bf); memcpy(Bf, Pool.Bf, Pool.BfL); }
   ~TBigStrPool() { if (Bf) free(Bf); else IAssert(MxBfL == 0);  MxBfL = 0; BfL = 0; }
 
-  static PBigStrPool New(TSize _MxBfLen = 0, uint _GrowBy = 16*1024*1024) { return PBigStrPool(new TBigStrPool(_MxBfLen, _GrowBy)); }
+  static PBigStrPool New(TSize _MxBfLen = 0, uint64 _GrowBy = 16*1024*1024) { return PBigStrPool(new TBigStrPool(_MxBfLen, _GrowBy)); }
   static PBigStrPool New(TSIn& SIn) { return new TBigStrPool(SIn); }
   static PBigStrPool New(const TStr& fileName) { PSIn SIn = TFIn::New(fileName); return new TBigStrPool(*SIn); }
   static PBigStrPool Load(TSIn& SIn, bool LoadCompacted = true) { return PBigStrPool(new TBigStrPool(SIn, LoadCompacted)); }
   void Save(TSOut& SOut) const;
   void Save(const TStr& fileName) { TFOut FOut(fileName); Save(FOut); }
 
-  int GetStrs() const { return IdOffV.Len(); }
+  int64 GetStrs() const { return IdOffV.Len(); }
   TSize Len() const { return BfL; }
   TSize Size() const { return MxBfL; }
   bool Empty() const { return ! Len(); }
   char* operator () () const { return Bf; }
   TBigStrPool& operator = (const TBigStrPool& Pool);
   ::TSize GetMemUsed(){
-  	return 4 * sizeof(int) + IdOffV.GetMemUsed() + MxBfL;
+  	return 4 * sizeof(int64) + IdOffV.GetMemUsed() + MxBfL;
   }
 
-  int AddStr(const char *Str, uint Len);
-  int AddStr(const char *Str) { return AddStr(Str, uint(strlen(Str)) + 1); }
-  int AddStr(const TStr& Str) { return AddStr(Str.CStr(), Str.Len() + 1); }
+  int64 AddStr(const char *Str, uint64 Len);
+  int64 AddStr(const char *Str) { return AddStr(Str, uint64(strlen(Str)) + 1); }
+  int64 AddStr(const TStr& Str) { return AddStr(Str.CStr(), Str.Len() + 1); }
 
-  TStr GetStr(const int& StrId) const { Assert(StrId < GetStrs());
+  TStr GetStr(const int64& StrId) const { Assert(StrId < GetStrs());
     if (StrId == 0) return TStr::GetNullStr(); else return TStr(Bf + (TSize)IdOffV[StrId]); }
-  const char *GetCStr(const int& StrId) const { Assert(StrId < GetStrs());
+  const char *GetCStr(const int64& StrId) const { Assert(StrId < GetStrs());
     if (StrId == 0) return TStr::GetNullStr().CStr(); else return (Bf + (TSize)IdOffV[StrId]); }
 
   TStr GetStrFromOffset(const TSize& Offset) const { Assert(Offset < BfL);
@@ -713,14 +713,14 @@ public:
     if (Offset == 0) return TStr::GetNullStr().CStr(); else return Bf + Offset; }
 
   void Clr(bool DoDel = false) { BfL = 0; if (DoDel && Bf) { free(Bf); Bf = 0; MxBfL = 0; } }
-  int Cmp(const int& StrId, const char *Str) const { Assert(StrId < GetStrs());
+  int Cmp(const int64& StrId, const char *Str) const { Assert(StrId < GetStrs());
     if (StrId != 0) return strcmp(Bf + (TSize)IdOffV[StrId], Str); else return strcmp("", Str); }
 
   static int GetPrimHashCd(const char *CStr);
   static int GetSecHashCd(const char *CStr);
-  int GetPrimHashCd(const int& StrId) { Assert(StrId < GetStrs());
+  int64 GetPrimHashCd(const int64& StrId) { Assert(StrId < GetStrs());
     if (StrId != 0) return GetPrimHashCd(Bf + (TSize)IdOffV[StrId]); else return GetPrimHashCd(""); }
-  int GetSecHashCd(const int& StrId) { Assert(StrId < GetStrs());
+  int64 GetSecHashCd(const int64& StrId) { Assert(StrId < GetStrs());
     if (StrId != 0) return GetSecHashCd(Bf + (TSize)IdOffV[StrId]); else return GetSecHashCd(""); }
 };
 
@@ -990,21 +990,21 @@ typedef TStrHash<TIntV> TStrToIntVSH;
 
 /////////////////////////////////////////////////
 // Cache
-template <class TKey, class TDat, class THashFunc = TDefaultHashFunc<TKey> >
+template <class TKey, class TDat, class TSizeTy = int, class THashFunc = TDefaultHashFunc<TKey> >
 class TCache{
 private:
-  typedef TLst<TKey> TKeyL; typedef TLstNd<TKey>* TKeyLN;
+  typedef TLst<TKey, TSizeTy> TKeyL; typedef TLstNd<TKey>* TKeyLN;
   typedef TPair<TKeyLN, TDat> TKeyLNDatPr;
   int64 MxMemUsed;
   int64 CurMemUsed;
-  THash<TKey, TKeyLNDatPr, THashFunc> KeyDatH;
+  THash<TKey, TKeyLNDatPr, TSizeTy, THashFunc> KeyDatH;
   TKeyL TimeKeyL;
   void* RefToBs;
   void Purge(const int64& MemToPurge);
 public:
   TCache(){}
   TCache(const TCache&);
-  TCache(const int64& _MxMemUsed, const int& Ports, void* _RefToBs):
+  TCache(const int64& _MxMemUsed, const int64& Ports, void* _RefToBs):
     MxMemUsed(_MxMemUsed), CurMemUsed(0),
     KeyDatH(Ports), TimeKeyL(), RefToBs(_RefToBs){}
 
@@ -1025,8 +1025,8 @@ public:
   void* GetRefToBs(){return RefToBs;}
 };
 
-template <class TKey, class TDat, class THashFunc>
-void TCache<TKey, TDat, THashFunc>::Purge(const int64& MemToPurge){
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+void TCache<TKey, TDat, TSizeTy, THashFunc>::Purge(const int64& MemToPurge){
   const int64 StartMemUsed = CurMemUsed;
   while (!TimeKeyL.Empty()&&(StartMemUsed-CurMemUsed<MemToPurge)){
     TKey Key=TimeKeyL.Last()->GetVal();
@@ -1034,10 +1034,10 @@ void TCache<TKey, TDat, THashFunc>::Purge(const int64& MemToPurge){
   }
 }
 
-template <class TKey, class TDat, class THashFunc>
-int64 TCache<TKey, TDat, THashFunc>::GetMemUsed() const {
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+int64 TCache<TKey, TDat, TSizeTy, THashFunc>::GetMemUsed() const {
   int64 MemUsed=0;
-  int KeyId=KeyDatH.FFirstKeyId();
+  TSizeTy KeyId=KeyDatH.FFirstKeyId();
   while (KeyDatH.FNextKeyId(KeyId)){
     const TKey& Key=KeyDatH.GetKey(KeyId);
     const TKeyLNDatPr& KeyLNDatPr=KeyDatH[KeyId];
@@ -1047,8 +1047,8 @@ int64 TCache<TKey, TDat, THashFunc>::GetMemUsed() const {
   return MemUsed;
 }
 
-template <class TKey, class TDat, class THashFunc>
-bool TCache<TKey, TDat, THashFunc>::RefreshMemUsed(){
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+bool TCache<TKey, TDat, TSizeTy, THashFunc>::RefreshMemUsed(){
   CurMemUsed=GetMemUsed();
   if (CurMemUsed>MxMemUsed){
     Purge(CurMemUsed-MxMemUsed);
@@ -1057,9 +1057,9 @@ bool TCache<TKey, TDat, THashFunc>::RefreshMemUsed(){
   return false;
 }
 
-template <class TKey, class TDat, class THashFunc>
-void TCache<TKey, TDat, THashFunc>::Put(const TKey& Key, const TDat& Dat){
-  int KeyId=KeyDatH.GetKeyId(Key);
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+void TCache<TKey, TDat, TSizeTy, THashFunc>::Put(const TKey& Key, const TDat& Dat){
+  TSizeTy KeyId=KeyDatH.GetKeyId(Key);
   if (KeyId==-1){
     int64 KeyDatMem=int64(Key.GetMemUsed()+Dat->GetMemUsed());
     if (CurMemUsed+KeyDatMem>MxMemUsed){Purge(KeyDatMem);}
@@ -1075,9 +1075,9 @@ void TCache<TKey, TDat, THashFunc>::Put(const TKey& Key, const TDat& Dat){
   }
 }
 
-template <class TKey, class TDat, class THashFunc>
-bool TCache<TKey, TDat, THashFunc>::Get(const TKey& Key, TDat& Dat){
-  int KeyId=KeyDatH.GetKeyId(Key);
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+bool TCache<TKey, TDat, TSizeTy, THashFunc>::Get(const TKey& Key, TDat& Dat){
+  TSizeTy KeyId=KeyDatH.GetKeyId(Key);
   if (KeyId==-1){
     return false;
   } else {
@@ -1086,9 +1086,9 @@ bool TCache<TKey, TDat, THashFunc>::Get(const TKey& Key, TDat& Dat){
   }
 }
 
-template <class TKey, class TDat, class THashFunc>
-void TCache<TKey, TDat, THashFunc>::Del(const TKey& Key, const bool& DoEventCall){
-  int KeyId=KeyDatH.GetKeyId(Key);
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+void TCache<TKey, TDat, TSizeTy, THashFunc>::Del(const TKey& Key, const bool& DoEventCall){
+  TSizeTy KeyId=KeyDatH.GetKeyId(Key);
   if (KeyId!=-1){
     TKeyLNDatPr& KeyLNDatPr=KeyDatH[KeyId];
     TKeyLN KeyLN=KeyLNDatPr.Val1;
@@ -1102,10 +1102,10 @@ void TCache<TKey, TDat, THashFunc>::Del(const TKey& Key, const bool& DoEventCall
   }
 }
 
-template <class TKey, class TDat, class THashFunc>
-void TCache<TKey, TDat, THashFunc>::Flush(){
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+void TCache<TKey, TDat, TSizeTy, THashFunc>::Flush(){
   printf("To flush: %d\n", KeyDatH.Len());
-  int KeyId=KeyDatH.FFirstKeyId(); int Done = 0;
+  TSizeTy KeyId=KeyDatH.FFirstKeyId(); TSizeTy Done = 0;
   while (KeyDatH.FNextKeyId(KeyId)){
     if (Done%10000==0){printf("%d\r", Done);}
     const TKey& Key=KeyDatH.GetKey(KeyId);
@@ -1117,21 +1117,21 @@ void TCache<TKey, TDat, THashFunc>::Flush(){
   printf("Done %d\n", KeyDatH.Len());
 }
 
-template <class TKey, class TDat, class THashFunc>
-void TCache<TKey, TDat, THashFunc>::FlushAndClr(){
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+void TCache<TKey, TDat, TSizeTy, THashFunc>::FlushAndClr(){
   Flush();
   CurMemUsed=0;
   KeyDatH.Clr();
   TimeKeyL.Clr();
 }
 
-template <class TKey, class TDat, class THashFunc>
-void* TCache<TKey, TDat, THashFunc>::FFirstKeyDat(){
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+void* TCache<TKey, TDat, TSizeTy, THashFunc>::FFirstKeyDat(){
   return TimeKeyL.First();
 }
 
-template <class TKey, class TDat, class THashFunc>
-bool TCache<TKey, TDat, THashFunc>::FNextKeyDat(void*& KeyDatP, TKey& Key, TDat& Dat){
+template <class TKey, class TDat, class TSizeTy, class THashFunc>
+bool TCache<TKey, TDat, TSizeTy, THashFunc>::FNextKeyDat(void*& KeyDatP, TKey& Key, TDat& Dat){
   if (KeyDatP==NULL){
     return false;
   } else {

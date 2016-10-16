@@ -5,7 +5,7 @@ void TBigStrPool::Resize(TSize _MxBfL) {
   while (newSize < _MxBfL) {
     if (newSize >= GrowBy && GrowBy > 0) newSize += GrowBy;
     else if (newSize > 0) newSize *= 2;
-    else newSize = TInt::GetMn(GrowBy, 1024);
+    else newSize = TInt64::GetMn(GrowBy, 1024);
   }
   if (newSize > MxBfL) {
     Bf = (char *) realloc(Bf, newSize);
@@ -15,7 +15,7 @@ void TBigStrPool::Resize(TSize _MxBfL) {
   IAssert(MxBfL >= _MxBfL);
 }
 
-TBigStrPool::TBigStrPool(TSize MxBfLen, uint _GrowBy) : MxBfL(MxBfLen), BfL(0), GrowBy(_GrowBy), Bf(0) {
+TBigStrPool::TBigStrPool(TSize MxBfLen, uint64 _GrowBy) : MxBfL(MxBfLen), BfL(0), GrowBy(_GrowBy), Bf(0) {
   //IAssert(MxBfL >= 0); IAssert(GrowBy >= 0);
   if (MxBfL > 0) { Bf = (char *) malloc(MxBfL);  IAssert(Bf); }
   AddStr(""); // add empty string
@@ -31,9 +31,9 @@ TBigStrPool::TBigStrPool(TSIn& SIn, bool LoadCompact) : MxBfL(0), BfL(0), GrowBy
   if (MxBfL > 0) { Bf = (char *) malloc(MxBfL); IAssert(Bf); }
   if (BfL > 0) { SIn.LoadBf(Bf, BfL); }
   SIn.LoadCs();
-  int NStr=0;  SIn.Load(NStr);
+  int64 NStr=0;  SIn.Load(NStr);
   IdOffV.Gen(NStr, 0);
-  for (int i = 0; i < NStr; i++) {
+  for (int64 i = 0; i < NStr; i++) {
     SIn.Load(Tmp);
     IAssert(Tmp <= uint64(TSizeMx));
     IdOffV.Add(TSize(Tmp));
@@ -45,7 +45,7 @@ void TBigStrPool::Save(TSOut& SOut) const {
   if (BfL > 0) { SOut.SaveBf(Bf, BfL); }
   SOut.SaveCs();
   SOut.Save(IdOffV.Len());
-  for (int i = 0; i < IdOffV.Len(); i++) {
+  for (int64 i = 0; i < IdOffV.Len(); i++) {
     SOut.Save(uint64(IdOffV[i])); 
   }
 }
@@ -60,7 +60,7 @@ TBigStrPool& TBigStrPool::operator = (const TBigStrPool& Pool) {
 }
 
 // Adds Len characters to pool. To append a null terminated string Len must be equal to strlen(s) + 1
-int TBigStrPool::AddStr(const char *Str, uint Len) {
+int64 TBigStrPool::AddStr(const char *Str, uint64 Len) {
   IAssertR(Len > 0, "String too short (lenght includes the null character)");  //J: if (! Len) return -1;
   Assert(Str);  Assert(Len > 0);
   if (Len == 1 && IdOffV.Len() > 0) { return 0; } // empty string
