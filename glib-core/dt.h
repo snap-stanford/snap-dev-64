@@ -1021,6 +1021,31 @@ public:
   int GetPrimHashCd() const {return Val;}
   int GetSecHashCd() const {return Val/0x10;}
 
+  static int64 Abs(const int64& Int){return Int<0?-Int:Int;}
+	static int64 Sign(const int64& Int){return Int<0?-1:(Int>0?1:0);}
+	static void Swap(int64& Int1, int64& Int2){
+		int64 SwapInt1=Int1; Int1=Int2; Int2=SwapInt1;}
+
+	static bool IsOdd(const int64& Int){return ((Int%2)==1);}
+	static bool IsEven(const int64& Int){return ((Int%2)==0);}
+
+	static int64 GetMn(const int64& Int1, const int64& Int2){
+		return Int1<Int2?Int1:Int2;}
+	static int64 GetMx(const int64& Int1, const int64& Int2){
+		return Int1>Int2?Int1:Int2;}
+	static int64 GetMn(const int64& Int1, const int64& Int2, const int64& Int3){
+		return GetMn(Int1, GetMn(Int2, Int3));}
+	static int64 GetMn(const int64& Int1, const int64& Int2,
+	 const int64& Int3, const int64& Int4){
+		return GetMn(GetMn(Int1, Int2), GetMn(Int3, Int4));}
+	static int64 GetMx(const int64& Int1, const int64& Int2, const int64& Int3){
+		return GetMx(Int1, GetMx(Int2, Int3));}
+	static int64 GetMx(const int64& Int1, const int64& Int2,
+	 const int64& Int3, const int64& Int4){
+		return GetMx(GetMx(Int1, Int2), GetMx(Int3, Int4));}
+	static int64 GetInRng(const int64& Val, const int64& Mn, const int64& Mx){
+		IAssert(Mn<=Mx); return Val<Mn?Mn:(Val>Mx?Mx:Val);}
+
 #ifdef GLib_WIN
   TStr GetStr() const { return TStr::Fmt("%I64", Val); }
   static TStr GetStr(const TNum& Int){ return TStr::Fmt("%I64", Int.Val); }
