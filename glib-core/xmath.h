@@ -15,18 +15,18 @@ public:
   static double Log2(const double& Val){return log(Val)/LogOf2;}
   static double Round(const double& Val){
     return (Val>0)?floor(Val+0.5):ceil(Val-0.5);}
-  static double Round(const double & Val, int Decs){
+  static double Round(const double & Val, int64 Decs){
     const double pwr=pow(10.0, Decs); return Round(Val * pwr) / pwr;}
-  static int Fac(const int& Val){
+  static int64 Fac(const int64& Val){
     if (Val<=1){return 1;} else {return Val*Fac(Val-1);}}
-  static int Choose(const int& N, const int& K){ // binomial coefficient
+  static int64 Choose(const int64& N, const int64& K){ // binomial coefficient
     return Fac(N)/(Fac(K)*Fac(N-K)); }
-  static uint Pow2(const int& pow){return uint(1u<<pow);}
+  static uint64 Pow2(const int64& pow){return uint64(1u<<pow);}
   static double Power(const double& Base, const double& Exponent){
     return exp(log(Base)*Exponent);}
 
   template <typename T>
-  static int Sign(const T& Val){return Val<0?-1:(Val>0?1:0);}
+  static int64 Sign(const T& Val){return Val<0?-1:(Val>0?1:0);}
 
   template <class T>
   static const T& Mx(const T& LVal, const T& RVal) {
@@ -111,7 +111,7 @@ public:
    const TVec<TFltPr>& XY, double& A, double& B,
    double& SigA, double& SigB, double& Chi2, double& R2);
 public:
-  static double LnComb(const int& n, const int& k);
+  static double LnComb(const int64& n, const int64& k);
 public:
   static double Entropy(const TIntV& ValV);
   static double Entropy(const TFltV& ValV);

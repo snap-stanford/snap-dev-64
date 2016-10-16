@@ -8,9 +8,9 @@ double TMath::LogOf2=log(double(2));
 // Special-Functions
 void TSpecFunc::GammaPSeries/*gser*/(
  double& gamser, const double& a, const double& x, double& gln){
-  static const int ITMAX=100;
+  static const int64 ITMAX=100;
   static const double EPS=3.0e-7;
-  int n;
+  int64 n;
   double sum, del, ap;
 
   gln=LnGamma(a);
@@ -37,10 +37,10 @@ void TSpecFunc::GammaPSeries/*gser*/(
 
 void TSpecFunc::GammaQContFrac/*gcf*/(
  double& gammcf, const double& a, const double& x, double& gln){
-  static const int ITMAX=100;
+  static const int64 ITMAX=100;
   static const double EPS=3.0e-7;
   static const double  FPMIN=1.0e-30;
-  int i;
+  int64 i;
   double an, b, c, d, del, h;
 
   gln=LnGamma(a);
@@ -82,7 +82,7 @@ double TSpecFunc::LnGamma/*gammln*/(const double& xx){
   static double cof[6]={76.18009172947146,-86.50532032941677,
           24.01409824083091,-1.231739572450155,
           0.1208650973866179e-2,-0.5395239384953e-5};
-  int j;
+  int64 j;
 
   y=x=xx;
   tmp=x+5.5;
@@ -92,7 +92,7 @@ double TSpecFunc::LnGamma/*gammln*/(const double& xx){
   return -tmp+log(2.5066282746310005*ser/x);
 }
 
-double TSpecFunc::LnComb(const int& n, const int& k){
+double TSpecFunc::LnComb(const int64& n, const int64& k){
   return LnGamma(n+1)-LnGamma(k+1)-LnGamma(n-k+1);
 }
 
@@ -100,7 +100,7 @@ double TSpecFunc::BetaCf(const double& a, const double& b, const double& x){
   static const double MAXIT=100;
   static const double EPS=3.0e-7;
   static const double FPMIN=1.0e-30;
-  int m,m2;
+  int64 m,m2;
   double aa,c,d,del,h,qab,qam,qap;
 
   qab=a+b;
@@ -151,7 +151,7 @@ void TSpecFunc::LinearFit(
  const TVec<TFltPr>& XY, double& A, double& B,
  double& SigA, double& SigB, double& Chi2, double& R2) {
   // y = a + bx :: SigA (SigB): A's uncertainty; Chi2: std dev on all points
-  int i;
+  int64 i;
   double t, sxoss, sx = 0.0, sy = 0.0, st2 = 0.0, ss, sigdat;
 
   A = B = SigA = SigB = Chi2 = 0.0;
@@ -178,7 +178,7 @@ void TSpecFunc::LinearFit(
 
   // calculate R squared
   { double N = XY.Len(), sXY=0.0, sX=0.0, sY=0.0, sSqX=0.0, sSqY=0.0;
-  for (int s =0; s < XY.Len(); s++) {
+  for (int64 s =0; s < XY.Len(); s++) {
     sX += XY[s].Val1;  sY += XY[s].Val2;
     sXY += XY[s].Val1 * XY[s].Val2;
     sSqX += TMath::Sqr(XY[s].Val1);
@@ -196,7 +196,7 @@ void TSpecFunc::PowerFit(const TVec<TFltPr>& XY, double& A, double& B,
   // log fit
   double AA, BB;
   TFltPrV LogXY(XY.Len(), 0);
-  for (int s = 0; s < XY.Len(); s++) {
+  for (int64 s = 0; s < XY.Len(); s++) {
     LogXY.Add(TFltPr(log((double)XY[s].Val1), log((double)XY[s].Val2)));
   }
   TSpecFunc::LinearFit(LogXY, AA, BB, SigA, SigB, Chi2, R2);
@@ -209,7 +209,7 @@ void TSpecFunc::LogFit(const TVec<TFltPr>& XY, double& A, double& B,
  double& SigA, double& SigB, double& Chi2, double& R2) {
   // Y = A + B*log(X)
   TFltPrV LogXY(XY.Len(), 0);
-  for (int s = 0; s < XY.Len(); s++) {
+  for (int64 s = 0; s < XY.Len(); s++) {
     LogXY.Add(TFltPr(log((double)XY[s].Val1), XY[s].Val2));
   }
   TSpecFunc::LinearFit(LogXY, A, B, SigA, SigB, Chi2, R2);
@@ -220,7 +220,7 @@ void TSpecFunc::ExpFit(const TVec<TFltPr>& XY, double& A, double& B,
   // Y = A * exp(B*X)
   TFltPrV XLogY(XY.Len(), 0);
   double AA, BB;
-  for (int s = 0; s < XY.Len(); s++) {
+  for (int64 s = 0; s < XY.Len(); s++) {
     XLogY.Add(TFltPr(XY[s].Val1, log((double)XY[s].Val2)));
   }
   TSpecFunc::LinearFit(XLogY, AA, BB, SigA, SigB, Chi2, R2);
@@ -230,14 +230,14 @@ void TSpecFunc::ExpFit(const TVec<TFltPr>& XY, double& A, double& B,
 
 double TSpecFunc::Entropy(const TIntV& ValV) {
   TFltV NewValV(ValV.Len());
-  for (int i = 0; i < ValV.Len(); i++) { NewValV[i] = ValV[i]; }
+  for (int64 i = 0; i < ValV.Len(); i++) { NewValV[i] = ValV[i]; }
   return Entropy(NewValV);
 }
 
 // Entropy of a distribution: ValV[i] contains the number of events i
 double TSpecFunc::Entropy(const TFltV& ValV) {
   double Sum=0, Ent=0;
-  for (int i = 0; i < ValV.Len(); i++) {
+  for (int64 i = 0; i < ValV.Len(); i++) {
     const double& Val = ValV[i];
     if (Val > 0.0) { Ent -= Val * log(Val);  Sum += Val; }
   }
@@ -251,7 +251,7 @@ double TSpecFunc::Entropy(const TFltV& ValV) {
 
 void TSpecFunc::EntropyFracDim(const TIntV& ValV, TFltV& EntropyV) {
   TFltV NewValV(ValV.Len());
-  for (int i = 0; i < ValV.Len(); i++) { 
+  for (int64 i = 0; i < ValV.Len(); i++) {
     IAssert(ValV[i]==1 || ValV[i] == 0);
     NewValV[i] = ValV[i]; 
   }
@@ -263,16 +263,16 @@ void TSpecFunc::EntropyFracDim(const TIntV& ValV, TFltV& EntropyV) {
 // Works exactly as Mengzi Wang's code.
 void TSpecFunc::EntropyFracDim(const TFltV& ValV, TFltV& EntropyV) {
   TFltV ValV1, ValV2;
-  int Pow2 = 1;
+  int64 Pow2 = 1;
   while (2*Pow2 <= ValV.Len()) { Pow2 *= 2; }
   ValV1.Gen(Pow2);
-  for (int i = 0; i < Pow2; i++) { ValV1[i] = ValV[i]; 
+  for (int64 i = 0; i < Pow2; i++) { ValV1[i] = ValV[i];
     IAssert(ValV[i]==1.0 || ValV[i] == 0.0); }
   EntropyV.Clr();
   EntropyV.Add(Entropy(ValV1)); // 2^Pow2 windows
   while (ValV1.Len() > 2) {
     ValV2.Gen(ValV1.Len() / 2);
-    for (int i = 0; i < ValV1.Len(); i++) {
+    for (int64 i = 0; i < ValV1.Len(); i++) {
       ValV2[i/2] += ValV1[i];
     }
     EntropyV.Add(Entropy(ValV2));
@@ -297,11 +297,11 @@ double TSpecFunc::EntropyBias(const double& B){
 
 // MLE of the power-law coefficient
 double TSpecFunc::GetPowerCoef(const TFltV& XValV, double MinX) {
-  for (int i = 0; MinX <= 0.0 && i < XValV.Len(); i++) { 
+  for (int64 i = 0; MinX <= 0.0 && i < XValV.Len(); i++) {
     MinX = XValV[i]; }
   IAssert(MinX > 0.0);
   double LnSum=0.0;
-  for (int i = 0; i < XValV.Len(); i++) {
+  for (int64 i = 0; i < XValV.Len(); i++) {
     if (XValV[i].Val < MinX) continue;
     LnSum += log(XValV[i] / MinX);
   }
@@ -309,11 +309,11 @@ double TSpecFunc::GetPowerCoef(const TFltV& XValV, double MinX) {
 }
 
 double TSpecFunc::GetPowerCoef(const TFltPrV& XValCntV, double MinX) {
-  for (int i = 0; MinX <= 0.0 && i < XValCntV.Len(); i++) { 
+  for (int64 i = 0; MinX <= 0.0 && i < XValCntV.Len(); i++) {
     MinX = XValCntV[i].Val1; }
   IAssert(MinX > 0.0);
   double NSamples=0.0, LnSum=0.0;
-  for (int i = 0; i < XValCntV.Len(); i++) {
+  for (int64 i = 0; i < XValCntV.Len(); i++) {
     if (XValCntV[i].Val1() < MinX) continue;
     LnSum += XValCntV[i].Val2 * log(XValCntV[i].Val1 / MinX);
     NSamples += XValCntV[i].Val2;
