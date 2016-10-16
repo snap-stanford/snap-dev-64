@@ -2528,12 +2528,12 @@ public:
 
 /////////////////////////////////////////////////
 // List
-template <class TVal>
+template <class TVal, class TSizeTy = int>
 class TLst{
 public:
   typedef TLstNd<TVal>* PLstNd;
 private:
-  int Nds;
+  TSizeTy Nds;
   PLstNd FirstNd;
   PLstNd LastNd;
 public:
@@ -2551,7 +2551,7 @@ public:
     Nds=0; FirstNd=NULL; LastNd=NULL;}
 
   bool Empty() const {return Nds==0;}
-  int Len() const {return Nds;}
+  TSizeTy Len() const {return Nds;}
   PLstNd First() const {return FirstNd;}
   PLstNd Last() const {return LastNd;}
   TVal& FirstVal() const {return FirstNd->GetVal();}
@@ -2575,41 +2575,41 @@ public:
   friend class TLstNd<TVal>;
 };
 
-template <class TVal>
-TLst<TVal>::TLst(TSIn& SIn):
+template <class TVal, class TSizeTy>
+TLst<TVal, TSizeTy>::TLst(TSIn& SIn):
   Nds(0), FirstNd(NULL), LastNd(NULL){
-  int CheckNds=0; SIn.Load(CheckNds);
-  for (int NdN=0; NdN<CheckNds; NdN++){AddBack(TVal(SIn));}
+  TSizeTy CheckNds=0; SIn.Load(CheckNds);
+  for (TSizeTy NdN=0; NdN<CheckNds; NdN++){AddBack(TVal(SIn));}
   Assert(Nds==CheckNds);
 }
 
-template <class TVal>
-void TLst<TVal>::Save(TSOut& SOut) const {
+template <class TVal, class TSizeTy>
+void TLst<TVal, TSizeTy>::Save(TSOut& SOut) const {
   SOut.Save(Nds);
-  PLstNd Nd=FirstNd; int CheckNds=0;
+  PLstNd Nd=FirstNd; TSizeTy CheckNds=0;
   while (Nd!=NULL){
     Nd->Val.Save(SOut); Nd=Nd->NextNd; CheckNds++;}
   IAssert(Nds==CheckNds);
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::AddFront(const TVal& Val){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::AddFront(const TVal& Val){
   PLstNd Nd=new TLstNd<TVal>(NULL, FirstNd, Val);
   if (FirstNd!=NULL){FirstNd->PrevNd=Nd; FirstNd=Nd;}
   else {FirstNd=Nd; LastNd=Nd;}
   Nds++; return Nd;
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::AddBack(const TVal& Val){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::AddBack(const TVal& Val){
   PLstNd Nd=new TLstNd<TVal>(LastNd, NULL, Val);
   if (LastNd!=NULL){LastNd->NextNd=Nd; LastNd=Nd;}
   else {FirstNd=Nd; LastNd=Nd;}
   Nds++; return Nd;
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::AddFrontSorted(const TVal& Val, const bool& Asc){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::AddFrontSorted(const TVal& Val, const bool& Asc){
   PLstNd Nd=First();
   if (Nd==NULL){
     return Ins(Nd, Val);
@@ -2621,16 +2621,16 @@ TLstNd<TVal>* TLst<TVal>::AddFrontSorted(const TVal& Val, const bool& Asc){
   }
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::AddBackSorted(const TVal& Val, const bool& Asc){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::AddBackSorted(const TVal& Val, const bool& Asc){
   PLstNd Nd=Last();
   while ((Nd!=NULL)&&((Asc&&(Val<Nd->Val))||(!Asc&&(Val>Nd->Val)))){
     Nd=Nd->Prev();}
   return Ins(Nd, Val);
 }
 
-template <class TVal>
-void TLst<TVal>::PutFront(const PLstNd& Nd){
+template <class TVal, class TSizeTy>
+void TLst<TVal, TSizeTy>::PutFront(const PLstNd& Nd){
   Assert(Nd!=NULL);
   // unchain
   if (Nd->PrevNd==NULL){FirstNd=Nd->NextNd;}
@@ -2643,8 +2643,8 @@ void TLst<TVal>::PutFront(const PLstNd& Nd){
   else {FirstNd=Nd; LastNd=Nd;}
 }
 
-template <class TVal>
-void TLst<TVal>::PutBack(const PLstNd& Nd){
+template <class TVal, class TSizeTy>
+void TLst<TVal, TSizeTy>::PutBack(const PLstNd& Nd){
   Assert(Nd!=NULL);
   // unchain
   if (Nd->PrevNd==NULL){FirstNd=Nd->NextNd;}
@@ -2657,8 +2657,8 @@ void TLst<TVal>::PutBack(const PLstNd& Nd){
   else {FirstNd=Nd; LastNd=Nd;}
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::Ins(const PLstNd& Nd, const TVal& Val){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::Ins(const PLstNd& Nd, const TVal& Val){
   if (Nd==NULL){return AddFront(Val);}
   else if (Nd->NextNd==NULL){return AddBack(Val);}
   else {
@@ -2668,14 +2668,14 @@ TLstNd<TVal>* TLst<TVal>::Ins(const PLstNd& Nd, const TVal& Val){
   }
 }
 
-template <class TVal>
-void TLst<TVal>::Del(const TVal& Val){
+template <class TVal, class TSizeTy>
+void TLst<TVal, TSizeTy>::Del(const TVal& Val){
   PLstNd Nd=SearchForw(Val);
   if (Nd!=NULL){Del(Nd);}
 }
 
-template <class TVal>
-void TLst<TVal>::Del(const PLstNd& Nd){
+template <class TVal, class TSizeTy>
+void TLst<TVal, TSizeTy>::Del(const PLstNd& Nd){
   Assert(Nd!=NULL);
   if (Nd->PrevNd==NULL){FirstNd=Nd->NextNd;}
   else {Nd->PrevNd->NextNd=Nd->NextNd;}
@@ -2684,8 +2684,8 @@ void TLst<TVal>::Del(const PLstNd& Nd){
   Nds--; delete Nd;
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::SearchForw(const TVal& Val){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::SearchForw(const TVal& Val){
   PLstNd Nd=First();
   while (Nd!=NULL){
     if (Nd->GetVal()==Val){return Nd;}
@@ -2694,8 +2694,8 @@ TLstNd<TVal>* TLst<TVal>::SearchForw(const TVal& Val){
   return NULL;
 }
 
-template <class TVal>
-TLstNd<TVal>* TLst<TVal>::SearchBack(const TVal& Val){
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::SearchBack(const TVal& Val){
   PLstNd Nd=Last();
   while (Nd!=NULL){
     if (Nd->GetVal()==Val){return Nd;}
