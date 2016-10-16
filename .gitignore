@@ -59,3 +59,6 @@ tutorials/*
 tutorials/.DS_Store
 tutorials/*.dSYM
 benchmarking/*.dat
+
+# Ignore temp text files
+snap-core/temp*.txt

@@ -32,7 +32,7 @@
 #include "flow.cpp"          // network flow algorithms
 #include "coreper.cpp"       // core-periphery algorithms
 #include "triad.cpp"         // clustering coefficient and triads
-#include "casc.cpp"          // cascade detection^M
+//#include "casc.cpp"          // cascade detection^M
 
 // graph generators
 #include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)
@@ -45,6 +45,6 @@
 
 // table data structures and algorithms
 #include "table.cpp"         // table
-#include "conv.cpp"
+//#include "conv.cpp"
 #include "numpy.cpp"         // numpy conversion
 
