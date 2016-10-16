@@ -415,7 +415,7 @@ double GetBfsEffDiam(const PGraph& Graph, const int& NTestNodes, const bool& IsD
   // shotest paths
   TIntV NodeIdV;
   Graph->GetNIdV(NodeIdV);  NodeIdV.Shuffle(TInt::Rnd);
-  for (int tries = 0; tries < TMath::Mn(NTestNodes, Graph->GetNodes()); tries++) {
+  for (int tries = 0; tries < TMath::Mn(int64(NTestNodes), Graph->GetNodes()); tries++) {
     const int NId = NodeIdV[tries];
     BFS.DoBfs(NId, true, ! IsDir, -1, TInt::Mx);
     for (int i = 0; i < BFS.NIdDistH.Len(); i++) {

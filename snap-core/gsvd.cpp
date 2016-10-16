@@ -74,7 +74,7 @@ void TNGraphMtx::PMultiplyT(const TFltV& Vec, TFltV& Result) const {
 /////////////////////////////////////////////////
 // Undirected Graph Matrix -- sparse {0,1} row matrix 
 bool TUNGraphMtx::CheckNodeIds() {
-  for (int NId = 0; NId < Graph->GetNodes(); NId++) {
+  for (int64 NId = 0; NId < Graph->GetNodes(); NId++) {
     if (! Graph->IsNode(NId)) { return false; }
   }
   return true;
@@ -95,57 +95,113 @@ TUNGraphMtx::TUNGraphMtx(const PUNGraph& GraphPt) : Graph() {
   }
 }
 
+//// Result = A * B(:,ColId)
+//void TUNGraphMtx::PMultiply(const TFltVV& B, int ColId, TFltV& Result) const {
+//  const int RowN = GetRows();
+//  Assert(B.GetRows() >= RowN && Result.Len() >= RowN);
+//  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
+//  for (int j = 0; j < RowN; j++) {
+//    const TIntV& RowV = NodeH[j].NIdV;
+//    Result[j] = 0.0;
+//    for (int i = 0; i < RowV.Len(); i++) {
+//      Result[j] += B(RowV[i], ColId);
+//    }
+//  }
+//}
+//
+//// Result = A * Vec
+//void TUNGraphMtx::PMultiply(const TFltV& Vec, TFltV& Result) const {
+//  const int RowN = GetRows();
+//  Assert(Vec.Len() >= RowN && Result.Len() >= RowN);
+//  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
+//  for (int j = 0; j < RowN; j++) {
+//    const TIntV& RowV = NodeH[j].NIdV;
+//    Result[j] = 0.0;
+//    for (int i = 0; i < RowV.Len(); i++) {
+//      Result[j] += Vec[RowV[i]];
+//    }
+//  }
+//}
+//
+//// Result = A' * B(:,ColId)
+//void TUNGraphMtx::PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const {
+//  const int ColN = GetCols();
+//  Assert(B.GetRows() >= ColN && Result.Len() >= ColN);
+//  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
+//  for (int i = 0; i < ColN; i++) Result[i] = 0.0;
+//  for (int j = 0; j < ColN; j++) {
+//    const TIntV& RowV = NodeH[j].NIdV;
+//    for (int i = 0; i < RowV.Len(); i++) {
+//      Result[RowV[i]] += B(j, ColId);
+//    }
+//  }
+//}
+//
+//// Result = A' * Vec
+//void TUNGraphMtx::PMultiplyT(const TFltV& Vec, TFltV& Result) const {
+//  const int RowN = GetRows();
+//  Assert(Vec.Len() >= RowN && Result.Len() >= RowN);
+//  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
+//  for (int i = 0; i < RowN; i++) Result[i] = 0.0;
+//  for (int j = 0; j < RowN; j++) {
+//    const TIntV& RowV = NodeH[j].NIdV;
+//    for (int i = 0; i < RowV.Len(); i++) {
+//      Result[RowV[i]] += Vec[j];
+//    }
+//  }
+//}
+
 // Result = A * B(:,ColId)
-void TUNGraphMtx::PMultiply(const TFltVV& B, int ColId, TFltV& Result) const {
-  const int RowN = GetRows();
+void TUNGraphMtx::PMultiply(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {
+  const int64 RowN = GetRows();
   Assert(B.GetRows() >= RowN && Result.Len() >= RowN);
-  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int j = 0; j < RowN; j++) {
-    const TIntV& RowV = NodeH[j].NIdV;
+  const THash<TInt64, TUNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 j = 0; j < RowN; j++) {
+    const TInt64V& RowV = NodeH[j].NIdV;
     Result[j] = 0.0;
-    for (int i = 0; i < RowV.Len(); i++) {
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[j] += B(RowV[i], ColId);
     }
   }
 }
 
 // Result = A * Vec
-void TUNGraphMtx::PMultiply(const TFltV& Vec, TFltV& Result) const {
-  const int RowN = GetRows();
+void TUNGraphMtx::PMultiply(const TFlt64V& Vec, TFlt64V& Result) const {
+  const int64 RowN = GetRows();
   Assert(Vec.Len() >= RowN && Result.Len() >= RowN);
-  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int j = 0; j < RowN; j++) {
-    const TIntV& RowV = NodeH[j].NIdV;
+  const THash<TInt64, TUNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 j = 0; j < RowN; j++) {
+    const TInt64V& RowV = NodeH[j].NIdV;
     Result[j] = 0.0;
-    for (int i = 0; i < RowV.Len(); i++) {
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[j] += Vec[RowV[i]];
     }
   }
 }
 
 // Result = A' * B(:,ColId)
-void TUNGraphMtx::PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const {
-  const int ColN = GetCols();
+void TUNGraphMtx::PMultiplyT(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {
+  const int64 ColN = GetCols();
   Assert(B.GetRows() >= ColN && Result.Len() >= ColN);
-  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int i = 0; i < ColN; i++) Result[i] = 0.0;
-  for (int j = 0; j < ColN; j++) {
-    const TIntV& RowV = NodeH[j].NIdV;
-    for (int i = 0; i < RowV.Len(); i++) {
+  const THash<TInt64, TUNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 i = 0; i < ColN; i++) Result[i] = 0.0;
+  for (int64 j = 0; j < ColN; j++) {
+    const TInt64V& RowV = NodeH[j].NIdV;
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[RowV[i]] += B(j, ColId);
     }
   }
 }
 
 // Result = A' * Vec
-void TUNGraphMtx::PMultiplyT(const TFltV& Vec, TFltV& Result) const {
-  const int RowN = GetRows();
+void TUNGraphMtx::PMultiplyT(const TFlt64V& Vec, TFlt64V& Result) const {
+  const int64 RowN = GetRows();
   Assert(Vec.Len() >= RowN && Result.Len() >= RowN);
-  const THash<TInt, TUNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int i = 0; i < RowN; i++) Result[i] = 0.0;
-  for (int j = 0; j < RowN; j++) {
-    const TIntV& RowV = NodeH[j].NIdV;
-    for (int i = 0; i < RowV.Len(); i++) {
+  const THash<TInt64, TUNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 i = 0; i < RowN; i++) Result[i] = 0.0;
+  for (int64 j = 0; j < RowN; j++) {
+    const TInt64V& RowV = NodeH[j].NIdV;
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[RowV[i]] += Vec[j];
     }
   }
@@ -380,7 +436,7 @@ void GetInvParticipRat(const PUNGraph& Graph, int MaxEigVecs, int TimeLimit, TFl
   TFltV EigValV;
   TExeTm ExeTm;
   if (MaxEigVecs<=1) { MaxEigVecs=1000; }
-  int EigVecs = TMath::Mn(Graph->GetNodes(), MaxEigVecs);
+  int EigVecs = TMath::Mn(Graph->GetNodes(), int64(MaxEigVecs));
   printf("start %d vecs...", EigVecs);
   try {
     TSparseSVD::Lanczos2(GraphMtx, EigVecs, TimeLimit, ssotFull, EigValV, EigVecVV, false);
