@@ -39,7 +39,7 @@ public:
 template<class TKey, class TDat, class TSizeTy = int>
 class THashKeyDatI{
 public:
-  typedef THashKeyDat<TKey, TDat> THKeyDat;
+  typedef THashKeyDat<TKey, TDat, TSizeTy> THKeyDat;
 private:
   THKeyDat* KeyDatI;
   THKeyDat* EndI;
@@ -56,8 +56,8 @@ public:
     return KeyDatI==HashKeyDatI.KeyDatI;}
   bool operator<(const THashKeyDatI& HashKeyDatI) const {
     return KeyDatI<HashKeyDatI.KeyDatI;}
-  THashKeyDatI& operator++(TSizeTy){ KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return *this; }
-  THashKeyDatI& operator--(TSizeTy){ do { KeyDatI--; } while (KeyDatI->HashCd==-1); return *this;}
+  THashKeyDatI& operator++(int){ KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return *this; }
+  THashKeyDatI& operator--(int){ do { KeyDatI--; } while (KeyDatI->HashCd==-1); return *this;}
   THKeyDat& operator*() const { return *KeyDatI; }
   THKeyDat& operator()() const { return *KeyDatI; }
   THKeyDat* operator->() const { return KeyDatI; }
