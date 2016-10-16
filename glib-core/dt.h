@@ -10,14 +10,14 @@ ClassHdTP(TXmlTok, PXmlTok);
 // Random
 class TRnd{
 public:
-  static const int RndSeed;
+  static const int64 RndSeed;
 private:
-  static const int a, m, q, r;
-  int Seed;
-  int GetNextSeed(){
+  static const int64 a, m, q, r;
+  int64 Seed;
+  int64 GetNextSeed(){
     if ((Seed=a*(Seed%q)-r*(Seed/q))>0){return Seed;} else {return Seed+=m;}}
 public:
-  TRnd(const int& _Seed=1, const int& Steps=0){
+  TRnd(const int64& _Seed=1, const int64& Steps=0){
     PutSeed(_Seed); Move(Steps);}
   explicit TRnd(TSIn& SIn){SIn.Load(Seed);}
   void Save(TSOut& SOut) const {SOut.Save(Seed);}
@@ -28,10 +28,10 @@ public:
   bool operator==(const TRnd&) const {Fail; return false;}
 
   double GetUniDev(){return GetNextSeed()/double(m);}
-  int GetUniDevInt(const int& Range=0);
-  int GetUniDevInt(const int& MnVal, const int& MxVal){
+  int64 GetUniDevInt(const int64& Range=0);
+  int64 GetUniDevInt(const int64& MnVal, const int64& MxVal){
     IAssert(MnVal<=MxVal); return MnVal+GetUniDevInt(MxVal-MnVal+1);}
-  uint GetUniDevUInt(const uint& Range=0);
+  uint64 GetUniDevUInt(const uint64& Range=0);
   int64 GetUniDevInt64(const int64& Range=0);
   uint64 GetUniDevUInt64(const uint64& Range=0);
   double GetNrmDev();
@@ -39,11 +39,11 @@ public:
    const double& Mean, const double& SDev, const double& Mn, const double& Mx);
   double GetExpDev();
   double GetExpDev(const double& Lambda); // mean=1/lambda
-  double GetGammaDev(const int& Order);
+  double GetGammaDev(const int64& Order);
   double GetPoissonDev(const double& Mean);
-  double GetBinomialDev(const double& Prb, const int& Trials);
-  int GetGeoDev(const double& Prb){
-    return 1+(int)floor(log(1.0-GetUniDev())/log(1.0-Prb));}
+  double GetBinomialDev(const double& Prb, const int64& Trials);
+  int64 GetGeoDev(const double& Prb){
+    return 1+(int64)floor(log(1.0-GetUniDev())/log(1.0-Prb));}
   double GetPowerDev(const double& AlphaSlope){ // power-law degree distribution (AlphaSlope>0)
     IAssert(AlphaSlope>1.0);
     return pow(1.0-GetUniDev(), -1.0/(AlphaSlope-1.0));}
@@ -55,17 +55,17 @@ public:
     return Lambda*pow(-log(1-GetUniDev()), 1.0/K);}
   //void GetSphereDev(const int& Dim, TFltV& ValV);
 
-  void PutSeed(const int& _Seed);
-  int GetSeed() const {return Seed;}
+  void PutSeed(const int64& _Seed);
+  int64 GetSeed() const {return Seed;}
   void Randomize(){PutSeed(RndSeed);}
-  void Move(const int& Steps);
+  void Move(const int64& Steps);
   bool Check();
 
-  static double GetUniDevStep(const int& Seed, const int& Steps){
+  static double GetUniDevStep(const int64& Seed, const int64& Steps){
     TRnd Rnd(Seed); Rnd.Move(Steps); return Rnd.GetUniDev();}
-  static double GetNrmDevStep(const int& Seed, const int& Steps){
+  static double GetNrmDevStep(const int64& Seed, const int64& Steps){
     TRnd Rnd(Seed); Rnd.Move(Steps); return Rnd.GetNrmDev();}
-  static double GetExpDevStep(const int& Seed, const int& Steps){
+  static double GetExpDevStep(const int64& Seed, const int64& Steps){
     TRnd Rnd(Seed); Rnd.Move(Steps); return Rnd.GetExpDev();}
 
   static TRnd LoadTxt(TILx& Lx);
@@ -998,7 +998,8 @@ public:
 public:
   static const int64 Mn;
   static const int64 Mx;
-
+  static TRnd Rnd;
+  static int64 GetRnd(const int64& Range=0){return Rnd.GetUniDevInt(Range);}
   TNum() : Val(0){}
   TNum(const TNum& Int) : Val(Int.Val){}
   TNum(const int64& Int) : Val(Int){}
@@ -1015,6 +1016,7 @@ public:
   TNum& operator--(){ --Val; return *this; } // prefix
   TNum operator++(int){ TNum oldVal = Val; Val++; return oldVal; } // postfix
   TNum operator--(int){ TNum oldVal = Val; Val--; return oldVal; } // postfix
+  TNum operator()() const {return Val;}
   int GetMemUsed() const { return sizeof(TNum); }
   int GetPrimHashCd() const {return Val;}
   int GetSecHashCd() const {return Val/0x10;}

@@ -1,49 +1,49 @@
 /////////////////////////////////////////////////
 // Random
-const int TRnd::RndSeed=0;
-const int TRnd::a=16807;
-const int TRnd::m=2147483647;
-const int TRnd::q=127773; // m DIV a
-const int TRnd::r=2836; // m MOD a
+const int64 TRnd::RndSeed=0;
+const int64 TRnd::a=16807;
+const int64 TRnd::m=2147483647;
+const int64 TRnd::q=127773; // m DIV a
+const int64 TRnd::r=2836; // m MOD a
 
 void TRnd::LoadXml(const PXmlTok& XmlTok, const TStr& Nm){
   XLoadHd(Nm);
-  Seed=TXmlObjSer::GetIntArg(XmlTok, "Seed");
+  Seed=TXmlObjSer::GetInt64Arg(XmlTok, "Seed");
 }
 
 void TRnd::SaveXml(TSOut& SOut, const TStr& Nm) const {
-  XSaveBETagArg(Nm, "Seed", TInt::GetStr(Seed));
+  XSaveBETagArg(Nm, "Seed", TInt64::GetStr(Seed));
 }
 
-void TRnd::PutSeed(const int& _Seed){
+void TRnd::PutSeed(const int64& _Seed){
   Assert(_Seed>=0);
   if (_Seed==0){
     //Seed=int(time(NULL));
-    Seed=abs(int(TSysTm::GetPerfTimerTicks()));
+    Seed=abs(int64(TSysTm::GetPerfTimerTicks()));
   } else {
     Seed=_Seed;
     //Seed=abs(_Seed*100000)+1;
   }
 }
 
-void TRnd::Move(const int& Steps){
-  for (int StepN=0; StepN<Steps; StepN++){GetNextSeed();}
+void TRnd::Move(const int64& Steps){
+  for (int64 StepN=0; StepN<Steps; StepN++){GetNextSeed();}
 }
 
 bool TRnd::Check(){
-  int PSeed=Seed; Seed=1;
-  for (int SeedN=0; SeedN<10000; SeedN++){GetNextSeed();}
+  int64 PSeed=Seed; Seed=1;
+  for (int64 SeedN=0; SeedN<10000; SeedN++){GetNextSeed();}
   bool Ok=Seed==1043618065; Seed=PSeed; return Ok;
 }
 
-int TRnd::GetUniDevInt(const int& Range){
-  int Seed=GetNextSeed();
+int64 TRnd::GetUniDevInt(const int64& Range){
+  int64 Seed=GetNextSeed();
   if (Range==0){return Seed;}
   else {return Seed%Range;}
 }
 
-uint TRnd::GetUniDevUInt(const uint& Range){
-  uint Seed=uint(GetNextSeed()%0x10000)*0x10000+uint(GetNextSeed()%0x10000);
+uint64 TRnd::GetUniDevUInt(const uint64& Range){
+  uint64 Seed=uint64(GetNextSeed()%0x10000)*0x10000+uint64(GetNextSeed()%0x10000);
   if (Range==0){return Seed;}
   else {return Seed%Range;}
 }
@@ -92,8 +92,8 @@ double TRnd::GetExpDev(const double& Lambda) {
   return GetExpDev()/Lambda;
 }
 
-double TRnd::GetGammaDev(const int& Order){
-  int j;
+double TRnd::GetGammaDev(const int64& Order){
+  int64 j;
   double am,e,s,v1,v2,x,y;
   if (Order<1){Fail;}
   if (Order<6) {
@@ -151,9 +151,9 @@ double TRnd::GetPoissonDev(const double& Mean){
   return em;
 }
 
-double TRnd::GetBinomialDev(const double& Prb, const int& Trials){
-  int j;
-  static int nold=(-1);
+double TRnd::GetBinomialDev(const double& Prb, const int64& Trials){
+  int64 j;
+  static int64 nold=(-1);
   double am,em,g,angle,p,bnl,sq,t,y;
   static double pold=(-1.0),pc,plog,pclog,en,oldg;
 
