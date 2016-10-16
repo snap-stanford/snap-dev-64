@@ -484,6 +484,8 @@ void TTable::GetSchema(const TStr& InFNm, Schema& S, const char& Separator) {
 }
 
 #ifdef GCC_ATOMIC
+// TODO64
+/*
 void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, 
                         const char& Separator, TBool HasTitleLine) {
   // preloaded necessary variables
@@ -644,6 +646,7 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
   T->AddSchemaCol(T->IdColName, atInt);
   T->AddColType(T->IdColName, atInt, T->IntCols.Len()-1);
 }
+*/
 #endif // GCC_ATOMIC
 
 void TTable::LoadSSSeq(
@@ -762,7 +765,8 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
     // Right now, can load in parallel only in Linux (for mmap) and if
     // there are no string columns
 #ifdef GLib_LINUX
-    LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+    // TODO64
+    //LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #endif
@@ -961,7 +965,8 @@ void TTable::AddStrVal(const TStr& Col, const TStr& Key) {
   //printf("TTable::AddStrVal1  .%s.  .%s.\n", Col.CStr(), Key.CStr());
   AddStrVal(GetColIdx(Col), Key);
 }
-
+// TODO64 
+/*
 void TTable::AddGraphAttribute(const TStr& Attr, TBool IsEdge, TBool IsSrc, TBool IsDst) {
   if (!IsColName(Attr)) { TExcept::Throw(Attr + ": No such column"); }
   if (IsEdge) { EdgeAttrV.Add(NormalizeColName(Attr)); }
@@ -1081,7 +1086,7 @@ TStr64V TTable::GetEdgeStrAttrV() const {
   }
   return StrEA;
 }
-
+*/
 void TTable::Rename(const TStr& column, const TStr& NewLabel) {
   // This function is necessary, for example to take the union of two tables 
   // where the attribute names don't match.
@@ -1202,7 +1207,8 @@ void TTable::GroupingSanityCheck(const TStr& GroupBy, const TAttrType& AttrType)
 }
 
 #ifdef GCC_ATOMIC
-//CHECK
+//TODO64
+/*
 void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt, TIntV>& Grouping, TBool UsePhysicalIds) const {
   timeval timer0;
   gettimeofday(&timer0, NULL);
@@ -1242,6 +1248,7 @@ void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt, TIntV>& Grouping
   //double endAdd = omp_get_wtime();
   //printf("Add time = %f\n", endAdd-endGen);
 }
+*/
 #endif // GCC_ATOMIC
 
 void TTable::Unique(const TStr& Col) {
@@ -1581,9 +1588,11 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   THash<TInt64,TInt64V, int64> GroupByStrMapping;
   THash<TGroupKey,TInt64V, int64> Mapping;
 #ifdef GCC_ATOMIC
-  //CHECK
+  //TODO64
+  /*
   THashMP<TInt,TIntV> GroupByIntMapping_MP(NumValidRows);
   TInt64V GroupByIntMPKeys(NumValidRows);
+  */
 #endif
   TInt64 NumOfGroups = 0;
   TInt64 GroupingCase = 0;
@@ -1597,6 +1606,8 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   		switch(GetColType(NGroupByAttrs[0])){
   			case atInt:
 #ifdef GCC_ATOMIC
+          // TODO64
+          /*
   				if(GetMP()){
   					GroupByIntColMP(NGroupByAttrs[0], GroupByIntMapping_MP, UsePhysicalIds);
   					int64 x = 0;
@@ -1604,20 +1615,21 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
 					for(THashMP<TInt,TIntV>::TIter it = GroupByIntMapping_MP.BegI(); it < GroupByIntMapping_MP.EndI(); it++){
 						GroupByIntMPKeys[x] = it.GetKey();
 						x++;
-						/*
-						printf("%d --> ", it.GetKey().Val);
-						TIntV& V = it.GetDat();
-						for(int i = 0; i < V.Len(); i++){
-							printf(" %d", V[i].Val); 
-						}
-						printf("\n");
-						*/
+						
+						//printf("%d --> ", it.GetKey().Val);
+						//TIntV& V = it.GetDat();
+						//for(int i = 0; i < V.Len(); i++){
+						//	printf(" %d", V[i].Val); 
+						//}
+						//printf("\n");
+						
 					}
   					NumOfGroups = x;
   					GroupingCase = 4;
   					//printf("Number of groups: %d\n", NumOfGroups.Val);
   					break;
   				}
+          */
 #endif // GCC_ATOMIC
   				GroupByIntCol(NGroupByAttrs[0], GroupByIntMapping, TInt64V(), true, UsePhysicalIds);
   				NumOfGroups = GroupByIntMapping.Len();
@@ -1687,7 +1699,8 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   			break;
   		case 4:
 #ifdef GCC_ATOMIC
-  			GroupRows = & GroupByIntMapping_MP.GetDat(GroupByIntMPKeys[g]);
+        // TODO64
+  			//GroupRows = & GroupByIntMapping_MP.GetDat(GroupByIntMPKeys[g]);
 #endif
   			break;
   	}
@@ -2283,6 +2296,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
   // iterate over the rows of the bigger table and check for "collisions" 
   // with the group keys for the small table.
 #ifdef GCC_ATOMIC
+  /*
   if (GetMP()) {
     switch(ColType){
       case atInt:{
@@ -2398,6 +2412,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
       break;
     }
   } else {
+*/
 #endif // GCC_ATOMIC
     switch (ColType) {
       case atInt:{
@@ -2456,7 +2471,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
       break;
     }
 #ifdef GCC_ATOMIC
-  }
+  //}
 #endif
   return JointTable; 
 }
@@ -3372,7 +3387,8 @@ void TTable::SelectFirstNRows(const TInt64& N) {
   Next[LastId] = Last;
   LastValidRow = LastId;
 }
-//CHECK
+// TODO64
+/*
 inline void TTable::CheckAndAddIntNode(PNEANet Graph, THashSet<TInt>& NodeVals, TInt64 NodeId) {
   if (!NodeVals.IsKey(NodeId)) {
     Graph->AddNode(NodeId);
@@ -3398,7 +3414,7 @@ inline void TTable::AddEdgeAttributes(PNEANet& Graph, int64 RowId) {
     }
   }
 }
-
+*/
 inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowId, THash<TInt64, TStrInt64V64H, int64>& NodeIntAttrs,
   THash<TInt64, TStrFlt64V64H, int64>& NodeFltAttrs, THash<TInt64, TStrStr64V64H, int64>& NodeStrAttrs) {
   for (TInt64 i = 0; i < NodeAttrV.Len(); i++) {
@@ -3430,6 +3446,8 @@ inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowI
 
 // Makes one pass over all the rows in the vector RowIds, and builds
 // a PNEANet, with each row as an edge between SrcCol and DstCol.
+// TODO64
+/*
 PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
   PNEANet Graph = TNEANet::New();
   
@@ -3517,8 +3535,7 @@ PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
 
   return Graph;
 }
-
-
+*/
 
 void TTable::InitRowIdBuckets(int64 NumBuckets) {
   for (TInt64 i = 0; i < RowIdBuckets.Len(); i++) {
@@ -3600,7 +3617,8 @@ void TTable::FillBucketsByInterval(TStr SplitAttr, TIntPr64V SplitIntervals) {
     }
   }
 }
-
+// TOOD64
+/*
 TVec<PNEANet, int64> TTable::GetGraphsFromSequence(TAttrAggr AggrPolicy) {
   //call BuildGraph on each row id set - parallelizable!
   TVec<PNEANet, int64> GraphSequence;
@@ -3782,8 +3800,10 @@ PTable TTable::GetEdgeTable(const PNEANet& Network, TTableContext* Context) {
   T->Next.Add(Last);
   return T;
 }
-
+*/
 #ifdef GCC_ATOMIC
+// TODO64
+/*
 PTable TTable::GetEdgeTablePN(const PNGraphMP& Network, TTableContext* Context){
   Schema SR;
   SR.Add(TPair<TStr,TAttrType>("src_id",atInt));
@@ -3835,8 +3855,10 @@ PTable TTable::GetEdgeTablePN(const PNGraphMP& Network, TTableContext* Context){
   Assert(T->NumRows == NumEdges);
   return T;
 }
+*/
 #endif // GCC_ATOMIC
-
+// TODO64
+/*
 PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property, 
  const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName, 
  TTableContext* Context) {
@@ -3874,7 +3896,7 @@ PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H&
   T->Next.Add(Last);
   return T;
 }
-
+*/
 /*** Special Filters ***/
 PTable TTable::IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName) {
   TStr64V OrderBy;
@@ -4138,6 +4160,8 @@ void TTable::UpdateTableForNewRow() {
 }
 
 #ifdef GCC_ATOMIC
+// TODO64
+/*
 void TTable::SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal){
     if(!GetMP()){ TExcept::Throw("Not Using MP!");}
 	TIntPr64V Partitions;
@@ -4227,6 +4251,7 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
       break;
   } // end of outer switch statement
 }
+*/
 #endif	// GCC_ATOMIC
 
 void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
@@ -4237,10 +4262,13 @@ void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, con
   if(!Table.IsColName(ReadAttr)){ TExcept::Throw("Bad ReadAttr parameter");}
   
 #ifdef GCC_ATOMIC
+  // TODO64
+  /*
   if(GetMP()){
     UpdateFltFromTableMP(KeyAttr, UpdateAttr,Table, FKeyAttr, ReadAttr, DefaultFltVal);
     return;
   }
+  */
 #endif	// GCC_ATOMIC
   	
   TAttrType KeyType = GetColType(KeyAttr);

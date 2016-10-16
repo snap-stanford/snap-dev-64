@@ -441,6 +441,8 @@ public:
 
 /// The name of the friend is not found by simple name lookup until a matching declaration is provided in that namespace scope (either before or after the class declaration granting friendship).
 namespace TSnap{
+  // TODO64
+  /*
 	/// Converts table to a directed/undirected graph. Suitable for PUNGraph and PNGraph, but not for PNEANet where attributes are expected.
 	template<class PGraph> PGraph ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
@@ -467,8 +469,10 @@ namespace TSnap{
 
   int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV);
-
+*/
 #ifdef GCC_ATOMIC
+// TODO64
+/*
   template<class PGraphMP> PGraphMP ToGraphMP(PTable Table,
     const TStr& SrcCol, const TStr& DstCol);
   template<class PGraphMP> PGraphMP ToGraphMP3(PTable Table,
@@ -484,7 +488,7 @@ namespace TSnap{
   template<class PGraphMP> PGraphMP ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
 		  TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
  
-
+*/
 #endif // GCC_ATOMIC
 }
 
@@ -497,6 +501,8 @@ protected:
 
   static TInt64 UseMP; ///< Global switch for choosing multi-threaded versions of TTable functions.
 public:
+  // TODO64
+  /*
   template<class PGraph> friend PGraph TSnap::ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
     template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
@@ -518,8 +524,10 @@ public:
       TStr64V& EdgeAttrV);
     friend int64 TSnap::LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV); 
-
+  */
 #ifdef GCC_ATOMIC
+// TODO64
+/*
   template<class PGraphMP> friend PGraphMP TSnap::ToGraphMP(PTable Table, const TStr& SrcCol, const TStr& DstCol);
   template<class PGraphMP> friend PGraphMP TSnap::ToGraphMP3(PTable Table, const TStr& SrcCol, const TStr& DstCol);
   template<class PGraphMP> friend PGraphMP TSnap::ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol, TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs, TAttrAggr AggrPolicy);
@@ -528,7 +536,7 @@ public:
   template<class PGraphMP> friend PGraphMP TSnap::ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
   template<class PGraphMP> friend PGraphMP TSnap::ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
 		  TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
- 
+*/ 
 #endif // GCC_ATOMIC
 
   static void SetMP(TInt64 Value) { UseMP = Value; }
@@ -675,11 +683,12 @@ protected:
   void AddRow(const TInt64V& IntVals, const TFlt64V& FltVals, const TStr64V& StrVals);
 
 /***** Utility functions for building graph from TTable *****/
+  // TODO64
+  /*
   /// Adds names of columns to be used as graph attributes.
   void AddGraphAttribute(const TStr& Attr, TBool IsEdge, TBool IsSrc, TBool IsDst);
   /// Adds vector of names of columns to be used as graph attributes.
   void AddGraphAttributeV(TStr64V& Attrs, TBool IsEdge, TBool IsSrc, TBool IsDst);
-  // CHECK
   /// Checks if given \c NodeId is seen earlier; if not, add it to \c Graph and hashmap \c NodeVals.
   void CheckAndAddIntNode(PNEANet Graph, THashSet<TInt64>& NodeVals, TInt64 NodeId);
   /// Checks if given \c NodeVal is seen earlier; if not, add it to \c Graph and hashmap \c NodeVals.
@@ -705,7 +714,7 @@ protected:
   PNEANet GetFirstGraphFromSequence(TAttrAggr AggrPolicy);
   /// Returns the next graph in sequence corresponding to RowIdBuckets. ##TTable::GetNextGraphFromSequence
   PNEANet GetNextGraphFromSequence();
-
+  */
   /// Aggregates vector into a single scalar value according to a policy. ##TTable::AggregateVector
   template <class T> T AggregateVector(TVec<T, int64>& V, TAttrAggr Policy);
 
@@ -716,10 +725,12 @@ protected:
   template <class T> void GroupByIntCol(const TStr& GroupBy, T& Grouping, 
     const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds = true) const;
 #ifdef GCC_ATOMIC
+  // TODO64
+  /*
   public:	//Should be protected - this is for debug only
   /// Groups/hashes by a single column with integer values, using OpenMP multi-threading
-  //CHECK
   void GroupByIntColMP(const TStr& GroupBy, THashMP<TInt, TIntV>& Grouping, TBool UsePhysicalIds = true) const;
+  */
 #endif // GCC_ATOMIC
   protected:
   /// Groups/hashes by a single column with float values. Returns hash table with grouping.
@@ -731,9 +742,11 @@ protected:
   /// Template for utility function to update a grouping hash map.
   template <class T> void UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val) const;
 #ifdef GCC_ATOMIC
-  //CHECK 
+  // TODO64
+  /*
   /// Template for utility function to update a parallel grouping hash map.
   template <class T> void UpdateGrouping(THashMP<T,TIntV>& Grouping, T Key, TInt64 Val) const;
+  */
 #endif // GCC_ATOMIC
   void PrintGrouping(const THash<TGroupKey, TInt64V, int64>& Grouping) const;
 
@@ -818,8 +831,11 @@ protected:
   void UpdateTableForNewRow();
 
 #ifdef GCC_ATOMIC
+  // TODO64
+  /*
   /// Parallelly loads data from input file at InFNm into NewTable. Only work when NewTable has no string columns.
   static void LoadSSPar(PTable& NewTable, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, const char& Separator, TBool HasTitleLine);
+  */
 #endif // GCC_ATOMIC
   /// Sequentially loads data from input file at InFNm into NewTable
   static void LoadSSSeq(PTable& NewTable, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, const char& Separator, TBool HasTitleLine);
@@ -1026,6 +1042,8 @@ public:
   Schema GetSchema() { return DenormalizeSchema(); }
 
 /***** Graph handling *****/
+  // TODO64
+  /*
   /// Creates a sequence of graphs based on values of column SplitAttr and windows specified by JumpSize and WindowSize.
   TVec<PNEANet, int64> ToGraphSequence(TStr SplitAttr, TAttrAggr AggrPolicy,
     TInt64 WindowSize, TInt64 JumpSize, TInt64 StartVal = TInt64::Mn, TInt64 EndVal = TInt64::Mx);
@@ -1113,7 +1131,7 @@ public:
   static PTable GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property,
    const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName,
    TTableContext* Context);
-
+*/
 /***** Basic Getters *****/
   /// Gets type of column \c ColName.
 	TAttrType GetColType(const TStr& ColName) const {
@@ -1274,10 +1292,13 @@ public:
   void UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
   	const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
 #ifdef GCC_ATOMIC
+  // TODO64
+  /*
   void UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
   	const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
   // TODO: this should be a generic vector operation (parallel equivalent to TVec::PutAll)
   void SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal);
+  */
 #endif // GCC_ATOMIC
 
   /// Returns union of this table with given \c Table.
@@ -1383,6 +1404,8 @@ public:
   PTable IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName = "");
 
   /// Gets sequence of PageRank tables from given \c GraphSeq.
+  // TODO64
+  /*
   static TTableIterator GetMapPageRank(const TVec<PNEANet, int64>& GraphSeq, TTableContext* Context,
    const double& C = 0.85, const double& Eps = 1e-4, const int64& MaxIter = 100) {
     TVec<PTable, int64> TableSeq(GraphSeq.Len());
@@ -1397,7 +1420,7 @@ public:
     TSnap::MapHits(GraphSeq, TableSeq, Context, MaxIter);
     return TTableIterator(TableSeq);
   }
-  
+  */
   void PrintSize();
   void PrintContextSize();
   /// Returns approximate memory used by table in [KB]
@@ -1571,6 +1594,8 @@ void TTable::UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val
 }
 
 #ifdef GCC_ATOMIC
+// TODO64
+/*
 template <class T>
 //CHECK
 void TTable::UpdateGrouping(THashMP<T,TInt64V>& Grouping, T Key, TInt64 Val) const{
@@ -1584,6 +1609,7 @@ void TTable::UpdateGrouping(THashMP<T,TInt64V>& Grouping, T Key, TInt64 Val) con
     Grouping.AddDat(Key, NewGroup);
   }
 }
+*/
 #endif // GCC_ATOMIC
 
 /*
