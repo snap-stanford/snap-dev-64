@@ -13,9 +13,13 @@ protected:
     virtual void PMultiply(const TFltV& Vec, TFltV& Result) const = 0;
     virtual void PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const = 0;
     virtual void PMultiplyT(const TFltV& Vec, TFltV& Result) const = 0;
-
-    virtual int PGetRows() const = 0;
-    virtual int PGetCols() const = 0;
+    //These functions need to be over-ridden
+    virtual void PMultiply(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {};
+    virtual void PMultiply(const TFlt64V& Vec, TFlt64V& Result) const {};
+    virtual void PMultiplyT(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {};
+    virtual void PMultiplyT(const TFlt64V& Vec, TFlt64V& Result) const {};
+    virtual int64 PGetRows() const = 0;
+    virtual int64 PGetCols() const = 0;
 public:
     TMatrix(): Transposed(false) {}
     virtual ~TMatrix() { }
@@ -41,10 +45,31 @@ public:
         else { PMultiplyT(Vec, Result); }
     }
 
+    // Result = A * B(:,ColId)
+			void Multiply(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {
+					if (Transposed) { PMultiplyT(B, ColId, Result); }
+					else { PMultiply(B, ColId, Result); }
+			}
+			// Result = A * Vec
+			void Multiply(const TFlt64V& Vec, TFlt64V& Result) const {
+					if (Transposed) { PMultiplyT(Vec, Result); }
+					else { PMultiply(Vec, Result); }
+			}
+			// Result = A' * B(:,ColId)
+			void MultiplyT(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {
+					if (Transposed) { PMultiply(B, ColId, Result); }
+					else { PMultiplyT(B, ColId, Result); }
+			}
+			// Result = A' * Vec
+			void MultiplyT(const TFlt64V& Vec, TFlt64V& Result) const{
+					if (Transposed) { PMultiply(Vec, Result); }
+					else { PMultiplyT(Vec, Result); }
+			}
+
     // number of rows
-    int GetRows() const { return Transposed ? PGetCols() : PGetRows(); }
+    int64 GetRows() const { return Transposed ? PGetCols() : PGetRows(); }
     // number of columns
-    int GetCols() const { return Transposed ? PGetRows() : PGetCols(); }
+    int64 GetCols() const { return Transposed ? PGetRows() : PGetCols(); }
 
     void Transpose() { Transposed = !Transposed; }
 };
@@ -68,8 +93,8 @@ protected:
     // Result = A' * Vec
     virtual void PMultiplyT(const TFltV& Vec, TFltV& Result) const;
 
-    int PGetRows() const { return RowN; }
-    int PGetCols() const { return ColN; }
+    int64 PGetRows() const { return RowN; }
+    int64 PGetCols() const { return ColN; }
 
 public:
     TSparseColMatrix(): TMatrix() {}
@@ -103,8 +128,8 @@ protected:
     // Result = A' * Vec
     virtual void PMultiplyT(const TFltV& Vec, TFltV& Result) const;
 
-    int PGetRows() const { return RowN; }
-    int PGetCols() const { return ColN; }
+    int64 PGetRows() const { return RowN; }
+    int64 PGetCols() const { return ColN; }
 
 public:
     TSparseRowMatrix(): TMatrix() {}
@@ -139,8 +164,8 @@ protected:
     // Result = A' * Vec
     virtual void PMultiplyT(const TFltV& Vec, TFltV& Result) const;
 
-    int PGetRows() const { return RowN; }
-    int PGetCols() const { return ColN; }
+    int64 PGetRows() const { return RowN; }
+    int64 PGetCols() const { return ColN; }
 
 public:
     TFullColMatrix(): TMatrix() {}
