@@ -492,7 +492,7 @@ public:
 
   TRec* operator->() const {Assert(Addr!=NULL); return Addr;}
   TRec& operator*() const {Assert(Addr!=NULL); return *Addr;}
-  TRec& operator[](const int& RecN) const {
+  TRec& operator[](const int64& RecN) const {
     Assert(Addr!=NULL); return Addr[RecN];}
   TRec* operator()() const {return Addr;}
   //const TRec* operator()() const {return Addr;}
@@ -500,11 +500,11 @@ public:
 
   bool Empty() const { return Addr==NULL;}
   void Clr(){UnRef(); Addr=NULL;}
-  int GetRefs() const {
+  int64 GetRefs() const {
     if (Addr==NULL){return -1;} else {return Addr->CRef.GetRefs();}}
 
-  int GetPrimHashCd() const {return Addr->GetPrimHashCd();}
-  int GetSecHashCd() const {return Addr->GetSecHashCd();}
+  int64 GetPrimHashCd() const {return Addr->GetPrimHashCd();}
+  int64 GetSecHashCd() const {return Addr->GetSecHashCd();}
 
   TPt<TRec> Clone(){return MkClone(*this);}
 };
