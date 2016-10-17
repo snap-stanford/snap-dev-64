@@ -120,8 +120,8 @@ void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const 
   }
   // print info
   fprintf(F, "\n");
-  fprintf(F, "  Nodes:                    %d\n", Graph->GetNodes());
-  fprintf(F, "  Edges:                    %d\n", Graph->GetEdges());
+  fprintf(F, "  Nodes:                    %ld\n", Graph->GetNodes());
+  fprintf(F, "  Edges:                    %ld\n", Graph->GetEdges());
   fprintf(F, "  Zero Deg Nodes:           %d\n", ZeroNodes);
   fprintf(F, "  Zero InDeg Nodes:         %d\n", ZeroInNodes);
   fprintf(F, "  Zero OutDeg Nodes:        %d\n", ZeroOutNodes);
