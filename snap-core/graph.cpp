@@ -19,7 +19,7 @@ int64 TUNGraph::AddNode(int64 NId) {
 // Add a node of ID NId to the graph.
 int64 TUNGraph::AddNodeUnchecked(int64 NId) {
   if (IsNode(NId)) { return -1;}
-  MxNId = TMath::Mx(NId+1, int64(MxNId()));
+  MxNId = TMath::Mx(NId+1, MxNId());
   NodeH.AddDat(NId, TNode(NId));
   return NId;
 }
@@ -32,7 +32,7 @@ int64 TUNGraph::AddNode(const int64& NId, const TInt64V& NbrNIdV) {
   } else {
     IAssertR(! IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
     NewNId = NId;
-    MxNId = TMath::Mx(NewNId+1, int64(MxNId()));
+    MxNId = TMath::Mx(NewNId+1, MxNId());
   }
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
@@ -53,7 +53,7 @@ int64 TUNGraph::AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, c
   } else {
     IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
     NewNId = NId;
-    MxNId = TMath::Mx(NewNId+1, int64(MxNId()));
+    MxNId = TMath::Mx(NewNId+1, MxNId());
   }
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
@@ -206,12 +206,12 @@ bool TUNGraph::IsOk(const bool& ThrowExcept) const {
 // Print the graph in a human readable form to an output stream OutF.
 void TUNGraph::Dump(FILE *OutF) const {
   const int NodePlaces = (int) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nUndirected Node Graph: nodes: %ld, edges: %ld\n", GetNodes(), GetEdges());
+  fprintf(OutF, "-------------------------------------------------\nUndirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()), TInt64::GetStr(GetEdges()));
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
-    fprintf(OutF, "  %*ld [%ld] ", NodePlaces, Node.GetId(), Node.GetDeg());
+    fprintf(OutF, "  %*s [%s] ", NodePlaces, TInt64::GetStr(Node.GetId()), TInt64::GetStr(Node.GetDeg()));
     for (int64 edge = 0; edge < Node.GetDeg(); edge++) {
-      fprintf(OutF, " %*ld", NodePlaces, Node.GetNbrNId(edge)); }
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetNbrNId(edge))); }
     fprintf(OutF, "\n");
   }
   fprintf(OutF, "\n");

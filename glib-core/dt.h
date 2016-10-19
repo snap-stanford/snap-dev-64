@@ -1016,7 +1016,7 @@ public:
   TNum& operator--(){ --Val; return *this; } // prefix
   TNum operator++(int){ TNum oldVal = Val; Val++; return oldVal; } // postfix
   TNum operator--(int){ TNum oldVal = Val; Val--; return oldVal; } // postfix
-  TNum operator()() const {return Val;}
+  int64 operator()() const {return Val;}
   int GetMemUsed() const { return sizeof(TNum); }
   int GetPrimHashCd() const {return Val;}
   int GetSecHashCd() const {return Val/0x10;}
