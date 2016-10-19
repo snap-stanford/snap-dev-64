@@ -210,11 +210,11 @@ void SaveEdgeList(const PGraph& Graph, const TStr& OutFNm, const TStr& Desc) {
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) { fprintf(F, "# Directed graph: %s \n", OutFNm.CStr()); } 
   else { fprintf(F, "# Undirected graph (each unordered pair of nodes is saved once): %s\n", OutFNm.CStr()); }
   if (! Desc.Empty()) { fprintf(F, "# %s\n", Desc.CStr()); }
-  fprintf(F, "# Nodes: %d Edges: %d\n", Graph->GetNodes(), Graph->GetEdges());
+  fprintf(F, "# Nodes: %ld Edges: %ld\n", Graph->GetNodes(), Graph->GetEdges());
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) { fprintf(F, "# FromNodeId\tToNodeId\n"); }
   else { fprintf(F, "# NodeId\tNodeId\n"); }
   for (typename PGraph::TObj::TEdgeI ei = Graph->BegEI(); ei < Graph->EndEI(); ei++) {
-    fprintf(F, "%d\t%d\n", ei.GetSrcNId(), ei.GetDstNId());
+    fprintf(F, "%ld\t%ld\n", ei.GetSrcNId(), ei.GetDstNId());
   }
   fclose(F);
 }

@@ -233,34 +233,34 @@ bool TNGraph::HasFlag(const TGraphFlag& Flag) const {
   return HasGraphFlag(TNGraph::TNet, Flag);
 }
 
-int TNGraph::AddNode(int NId) {
+int64 TNGraph::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
-    MxNId = TMath::Mx(NId+1, MxNId());
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %ld already exists", NId));
+    MxNId = TMath::Mx(NId+1, (int64) MxNId());
   }
   NodeH.AddDat(NId, TNode(NId));
   return NId;
 }
 
-int TNGraph::AddNodeUnchecked(int NId) {
+int64 TNGraph::AddNodeUnchecked(int64 NId) {
   if (IsNode(NId)) { return NId;}
-  MxNId = TMath::Mx(NId+1, MxNId());
+  MxNId = TMath::Mx(NId+1, (int64) MxNId());
   NodeH.AddDat(NId, TNode(NId));
   return NId;
 }
 
 // add a node with a list of neighbors
 // (use TNGraph::IsOk to check whether the graph is consistent)
-int TNGraph::AddNode(const int& NId, const TIntV& InNIdV, const TIntV& OutNIdV) {
-  int NewNId;
+int64 TNGraph::AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+  int64 NewNId;
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %ld already exists", NId));
     NewNId = NId;
-    MxNId = TMath::Mx(NewNId+1, MxNId());
+    MxNId = TMath::Mx(NewNId+1, (int64) MxNId());
   }
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
@@ -273,14 +273,14 @@ int TNGraph::AddNode(const int& NId, const TIntV& InNIdV, const TIntV& OutNIdV) 
 
 // add a node from a vector pool
 // (use TNGraph::IsOk to check whether the graph is consistent)
-int TNGraph::AddNode(const int& NId, const TVecPool<TInt>& Pool, const int& SrcVId, const int& DstVId) {
-  int NewNId;
+int64 TNGraph::AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, const int64& SrcVId, const int64& DstVId) {
+  int64 NewNId;
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
   } else {
     IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
     NewNId = NId;
-    MxNId = TMath::Mx(NewNId+1, MxNId());
+    MxNId = TMath::Mx(NewNId+1, (int64) MxNId());
   }
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
@@ -291,34 +291,34 @@ int TNGraph::AddNode(const int& NId, const TVecPool<TInt>& Pool, const int& SrcV
   return NewNId;
 }
 
-void TNGraph::DelNode(const int& NId) {
+void TNGraph::DelNode(const int64& NId) {
   { TNode& Node = GetNode(NId);
-  for (int e = 0; e < Node.GetOutDeg(); e++) {
-  const int nbr = Node.GetOutNId(e);
+  for (int64 e = 0; e < Node.GetOutDeg(); e++) {
+  const int64 nbr = Node.GetOutNId(e);
   if (nbr == NId) { continue; }
     TNode& N = GetNode(nbr);
-    const int n = N.InNIdV.SearchBin(NId);
+    const int64 n = N.InNIdV.SearchBin(NId);
     if (n!= -1) { N.InNIdV.Del(n); }
   }
-  for (int e = 0; e < Node.GetInDeg(); e++) {
-  const int nbr = Node.GetInNId(e);
+  for (int64 e = 0; e < Node.GetInDeg(); e++) {
+  const int64 nbr = Node.GetInNId(e);
   if (nbr == NId) { continue; }
     TNode& N = GetNode(nbr);
-    const int n = N.OutNIdV.SearchBin(NId);
+    const int64 n = N.OutNIdV.SearchBin(NId);
     if (n!= -1) { N.OutNIdV.Del(n); }
   } }
   NodeH.DelKey(NId);
 }
 
-int TNGraph::GetEdges() const {
-  int edges=0;
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+int64 TNGraph::GetEdges() const {
+  int64 edges=0;
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     edges+=NodeH[N].GetOutDeg();
   }
   return edges;
 }
 
-int TNGraph::AddEdge(const int& SrcNId, const int& DstNId) {
+int64 TNGraph::AddEdge(const int64& SrcNId, const int64& DstNId) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   //IAssert(! IsEdge(SrcNId, DstNId));
   if (IsEdge(SrcNId, DstNId)) { return -2; }
@@ -327,13 +327,13 @@ int TNGraph::AddEdge(const int& SrcNId, const int& DstNId) {
   return -1; // no edge id
 }
 
-int TNGraph::AddEdgeUnchecked(const int& SrcNId, const int& DstNId) {
+int64 TNGraph::AddEdgeUnchecked(const int64& SrcNId, const int64& DstNId) {
   GetNode(SrcNId).OutNIdV.Add(DstNId);
   GetNode(DstNId).InNIdV.Add(SrcNId);
   return -1; // no edge id
 }
 
-int TNGraph::AddEdge2(const int& SrcNId, const int& DstNId) {
+int64 TNGraph::AddEdge2(const int64& SrcNId, const int64& DstNId) {
   if (! IsNode(SrcNId)) { AddNode(SrcNId); }
   if (! IsNode(DstNId)) { AddNode(DstNId); }
   if (GetNode(SrcNId).IsOutNId(DstNId)) { return -2; } // edge already exists
@@ -342,45 +342,45 @@ int TNGraph::AddEdge2(const int& SrcNId, const int& DstNId) {
   return -1; // no edge id
 }
 
-void TNGraph::DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) {
+void TNGraph::DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   { TNode& N = GetNode(SrcNId);
-  const int n = N.OutNIdV.SearchBin(DstNId);
+  const int64 n = N.OutNIdV.SearchBin(DstNId);
   if (n!= -1) { N.OutNIdV.Del(n); } }
   { TNode& N = GetNode(DstNId);
-  const int n = N.InNIdV.SearchBin(SrcNId);
+  const int64 n = N.InNIdV.SearchBin(SrcNId);
   if (n!= -1) { N.InNIdV.Del(n); } }
   if (! IsDir) {
     { TNode& N = GetNode(SrcNId);
-    const int n = N.InNIdV.SearchBin(DstNId);
+    const int64 n = N.InNIdV.SearchBin(DstNId);
     if (n!= -1) { N.InNIdV.Del(n); } }
     { TNode& N = GetNode(DstNId);
-    const int n = N.OutNIdV.SearchBin(SrcNId);
+    const int64 n = N.OutNIdV.SearchBin(SrcNId);
     if (n!= -1) { N.OutNIdV.Del(n); } }
   }
 }
 
-bool TNGraph::IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) const {
+bool TNGraph::IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) const {
   if (! IsNode(SrcNId) || ! IsNode(DstNId)) { return false; }
   if (IsDir) { return GetNode(SrcNId).IsOutNId(DstNId); }
   else { return GetNode(SrcNId).IsOutNId(DstNId) || GetNode(DstNId).IsOutNId(SrcNId); }
 }
 
-TNGraph::TEdgeI TNGraph::GetEI(const int& SrcNId, const int& DstNId) const {
+TNGraph::TEdgeI TNGraph::GetEI(const int64& SrcNId, const int64& DstNId) const {
   const TNodeI SrcNI = GetNI(SrcNId);
-  const int NodeN = SrcNI.NodeHI.GetDat().OutNIdV.SearchBin(DstNId);
+  const int64 NodeN = SrcNI.NodeHI.GetDat().OutNIdV.SearchBin(DstNId);
   IAssert(NodeN != -1);
   return TEdgeI(SrcNI, EndNI(), NodeN);
 }
 
-void TNGraph::GetNIdV(TIntV& NIdV) const {
+void TNGraph::GetNIdV(TInt64V& NIdV) const {
   NIdV.Gen(GetNodes(), 0);
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     NIdV.Add(NodeH.GetKey(N)); }
 }
 
 void TNGraph::Defrag(const bool& OnlyNodeLinks) {
-  for (int n = NodeH.FFirstKeyId(); NodeH.FNextKeyId(n); ) {
+  for (int64 n = NodeH.FFirstKeyId(); NodeH.FNextKeyId(n); ) {
     TNode& Node = NodeH[n];
     Node.InNIdV.Pack();  Node.OutNIdV.Pack();
   }
@@ -390,7 +390,7 @@ void TNGraph::Defrag(const bool& OnlyNodeLinks) {
 // for each node check that their neighbors are also nodes
 bool TNGraph::IsOk(const bool& ThrowExcept) const {
   bool RetVal = true;
-  for (int N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
     if (! Node.OutNIdV.IsSorted()) {
       const TStr Msg = TStr::Fmt("Out-neighbor list of node %d is not sorted.", Node.GetId());
@@ -401,8 +401,8 @@ bool TNGraph::IsOk(const bool& ThrowExcept) const {
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     // check out-edges
-    int prevNId = -1;
-    for (int e = 0; e < Node.GetOutDeg(); e++) {
+    int64 prevNId = -1;
+    for (int64 e = 0; e < Node.GetOutDeg(); e++) {
       if (! IsNode(Node.GetOutNId(e))) {
         const TStr Msg = TStr::Fmt("Out-edge %d --> %d: node %d does not exist.",
           Node.GetId(), Node.GetOutNId(e), Node.GetOutNId(e));
@@ -417,7 +417,7 @@ bool TNGraph::IsOk(const bool& ThrowExcept) const {
     }
     // check in-edges
     prevNId = -1;
-    for (int e = 0; e < Node.GetInDeg(); e++) {
+    for (int64 e = 0; e < Node.GetInDeg(); e++) {
       if (! IsNode(Node.GetInNId(e))) {
         const TStr Msg = TStr::Fmt("In-edge %d <-- %d: node %d does not exist.",
           Node.GetId(), Node.GetInNId(e), Node.GetInNId(e));
@@ -436,16 +436,16 @@ bool TNGraph::IsOk(const bool& ThrowExcept) const {
 
 void TNGraph::Dump(FILE *OutF) const {
   const int NodePlaces = (int) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %d, edges: %d\n", GetNodes(), GetEdges());
-  for (int N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %ld, edges: %ld\n", GetNodes(), GetEdges());
+  for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
-    fprintf(OutF, "  %*d]\n", NodePlaces, Node.GetId());
-    fprintf(OutF, "    in [%d]", Node.GetInDeg());
+    fprintf(OutF, "  %*ld]\n", NodePlaces, Node.GetId());
+    fprintf(OutF, "    in [%ld]", Node.GetInDeg());
     for (int edge = 0; edge < Node.GetInDeg(); edge++) {
-      fprintf(OutF, " %*d", NodePlaces, Node.GetInNId(edge)); }
-    fprintf(OutF, "\n    out[%d]", Node.GetOutDeg());
+      fprintf(OutF, " %*ld", NodePlaces, Node.GetInNId(edge)); }
+    fprintf(OutF, "\n    out[%ld]", Node.GetOutDeg());
     for (int edge = 0; edge < Node.GetOutDeg(); edge++) {
-      fprintf(OutF, " %*d", NodePlaces, Node.GetOutNId(edge)); }
+      fprintf(OutF, " %*ld", NodePlaces, Node.GetOutNId(edge)); }
     fprintf(OutF, "\n");
   }
   fprintf(OutF, "\n");
@@ -453,7 +453,7 @@ void TNGraph::Dump(FILE *OutF) const {
 
 PNGraph TNGraph::GetSmallGraph() {
   PNGraph G = TNGraph::New();
-  for (int i = 0; i < 5; i++) { G->AddNode(i); }
+  for (int64 i = 0; i < 5; i++) { G->AddNode(i); }
   G->AddEdge(0,1); G->AddEdge(1,2); G->AddEdge(0,2);
   G->AddEdge(1,3); G->AddEdge(3,4); G->AddEdge(2,3);
   return G;

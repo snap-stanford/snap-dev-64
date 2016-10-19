@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////
 // Directed Graph Matrix -- sparse {0,1} row matrix 
 bool TNGraphMtx::CheckNodeIds() {
-  for (int NId = 0; NId < Graph->GetNodes(); NId++) {
+  for (int64 NId = 0; NId < Graph->GetNodes(); NId++) {
     if (! Graph->IsNode(NId)) { return false; }
   }
   return true;
@@ -16,56 +16,56 @@ TNGraphMtx::TNGraphMtx(const PNGraph& GraphPt) : Graph() {
 }
 
 // Result = A * B(:,ColId)
-void TNGraphMtx::PMultiply(const TFltVV& B, int ColId, TFltV& Result) const {
-  const int RowN = GetRows();
+void TNGraphMtx::PMultiply(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {
+  const int64 RowN = GetRows();
   Assert(B.GetRows() >= RowN && Result.Len() >= RowN);
-  const THash<TInt, TNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int j = 0; j < RowN; j++) {
-    const TIntV& RowV = NodeH[j].OutNIdV;
+  const THash<TInt64, TNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 j = 0; j < RowN; j++) {
+    const TInt64V& RowV = NodeH[j].OutNIdV;
     Result[j] = 0.0;
-    for (int i = 0; i < RowV.Len(); i++) {
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[j] += B(RowV[i], ColId);
     }
   }
 }
 
 // Result = A * Vec
-void TNGraphMtx::PMultiply(const TFltV& Vec, TFltV& Result) const {
-  const int RowN = GetRows();
+void TNGraphMtx::PMultiply(const TFlt64V& Vec, TFlt64V& Result) const {
+  const int64 RowN = GetRows();
   Assert(Vec.Len() >= RowN && Result.Len() >= RowN);
-  const THash<TInt, TNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int j = 0; j < RowN; j++) {
-    const TIntV& RowV = NodeH[j].OutNIdV;
+  const THash<TInt64, TNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 j = 0; j < RowN; j++) {
+    const TInt64V& RowV = NodeH[j].OutNIdV;
     Result[j] = 0.0;
-    for (int i = 0; i < RowV.Len(); i++) {
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[j] += Vec[RowV[i]];
     }
   }
 }
 
 // Result = A' * B(:,ColId)
-void TNGraphMtx::PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const {
-  const int ColN = GetCols();
+void TNGraphMtx::PMultiplyT(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const {
+  const int64 ColN = GetCols();
   Assert(B.GetRows() >= ColN && Result.Len() >= ColN);
-  const THash<TInt, TNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int i = 0; i < ColN; i++) Result[i] = 0.0;
-  for (int j = 0; j < ColN; j++) {
-    const TIntV& RowV = NodeH[j].OutNIdV;
-    for (int i = 0; i < RowV.Len(); i++) {
+  const THash<TInt64, TNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 i = 0; i < ColN; i++) Result[i] = 0.0;
+  for (int64 j = 0; j < ColN; j++) {
+    const TInt64V& RowV = NodeH[j].OutNIdV;
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[RowV[i]] += B(j, ColId);
     }
   }
 }
 
 // Result = A' * Vec
-void TNGraphMtx::PMultiplyT(const TFltV& Vec, TFltV& Result) const {
-  const int RowN = GetRows();
+void TNGraphMtx::PMultiplyT(const TFlt64V& Vec, TFlt64V& Result) const {
+  const int64 RowN = GetRows();
   Assert(Vec.Len() >= RowN && Result.Len() >= RowN);
-  const THash<TInt, TNGraph::TNode>& NodeH = Graph->NodeH;
-  for (int i = 0; i < RowN; i++) Result[i] = 0.0;
-  for (int j = 0; j < RowN; j++) {
-    const TIntV& RowV = NodeH[j].OutNIdV;
-    for (int i = 0; i < RowV.Len(); i++) {
+  const THash<TInt64, TNGraph::TNode, int64>& NodeH = Graph->NodeH;
+  for (int64 i = 0; i < RowN; i++) Result[i] = 0.0;
+  for (int64 j = 0; j < RowN; j++) {
+    const TInt64V& RowV = NodeH[j].OutNIdV;
+    for (int64 i = 0; i < RowV.Len(); i++) {
       Result[RowV[i]] += Vec[j];
     }
   }
@@ -83,7 +83,7 @@ bool TUNGraphMtx::CheckNodeIds() {
 TUNGraphMtx::TUNGraphMtx(const PUNGraph& GraphPt) : Graph() { 
   Graph = GraphPt;
   if (! CheckNodeIds()) {
-    printf("  Renumbering %d nodes....", GraphPt->GetNodes());
+    printf("  Renumbering %ld nodes....", GraphPt->GetNodes());
     TExeTm ExeTm;
     Graph = TSnap::ConvertGraph<PUNGraph>(GraphPt, true);
     /*TIntSet NIdSet;
@@ -249,7 +249,7 @@ void GetSngVals(const PNGraph& Graph, const int& SngVals, TFltV& SngValV) {
     try { // can fail to converge but results seem to be good
       TSvd::Svd1Based(AdjMtx, LSingV, SngValV, RSingV); }
     catch(...) {
-      printf("\n***No SVD convergence: G(%d, %d)\n", Nodes, Graph->GetEdges()); }
+      printf("\n***No SVD convergence: G(%d, %ld)\n", Nodes, Graph->GetEdges()); }
   } else {
     // Lanczos
     TNGraphMtx GraphMtx(Graph);
@@ -299,7 +299,7 @@ void GetSngVec(const PNGraph& Graph, TFltV& LeftSV, TFltV& RightSV) {
     try { // can fail to converge but results seem to be good
       TSvd::Svd1Based(AdjMtx, LSingV, SngValV, RSingV); }
     catch(...) {
-      printf("\n***No SVD convergence: G(%d, %d)\n", Nodes, Graph->GetEdges()); }
+      printf("\n***No SVD convergence: G(%d, %ld)\n", Nodes, Graph->GetEdges()); }
   } else { // Lanczos
     TNGraphMtx GraphMtx(Graph);
     TSparseSVD::LanczosSVD(GraphMtx, 1, 8, ssotFull, SngValV, LSingV, RSingV);
@@ -337,7 +337,7 @@ void GetSngVec(const PNGraph& Graph, const int& SngVecs, TFltV& SngValV, TVec<TF
     try { // can fail to converge but results seem to be good
       TSvd::Svd1Based(AdjMtx, LSingV, SngValV, RSingV);
     } catch(...) {
-      printf("\n***No SVD convergence: G(%d, %d)\n", Nodes, Graph->GetEdges()); 
+      printf("\n***No SVD convergence: G(%d, %ld)\n", Nodes, Graph->GetEdges()); 
     }
   } else { // Lanczos
     TNGraphMtx GraphMtx(Graph);

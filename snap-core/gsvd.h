@@ -13,13 +13,23 @@ public:
   int64 PGetRows() const { return Graph->GetNodes(); }
   int64 PGetCols() const { return Graph->GetNodes(); }
   // Result = A * B(:,ColId)
-  void PMultiply(const TFltVV& B, int ColId, TFltV& Result) const;
+  void PMultiply(const TFltVV& B, int ColId, TFltV& Result) const { fprintf(stderr,"This function should not have been called");}
   // Result = A * Vec
-  void PMultiply(const TFltV& Vec, TFltV& Result) const;
+  void PMultiply(const TFltV& Vec, TFltV& Result) const { fprintf(stderr,"This function should not have been called");}
   // Result = A' * B(:,ColId)
-  void PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const;
+  void PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const { fprintf(stderr,"This function should not have been called");}
   // Result = A' * Vec
-  void PMultiplyT(const TFltV& Vec, TFltV& Result) const;
+  void PMultiplyT(const TFltV& Vec, TFltV& Result) const { fprintf(stderr,"This function should not have been called");}
+
+  // Result = A * B(:,ColId)
+  void PMultiply(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const;
+  // Result = A * Vec
+  void PMultiply(const TFlt64V& Vec, TFlt64V& Result) const;
+  // Result = A' * B(:,ColId)
+  void PMultiplyT(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const;
+  // Result = A' * Vec
+  void PMultiplyT(const TFlt64V& Vec, TFlt64V& Result) const;
+
 };
 
 //#//////////////////////////////////////////////
@@ -36,6 +46,7 @@ public:
   TUNGraphMtx& operator = (const TUNGraphMtx& GraphMtx) { Graph=GraphMtx.Graph;  return *this; }
   int64 PGetRows() const { return Graph->GetNodes(); }
   int64 PGetCols() const { return Graph->GetNodes(); }
+  
   // Result = A * B(:,ColId)
   void PMultiply(const TFltVV& B, int ColId, TFltV& Result) const { fprintf(stderr,"This function should not have been called");}
   // Result = A * Vec
@@ -44,7 +55,7 @@ public:
   void PMultiplyT(const TFltVV& B, int ColId, TFltV& Result) const{ fprintf(stderr,"This function should not have been called");}
   // Result = A' * Vec
   void PMultiplyT(const TFltV& Vec, TFltV& Result) const{ fprintf(stderr,"This function should not have been called");}
-
+  
   // Result = A * B(:,ColId)
 	void PMultiply(const TFlt64VV& B, int64 ColId, TFlt64V& Result) const;
 	// Result = A * Vec
