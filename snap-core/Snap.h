@@ -20,36 +20,36 @@
 #include "network.h"         // networks
 #include "networkmp.h"       // networks OMP
 #include "bignet.h"          // large networks
-//#include "timenet.h"         // time evolving networks             Need to uncomment this
+//#include "timenet.h"         // time evolving networks             TODO 64
 #include "mmnet.h"           // multimodal networks
 
 // algorithms
 #include "subgraph.h"        // subgraph manipulations
 #include "anf.h"             // approximate diameter calculation
-//#include "bfsdfs.h"          // breadth and depth first search      Need to uncomment this
+//#include "bfsdfs.h"          // breadth and depth first search      TODO 64
 #include "cncom.h"           // connected components
 #include "kcore.h"           // k-core decomposition
 #include "alg.h"             // misc graph algorithms
-//#include "triad.h"           // clustering coefficient and triads   Need to uncomment this
+//#include "triad.h"           // clustering coefficient and triads   TODO 64
 #include "gsvd.h"            // SVD and eigenvector computations
-//#include "gstat.h"           // graph statistics                      Need to uncomment this
-//#include "centr.h"           // centrality measures                   Need to uncomment this
-//#include "cmty.h"            // community detection algorithms        Need to uncomment this
+//#include "gstat.h"           // graph statistics                      TODO 64
+//#include "centr.h"           // centrality measures                   TODO 64
+//#include "cmty.h"            // community detection algorithms        TODO 64
 #include "flow.h"            // network flow algorithms
-//#include "coreper.h"         // core-periphery algorithms             Need to uncomment this
+//#include "coreper.h"         // core-periphery algorithms             TODO 64
 #include "randwalk.h"        // Personalized PageRank
 
 // graph generators
-//#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       Need to uncomment this
-//#include "ff.h"              // forest fire graph generator            Need to uncomment this
+//#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       TODO 64
+//#include "ff.h"              // forest fire graph generator            TODO 64
 
 #include "gio.h"
 #include "gviz.h"
 #include "ghash.h"
-//#include "statplot.h"                                                 Need to uncomment this
+//#include "statplot.h"                                                 TODO 64
 
 // table data structures and algorithms
-//#include "table.h"         // table                    Need to uncomment this
+//#include "table.h"         // table                    TODO 64
 //#include "conv.h" 	   // conversion functions - table to graph
 #include "numpy.h" 	   // numpy conversion
 //#include "casc.h"          // cascade detection^M

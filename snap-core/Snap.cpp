@@ -17,7 +17,7 @@
 //#include "mmgraph.cpp"       // multimodal graphs
 #include "network.cpp"       // networks
 #include "networkmp.cpp"     // networks OMP
-//#include "timenet.cpp"       // time evolving networks              Need to uncomment this
+//#include "timenet.cpp"       // time evolving networks              TODO 64
 #include "mmnet.cpp"         // multimodal networks
 
 // algorithms
@@ -26,25 +26,25 @@
 #include "cncom.cpp"         // connected components
 #include "alg.cpp"           // misc graph algorithms
 #include "gsvd.cpp"          // SVD and eigenvector computations
-//#include "gstat.cpp"         // graph statistics        Need to uncomment this
-//#include "centr.cpp"         // centrality measures    Need to uncomment this
-//#include "cmty.cpp"          // community detection algorithms   Need to uncomment this
+//#include "gstat.cpp"         // graph statistics        TODO 64
+//#include "centr.cpp"         // centrality measures    TODO 64
+//#include "cmty.cpp"          // community detection algorithms   TODO 64
 #include "flow.cpp"          // network flow algorithms
-//#include "coreper.cpp"       // core-periphery algorithms        Need to uncomment this
-//#include "triad.cpp"         // clustering coefficient and triads Need to uncomment this
+//#include "coreper.cpp"       // core-periphery algorithms        TODO 64
+//#include "triad.cpp"         // clustering coefficient and triads TODO 64
 //#include "casc.cpp"          // cascade detection^M
 
 // graph generators
-//#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       Need to uncomment this
-//#include "ff.cpp"            // forest fire graph generator           Need to uncomment this
+//#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       TODO 64
+//#include "ff.cpp"            // forest fire graph generator           TODO 64
 
 #include "gviz.cpp"
 #include "ghash.cpp"
-//#include "statplot.cpp"            Need to uncomment this
+//#include "statplot.cpp"            TODO 64
 #include "gio.cpp"
 
 // table data structures and algorithms
-//#include "table.cpp"         // table     Need to uncomment this
+//#include "table.cpp"         // table     TODO 64
 //#include "conv.cpp"
 #include "numpy.cpp"         // numpy conversion
 

@@ -86,7 +86,7 @@ public:
 
 /////////////////////////////////////////////////
 // Special-Functions
-class TSpecFunc{
+class TSpecFunc{       //TODO 64
 public:
   static void GammaPSeries/*gser*/(
    double& gamser, const double& a, const double& x, double& gln);

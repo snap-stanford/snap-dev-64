@@ -126,7 +126,7 @@ typedef enum {
   iloCmtAlw, iloRetEoln, iloSigNum, iloUniStr, iloCsSens,
   iloExcept, iloTabSep, iloList, iloMx} TILxOpt;
 
-class TILx{
+class TILx{				// TODO 64
 private:
   PLxChDef ChDef;
   PSIn SIn;
@@ -248,7 +248,7 @@ typedef enum {
   oloCmtAlw, oloFrcEoln, oloSigNum, oloUniStr,
   oloCsSens, oloTabSep, oloVarIndent, oloMx} TOLxOpt;
 
-class TOLx{
+class TOLx{		// TODO 64
 private:
   PLxChDef ChDef;
   PSOut SOut;

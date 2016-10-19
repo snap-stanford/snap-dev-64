@@ -2,7 +2,7 @@
 // forward declarations
 class TLinAlg;
 class TLAMisc;
-
+//All other classes except TMatrix needs to be changed to 64bit (not needed immediately)   TODO 64
 ///////////////////////////////////////////////////////////////////////
 // Matrix
 class TMatrix {
