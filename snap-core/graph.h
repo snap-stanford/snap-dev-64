@@ -197,9 +197,11 @@ public:
   TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
 
   /// Returns an ID of a random node in the graph.
-  int64 GetRndNId(TRnd& Rnd=TInt64::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  // TODO 64 - gives error if replaced with TInt64::Rnd. Shouldn't matter as TInt::Rnd also returns TRnd object that takes care of 64 bit integers
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the graph.
-  TNodeI GetRndNI(TRnd& Rnd=TInt64::Rnd) { return GetNI(GetRndNId(Rnd)); }
+  // TODO 64 - gives error if replaced with TInt64::Rnd. Shouldn't matter as TInt::Rnd also returns TRnd object that takes care of 64 bit integers
+  TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Gets a vector IDs of all nodes in the graph.
   void GetNIdV(TInt64V& NIdV) const;
 
@@ -403,9 +405,10 @@ public:
   TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
 
   /// Returns an ID of a random node in the graph.
-  // TODO64
+  // TODO 64 - gives error if replaced with TInt64::Rnd. Shouldn't matter as TInt::Rnd also returns TRnd object that takes care of 64 bit integers
   int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the graph.
+  // TODO 64 - gives error if replaced with TInt64::Rnd. Shouldn't matter as TInt::Rnd also returns TRnd object that takes care of 64 bit integers
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Gets a vector IDs of all nodes in the graph.
   void GetNIdV(TInt64V& NIdV) const;

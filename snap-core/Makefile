@@ -4,7 +4,8 @@
 
 include ../Makefile.config
 
-all: testSnap
+all: Snap.o
+#all: testSnap  #TODO 64
 
 testSnap: testSnap.cpp Snap.o 
 	$(CC) $(CXXFLAGS) -o testSnap testSnap.cpp Snap.o -I$(CGLIB) $(LDFLAGS) $(LIBS)
