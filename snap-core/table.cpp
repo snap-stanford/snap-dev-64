@@ -1611,7 +1611,6 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   				if(GetMP()){
   					GroupByIntColMP(NGroupByAttrs[0], GroupByIntMapping_MP, UsePhysicalIds);
   					int64 x = 0;
-          //CHECK
 					for(THashMP<TInt,TIntV>::TIter it = GroupByIntMapping_MP.BegI(); it < GroupByIntMapping_MP.EndI(); it++){
 						GroupByIntMPKeys[x] = it.GetKey();
 						x++;
@@ -2625,8 +2624,7 @@ PTable TTable::ThresholdJoinPerJoinKeyOutputTable(const THash<TInt64Tr,TInt64Tr,
   for(THash<TInt64Tr,TInt64Tr, int64>::TIter iter = Counters.BegI(); iter < Counters.EndI(); iter++){
     const TInt64Tr& Counter = iter.GetDat();
     const TInt64Tr& Keys = iter.GetKey();
-    //CHECK
-    THashSet<TIntPr> Pairs;
+    THashSet<TInt64Pr, int64> Pairs;
     if(Counter.Val3 >= Threshold){
       TInt64Pr K(Keys.Val1,Keys.Val2);
       if(!Pairs.IsKey(K)){
@@ -3414,7 +3412,7 @@ inline void TTable::AddEdgeAttributes(PNEANet& Graph, int64 RowId) {
     }
   }
 }
-*/
+
 inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowId, THash<TInt64, TStrInt64V64H, int64>& NodeIntAttrs,
   THash<TInt64, TStrFlt64V64H, int64>& NodeFltAttrs, THash<TInt64, TStrStr64V64H, int64>& NodeStrAttrs) {
   for (TInt64 i = 0; i < NodeAttrV.Len(); i++) {
@@ -3443,7 +3441,7 @@ inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowI
     }
   }
 }
-
+*/
 // Makes one pass over all the rows in the vector RowIds, and builds
 // a PNEANet, with each row as an edge between SrcCol and DstCol.
 // TODO64
@@ -3535,7 +3533,6 @@ PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
 
   return Graph;
 }
-*/
 
 void TTable::InitRowIdBuckets(int64 NumBuckets) {
   for (TInt64 i = 0; i < RowIdBuckets.Len(); i++) {
@@ -3617,8 +3614,7 @@ void TTable::FillBucketsByInterval(TStr SplitAttr, TIntPr64V SplitIntervals) {
     }
   }
 }
-// TOOD64
-/*
+
 TVec<PNEANet, int64> TTable::GetGraphsFromSequence(TAttrAggr AggrPolicy) {
   //call BuildGraph on each row id set - parallelizable!
   TVec<PNEANet, int64> GraphSequence;
@@ -4021,10 +4017,9 @@ void TTable::AddTable(const TTable& T) {
 
 // returns physical indices of rows of given table present in our table
 // we assume that schema matches exactly (including index of id cols)
-// CHECK
-void TTable::GetCollidingRows(const TTable& Table, THashSet<TInt>& Collisions) {
+void TTable::GetCollidingRows(const TTable& Table, THashSet<TInt64, int64>& Collisions) {
   TInt64V UniqueVec;
-  THash<TGroupKey, TPair<TInt64, TInt64V, int64> >Grouping;
+  THash<TGroupKey, TPair<TInt64, TInt64V>, int64>Grouping;
   TStr64V GroupBy;
 
   // indices of columns of each type
@@ -4457,6 +4452,8 @@ void TTable::AddNRows(int64 NewRows, const TVec<TInt64V, int64>& IntColsP, const
 }
 
 #ifdef USE_OPENMP
+// TODO64
+/*
 void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TIntPr64V>& JointRowIDSet) {
   //double startFn = omp_get_wtime();
   int64 JointTableSize = 0;
@@ -4524,6 +4521,7 @@ void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TInt
   //double endIterate = omp_get_wtime();
   //printf("Iterate time = %f\n",endIterate-endResize);
 }
+*/
 #endif // USE_OPENMP
 
 PTable TTable::UnionAll(const TTable& Table) {
@@ -4548,8 +4546,7 @@ void TTable::UnionAllInPlace(const TTable& Table) {
 
 PTable TTable::Union(const TTable& Table) {
   Schema NewSchema;
-  //CHECK
-  THashSet<TInt> Collisions;
+  THashSet<TInt64, int64> Collisions;
   TStr64V ColNames;
 
   for (TInt64 c = 0; c < Sch.Len(); c++) {
@@ -4585,8 +4582,7 @@ PTable TTable::Union(const TTable& Table) {
 
 PTable TTable::Intersection(const TTable& Table) {
   Schema NewSchema;
-  //CHECK
-  THashSet<TInt> Collisions;
+  THashSet<TInt64, int64> Collisions;
 
   for (TInt64 c = 0; c < Sch.Len(); c++) {
     if (Sch[c].Val1 != GetIdColName()) {
@@ -4611,8 +4607,7 @@ PTable TTable::Intersection(const TTable& Table) {
 // as of now, GroupAux cannot be const because it modifies the table in some cases
 PTable TTable::Minus(TTable& Table) {
   Schema NewSchema;
-  //CHECK
-  THashSet<TInt> Collisions;
+  THashSet<TInt64, int64> Collisions;
 
   for (TInt64 c = 0; c < Sch.Len(); c++) {
     if (Sch[c].Val1 != GetIdColName()) {
@@ -5262,8 +5257,7 @@ void TTable::ProjectInPlace(const TStr64V& ProjectCols) {
   for (TInt64 c = 0; c < NProjectCols.Len(); c++) {
     if (!IsColName(NProjectCols[c])) { TExcept::Throw("no such column " + NProjectCols[c]); }
   }
-  //CHECK
-  THashSet<TStr> ProjectColsSet = THashSet<TStr>(NProjectCols);
+  THashSet<TStr, int64> ProjectColsSet = THashSet<TStr, int64>(NProjectCols);
   // Delete the column vectors
   for (TInt64 i = Sch.Len() - 1; i >= 0; i--) {
     TStr ColName = GetSchemaColName(i);

@@ -193,8 +193,7 @@ namespace TSnap {
 /// Execution context
 class TTableContext {
 protected:
-  // CHECK
-  TStrHash<TInt64, TBigStrPool> StringVals; ///< StringPool - stores string data values and maps them to integers.
+  TStrHash<TInt64, TBigStrPool, int64> StringVals; ///< StringPool - stores string data values and maps them to integers.
   friend class TTable;
 public:
   /// Default constructor.
@@ -868,8 +867,7 @@ protected:
   static void QSortKeyVal(TInt64V& Key, TInt64V& Val, TInt64 Start, TInt64 End);
 
   /// Gets set of row ids of rows common with table \c T.
-  //CHECK
-  void GetCollidingRows(const TTable& T, THashSet<TInt64>& Collisions);
+  void GetCollidingRows(const TTable& T, THashSet<TInt64, int64>& Collisions);
 
 public:
 /***** Constructors *****/
@@ -1434,7 +1432,7 @@ public:
 };
 
 typedef TPair<TStr,TAttrType> TStrTypPr;
-
+/*
 template<class T>
 TInt64 TTable::CheckAndAddFltNode(T Graph, THash<TFlt, TInt64, int64>& NodeVals, TFlt FNodeVal) {
   if (!NodeVals.IsKey(FNodeVal)) {
@@ -1499,7 +1497,7 @@ T TTable::AggregateVector(TVec<T, int64>& V, TAttrAggr Policy) {
   T ShouldNotComeHere;
   return ShouldNotComeHere;
 }
-
+*/
 template <class T>
 void TTable::GroupByIntCol(const TStr& GroupBy, T& Grouping, 
  const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds) const {
@@ -1597,7 +1595,6 @@ void TTable::UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val
 // TODO64
 /*
 template <class T>
-//CHECK
 void TTable::UpdateGrouping(THashMP<T,TInt64V>& Grouping, T Key, TInt64 Val) const{
   if (Grouping.IsKey(Key)) {
   	//printf("y\n");
