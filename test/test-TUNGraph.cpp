@@ -292,7 +292,7 @@ TEST(TUNGraph, GetSmallGraph) {
 }
 
 // Test node, edge creation
-TEST(TUNGraph, ManipulateNodesEdgesWith64BitNodeIds) {
+TEST(TUNGraph, ManipulateNodesEdgesWith64BitNodeValues) {
   int64 NNodes = 10000;
   int64 NEdges = 100000;
   int64 OFFSET = 1000000000000;
@@ -427,7 +427,7 @@ TEST(TUNGraph, ManipulateNodesEdgesWith64BitNodeIds) {
 }
 
 // Test edge iterator, manipulate edges
-TEST(TUNGraph, ManipulateEdgesWith64BitNodeIds) {
+TEST(TUNGraph, ManipulateEdgesWith64BitNodeValues) {
   int64 Iterations = 100;
 
   int64 NNodes;
