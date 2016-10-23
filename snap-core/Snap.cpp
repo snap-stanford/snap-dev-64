@@ -44,7 +44,7 @@
 #include "gio.cpp"
 
 // table data structures and algorithms
-#include "table.cpp"         // table     
+//#include "table.cpp"         // table     
 //#include "conv.cpp"
 #include "numpy.cpp"         // numpy conversion
 

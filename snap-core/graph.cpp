@@ -237,8 +237,8 @@ int64 TNGraph::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %ld already exists", NId));
-    MxNId = TMath::Mx(NId+1, (int64) MxNId());
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId)));
+    MxNId = TMath::Mx(NId+1, MxNId());
   }
   NodeH.AddDat(NId, TNode(NId));
   return NId;
@@ -246,7 +246,7 @@ int64 TNGraph::AddNode(int64 NId) {
 
 int64 TNGraph::AddNodeUnchecked(int64 NId) {
   if (IsNode(NId)) { return NId;}
-  MxNId = TMath::Mx(NId+1, (int64) MxNId());
+  MxNId = TMath::Mx(NId+1, MxNId());
   NodeH.AddDat(NId, TNode(NId));
   return NId;
 }
@@ -258,9 +258,9 @@ int64 TNGraph::AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& O
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %ld already exists", NId));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId)));
     NewNId = NId;
-    MxNId = TMath::Mx(NewNId+1, (int64) MxNId());
+    MxNId = TMath::Mx(NewNId+1, MxNId());
   }
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
@@ -280,7 +280,7 @@ int64 TNGraph::AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, co
   } else {
     IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
     NewNId = NId;
-    MxNId = TMath::Mx(NewNId+1, (int64) MxNId());
+    MxNId = TMath::Mx(NewNId+1, MxNId());
   }
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
@@ -436,14 +436,14 @@ bool TNGraph::IsOk(const bool& ThrowExcept) const {
 
 void TNGraph::Dump(FILE *OutF) const {
   const int NodePlaces = (int) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %ld, edges: %ld\n", GetNodes(), GetEdges());
+  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()), TInt64::GetStr(GetEdges()));
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
     fprintf(OutF, "  %*ld]\n", NodePlaces, Node.GetId());
-    fprintf(OutF, "    in [%ld]", Node.GetInDeg());
+    fprintf(OutF, "    in [%s]", TInt64::GetStr(Node.GetInDeg()));
     for (int edge = 0; edge < Node.GetInDeg(); edge++) {
       fprintf(OutF, " %*ld", NodePlaces, Node.GetInNId(edge)); }
-    fprintf(OutF, "\n    out[%ld]", Node.GetOutDeg());
+    fprintf(OutF, "\n    out[%s]", TInt64::GetStr(Node.GetOutDeg()));
     for (int edge = 0; edge < Node.GetOutDeg(); edge++) {
       fprintf(OutF, " %*ld", NodePlaces, Node.GetOutNId(edge)); }
     fprintf(OutF, "\n");

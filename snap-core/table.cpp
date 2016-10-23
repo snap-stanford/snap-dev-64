@@ -886,7 +886,7 @@ void TTable::Dump(FILE *OutF) const {
       char C = (i == L-1) ? '\n' : '\t';
       switch (GetSchemaColType(i)) {
         case atInt: {
-          fprintf(OutF, "%ld%c", RowI.GetIntAttr(GetSchemaColName(i)).Val, C);
+          fprintf(OutF, "%s%c", TInt64::GetStr(RowI.GetIntAttr(GetSchemaColName(i))).Val, C);
           break;
         }
         case atFlt: {
@@ -1785,11 +1785,11 @@ void TTable::PrintGrouping(const THash<TGroupKey, TInt64V, int64>& Mapping) cons
   		TGroupKey gk = it.GetKey();
   		TInt64V ik = gk.Val1;
   		TFlt64V fk = gk.Val2;
-  		for(int64 i = 0; i < ik.Len(); i++){ printf("%ld ",ik[i].Val);} 
+  		for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val));} 
   		for(int64 i = 0; i < fk.Len(); i++){ printf("%f ",fk[i].Val);} 
   		printf("-->");
   		TInt64V v = it.GetDat();
-  		for(int64 i = 0; i < v.Len(); i++){ printf("%ld ",v[i].Val);} 
+  		for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val));} 
   		printf("\n");
   	}
 }
@@ -3934,11 +3934,11 @@ PTable TTable::IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, cons
 }
 
 void TTable::PrintSize(){
-	printf("Total number of rows: %ld\n", NumRows.Val);
-	printf("Number of valid rows: %ld\n", NumValidRows.Val);
-	printf("Number of Int columns: %ld\n", IntCols.Len());
-	printf("Number of Flt columns: %ld\n", FltCols.Len());
-	printf("Number of Str columns: %ld\n", StrColMaps.Len());
+	printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val));
+	printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val));
+	printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()));
+	printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()));
+	printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()));
 	TSize MemUsed = GetMemUsedKB();
 	printf("Approximate table size is %s KB\n", TUInt64::GetStr(MemUsed).CStr());
 }
