@@ -87,8 +87,8 @@ public:
 template<class TKey, class TDat, class TSizeTy = int, class THashFunc = TDefaultHashFunc<TKey, TSizeTy> >
 class THash{
 public:
-  enum {HashPrimes=32};
-  static const unsigned int HashPrimeT[HashPrimes];
+  enum {HashPrimes=64};
+  static const uint64 HashPrimeT[HashPrimes];
 public:
   typedef THashKeyDatI<TKey, TDat, TSizeTy> TIter;
 private:
@@ -120,7 +120,7 @@ private:
   const THKeyDat& GetHashKeyDat(const TSizeTy& KeyId) const {
     const THKeyDat& KeyDat=KeyDatV[KeyId];
     Assert(KeyDat.HashCd!=-1); return KeyDat;}
-  uint GetNextPrime(const uint& Val) const;
+  uint64 GetNextPrime(const uint64& Val) const;
   void Resize();
 public:
   THash():
@@ -249,22 +249,55 @@ public:
   void SortByKey(const bool& Asc=true) { Sort(true, Asc); }
   void SortByDat(const bool& Asc=true) { Sort(false, Asc); }
 };
-
+//Primes got from https://primes.utm.edu/lists/2small/0bit.html
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
-const unsigned int THash<TKey, TDat, TSizeTy, THashFunc>::HashPrimeT[HashPrimes]={
+const uint64 THash<TKey, TDat, TSizeTy, THashFunc>::HashPrimeT[HashPrimes]={
   3ul, 5ul, 11ul, 23ul,
   53ul,         97ul,         193ul,       389ul,       769ul,
   1543ul,       3079ul,       6151ul,      12289ul,     24593ul,
   49157ul,      98317ul,      196613ul,    393241ul,    786433ul,
   1572869ul,    3145739ul,    6291469ul,   12582917ul,  25165843ul,
   50331653ul,   100663319ul,  201326611ul, 402653189ul, 805306457ul,
-  1610612741ul, 3221225473ul, 4294967291ul
+  1610612741ul, 3221225473ul, 4294967291ul,
+	uint64(1<<33-9),
+	uint64(1<<34-41),
+	uint64(1<<35-31),
+	uint64(1<<36-5),
+	uint64(1<<37-25),
+	uint64(1<<38-45),
+	uint64(1<<39-7),
+	uint64(1<<40-87),
+	uint64(1<<41-21),
+	uint64(1<<42-11),
+	uint64(1<<43-57),
+	uint64(1<<44-17),
+	uint64(1<<45-55),
+	uint64(1<<46-21),
+	uint64(1<<47-115),
+	uint64(1<<48-59),
+	uint64(1<<49-81),
+	uint64(1<<50-27),
+	uint64(1<<51-129),
+	uint64(1<<52-47),
+	uint64(1<<53-111),
+	uint64(1<<54-33),
+	uint64(1<<55-55),
+	uint64(1<<56-5),
+	uint64(1<<57-13),
+	uint64(1<<58-27),
+	uint64(1<<59-55),
+	uint64(1<<60-93),
+	uint64(1<<61-1),
+	uint64(1<<62-57),
+	uint64(1<<63-25),
+	uint64(1<<64-59)
+
 };
 
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
-uint THash<TKey, TDat, TSizeTy, THashFunc>::GetNextPrime(const uint& Val) const {
-  const uint* f=(const uint*)HashPrimeT, *m, *l=(const uint*)HashPrimeT + (int)HashPrimes;
-  int h, len = (int)HashPrimes;
+uint64 THash<TKey, TDat, TSizeTy, THashFunc>::GetNextPrime(const uint64& Val) const {
+  const uint64* f=(const uint64*)HashPrimeT, *m, *l=(const uint64*)HashPrimeT + (int64)HashPrimes;
+  int64 h, len = (int64)HashPrimes;
   while (len > 0) {
     h = len >> 1;  m = f + h;
     if (*m < Val) { f = m;  f++;  len = len - h - 1; }
@@ -563,6 +596,7 @@ void THash<TKey, TDat, TSizeTy, THashFunc>::Sort(const bool& CmpKey, const bool&
 typedef THash<TCh, TCh> TChChH;
 typedef THash<TChTr, TInt> TChTrIntH;
 typedef THash<TInt, TInt> TIntH;
+typedef THash<TInt64, TInt64, int64> TInt64H;
 typedef THash<TUInt64, TInt> TUInt64H;
 typedef THash<TInt, TBool> TIntBoolH;
 typedef THash<TInt, TInt> TIntIntH;
@@ -747,7 +781,7 @@ private:
   TInt64 FFreeKeyId, FreeKeys;
   PStringPool Pool;
 private:
-  uint GetNextPrime(const uint& Val) const;
+  uint64 GetNextPrime(const uint64& Val) const;
   void Resize();
   const THKeyDat& GetHashKeyDat(const TSizeTy& KeyId) const {
     const THKeyDat& KeyDat = KeyDatV[KeyId];  Assert(KeyDat.HashCd != -1);  return KeyDat; }
@@ -851,9 +885,9 @@ public:
 };
 
 template <class TDat, class TStringPool, class TSizeTy, class THashFunc>
-uint TStrHash<TDat, TStringPool, TSizeTy,  THashFunc>::GetNextPrime(const uint& Val) const {
-  uint *f = (uint *) TIntH::HashPrimeT, *m, *l = (uint *) TIntH::HashPrimeT + (int) TIntH::HashPrimes;
-  int h, len = (int)TIntH::HashPrimes;
+uint64 TStrHash<TDat, TStringPool, TSizeTy,  THashFunc>::GetNextPrime(const uint64& Val) const {
+  uint64 *f = (uint64 *) TInt64H::HashPrimeT, *m, *l = (uint64 *) TInt64H::HashPrimeT + (int64) TInt64H::HashPrimes;
+  int64 h, len = (int64)TInt64H::HashPrimes;
   while (len > 0) {
     h = len >> 1;  m = f + h;
     if (*m < Val) { f = m;  f++;  len = len - h - 1; }
