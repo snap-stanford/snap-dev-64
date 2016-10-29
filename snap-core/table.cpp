@@ -484,7 +484,6 @@ void TTable::GetSchema(const TStr& InFNm, Schema& S, const char& Separator) {
 }
 
 #ifdef GCC_ATOMIC
-// TODO64
 /*
 void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, 
                         const char& Separator, TBool HasTitleLine) {
@@ -573,7 +572,6 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
   for (int64 i = 0; i < NumThreads; i++) {
     // calculate beginning of each line handled by thread
     TVec<uint64, int64> LineStartPosV = Ss.GetStartPosV(StartIntV[i], StartIntV[i+1]);
-
     // parse line and fill rows
     for (uint64 k = 0; k < (uint64) LineStartPosV.Len(); k++) {
       TVec<char*, int64> FieldsV;
@@ -765,7 +763,6 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
     // Right now, can load in parallel only in Linux (for mmap) and if
     // there are no string columns
 #ifdef GLib_LINUX
-    // TODO64
     //LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
@@ -886,7 +883,7 @@ void TTable::Dump(FILE *OutF) const {
       char C = (i == L-1) ? '\n' : '\t';
       switch (GetSchemaColType(i)) {
         case atInt: {
-          fprintf(OutF, "%s%c", TInt64::GetStr(RowI.GetIntAttr(GetSchemaColName(i))).Val, C);
+          fprintf(OutF, "%s%c", TInt::GetStr(RowI.GetIntAttr(GetSchemaColName(i)).Val), C);
           break;
         }
         case atFlt: {
@@ -1207,9 +1204,7 @@ void TTable::GroupingSanityCheck(const TStr& GroupBy, const TAttrType& AttrType)
 }
 
 #ifdef GCC_ATOMIC
-//TODO64
-/*
-void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt, TIntV>& Grouping, TBool UsePhysicalIds) const {
+void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt64, TInt64V, int64>& Grouping, TBool UsePhysicalIds) const {
   timeval timer0;
   gettimeofday(&timer0, NULL);
   double t1 = timer0.tv_sec + (timer0.tv_usec/1000000.0);
@@ -1248,7 +1243,6 @@ void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt, TIntV>& Grouping
   //double endAdd = omp_get_wtime();
   //printf("Add time = %f\n", endAdd-endGen);
 }
-*/
 #endif // GCC_ATOMIC
 
 void TTable::Unique(const TStr& Col) {
@@ -1588,11 +1582,8 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   THash<TInt64,TInt64V, int64> GroupByStrMapping;
   THash<TGroupKey,TInt64V, int64> Mapping;
 #ifdef GCC_ATOMIC
-  //TODO64
-  /*
-  THashMP<TInt,TIntV> GroupByIntMapping_MP(NumValidRows);
+  THashMP<TInt64,TInt64V, int64> GroupByIntMapping_MP(NumValidRows);
   TInt64V GroupByIntMPKeys(NumValidRows);
-  */
 #endif
   TInt64 NumOfGroups = 0;
   TInt64 GroupingCase = 0;
@@ -1606,12 +1597,10 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   		switch(GetColType(NGroupByAttrs[0])){
   			case atInt:
 #ifdef GCC_ATOMIC
-          // TODO64
-          /*
   				if(GetMP()){
   					GroupByIntColMP(NGroupByAttrs[0], GroupByIntMapping_MP, UsePhysicalIds);
   					int64 x = 0;
-					for(THashMP<TInt,TIntV>::TIter it = GroupByIntMapping_MP.BegI(); it < GroupByIntMapping_MP.EndI(); it++){
+					for(THashMP<TInt64,TInt64V, int64>::TIter it = GroupByIntMapping_MP.BegI(); it < GroupByIntMapping_MP.EndI(); it++){
 						GroupByIntMPKeys[x] = it.GetKey();
 						x++;
 						
@@ -1628,7 +1617,6 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   					//printf("Number of groups: %d\n", NumOfGroups.Val);
   					break;
   				}
-          */
 #endif // GCC_ATOMIC
   				GroupByIntCol(NGroupByAttrs[0], GroupByIntMapping, TInt64V(), true, UsePhysicalIds);
   				NumOfGroups = GroupByIntMapping.Len();
@@ -1698,8 +1686,7 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   			break;
   		case 4:
 #ifdef GCC_ATOMIC
-        // TODO64
-  			//GroupRows = & GroupByIntMapping_MP.GetDat(GroupByIntMPKeys[g]);
+  			GroupRows = & GroupByIntMapping_MP.GetDat(GroupByIntMPKeys[g]);
 #endif
   			break;
   	}
@@ -4155,8 +4142,6 @@ void TTable::UpdateTableForNewRow() {
 }
 
 #ifdef GCC_ATOMIC
-// TODO64
-/*
 void TTable::SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal){
     if(!GetMP()){ TExcept::Throw("Not Using MP!");}
 	TIntPr64V Partitions;
@@ -4212,8 +4197,7 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
   switch (KeyType) {
     // TODO: add support for other cases of KeyType
     case atInt: {
-        // CHECK
-        THashMP<TInt,TIntV> Grouping;
+        THashMP<TInt64,TInt64V,int64> Grouping;
         // must use physical row ids
         GroupByIntColMP(NKeyAttr, Grouping, true);
         #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) // num_threads(1)
@@ -4246,7 +4230,6 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
       break;
   } // end of outer switch statement
 }
-*/
 #endif	// GCC_ATOMIC
 
 void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
@@ -4257,13 +4240,10 @@ void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, con
   if(!Table.IsColName(ReadAttr)){ TExcept::Throw("Bad ReadAttr parameter");}
   
 #ifdef GCC_ATOMIC
-  // TODO64
-  /*
   if(GetMP()){
     UpdateFltFromTableMP(KeyAttr, UpdateAttr,Table, FKeyAttr, ReadAttr, DefaultFltVal);
     return;
   }
-  */
 #endif	// GCC_ATOMIC
   	
   TAttrType KeyType = GetColType(KeyAttr);
@@ -4452,9 +4432,7 @@ void TTable::AddNRows(int64 NewRows, const TVec<TInt64V, int64>& IntColsP, const
 }
 
 #ifdef USE_OPENMP
-// TODO64
-/*
-void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TIntPr64V>& JointRowIDSet) {
+void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TIntPr64V, int64>& JointRowIDSet) {
   //double startFn = omp_get_wtime();
   int64 JointTableSize = 0;
   TInt64V StartOffsets(JointRowIDSet.Len());
@@ -4486,7 +4464,7 @@ void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TInt
 
   #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) 
   for (int64 j = 0; j < JointRowIDSet.Len(); j++) {
-    const TIntP64rV& RowIDs = JointRowIDSet[j];
+    const TIntPr64V& RowIDs = JointRowIDSet[j];
     int64 start = StartOffsets[j];
     int64 NewRows = RowIDs.Len();
     if (NewRows == 0) {continue;}
@@ -4521,7 +4499,6 @@ void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TInt
   //double endIterate = omp_get_wtime();
   //printf("Iterate time = %f\n",endIterate-endResize);
 }
-*/
 #endif // USE_OPENMP
 
 PTable TTable::UnionAll(const TTable& Table) {

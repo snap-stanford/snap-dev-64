@@ -41,7 +41,7 @@ public:
 template<class TKey, class TDat, class TSizeTy = int>
 class THashMPKeyDatI{
 public:
-  typedef THashMPKeyDat<TKey, TDat> TPHKeyDat;
+  typedef THashMPKeyDat<TKey, TDat, TSizeTy> TPHKeyDat;
 private:
   TPHKeyDat* KeyDatI;
   TPHKeyDat* EndI;

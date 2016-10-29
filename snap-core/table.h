@@ -724,12 +724,9 @@ protected:
   template <class T> void GroupByIntCol(const TStr& GroupBy, T& Grouping, 
     const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds = true) const;
 #ifdef GCC_ATOMIC
-  // TODO64
-  /*
   public:	//Should be protected - this is for debug only
   /// Groups/hashes by a single column with integer values, using OpenMP multi-threading
-  void GroupByIntColMP(const TStr& GroupBy, THashMP<TInt, TIntV>& Grouping, TBool UsePhysicalIds = true) const;
-  */
+  void GroupByIntColMP(const TStr& GroupBy, THashMP<TInt64, TInt64V, int64>& Grouping, TBool UsePhysicalIds = true) const;
 #endif // GCC_ATOMIC
   protected:
   /// Groups/hashes by a single column with float values. Returns hash table with grouping.
@@ -741,11 +738,8 @@ protected:
   /// Template for utility function to update a grouping hash map.
   template <class T> void UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val) const;
 #ifdef GCC_ATOMIC
-  // TODO64
-  /*
   /// Template for utility function to update a parallel grouping hash map.
-  template <class T> void UpdateGrouping(THashMP<T,TIntV>& Grouping, T Key, TInt64 Val) const;
-  */
+  template <class T> void UpdateGrouping(THashMP<T,TInt64V, int64>& Grouping, T Key, TInt64 Val) const;
 #endif // GCC_ATOMIC
   void PrintGrouping(const THash<TGroupKey, TInt64V, int64>& Grouping) const;
 
@@ -830,11 +824,8 @@ protected:
   void UpdateTableForNewRow();
 
 #ifdef GCC_ATOMIC
-  // TODO64
-  /*
   /// Parallelly loads data from input file at InFNm into NewTable. Only work when NewTable has no string columns.
   static void LoadSSPar(PTable& NewTable, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, const char& Separator, TBool HasTitleLine);
-  */
 #endif // GCC_ATOMIC
   /// Sequentially loads data from input file at InFNm into NewTable
   static void LoadSSSeq(PTable& NewTable, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, const char& Separator, TBool HasTitleLine);
@@ -845,8 +836,8 @@ protected:
    TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TInt64V& UniqueVec, TBool UsePhysicalIds = true);
 #ifdef USE_OPENMP
   /// Parallel helper function for grouping. - we currently don't support such parallel grouping by complex keys
-  //void GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TInt, TIntV> >& Grouping, 
-  // TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TIntV& UniqueVec, TBool UsePhysicalIds = false);
+  //void GroupAuxMP(const TStr64V& GroupBy, THashGenericMP<TGroupKey, TPair<TInt64, TInt64V>, int64>& Grouping, 
+  // TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TInt64V& UniqueVec, TBool UsePhysicalIds = false);
 #endif // USE_OPENMP
   /// Stores column for a group. Physical row ids have to be passed.
   void StoreGroupCol(const TStr& GroupColName, const TVec<TPair<TInt64, TInt64>, int64 >& GroupAndRowIds);
@@ -1290,13 +1281,10 @@ public:
   void UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
   	const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
 #ifdef GCC_ATOMIC
-  // TODO64
-  /*
   void UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
   	const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
   // TODO: this should be a generic vector operation (parallel equivalent to TVec::PutAll)
   void SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal);
-  */
 #endif // GCC_ATOMIC
 
   /// Returns union of this table with given \c Table.
@@ -1443,7 +1431,7 @@ TInt64 TTable::CheckAndAddFltNode(T Graph, THash<TFlt, TInt64, int64>& NodeVals,
     return NodeVal;
   } else { return NodeVals.GetDat(FNodeVal); }
 }
-
+*/
 template <class T>
 T TTable::AggregateVector(TVec<T, int64>& V, TAttrAggr Policy) {
   switch (Policy) {
@@ -1497,7 +1485,7 @@ T TTable::AggregateVector(TVec<T, int64>& V, TAttrAggr Policy) {
   T ShouldNotComeHere;
   return ShouldNotComeHere;
 }
-*/
+
 template <class T>
 void TTable::GroupByIntCol(const TStr& GroupBy, T& Grouping, 
  const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds) const {
@@ -1592,10 +1580,8 @@ void TTable::UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val
 }
 
 #ifdef GCC_ATOMIC
-// TODO64
-/*
 template <class T>
-void TTable::UpdateGrouping(THashMP<T,TInt64V>& Grouping, T Key, TInt64 Val) const{
+void TTable::UpdateGrouping(THashMP<T,TInt64V, int64>& Grouping, T Key, TInt64 Val) const{
   if (Grouping.IsKey(Key)) {
   	//printf("y\n");
     Grouping.GetDat(Key).Add(Val);
@@ -1606,7 +1592,6 @@ void TTable::UpdateGrouping(THashMP<T,TInt64V>& Grouping, T Key, TInt64 Val) con
     Grouping.AddDat(Key, NewGroup);
   }
 }
-*/
 #endif // GCC_ATOMIC
 
 /*
