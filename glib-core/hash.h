@@ -1,5 +1,4 @@
 #include "bd.h"
-
 /////////////////////////////////////////////////
 // Hash-Table-Key-Data
 #pragma pack(push, 1) // pack class size
@@ -296,14 +295,22 @@ const uint64 THash<TKey, TDat, TSizeTy, THashFunc>::HashPrimeT[HashPrimes]={
 
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
 uint64 THash<TKey, TDat, TSizeTy, THashFunc>::GetNextPrime(const uint64& Val) const {
-  const uint64* f=(const uint64*)HashPrimeT, *m, *l=(const uint64*)HashPrimeT + (int64)HashPrimes;
-  int64 h, len = (int64)HashPrimes;
-  while (len > 0) {
-    h = len >> 1;  m = f + h;
-    if (*m < Val) { f = m;  f++;  len = len - h - 1; }
-    else len = h;
-  }
-  return f == l ? *(l - 1) : *f;
+//	const uint64* f=(const uint64*)HashPrimeT, *m, *l=(const uint64*)HashPrimeT + (int64)HashPrimes;
+//  int64 h, len = (int64)HashPrimes;
+//  while (len > 0) {
+//    h = len >> 1;  m = f + h;
+//    if (*m < Val) { f = m;  f++;  len = len - h - 1; }
+//    else len = h;
+//  }
+//  return f == l ? *(l - 1) : *f;
+	int i, len = HashPrimes;
+	uint64 return_value = HashPrimeT[len-1];
+	for (i = 0; i < len; i++)
+		if (HashPrimeT[i] > Val){
+			return_value = HashPrimeT[i];
+			break;
+		}
+	return return_value;
 }
 
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
@@ -314,7 +321,7 @@ void THash<TKey, TDat, TSizeTy, THashFunc>::Resize(){
   if (PortV.Len()==0){
     PortV.Gen(17);
   } else if (AutoSizeP&&(KeyDatV.Len()>2*PortV.Len())){
-    PortV.Gen(GetNextPrime(PortV.Len()+1));
+    PortV.Gen(GetNextPrime(uint64(PortV.Len()+1)));
   } else {
     return;
   }
