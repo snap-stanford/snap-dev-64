@@ -744,11 +744,11 @@ TEST(TIntInt64H, ManipulateTableWithInt64KeysAndValues) {
 }
 
 // Table manipulations and inserting with >int32 elements
-TEST(TIntInt64H, ManipulateTableWithInt64) {
-  const int64 OFFSET = 0;
-  const int64 NElems = 6000000000;
+// Table manipulations
+TEST(TIntInt64H, ManipulateTablewithInt64) {
+  const int64 NElems = 100000000000;
   int64 DDist = 10;
-  const char *FName = "test.hashint64full.dat";
+  const char *FName = "test.hashint.dat";
   TIntInt64H TableInt;
   TIntInt64H TableInt1;
   TIntInt64H TableInt2;
@@ -765,10 +765,11 @@ TEST(TIntInt64H, ManipulateTableWithInt64) {
   int64 DatSumDel;
   int64 DelCount;
   int64 Count;
-  std::cout<<"add table elements - ";
+
   // add table elements
-  d = 1<<20 - 3;
-  n = d + OFFSET;
+  d = Prime(NElems);
+  n = d;
+  std::cerr<<d<<std::endl;
   KeySumVal = 0;
   DatSumVal = 0;
   for (i = 0; i < NElems; i++) {
@@ -776,213 +777,201 @@ TEST(TIntInt64H, ManipulateTableWithInt64) {
     KeySumVal += n;
     DatSumVal += (n+1);
     //printf("add %d %d\n", n, n+1);
-    //n = (n + d) % NElems;
-    n = n+ d;
+    n = (n + d) % NElems;
     if (i%10000000 == 0)
-    	std::cout<< i/10000000<<std::endl;
+      std::cerr<<i<<std::endl;
   }
   EXPECT_EQ(0,TableInt.Empty());
   EXPECT_EQ(NElems,TableInt.Len());
-  std::cout<<"DONE\n";
-  std::cout<<"verify elements by successive keys - ";
+
+  EXPECT_EQ(0,(NElems-1)*(NElems)/2 - KeySumVal);
+  EXPECT_EQ(0,(NElems)*(NElems+1)/2 - DatSumVal);
+
   // verify elements by successive keys
-	KeySum = 0;
-	DatSum = 0;
-	n = d + OFFSET;
-	//std::cout<< OFFSET<< " "<<n<<std::endl;
-	for (i = 0; i < NElems; i++) {
-		Id = TableInt.GetKeyId(n);
-		EXPECT_EQ(1,Id >= 0);
-		Key = TableInt.GetKey(Id);
-		EXPECT_EQ(0,TableInt.GetDat(Key)-Key-1);
-		KeySum += Key;
-		DatSum += TableInt.GetDat(Key);
-		//std::cout <<n <<" "<<Key<<" "<< TableInt.GetDat(Key)<<std::endl;
-		n = n + d;
-	}
+  KeySum = 0;
+  DatSum = 0;
+  for (i = 0; i < NElems; i++) {
+    Id = TableInt.GetKeyId(i);
+    EXPECT_EQ(1,Id >= 0);
+    Key = TableInt.GetKey(Id);
+    EXPECT_EQ(0,TableInt.GetDat(Key)-Key-1);
+    KeySum += Key;
+    DatSum += TableInt.GetDat(Key);
+  }
 
-	EXPECT_EQ(0,KeySumVal - KeySum);
-	EXPECT_EQ(0,DatSumVal - DatSum);
+  EXPECT_EQ(0,KeySumVal - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSum);
 
-//	// verify elements by distant keys
-//	  KeySum = 0;
-//	  DatSum = 0;
-//	  n = d + OFFSET;
-//	  for (i = 0; i < NElems; i++) {
-//	    Id = TableInt.GetKeyId(n);
-//	    EXPECT_EQ(1,Id >= 0);
-//	    Key = TableInt.GetKey(Id);
-//	    EXPECT_EQ(0,TableInt.GetDat(Key)-Key-1);
-//	    KeySum += Key;
-//	    DatSum += TableInt.GetDat(Key);
-//	    n = (n + d) % NElems;
-//	  }
-//
-//	  EXPECT_EQ(0,KeySumVal - KeySum);
-//	  EXPECT_EQ(0,DatSumVal - DatSum);
-  std::cout<<"verify elements by iterator - ";
+  // verify elements by distant keys
+  KeySum = 0;
+  DatSum = 0;
+  n = Prime(d);
+  for (i = 0; i < NElems; i++) {
+    Id = TableInt.GetKeyId(n);
+    EXPECT_EQ(1,Id >= 0);
+    Key = TableInt.GetKey(Id);
+    EXPECT_EQ(0,TableInt.GetDat(Key)-Key-1);
+    KeySum += Key;
+    DatSum += TableInt.GetDat(Key);
+    n = (n + d) % NElems;
+  }
 
-	// verify elements by iterator
-	KeySum = 0;
-	DatSum = 0;
-	for (TIntInt64H::TIter It = TableInt.BegI(); It < TableInt.EndI(); It++) {
-		EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
-		KeySum += It.GetKey();
-		DatSum += It.GetDat();
-	}
+  EXPECT_EQ(0,KeySumVal - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSum);
 
-	EXPECT_EQ(0,KeySumVal - KeySum);
-	EXPECT_EQ(0,DatSumVal - DatSum);
-  std::cout<<"verify elements by key index - ";
+  // verify elements by iterator
+  KeySum = 0;
+  DatSum = 0;
+  for (TIntInt64H::TIter It = TableInt.BegI(); It < TableInt.EndI(); It++) {
+    EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
+    KeySum += It.GetKey();
+    DatSum += It.GetDat();
+  }
 
-	// verify elements by key index
-	KeySum = 0;
-	DatSum = 0;
-	Id = TableInt.FFirstKeyId();
-	while (TableInt.FNextKeyId(Id)) {
-		EXPECT_EQ(1,Id >= 0);
-		Key = TableInt.GetKey(Id);
-		EXPECT_EQ(0,TableInt.GetDat(Key)-Key-1);
-		KeySum += Key;
-		DatSum += TableInt.GetDat(Key);
-	}
+  EXPECT_EQ(0,KeySumVal - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSum);
 
-	EXPECT_EQ(0,KeySumVal - KeySum);
-	EXPECT_EQ(0,DatSumVal - DatSum);
-  std::cout<<"delete elements - ";
+  // verify elements by key index
+  KeySum = 0;
+  DatSum = 0;
+  Id = TableInt.FFirstKeyId();
+  while (TableInt.FNextKeyId(Id)) {
+    EXPECT_EQ(1,Id >= 0);
+    Key = TableInt.GetKey(Id);
+    EXPECT_EQ(0,TableInt.GetDat(Key)-Key-1);
+    KeySum += Key;
+    DatSum += TableInt.GetDat(Key);
+  }
 
-	// delete elements
-	DelCount = 0;
-	KeySumDel = 0;
-	DatSumDel = 0;
-	n = d + OFFSET;
-	for (n = d + OFFSET; n < d + OFFSET + NElems*d; n += DDist*d) {
-		Id = TableInt.GetKeyId(n);
-		//printf("del %d %d %d\n", n, Id, (int) TableInt[Id]);
-		KeySumDel += n;
-		DatSumDel += TableInt[Id];
-		TableInt.DelKeyId(Id);
-		DelCount++;
-	}
-	EXPECT_EQ(0,TableInt.Empty());
-	EXPECT_EQ(NElems-DelCount,TableInt.Len());
-  std::cout<<"verify elements by iterator - \n";
+  EXPECT_EQ(0,KeySumVal - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSum);
 
-	// verify elements by iterator
-	KeySum = 0;
-	DatSum = 0;
-	Count = 0;
-	for (TIntInt64H::TIter It = TableInt.BegI(); It < TableInt.EndI(); It++) {
-		EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
-		//printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
-		KeySum += It.GetKey();
-		DatSum += It.GetDat();
-		Count++;
-	}
+  // delete elements
+  DelCount = 0;
+  KeySumDel = 0;
+  DatSumDel = 0;
+  for (n = 0; n < NElems; n += DDist) {
+    Id = TableInt.GetKeyId(n);
+    //printf("del %d %d %d\n", n, Id, (int) TableInt[Id]);
+    KeySumDel += n;
+    DatSumDel += TableInt[Id];
+    TableInt.DelKeyId(Id);
+    DelCount++;
+  }
+  EXPECT_EQ(0,TableInt.Empty());
+  EXPECT_EQ(NElems-DelCount,TableInt.Len());
 
-	EXPECT_EQ(NElems-DelCount,Count);
-	EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
-	EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
-  std::cout<<"asignment \n ";
+  // verify elements by iterator
+  KeySum = 0;
+  DatSum = 0;
+  Count = 0;
+  for (TIntInt64H::TIter It = TableInt.BegI(); It < TableInt.EndI(); It++) {
+    EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
+    //printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
+    KeySum += It.GetKey();
+    DatSum += It.GetDat();
+    Count++;
+  }
 
-	// assignment
-	TableInt1 = TableInt;
-	EXPECT_EQ(0,TableInt1.Empty());
-	EXPECT_EQ(NElems-DelCount,TableInt1.Len());
+  EXPECT_EQ(NElems-DelCount,Count);
+  EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
 
-	// verify elements by iterator
-	KeySum = 0;
-	DatSum = 0;
-	Count = 0;
-	for (TIntInt64H::TIter It = TableInt1.BegI(); It < TableInt1.EndI(); It++) {
-		EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
-		//printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
-		KeySum += It.GetKey();
-		DatSum += It.GetDat();
-		Count++;
-	}
+  // assignment
+  TableInt1 = TableInt;
+  EXPECT_EQ(0,TableInt1.Empty());
+  EXPECT_EQ(NElems-DelCount,TableInt1.Len());
 
-	EXPECT_EQ(NElems-DelCount,Count);
-	EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
-	EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
-  std::cout<<"saving and loading \n ";
+  // verify elements by iterator
+  KeySum = 0;
+  DatSum = 0;
+  Count = 0;
+  for (TIntInt64H::TIter It = TableInt1.BegI(); It < TableInt1.EndI(); It++) {
+    EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
+    //printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
+    KeySum += It.GetKey();
+    DatSum += It.GetDat();
+    Count++;
+  }
 
-	// saving and loading
-	{
-		TFOut FOut(FName);
-		TableInt.Save(FOut);
-		FOut.Flush();
-	}
+  EXPECT_EQ(NElems-DelCount,Count);
+  EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
 
-	{
-		TFIn FIn(FName);
-		TableInt2.Load(FIn);
-	}
+  // saving and loading
+  {
+    TFOut FOut(FName);
+    TableInt.Save(FOut);
+    FOut.Flush();
+  }
 
-	EXPECT_EQ(NElems-DelCount,TableInt2.Len());
+  {
+    TFIn FIn(FName);
+    TableInt2.Load(FIn);
+  }
 
-	// verify elements by iterator
-	KeySum = 0;
-	DatSum = 0;
-	Count = 0;
-	for (TIntInt64H::TIter It = TableInt2.BegI(); It < TableInt2.EndI(); It++) {
-		EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
-		//printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
-		KeySum += It.GetKey();
-		DatSum += It.GetDat();
-		Count++;
-	}
+  EXPECT_EQ(NElems-DelCount,TableInt2.Len());
 
-	EXPECT_EQ(NElems-DelCount,Count);
-	EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
-	EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
+  // verify elements by iterator
+  KeySum = 0;
+  DatSum = 0;
+  Count = 0;
+  for (TIntInt64H::TIter It = TableInt2.BegI(); It < TableInt2.EndI(); It++) {
+    EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
+    //printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
+    KeySum += It.GetKey();
+    DatSum += It.GetDat();
+    Count++;
+  }
 
-	// remove all elements
-	for (i = 0; i < Count; i++) {
-		Id = TableInt.GetRndKeyId(TInt::Rnd, 0.5);
-		TableInt.DelKeyId(Id);
-	}
-	EXPECT_EQ(0,TableInt.Len());
-	EXPECT_EQ(1,TableInt.Empty());
+  EXPECT_EQ(NElems-DelCount,Count);
+  EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
+  EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
 
-	// verify elements by iterator
-	KeySum = 0;
-	DatSum = 0;
-	Count = 0;
-	for (TIntInt64H::TIter It = TableInt.BegI(); It < TableInt.EndI(); It++) {
-		EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
-		//printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
-		KeySum += It.GetKey();
-		DatSum += It.GetDat();
-		Count++;
-	}
+  // remove all elements
+  for (i = 0; i < Count; i++) {
+    Id = TableInt.GetRndKeyId(TInt::Rnd, 0.5);
+    TableInt.DelKeyId(Id);
+  }
+  EXPECT_EQ(0,TableInt.Len());
+  EXPECT_EQ(1,TableInt.Empty());
 
-	EXPECT_EQ(0,Count);
-	EXPECT_EQ(0,KeySum);
-	EXPECT_EQ(0,DatSum);
-  std::cout<<"clear table \n ";
+  // verify elements by iterator
+  KeySum = 0;
+  DatSum = 0;
+  Count = 0;
+  for (TIntInt64H::TIter It = TableInt.BegI(); It < TableInt.EndI(); It++) {
+    EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
+    //printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
+    KeySum += It.GetKey();
+    DatSum += It.GetDat();
+    Count++;
+  }
 
-	// clear the table
-	TableInt1.Clr();
-	EXPECT_EQ(0,TableInt1.Len());
-	EXPECT_EQ(1,TableInt1.Empty());
+  EXPECT_EQ(0,Count);
+  EXPECT_EQ(0,KeySum);
+  EXPECT_EQ(0,DatSum);
 
-	// verify elements by iterator
-	KeySum = 0;
-	DatSum = 0;
-	Count = 0;
-	for (TIntInt64H::TIter It = TableInt1.BegI(); It < TableInt1.EndI(); It++) {
-		EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
-		//printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
-		KeySum += It.GetKey();
-		DatSum += It.GetDat();
-		Count++;
-	}
+  // clear the table
+  TableInt1.Clr();
+  EXPECT_EQ(0,TableInt1.Len());
+  EXPECT_EQ(1,TableInt1.Empty());
 
-	EXPECT_EQ(0,Count);
-	EXPECT_EQ(0,KeySum);
-	EXPECT_EQ(0,DatSum);
+  // verify elements by iterator
+  KeySum = 0;
+  DatSum = 0;
+  Count = 0;
+  for (TIntInt64H::TIter It = TableInt1.BegI(); It < TableInt1.EndI(); It++) {
+    EXPECT_EQ(0,It.GetDat()-It.GetKey()-1);
+    //printf("get %d %d\n", (int) It.GetKey(), (int) It.GetDat());
+    KeySum += It.GetKey();
+    DatSum += It.GetDat();
+    Count++;
+  }
 
+  EXPECT_EQ(0,Count);
+  EXPECT_EQ(0,KeySum);
+  EXPECT_EQ(0,DatSum);
 }
 
 int Prime(const int& n) {
