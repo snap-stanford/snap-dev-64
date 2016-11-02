@@ -3,6 +3,8 @@
 #include "iostream"
 int Prime(const int& n);
 bool IsPrime(const int& d);
+int64 Prime(const int64& n);
+bool IsPrime(const int64& d);
 
 // Test the default constructor
 TEST(TIntIntH, DefaultConstructor) {
@@ -746,7 +748,7 @@ TEST(TIntInt64H, ManipulateTableWithInt64KeysAndValues) {
 // Table manipulations and inserting with >int32 elements
 // Table manipulations
 TEST(TIntInt64H, ManipulateTablewithInt64) {
-  const int64 NElems = 100000000000;
+  const int64 NElems = 10000000000;
   int64 DDist = 10;
   const char *FName = "test.hashint.dat";
   TIntInt64H TableInt;
@@ -765,7 +767,10 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
   int64 DatSumDel;
   int64 DelCount;
   int64 Count;
-
+  TInt64V v;
+  v.Gen(uint64((uint64(1)<<34)-41));
+  std::cerr<<v.Len()<<std::endl;
+  std::cerr<<"Add table\n";
   // add table elements
   d = Prime(NElems);
   n = d;
@@ -778,14 +783,15 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
     DatSumVal += (n+1);
     //printf("add %d %d\n", n, n+1);
     n = (n + d) % NElems;
-    if (i%10000000 == 0)
-      std::cerr<<i<<std::endl;
+    if (i%100000000 == 0)
+      std::cerr<<i/100000000<<std::endl;
   }
   EXPECT_EQ(0,TableInt.Empty());
   EXPECT_EQ(NElems,TableInt.Len());
 
-  EXPECT_EQ(0,(NElems-1)*(NElems)/2 - KeySumVal);
-  EXPECT_EQ(0,(NElems)*(NElems+1)/2 - DatSumVal);
+  EXPECT_EQ(0,(int64)(NElems-1)*(NElems)/2 - KeySumVal);
+  EXPECT_EQ(0,(int64)(NElems)*(NElems+1)/2 - DatSumVal);
+  std::cerr<<"Verify elements by successive keys\n";
 
   // verify elements by successive keys
   KeySum = 0;
@@ -801,6 +807,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
 
   EXPECT_EQ(0,KeySumVal - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSum);
+  std::cerr<<"verify elements by distant keys\n";
 
   // verify elements by distant keys
   KeySum = 0;
@@ -818,6 +825,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
 
   EXPECT_EQ(0,KeySumVal - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSum);
+  std::cerr<<"Verify elements by iterator\n";
 
   // verify elements by iterator
   KeySum = 0;
@@ -830,7 +838,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
 
   EXPECT_EQ(0,KeySumVal - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSum);
-
+  std::cerr<<"Verify elements by key index\n";
   // verify elements by key index
   KeySum = 0;
   DatSum = 0;
@@ -845,7 +853,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
 
   EXPECT_EQ(0,KeySumVal - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSum);
-
+  std::cerr<<"Delete elements\n";
   // delete elements
   DelCount = 0;
   KeySumDel = 0;
@@ -860,7 +868,6 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
   }
   EXPECT_EQ(0,TableInt.Empty());
   EXPECT_EQ(NElems-DelCount,TableInt.Len());
-
   // verify elements by iterator
   KeySum = 0;
   DatSum = 0;
@@ -876,7 +883,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
   EXPECT_EQ(NElems-DelCount,Count);
   EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
-
+  std::cerr<<"Assignment\n";
   // assignment
   TableInt1 = TableInt;
   EXPECT_EQ(0,TableInt1.Empty());
@@ -897,7 +904,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
   EXPECT_EQ(NElems-DelCount,Count);
   EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
-
+  std::cerr<<"Saving and loading\n";
   // saving and loading
   {
     TFOut FOut(FName);
@@ -927,7 +934,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
   EXPECT_EQ(NElems-DelCount,Count);
   EXPECT_EQ(0,KeySumVal - KeySumDel - KeySum);
   EXPECT_EQ(0,DatSumVal - DatSumDel - DatSum);
-
+  std::cerr<<"Remove all elements\n";
   // remove all elements
   for (i = 0; i < Count; i++) {
     Id = TableInt.GetRndKeyId(TInt::Rnd, 0.5);
@@ -951,7 +958,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
   EXPECT_EQ(0,Count);
   EXPECT_EQ(0,KeySum);
   EXPECT_EQ(0,DatSum);
-
+  std::cerr<<"Clear Table\n";
   // clear the table
   TableInt1.Clr();
   EXPECT_EQ(0,TableInt1.Len());
@@ -986,6 +993,43 @@ int Prime(const int& n) {
   return d;
 }
 
+bool IsPrime(const int64& d) {
+  int64 i;
+  int64 j;
+
+  // 1, 2, 3 are primes
+  if (d < 4  ||  (d & 0x01) == 0) {
+    return true;
+  }
+
+  // even numbers are not primes
+  if (d < 4  ||  (d & 0x01) == 0) {
+    return true;
+  }
+
+  // test divisions with < sqrt(d)
+  for (i = 2; i*i <= d; i++) {
+    j = d/i;
+    if (j*i == d) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+int64 Prime(const int64& n) {
+  int64 d;
+
+  d = (int64) ((float) n * 0.61803398875);    // golden ratio
+  d |= 0x01;                                // get an odd number
+  while (!IsPrime(d)) {
+    d += 2;
+  }
+
+  return d;
+}
+
 bool IsPrime(const int& d) {
   int i;
   int j;
@@ -1010,4 +1054,3 @@ bool IsPrime(const int& d) {
 
   return true;
 }
-
