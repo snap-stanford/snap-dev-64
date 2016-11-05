@@ -1,7 +1,18 @@
 #if SW_TRACE
 #include <execinfo.h>
 #endif
-
+///////////////////////////////////////
+//abs function overloaded for int64
+int64 absolute(int64 n){
+	if (n < int64(0))
+		return ((int64)-1)*n;
+	return n;
+}
+int absolute(int n){
+	if (n < 0)
+		return -1*n;
+	return n;
+}
 /////////////////////////////////////////////////
 // Mathmatical-Errors
 #if defined(__BCPLUSPLUS__) && (__BCPLUSPLUS__==0x0530)

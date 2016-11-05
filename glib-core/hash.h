@@ -1,11 +1,6 @@
 #include "bd.h"
 /////////////////////////////////////////////////
 // Hash-Table-Key-Data
-int64 abs(int64 n){
-	if (n < 0)
-		return (int64)-1*n;
-	return n;
-}
 #pragma pack(push, 1) // pack class size
 template <class TKey, class TDat, class TSizeTy = int>
 class THashKeyDat{
@@ -335,7 +330,7 @@ void THash<TKey, TDat, TSizeTy, THashFunc>::Resize(){
   for (TSizeTy KeyId=0; KeyId<KeyDatV.Len(); KeyId++){
     THKeyDat& KeyDat=KeyDatV[KeyId];
     if (KeyDat.HashCd!=-1){
-      const TSizeTy PortN = abs(THashFunc::GetPrimHashCd(KeyDat.Key) % PortV.Len());
+      const TSizeTy PortN = absolute(THashFunc::GetPrimHashCd(KeyDat.Key) % PortV.Len());
       KeyDat.Next=PortV[PortN];
       PortV[PortN]=KeyId;
     }
@@ -375,8 +370,8 @@ void THash<TKey, TDat, TSizeTy, THashFunc>::Clr(const bool& DoDel, const TSizeTy
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
 TSizeTy THash<TKey, TDat, TSizeTy, THashFunc>::AddKey(const TKey& Key){
   if ((KeyDatV.Len()>2*PortV.Len())||PortV.Empty()){Resize();}
-  const TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  const TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  const TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  const TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId=-1;
   TSizeTy KeyId=PortV[PortN];
   while ((KeyId!=-1) &&
@@ -406,8 +401,8 @@ TSizeTy THash<TKey, TDat, TSizeTy, THashFunc>::AddKey(const TKey& Key){
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
 void THash<TKey, TDat, TSizeTy, THashFunc>::DelKey(const TKey& Key){
   IAssert(!PortV.Empty());
-  const TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  const TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  const TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  const TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId=-1;
   TSizeTy KeyId=PortV[PortN];
 
@@ -429,8 +424,8 @@ template<class TKey, class TDat, class TSizeTy, class THashFunc>
 void THash<TKey, TDat, TSizeTy, THashFunc>::MarkDelKey(const TKey& Key){
   // MarkDelKey is same as Delkey except last two lines
   IAssert(!PortV.Empty());
-  const TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  const TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  const TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  const TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId=-1;
   TSizeTy KeyId=PortV[PortN];
   while ((KeyId!=-1) &&
@@ -446,9 +441,9 @@ void THash<TKey, TDat, TSizeTy, THashFunc>::MarkDelKey(const TKey& Key){
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
 TSizeTy THash<TKey, TDat, TSizeTy, THashFunc>::GetRndKeyId(TRnd& Rnd) const  {
   IAssert(! Empty());
-  TSizeTy KeyId = abs(Rnd.GetUniDevInt64(KeyDatV.Len()));
+  TSizeTy KeyId = absolute(Rnd.GetUniDevInt64(KeyDatV.Len()));
   while (KeyDatV[KeyId].HashCd == -1) { // if the index is empty, just try again
-    KeyId = abs(Rnd.GetUniDevInt64(KeyDatV.Len())); }
+    KeyId = absolute(Rnd.GetUniDevInt64(KeyDatV.Len())); }
   return KeyId;
 }
 
@@ -468,8 +463,8 @@ TSizeTy THash<TKey, TDat, TSizeTy, THashFunc>::GetRndKeyId(TRnd& Rnd, const doub
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
 TSizeTy THash<TKey, TDat, TSizeTy, THashFunc>::GetKeyId(const TKey& Key) const {
   if (PortV.Empty()){return -1;}
-  const TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  const TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  const TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  const TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy KeyId=PortV[PortN];
   while ((KeyId!=-1) &&
    !((KeyDatV[KeyId].HashCd==HashCd) && (KeyDatV[KeyId].Key==Key))){
@@ -924,7 +919,7 @@ void TStrHash<TDat, TStringPool, TSizeTy, THashFunc>::Resize() {
   for (int64 i = 0; i < KeyDatV.Len(); i++) {
     THKeyDat& KeyDat = KeyDatV[i];
     if (KeyDat.HashCd != -1) {
-      const int64 Port = abs(THashFunc::GetPrimHashCd(Pool->GetCStr(KeyDat.Key)) % NPorts);
+      const int64 Port = absolute(THashFunc::GetPrimHashCd(Pool->GetCStr(KeyDat.Key)) % NPorts);
       KeyDat.Next = PortV[Port];
       PortV[Port] = i;
     }
@@ -949,8 +944,8 @@ template <class TDat, class TStringPool, class TSizeTy, class THashFunc>
 TSizeTy TStrHash<TDat, TStringPool, TSizeTy, THashFunc>::AddKey(const char *Key) {
   if (Pool.Empty()) Pool = TStringPool::New();
   if ((AutoSizeP && KeyDatV.Len() > PortV.Len()) || PortV.Empty()) Resize();
-  const TSizeTy PortN = abs(THashFunc::GetPrimHashCd(Key) % PortV.Len());
-  const TSizeTy HashCd = abs(THashFunc::GetSecHashCd(Key));
+  const TSizeTy PortN = absolute(THashFunc::GetPrimHashCd(Key) % PortV.Len());
+  const TSizeTy HashCd = absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId = -1;
   TSizeTy KeyId = PortV[PortN];
   while (KeyId != -1 && ! (KeyDatV[KeyId].HashCd == HashCd && Pool->Cmp(KeyDatV[KeyId].Key, Key) == 0)) {
@@ -974,8 +969,8 @@ TSizeTy TStrHash<TDat, TStringPool, TSizeTy, THashFunc>::AddKey(const char *Key)
 template <class TDat, class TStringPool, class TSizeTy, class THashFunc>
 TSizeTy TStrHash<TDat, TStringPool, TSizeTy, THashFunc>::GetKeyId(const char *Key) const {
   if (PortV.Empty()) return -1;
-  const TSizeTy PortN = abs(THashFunc::GetPrimHashCd(Key) % PortV.Len());
-  const TSizeTy Hc = abs(THashFunc::GetSecHashCd(Key));
+  const TSizeTy PortN = absolute(THashFunc::GetPrimHashCd(Key) % PortV.Len());
+  const TSizeTy Hc = absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy KeyId = PortV[PortN];
   while (KeyId != -1 && ! (KeyDatV[KeyId].HashCd == Hc && Pool->Cmp(KeyDatV[KeyId].Key, Key) == 0))
     KeyId = KeyDatV[KeyId].Next;
@@ -1255,12 +1250,12 @@ public:
     int HashCd=0;
     for (int ValN=0; ValN<Vec.Len(); ValN++){
       HashCd+=Vec[ValN].GetPrimHashCd();}
-    return abs(HashCd);
+    return absolute(HashCd);
   }
   inline static int GetSecHashCd(const TVec& Vec) {
     int HashCd=0;
     for (int ValN=0; ValN<Vec.Len(); ValN++){
       HashCd+=Vec[ValN].GetSecHashCd();}
-    return abs(HashCd);
+    return absolute(HashCd);
   }
 };
