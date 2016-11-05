@@ -1,3 +1,4 @@
+//#include <iostream>
 /////////////////////////////////////////////////
 // Address-Pointer
 template <class TRec>
@@ -757,6 +758,7 @@ public:
 
 template <class TVal, class TSizeTy>
 void TVec<TVal, TSizeTy>::Resize(const TSizeTy& _MxVals){
+	//std::cerr<<MxVals<<" "<<_MxVals<<std::endl;
   IAssertR(MxVals!=-1, TStr::Fmt("Can not increase the capacity of the vector. %s. [Program failed to allocate more memory. Solution: Get a bigger machine and a 64-bit compiler.]", GetTypeNm(*this).CStr()).CStr());
   IAssertR(MxVals!=(TInt::Mx-1024), TStr::Fmt("Buffer size at maximum. %s. [Program refuses to allocate more memory. Solution-1: Send your test case to developers.]", GetTypeNm(*this).CStr()).CStr());
   if (_MxVals==-1){

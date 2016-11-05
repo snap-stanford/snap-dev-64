@@ -1017,9 +1017,9 @@ public:
   TNum operator++(int){ TNum oldVal = Val; Val++; return oldVal; } // postfix
   TNum operator--(int){ TNum oldVal = Val; Val--; return oldVal; } // postfix
   int64 operator()() const {return Val;}
-  int GetMemUsed() const { return sizeof(TNum); }
-  int GetPrimHashCd() const {return Val;}
-  int GetSecHashCd() const {return Val/0x10;}
+  int64 GetMemUsed() const { return sizeof(TNum); }
+  int64 GetPrimHashCd() const {return Val;}
+  int64 GetSecHashCd() const {return Val/0x10;}
 
   static int64 Abs(const int64& Int){return Int<0?-Int:Int;}
 	static int64 Sign(const int64& Int){return Int<0?-1:(Int>0?1:0);}

@@ -1,6 +1,11 @@
 #include "bd.h"
 /////////////////////////////////////////////////
 // Hash-Table-Key-Data
+int64 abs(int64 n){
+	if (n < 0)
+		return (int64)-1*n;
+	return n;
+}
 #pragma pack(push, 1) // pack class size
 template <class TKey, class TDat, class TSizeTy = int>
 class THashKeyDat{
@@ -289,7 +294,7 @@ const uint64 THash<TKey, TDat, TSizeTy, THashFunc>::HashPrimeT[HashPrimes]={
 	uint64((uint64(1)<<61)-1),
 	uint64((uint64(1)<<62)-57),
 	uint64((uint64(1)<<63)-25),
-	uint64((uint64(1)<<64)-59)
+	uint64(18446744073709551557ul)
 
 };
 
