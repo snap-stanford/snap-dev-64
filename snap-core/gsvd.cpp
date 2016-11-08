@@ -83,7 +83,7 @@ bool TUNGraphMtx::CheckNodeIds() {
 TUNGraphMtx::TUNGraphMtx(const PUNGraph& GraphPt) : Graph() { 
   Graph = GraphPt;
   if (! CheckNodeIds()) {
-    printf("  Renumbering %ld nodes....", GraphPt->GetNodes());
+    printf("  Renumbering %s nodes....", TInt64::GetStr(GraphPt->GetNodes()));
     TExeTm ExeTm;
     Graph = TSnap::ConvertGraph<PUNGraph>(GraphPt, true);
     /*TIntSet NIdSet;
@@ -249,7 +249,7 @@ void GetSngVals(const PNGraph& Graph, const int& SngVals, TFltV& SngValV) {
     try { // can fail to converge but results seem to be good
       TSvd::Svd1Based(AdjMtx, LSingV, SngValV, RSingV); }
     catch(...) {
-      printf("\n***No SVD convergence: G(%d, %ld)\n", Nodes, Graph->GetEdges()); }
+      printf("\n***No SVD convergence: G(%d, %s)\n", Nodes, TInt64::GetStr(Graph->GetEdges())); }
   } else {
     // Lanczos
     TNGraphMtx GraphMtx(Graph);
@@ -299,7 +299,7 @@ void GetSngVec(const PNGraph& Graph, TFltV& LeftSV, TFltV& RightSV) {
     try { // can fail to converge but results seem to be good
       TSvd::Svd1Based(AdjMtx, LSingV, SngValV, RSingV); }
     catch(...) {
-      printf("\n***No SVD convergence: G(%d, %ld)\n", Nodes, Graph->GetEdges()); }
+      printf("\n***No SVD convergence: G(%d, %s)\n", Nodes, TInt64::GetStr(Graph->GetEdges())); }
   } else { // Lanczos
     TNGraphMtx GraphMtx(Graph);
     TSparseSVD::LanczosSVD(GraphMtx, 1, 8, ssotFull, SngValV, LSingV, RSingV);
@@ -337,7 +337,7 @@ void GetSngVec(const PNGraph& Graph, const int& SngVecs, TFltV& SngValV, TVec<TF
     try { // can fail to converge but results seem to be good
       TSvd::Svd1Based(AdjMtx, LSingV, SngValV, RSingV);
     } catch(...) {
-      printf("\n***No SVD convergence: G(%d, %ld)\n", Nodes, Graph->GetEdges()); 
+      printf("\n***No SVD convergence: G(%d, %s)\n", Nodes, TInt64::GetStr(Graph->GetEdges())); 
     }
   } else { // Lanczos
     TNGraphMtx GraphMtx(Graph);
