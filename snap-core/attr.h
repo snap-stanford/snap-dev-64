@@ -1,17 +1,17 @@
 typedef TPair<TStr, TAttrType> TAttrPr;
-typedef TVec<TAttrPr> TAttrPrV;
+typedef TVec<TAttrPr, int64> TAttrPrV;
 
 class TAttr {
 private:
   // Sparse Attributes Name Mapping
-  TStrIntPrH AttrNameToId;
-  TIntIntStrPrH AttrIdToName;
+  TStrIntPr64H AttrNameToId;
+  TIntIntStrPr64H AttrIdToName;
 
-  TIntPrIntH IntAttrVals;
-  TIntPrFltH FltAttrVals;
-  TIntPrStrH StrAttrVals;
+  TIntPrInt64H IntAttrVals;
+  TIntPrFlt64H FltAttrVals;
+  TIntPrStr64H StrAttrVals;
 private:
-  int GetIdVSAttr(const TInt& AttrId, const TAttrType Type, TIntV& IdV) const;
+  int64 GetIdVSAttr(const TInt64& AttrId, const TAttrType Type, TInt64V& IdV) const;
 public:
   TAttr() : AttrNameToId(), AttrIdToName(), IntAttrVals(),
     FltAttrVals(), StrAttrVals() { }
@@ -32,71 +32,71 @@ public:
   size_t GetMemUsed() const { return AttrNameToId.GetMemUsed() + AttrIdToName.GetMemUsed() + IntAttrVals.GetMemUsed() + FltAttrVals.GetMemUsed() + StrAttrVals.GetMemUsed(); }
 
   /// Add Int attribute with name \c AttrName for the given id \c Id.
-  int AddSAttrDat(const TInt& Id, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDat(const TInt64& Id, const TStr& AttrName, const TInt64& Val);
   /// Add Int attribute with attribute id \c AttrId for the given id \c Id.
-  int AddSAttrDat(const TInt& Id, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDat(const TInt64& Id, const TInt64& AttrId, const TInt64& Val);
 
   /// Add Flt attribute with name \c AttrName for the given id \c Id.
-  int AddSAttrDat(const TInt& Id, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDat(const TInt64& Id, const TStr& AttrName, const TFlt& Val);
   /// Add Flt attribute with attribute id \c AttrId for the given id \c Id.
-  int AddSAttrDat(const TInt& Id, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDat(const TInt64& Id, const TInt64& AttrId, const TFlt& Val);
 
   /// Add Str attribute with name \c AttrName for the given id \c Id.
-  int AddSAttrDat(const TInt& Id, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDat(const TInt64& Id, const TStr& AttrName, const TStr& Val);
   /// Add Str attribute with attribute id \c AttrId for the given id \c Id.
-  int AddSAttrDat(const TInt& Id, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDat(const TInt64& Id, const TInt64& AttrId, const TStr& Val);
 
   /// Get Int attribute with name \c AttrName for the given id \c Id.
-  int GetSAttrDat(const TInt& Id, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDat(const TInt64& Id, const TStr& AttrName, TInt64& ValX) const;
   /// Get Int attribute with attribute id \c AttrId for the given id \c Id.
-  int GetSAttrDat(const TInt& Id, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDat(const TInt64& Id, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Get Flt attribute with name \c AttrName for the given id \c Id.
-  int GetSAttrDat(const TInt& Id, const TStr& AttrName, TFlt& ValX) const;
+  int64 GetSAttrDat(const TInt64& Id, const TStr& AttrName, TFlt& ValX) const;
   /// Get Flt attribute with attribute id \c AttrId for the given id \c Id.
-  int GetSAttrDat(const TInt& Id, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDat(const TInt64& Id, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Get Str attribute with name \c AttrName for the given id \c Id.
-  int GetSAttrDat(const TInt& Id, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDat(const TInt64& Id, const TStr& AttrName, TStr& ValX) const;
   /// Get Str attribute with attribute id \c AttrId for the given id \c Id.
-  int GetSAttrDat(const TInt& Id, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDat(const TInt64& Id, const TInt64& AttrId, TStr& ValX) const;
 
   /// Delete attribute with name \c AttrName for the given id \c Id.
-  int DelSAttrDat(const TInt& Id, const TStr& AttrName); 
+  int64 DelSAttrDat(const TInt64& Id, const TStr& AttrName); 
   /// Delete attribute with attribute id \c AttrId for the given id \c Id.
-  int DelSAttrDat(const TInt& Id, const TInt& AttrId);
+  int64 DelSAttrDat(const TInt64& Id, const TInt64& AttrId);
 
   /// Delete all attributes for the given id \c Id.
-  void DelSAttrId(const TInt& Id);
+  void DelSAttrId(const TInt64& Id);
 
   /// Get a list of all attributes of type \c AttrType for the given id \c Id.
-  void GetSAttrV(const TInt& Id, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  void GetSAttrV(const TInt64& Id, const TAttrType AttrType, TAttrPrV& AttrV) const;
 
   /// Get a list of all ids that have an attribute with name \c AttrName.
-  int GetIdVSAttr(const TStr& AttrName, TIntV& IdV) const;
+  int64 GetIdVSAttr(const TStr& AttrName, TInt64V& IdV) const;
   /// Get a list of all ids that have an attribute with attribute id \c AttrId.
-  int GetIdVSAttr(const TInt& AttrId, TIntV& IdV) const;
+  int64 GetIdVSAttr(const TInt64& AttrId, TInt64V& IdV) const;
 
   /// Adds a mapping for an attribute with name \c Name and type \c AttrType.
-  int AddSAttr(const TStr& Name, const TAttrType& AttrType, TInt& AttrIdX);
+  int64 AddSAttr(const TStr& Name, const TAttrType& AttrType, TInt64& AttrIdX);
 
   /// Given the attribute name \c Name, get the attribute id.
-  int GetSAttrId(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrId(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Given the attribute id \c AttrId, get the attribute name.
-  int GetSAttrName(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrName(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 };
 
 
 class TAttrPair {
 private:
-  TStrIntPrH AttrNameToId;
-  TIntIntStrPrH AttrIdToName;
+  TStrIntPr64H AttrNameToId;
+  TIntIntStrPr64H AttrIdToName;
 
-  TIntIntPrPrIntH IntAttrVals;
-  TIntIntPrPrFltH FltAttrVals;
-  TIntIntPrPrStrH StrAttrVals;
+  TIntIntPrPrInt64H IntAttrVals;
+  TIntIntPrPrFlt64H FltAttrVals;
+  TIntIntPrPrStr64H StrAttrVals;
 private:
-  int GetIdVSAttr(const TInt& AttrId, const TAttrType Type, TIntPrV& IdV) const;
+  int64 GetIdVSAttr(const TInt64& AttrId, const TAttrType Type, TIntPr64V& IdV) const;
 public:
   TAttrPair() : AttrNameToId(), AttrIdToName(), IntAttrVals(),
     FltAttrVals(), StrAttrVals() { }
@@ -114,56 +114,56 @@ public:
   void Clr() { AttrNameToId.Clr(); AttrIdToName.Clr(); IntAttrVals.Clr(); FltAttrVals.Clr(); StrAttrVals.Clr(); }
 
   /// Add Int attribute with name \c AttrName for the given id \c Id.
-  int AddSAttrDat(const TIntPr& Id, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDat(const TInt64Pr& Id, const TStr& AttrName, const TInt64& Val);
   /// Add Int attribute with attribute id \c AttrId for the given id \c Id.
-  int AddSAttrDat(const TIntPr& Id, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDat(const TInt64Pr& Id, const TInt64& AttrId, const TInt64& Val);
 
   /// Add Flt attribute with name \c AttrName for the given id \c Id.
-  int AddSAttrDat(const TIntPr& Id, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDat(const TInt64Pr& Id, const TStr& AttrName, const TFlt& Val);
   /// Add Flt attribute with attribute id \c AttrId for the given id \c Id.
-  int AddSAttrDat(const TIntPr& Id, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDat(const TInt64Pr& Id, const TInt64& AttrId, const TFlt& Val);
 
   /// Add Str attribute with name \c AttrName for the given id \c Id.
-  int AddSAttrDat(const TIntPr& Id, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDat(const TInt64Pr& Id, const TStr& AttrName, const TStr& Val);
   /// Add Str attribute with attribute id \c AttrId for the given id \c Id.
-  int AddSAttrDat(const TIntPr& Id, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDat(const TInt64Pr& Id, const TInt64& AttrId, const TStr& Val);
 
   /// Get Int attribute with name \c AttrName for the given id \c Id.
-  int GetSAttrDat(const TIntPr& Id, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDat(const TInt64Pr& Id, const TStr& AttrName, TInt64& ValX) const;
   /// Get Int attribute with attribute id \c AttrId for the given id \c Id.
-  int GetSAttrDat(const TIntPr& Id, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDat(const TInt64Pr& Id, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Get Flt attribute with name \c AttrName for the given id \c Id.
-  int GetSAttrDat(const TIntPr& Id, const TStr& AttrName, TFlt& ValX) const;
+  int64 GetSAttrDat(const TInt64Pr& Id, const TStr& AttrName, TFlt& ValX) const;
   /// Get Flt attribute with attribute id \c AttrId for the given id \c Id.
-  int GetSAttrDat(const TIntPr& Id, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDat(const TInt64Pr& Id, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Get Str attribute with name \c AttrName for the given id \c Id.
-  int GetSAttrDat(const TIntPr& Id, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDat(const TInt64Pr& Id, const TStr& AttrName, TStr& ValX) const;
   /// Get Str attribute with attribute id \c AttrId for the given id \c Id.
-  int GetSAttrDat(const TIntPr& Id, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDat(const TInt64Pr& Id, const TInt64& AttrId, TStr& ValX) const;
 
   /// Delete attribute with name \c AttrName for the given id \c Id.
-  int DelSAttrDat(const TIntPr& Id, const TStr& AttrName);
+  int64 DelSAttrDat(const TInt64Pr& Id, const TStr& AttrName);
   /// Delete attribute with attribute id \c AttrId for the given id \c Id.
-  int DelSAttrDat(const TIntPr& Id, const TInt& AttrId);
+  int64 DelSAttrDat(const TInt64Pr& Id, const TInt64& AttrId);
 
   /// Delete all attributes for the given id \c Id.
-  void DelSAttrId(const TIntPr& Id);
+  void DelSAttrId(const TInt64Pr& Id);
 
   /// Get a list of all attributes of the given type \c AttrType for the given id \c Id.
-  void GetSAttrV(const TIntPr& Id, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  void GetSAttrV(const TInt64Pr& Id, const TAttrType AttrType, TAttrPrV& AttrV) const;
 
   /// Get a list of all ids that have an attribute with name \c AttrName.
-  int GetIdVSAttr(const TStr& AttrName, TIntPrV& IdV) const;
+  int64 GetIdVSAttr(const TStr& AttrName, TIntPr64V& IdV) const;
   /// Get a list of all ids that have an attribute with attribute id \c AttrId.
-  int GetIdVSAttr(const TInt& AttrId, TIntPrV& IdV) const;
+  int64 GetIdVSAttr(const TInt64& AttrId, TIntPr64V& IdV) const;
 
   /// Adds a mapping for an attribute with name Name and type \c AttrType.
-  int AddSAttr(const TStr& Name, const TAttrType& AttrType, TInt& AttrIdX);
+  int64 AddSAttr(const TStr& Name, const TAttrType& AttrType, TInt64& AttrIdX);
 
   /// Given the attribute name \c Name, get the attribute id and type.
-  int GetSAttrId(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrId(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Given the attribute id \c AttrId, get the attribute name and type.
-  int GetSAttrName(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrName(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 };

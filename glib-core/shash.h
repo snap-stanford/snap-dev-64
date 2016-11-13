@@ -1008,7 +1008,7 @@ public:
 template <class TKey, class TSizeTy = int>
 class THashSetKeyI{
 public:
-  typedef THashSetKey<TKey> TSetKey;
+  typedef THashSetKey<TKey, TSizeTy> TSetKey;
 private:
   TSetKey* KeyI;
   TSetKey* EndI;
@@ -1386,6 +1386,7 @@ typedef THashSet<TStr> TStrSet;
 typedef THashSet<TUChIntPr> TUChIntPrSet;
 typedef THashSet<TUChUInt64Pr> TUChUInt64PrSet;
 typedef THashSet<TIntPr> TIntPrSet;
+typedef THashSet<TInt64Pr, int64> TInt64PrSet;
 
 /////////////////////////////////////////////////
 // Packed Vec
