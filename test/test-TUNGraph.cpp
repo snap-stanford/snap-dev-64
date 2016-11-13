@@ -553,3 +553,155 @@ TEST(TUNGraph, ManipulateEdgesWith64BitNodeValues) {
   }
 
 }
+
+// Test node, edge creation
+TEST(TUNGraph, ManipulateNodesEdges64Bit) {
+  int64 NNodes = 100000000;
+  int64 NOutDeg = 50; // should be < NNodes
+  int64 NEdges = NOutDeg*NNodes + NNodes;
+  const int64 OFFSET = 0;
+  const char *FName = "test.graph.dat";
+
+  PUNGraph Graph;
+  PUNGraph Graph1;
+  PUNGraph Graph2;
+  int64 i,j;
+  int64 n;
+  int64 LCount = 0, NCount = 0;
+  int64 Deg, InDeg, OutDeg;
+  Graph = TUNGraph::New();
+  EXPECT_EQ(1,Graph->Empty());
+  std::cerr<<"Creating nodes\n";
+  // create the nodes
+  for (i = 0; i < NNodes; i++) {
+    Graph->AddNode(OFFSET + i);
+  }
+  EXPECT_EQ(0,Graph->Empty());
+  EXPECT_EQ(NNodes,Graph->GetNodes());
+  std::cerr<<"Creating random edges\n";
+
+  // create random edges
+  for (i=0; i < NNodes; i++){
+  	for (j = 1; j <= NOutDeg; j++){
+  		Graph->AddEdge(OFFSET +i,OFFSET + (i + j)%NNodes);
+  		NCount++;
+  	}
+		Graph->AddEdge(OFFSET + i,OFFSET + i);
+		NCount++;
+		LCount++;
+		if (i%10000000 == 0)
+			std::cerr<<i/10000000<<std::endl;
+  }
+
+  EXPECT_EQ(NEdges,NCount);
+  EXPECT_EQ(NEdges,Graph->GetEdges());
+
+  EXPECT_EQ(0,Graph->Empty());
+  EXPECT_EQ(1,Graph->IsOk());
+
+  for (i = 0; i < NNodes; i++) {
+    EXPECT_EQ(1,Graph->IsNode(OFFSET + i));
+  }
+
+  EXPECT_EQ(0,Graph->IsNode(OFFSET + NNodes));
+  EXPECT_EQ(0,Graph->IsNode(OFFSET + NNodes+1));
+  EXPECT_EQ(0,Graph->IsNode(OFFSET + 2*NNodes));
+  std::cerr<<"nodes iterator\n";
+
+  // nodes iterator
+  NCount = 0;
+  for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
+    NCount++;
+  }
+  EXPECT_EQ(NNodes,NCount);
+  std::cerr<<"edges per node iterator\n";
+
+  // edges per node iterator, each non-loop is visited twice, each loop once
+  NCount = 0;
+  bool flag = false;
+  for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
+    int64 nid = NI.GetId();
+  	for (int64 e = 0; e < NI.GetOutDeg(); e++) {
+    	int64 nbrid = NI.GetOutNId(e);
+    	if (nid > OFFSET + 2*NOutDeg && nid < OFFSET + NNodes - 2*NOutDeg)
+    		if (nbrid < nid - NOutDeg || nbrid > nid + NOutDeg)
+    			flag = true;
+      NCount++;
+    }
+  }
+  EXPECT_EQ(NEdges*2-LCount,NCount);
+  EXPECT_EQ(flag,false);
+  std::cerr<<"Edge iterator\n";
+
+  // edges iterator, each edge is visited once
+  NCount = 0;
+  for (TUNGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
+  	NCount++;
+  }
+  EXPECT_EQ(NEdges,NCount);
+  std::cerr<<"Node degree\n";
+
+  // node degree
+  for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
+    Deg = NI.GetDeg();
+    InDeg = NI.GetInDeg();
+    OutDeg = NI.GetOutDeg();
+
+    EXPECT_EQ(Deg,InDeg);
+    EXPECT_EQ(Deg,OutDeg);
+  }
+  std::cerr<<"Assignment\n";
+
+  // assignment
+  Graph1 = TUNGraph::New();
+  *Graph1 = *Graph;
+
+  EXPECT_EQ(NNodes,Graph1->GetNodes());
+  EXPECT_EQ(NEdges,Graph1->GetEdges());
+  EXPECT_EQ(0,Graph1->Empty());
+  EXPECT_EQ(1,Graph1->IsOk());
+  std::cerr<<"Saving and loading\n";
+
+  // saving and loading
+  {
+    TFOut FOut(FName);
+    Graph->Save(FOut);
+    FOut.Flush();
+  }
+
+  {
+    TFIn FIn(FName);
+    Graph2 = TUNGraph::Load(FIn);
+  }
+
+  EXPECT_EQ(NNodes,Graph2->GetNodes());
+  EXPECT_EQ(NEdges,Graph2->GetEdges());
+  EXPECT_EQ(0,Graph2->Empty());
+  EXPECT_EQ(1,Graph2->IsOk());
+  std::cerr<<"remove all nodes and edges\n";
+
+  // remove all the nodes and edges
+  for (i = 0; i < NNodes; i++) {
+    n = Graph->GetRndNId();
+    Graph->DelNode(n);
+    if(i%1000000 == 0)
+        	std::cerr<<i/1000000<<std::endl;
+  }
+
+  EXPECT_EQ(0,Graph->GetNodes());
+  EXPECT_EQ(0,Graph->GetEdges());
+
+  EXPECT_EQ(1,Graph->IsOk());
+  EXPECT_EQ(1,Graph->Empty());
+  std::cerr<<"Clear graph\n";
+
+  Graph1->Clr();
+
+  EXPECT_EQ(0,Graph1->GetNodes());
+  EXPECT_EQ(0,Graph1->GetEdges());
+
+  EXPECT_EQ(1,Graph1->IsOk());
+  EXPECT_EQ(1,Graph1->Empty());
+}
+
+

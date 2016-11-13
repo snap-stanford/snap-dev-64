@@ -57,7 +57,13 @@ typedef ptrdiff_t ssize_t;
 
 typedef size_t TSize;
 #define TSizeMx SIZE_MAX
-
+/////////////////////////////////////////////////
+// abs function overloaded
+#ifndef ABS
+#define ABS
+int64 absolute(int64 n);
+int absolute(int n);
+#endif
 /////////////////////////////////////////////////
 // Localization
 typedef enum {lUndef, lUs, lSi} TLoc;
