@@ -2157,6 +2157,19 @@ void TUInt64::SaveXml(TSOut& SOut, const TStr& Nm) const {
   XSaveBETagArg(Nm, "Val", TUInt64::GetStr(Val));
 }
 
+/////////////////////////////////////////////////
+// Integer-64Bit
+
+#if defined (GLib_WIN32)
+const TInt64 TInt64::Mn((int64) (-0x7FFFFFFFFFFFFFFFi64 - 1));
+const TInt64 TInt64::Mx(int64(0x7FFFFFFFFFFFFFFFi64));
+#elif defined (GLib_BCB)
+const TInt64 TInt64::Mn((-0x7FFFFFFFFFFFFFFFi64 - 1));
+const TInt64 TInt64::Mx(0x7FFFFFFFFFFFFFFFi64);
+#else
+const TInt64 TInt64::Mn((int64) (-0x7FFFFFFFFFFFFFFFLL - 1));
+const TInt64 TInt64::Mx((int64)0x7FFFFFFFFFFFFFFFLL);
+#endif
 /*/////////////////////////////////////////////////
 // Unsigned-Integer-64Bit
 const TUInt64 TUInt64::Mn(0, 0);
