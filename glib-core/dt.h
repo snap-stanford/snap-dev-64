@@ -1010,6 +1010,13 @@ public:
   void Load(TSIn& SIn){ SIn.Load(Val); }
   void Save(TSOut& SOut) const { SOut.Save(Val); }
   TNum& operator=(const TNum& Int){ Val = Int.Val; return *this; }
+  TNum& operator=(const int64& Int){ Val = Int; return *this; }
+  bool operator==(const TNum& Int){ return Val == Int.Val; }
+  bool operator==(const int64& Int){ return Val == Int; }
+  bool operator!=(const int64& Int) const {return Val!=Int;}
+  bool operator!=(const TNum& Int) const {return Val!=Int.Val;}
+  bool operator<(const TNum& Int) const {return Val<Int.Val;}
+  bool operator<(const int64& Int) const {return Val<Int;}
   TNum& operator+=(const TNum& Int){ Val += Int.Val; return *this; }
   TNum& operator-=(const TNum& Int){ Val -= Int.Val; return *this; }
   TNum& operator++(){ ++Val; return *this; } // prefix
@@ -1288,6 +1295,10 @@ public:
   TUInt& operator=(const uint& _Val){Val=_Val; return *this;}
   TUInt operator++(int){Val++; return *this;}
   TUInt operator--(int){Val--; return *this;}
+  TUInt& operator+=(const uint& UInt){Val+=UInt; return *this;}
+  TUInt& operator-=(const uint& UInt){Val-=UInt; return *this;}
+  TUInt& operator+=(const TUInt& UInt){Val+=UInt.Val; return *this;}
+  TUInt& operator-=(const TUInt& UInt){Val-=UInt.Val; return *this;}
   //bool operator==(const TUInt& UInt) const {return Val==UInt.Val;}
   //bool operator==(const uint& UInt) const {return Val==UInt;}
   //bool operator!=(const uint& UInt) const {return Val!=UInt;}
