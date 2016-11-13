@@ -477,7 +477,7 @@ void THashMP<TKey, TDat, TSizeTy, THashFunc>::Clr(const bool& DoDel){
   } else {
     Table.PutAll(TPHKeyDat());
   }
-  NumVals = TInt(0);
+  NumVals = TInt64(0);
 }
 
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
