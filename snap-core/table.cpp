@@ -678,6 +678,9 @@ void TTable::LoadSSSeq(
   //printf("starting to populate table\n");
   uint64 Cnt = 0;
   while (Ss.Next()) {
+    if (Cnt % 1000000 == 0) {
+      printf("%ld\n", Cnt);
+    }  
     int64 IntColIdx = 0;
     int64 FltColIdx = 0;
     int64 StrColIdx = 0;
@@ -763,7 +766,10 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
     // Right now, can load in parallel only in Linux (for mmap) and if
     // there are no string columns
 #ifdef GLib_LINUX
-    //LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+     // Remove this when Parallel load works
+     // TODO64
+     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+     //LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #endif
@@ -883,7 +889,7 @@ void TTable::Dump(FILE *OutF) const {
       char C = (i == L-1) ? '\n' : '\t';
       switch (GetSchemaColType(i)) {
         case atInt: {
-          fprintf(OutF, "%s%c", TInt::GetStr(RowI.GetIntAttr(GetSchemaColName(i)).Val), C);
+          fprintf(OutF, "%ld%c", RowI.GetIntAttr(GetSchemaColName(i)).Val, C);
           break;
         }
         case atFlt: {
@@ -3991,7 +3997,10 @@ void TTable::AddTable(const TTable& T) {
   for (TInt64 i = 0; i < TNext.Len(); i++) {
     if (TNext[i] != Last && TNext[i] != Invalid) { TNext[i] += NumRows; }
   }
-
+  //BUG FIX
+  if (Next.Len() == 0) {
+    FirstValidRow = T.FirstValidRow;
+  }
   Next.AddV(TNext);
   // checks if table is empty 
   if (LastValidRow >= 0) {

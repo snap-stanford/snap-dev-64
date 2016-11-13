@@ -22,28 +22,28 @@ public:
 public:
   class TNode {
   private:
-    TInt Id;
+    TInt64 Id;
     TNodeData NodeDat;
-    TIntV InNIdV, OutNIdV;
+    TInt64V InNIdV, OutNIdV;
   public:
     TNode() : Id(-1), NodeDat(), InNIdV(), OutNIdV() { }
-    TNode(const int& NId) : Id(NId), NodeDat(), InNIdV(), OutNIdV() { }
-    TNode(const int& NId, const TNodeData& NodeData) : Id(NId), NodeDat(NodeData), InNIdV(), OutNIdV() { }
+    TNode(const int64& NId) : Id(NId), NodeDat(), InNIdV(), OutNIdV() { }
+    TNode(const int64& NId, const TNodeData& NodeData) : Id(NId), NodeDat(NodeData), InNIdV(), OutNIdV() { }
     TNode(const TNode& Node) : Id(Node.Id), NodeDat(Node.NodeDat), InNIdV(Node.InNIdV), OutNIdV(Node.OutNIdV) { }
     TNode(TSIn& SIn) : Id(SIn), NodeDat(SIn), InNIdV(SIn), OutNIdV(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut);  NodeDat.Save(SOut);  InNIdV.Save(SOut);  OutNIdV.Save(SOut); }
-    int GetId() const { return Id; }
-    int GetDeg() const { return GetInDeg() + GetOutDeg(); }
-    int GetInDeg() const { return InNIdV.Len(); }
-    int GetOutDeg() const { return OutNIdV.Len(); }
+    int64 GetId() const { return Id; }
+    int64 GetDeg() const { return GetInDeg() + GetOutDeg(); }
+    int64 GetInDeg() const { return InNIdV.Len(); }
+    int64 GetOutDeg() const { return OutNIdV.Len(); }
     const TNodeData& GetDat() const { return NodeDat; }
     TNodeData& GetDat() { return NodeDat; }
-    int GetInNId(const int& NodeN) const { return InNIdV[NodeN]; }
-    int GetOutNId(const int& NodeN) const { return OutNIdV[NodeN]; }
-    int GetNbrNId(const int& NodeN) const { return NodeN<GetOutDeg() ? GetOutNId(NodeN):GetInNId(NodeN-GetOutDeg()); }
-    bool IsInNId(const int& NId) const { return InNIdV.SearchBin(NId) != -1; }
-    bool IsOutNId(const int& NId) const { return OutNIdV.SearchBin(NId) != -1; }
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    int64 GetInNId(const int64& NodeN) const { return InNIdV[NodeN]; }
+    int64 GetOutNId(const int64& NodeN) const { return OutNIdV[NodeN]; }
+    int64 GetNbrNId(const int64& NodeN) const { return NodeN<GetOutDeg() ? GetOutNId(NodeN):GetInNId(NodeN-GetOutDeg()); }
+    bool IsInNId(const int64& NId) const { return InNIdV.SearchBin(NId) != -1; }
+    bool IsOutNId(const int64& NId) const { return OutNIdV.SearchBin(NId) != -1; }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     bool operator < (const TNode& Node) const { return NodeDat < Node.NodeDat; }
     friend class TNodeNet<TNodeData>;
   };
@@ -51,7 +51,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   private:
-    typedef typename THash<TInt, TNode>::TIter THashIter;
+    typedef typename THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
     TNodeNet *Net;
   public:
@@ -65,35 +65,35 @@ public:
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
 
     /// Returns ID of the current node.
-    int GetId() const { return NodeHI.GetDat().GetId(); }
+    int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node.
-    int GetDeg() const { return NodeHI.GetDat().GetDeg(); }
+    int64 GetDeg() const { return NodeHI.GetDat().GetDeg(); }
     /// Returns in-degree of the current node.
-    int GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
+    int64 GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
     /// Returns out-degree of the current node.
-    int GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
+    int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Returns ID of NodeN-th in-node (the node pointing to the current node). ##TNodeNet::TNodeI::GetInNId
-    int GetInNId(const int& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
+    int64 GetInNId(const int64& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
     /// Returns ID of NodeN-th out-node (the node the current node points to). ##TNodeNet::TNodeI::GetOutNId
-    int GetOutNId(const int& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
+    int64 GetOutNId(const int64& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
     /// Returns ID of NodeN-th neighboring node. ##TNodeNet::TNodeI::GetNbrNId
-    int GetNbrNId(const int& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
+    int64 GetNbrNId(const int64& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
     /// Tests whether node with ID NId points to the current node.
-    bool IsInNId(const int& NId) const { return NodeHI.GetDat().IsInNId(NId); }
+    bool IsInNId(const int64& NId) const { return NodeHI.GetDat().IsInNId(NId); }
     /// Tests whether the current node points to node with ID NId.
-    bool IsOutNId(const int& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
+    bool IsOutNId(const int64& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
     /// Tests whether node with ID NId is a neighbor of the current node.
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     const TNodeData& operator () () const { return NodeHI.GetDat().NodeDat; }
     TNodeData& operator () () { return NodeHI.GetDat().GetDat(); }
     const TNodeData& GetDat() const { return NodeHI.GetDat().GetDat(); }
     TNodeData& GetDat() { return NodeHI.GetDat().GetDat(); }
-    const TNodeData& GetInNDat(const int& NodeN) const { return Net->GetNDat(GetInNId(NodeN)); }
-    TNodeData& GetInNDat(const int& NodeN) { return Net->GetNDat(GetInNId(NodeN)); }
-    const TNodeData& GetOutNDat(const int& NodeN) const { return Net->GetNDat(GetOutNId(NodeN)); }
-    TNodeData& GetOutNDat(const int& NodeN) { return Net->GetNDat(GetOutNId(NodeN)); }
-    const TNodeData& GetNbrNDat(const int& NodeN) const { return Net->GetNDat(GetNbrNId(NodeN)); }
-    TNodeData& GetNbrNDat(const int& NodeN) { return Net->GetNDat(GetNbrNId(NodeN)); }
+    const TNodeData& GetInNDat(const int64& NodeN) const { return Net->GetNDat(GetInNId(NodeN)); }
+    TNodeData& GetInNDat(const int64& NodeN) { return Net->GetNDat(GetInNId(NodeN)); }
+    const TNodeData& GetOutNDat(const int64& NodeN) const { return Net->GetNDat(GetOutNId(NodeN)); }
+    TNodeData& GetOutNDat(const int64& NodeN) { return Net->GetNDat(GetOutNId(NodeN)); }
+    const TNodeData& GetNbrNDat(const int64& NodeN) const { return Net->GetNDat(GetNbrNId(NodeN)); }
+    TNodeData& GetNbrNDat(const int64& NodeN) { return Net->GetNDat(GetNbrNId(NodeN)); }
     friend class TNodeNet<TNodeData>;
   };
 
@@ -101,10 +101,10 @@ public:
   class TEdgeI {
   private:
     TNodeI CurNode, EndNode;
-    int CurEdge;
+    int64 CurEdge;
   public:
     TEdgeI() : CurNode(), EndNode(), CurEdge(0) { }
-    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
+    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int64& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
     TEdgeI(const TEdgeI& EdgeI) : CurNode(EdgeI.CurNode), EndNode(EdgeI.EndNode), CurEdge(EdgeI.CurEdge) { }
     TEdgeI& operator = (const TEdgeI& EdgeI) { if (this!=&EdgeI) { CurNode=EdgeI.CurNode;  EndNode=EdgeI.EndNode;  CurEdge=EdgeI.CurEdge; }  return *this; }
     /// Increment iterator.
@@ -113,28 +113,28 @@ public:
     bool operator < (const TEdgeI& EdgeI) const { return CurNode<EdgeI.CurNode || (CurNode==EdgeI.CurNode && CurEdge<EdgeI.CurEdge); }
     bool operator == (const TEdgeI& EdgeI) const { return CurNode == EdgeI.CurNode && CurEdge == EdgeI.CurEdge; }
     /// Gets edge ID. Always returns -1 since only edges in multigraphs have explicit IDs.
-    int GetId() const { return -1; }
+    int64 GetId() const { return -1; }
     /// Gets the source node of an edge.
-    int GetSrcNId() const { return CurNode.GetId(); }
+    int64 GetSrcNId() const { return CurNode.GetId(); }
     /// Gets the destination node of an edge.
-    int GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
+    int64 GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
     const TNodeData& GetSrcNDat() const { return CurNode.GetDat(); }
     TNodeData& GetDstNDat() { return CurNode.GetOutNDat(CurEdge); }
     friend class TNodeNet<TNodeData>;
   };
 
 protected:
-  TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
+  TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
 
 protected:
   TCRef CRef;
-  TInt MxNId;
-  THash<TInt, TNode> NodeH;
+  TInt64 MxNId;
+  THash<TInt64, TNode, int64> NodeH;
 
 public:
   TNodeNet() : CRef(), MxNId(0), NodeH() { }
   /// Constructor that reserves enough memory for a network of Nodes nodes and Edges edges.
-  explicit TNodeNet(const int& Nodes, const int& Edges) : MxNId(0) { Reserve(Nodes, Edges); }
+  explicit TNodeNet(const int64& Nodes, const int64& Edges) : MxNId(0) { Reserve(Nodes, Edges); }
   TNodeNet(const TNodeNet& NodeNet) : MxNId(NodeNet.MxNId), NodeH(NodeNet.NodeH) { }
   /// Constructor that loads the network from a (binary) stream SIn.
   TNodeNet(TSIn& SIn) : MxNId(SIn), NodeH(SIn) { }
@@ -151,64 +151,64 @@ public:
     if (this!=&NodeNet) { NodeH=NodeNet.NodeH;  MxNId=NodeNet.MxNId; }  return *this; }
   // nodes
   /// Returns the number of nodes in the network.
-  int GetNodes() const { return NodeH.Len(); }
+  int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the network. ##TNodeNet::AddNode
-  int AddNode(int NId = -1);
+  int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNodeNet::AddNodeUnchecked
-  int AddNodeUnchecked(int NId = -1);
+  int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds a node of ID NId and node data NodeDat to the network. ##TNodeNet::AddNode-1
-  int AddNode(int NId, const TNodeData& NodeDat);
+  int64 AddNode(int64 NId, const TNodeData& NodeDat);
   /// Adds a node NodeI and its node data to the network.
-  int AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId(), NodeI.GetDat()); }
+  int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId(), NodeI.GetDat()); }
   /// Deletes node of ID NId from the network. ##TNodeNet::DelNode
-  virtual void DelNode(const int& NId);
+  virtual void DelNode(const int64& NId);
   /// Deletes node of ID NodeI.GetId() from the network.
   void DelNode(const TNode& NodeI) { DelNode(NodeI.GetId()); }
   /// Tests whether ID NId is a node.
-  bool IsNode(const int& NId) const { return NodeH.IsKey(NId); }
+  bool IsNode(const int64& NId) const { return NodeH.IsKey(NId); }
   /// Returns an iterator referring to the first node in the network.
   TNodeI BegNI() const { return TNodeI(NodeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end node in the network.
   TNodeI EndNI() const { return TNodeI(NodeH.EndI(), this); }
   /// Returns an iterator referring to the node of ID NId in the network.
-  TNodeI GetNI(const int& NId) const { return TNodeI(NodeH.GetI(NId), this); }
+  TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId), this); }
   /// Returns node element for the node of ID NId in the network.
-  const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
+  const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
   /// Sets node data for the node of ID NId in the network.
-  void SetNDat(const int& NId, const TNodeData& NodeDat);
+  void SetNDat(const int64& NId, const TNodeData& NodeDat);
   /// Returns node data for the node of ID NId in the network.
-  TNodeData& GetNDat(const int& NId) { return NodeH.GetDat(NId).NodeDat; }
+  TNodeData& GetNDat(const int64& NId) { return NodeH.GetDat(NId).NodeDat; }
   /// Returns node data for the node of ID NId in the network.
-  const TNodeData& GetNDat(const int& NId) const { return NodeH.GetDat(NId).NodeDat; }
+  const TNodeData& GetNDat(const int64& NId) const { return NodeH.GetDat(NId).NodeDat; }
   /// Returns an ID that is larger than any node ID in the network.
-  int GetMxNId() const { return MxNId; }
+  int64 GetMxNId() const { return MxNId; }
 
   // edges
   /// Returns the number of edges in the network.
-  int GetEdges() const;
+  int64 GetEdges() const;
   /// Adds an edge from node SrcNId to node DstNId to the network. ##TNodeNet::AddEdge
-  int AddEdge(const int& SrcNId, const int& DstNId);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId);
   /// Adds an edge from EdgeI.GetSrcNId() to EdgeI.GetDstNId() to the network.
-  int AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId()); }
+  int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId()); }
   /// Deletes an edge from node IDs SrcNId to DstNId from the network. ##TNodeNet::DelEdge
-  void DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true);
+  void DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true);
   /// Tests whether an edge from node IDs SrcNId to DstNId exists in the network.
-  bool IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true) const;
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true) const;
   /// Returns an iterator referring to the first edge in the network.
   TEdgeI BegEI() const { TNodeI NI=BegNI();  while(NI<EndNI() && NI.GetOutDeg()==0) NI++;  return TEdgeI(NI, EndNI()); }
   /// Returns an iterator referring to the past-the-end edge in the network.
   TEdgeI EndEI() const { return TEdgeI(EndNI(), EndNI()); }
   /// Not supported/implemented!
-  TEdgeI GetEI(const int& EId) const;
+  TEdgeI GetEI(const int64& EId) const;
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the network.
-  TEdgeI GetEI(const int& SrcNId, const int& DstNId) const;
+  TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
 
   /// Returns an ID of a random node in the network.
-  int GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the network.
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Gets a vector IDs of all nodes in the network.
-  void GetNIdV(TIntV& NIdV) const;
+  void GetNIdV(TInt64V& NIdV) const;
 
   /// Tests whether the network is empty (has zero nodes).
   bool Empty() const { return GetNodes()==0; }
@@ -216,7 +216,7 @@ public:
   void Clr(const bool& DoDel=true, const bool& ResetDat=true) {
     MxNId = 0;  NodeH.Clr(DoDel, -1, ResetDat); }
   /// Reserves memory for a network of Nodes nodes and Edges edges.
-  void Reserve(const int& Nodes, const int& Edges) { if (Nodes>0) { NodeH.Gen(Nodes/2); } }
+  void Reserve(const int64& Nodes, const int64& Edges) { if (Nodes>0) { NodeH.Gen(Nodes/2); } }
   /// Sorts nodes by node IDs.
   void SortNIdById(const bool& Asc=true) { NodeH.SortByKey(Asc); }
   /// Sorts nodes by node data.
@@ -241,7 +241,7 @@ bool TNodeNet<TNodeData>::HasFlag(const TGraphFlag& Flag) const {
 }
 
 template <class TNodeData>
-int TNodeNet<TNodeData>::AddNode(int NId) {
+int64 TNodeNet<TNodeData>::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -253,7 +253,7 @@ int TNodeNet<TNodeData>::AddNode(int NId) {
 }
 
 template <class TNodeData>
-int TNodeNet<TNodeData>::AddNodeUnchecked(int NId) {
+int64 TNodeNet<TNodeData>::AddNodeUnchecked(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -265,7 +265,7 @@ int TNodeNet<TNodeData>::AddNodeUnchecked(int NId) {
 }
 
 template <class TNodeData>
-int TNodeNet<TNodeData>::AddNode(int NId, const TNodeData& NodeDat) {
+int64 TNodeNet<TNodeData>::AddNode(int64 NId, const TNodeData& NodeDat) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -277,41 +277,41 @@ int TNodeNet<TNodeData>::AddNode(int NId, const TNodeData& NodeDat) {
 }
 
 template <class TNodeData>
-void TNodeNet<TNodeData>::DelNode(const int& NId) {
+void TNodeNet<TNodeData>::DelNode(const int64& NId) {
   { TNode& Node = GetNode(NId);
-  for (int e = 0; e < Node.GetOutDeg(); e++) {
-  const int nbr = Node.GetOutNId(e);
+  for (int64 e = 0; e < Node.GetOutDeg(); e++) {
+  const int64 nbr = Node.GetOutNId(e);
   if (nbr == NId) { continue; }
     TNode& N = GetNode(nbr);
-    int n = N.InNIdV.SearchBin(NId);
+    int64 n = N.InNIdV.SearchBin(NId);
     if (n!= -1) { N.InNIdV.Del(n); }
   }
-  for (int e = 0; e < Node.GetInDeg(); e++) {
-  const int nbr = Node.GetInNId(e);
+  for (int64 e = 0; e < Node.GetInDeg(); e++) {
+  const int64 nbr = Node.GetInNId(e);
   if (nbr == NId) { continue; }
     TNode& N = GetNode(nbr);
-    int n = N.OutNIdV.SearchBin(NId);
+    int64 n = N.OutNIdV.SearchBin(NId);
     if (n!= -1) { N.OutNIdV.Del(n); }
   } }
   NodeH.DelKey(NId);
 }
 
 template <class TNodeData>
-void TNodeNet<TNodeData>::SetNDat(const int& NId, const TNodeData& NodeDat) {
+void TNodeNet<TNodeData>::SetNDat(const int64& NId, const TNodeData& NodeDat) {
   IAssertR(IsNode(NId), TStr::Fmt("NodeId %d does not exist.", NId).CStr());
   NodeH.GetDat(NId).NodeDat = NodeDat;
 }
 
 template <class TNodeData>
-int TNodeNet<TNodeData>::GetEdges() const {
-  int edges=0;
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N);) {
+int64 TNodeNet<TNodeData>::GetEdges() const {
+  int64 edges=0;
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N);) {
     edges+=NodeH[N].GetOutDeg(); }
   return edges;
 }
 
 template <class TNodeData>
-int TNodeNet<TNodeData>::AddEdge(const int& SrcNId, const int& DstNId) {
+int64 TNodeNet<TNodeData>::AddEdge(const int64& SrcNId, const int64& DstNId) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   if (IsEdge(SrcNId, DstNId)) { return -2; }
   GetNode(SrcNId).OutNIdV.AddSorted(DstNId);
@@ -320,7 +320,7 @@ int TNodeNet<TNodeData>::AddEdge(const int& SrcNId, const int& DstNId) {
 }
 
 template <class TNodeData>
-void TNodeNet<TNodeData>::DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) {
+void TNodeNet<TNodeData>::DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   GetNode(SrcNId).OutNIdV.DelIfIn(DstNId);
   GetNode(DstNId).InNIdV.DelIfIn(SrcNId);
@@ -331,30 +331,30 @@ void TNodeNet<TNodeData>::DelEdge(const int& SrcNId, const int& DstNId, const bo
 }
 
 template <class TNodeData>
-bool TNodeNet<TNodeData>::IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) const {
+bool TNodeNet<TNodeData>::IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) const {
   if (! IsNode(SrcNId) || ! IsNode(DstNId)) { return false; }
   if (IsDir) { return GetNode(SrcNId).IsOutNId(DstNId); }
   else { return GetNode(SrcNId).IsOutNId(DstNId) || GetNode(DstNId).IsOutNId(SrcNId); }
 }
 
 template <class TNodeData>
-void TNodeNet<TNodeData>::GetNIdV(TIntV& NIdV) const {
+void TNodeNet<TNodeData>::GetNIdV(TInt64V& NIdV) const {
   NIdV.Reserve(GetNodes(), 0);
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     NIdV.Add(NodeH.GetKey(N)); }
 }
 
 template <class TNodeData>
-typename TNodeNet<TNodeData>::TEdgeI  TNodeNet<TNodeData>::GetEI(const int& SrcNId, const int& DstNId) const {
+typename TNodeNet<TNodeData>::TEdgeI  TNodeNet<TNodeData>::GetEI(const int64& SrcNId, const int64& DstNId) const {
   const TNodeI SrcNI = GetNI(SrcNId);
-  const int NodeN = SrcNI.NodeHI.GetDat().OutNIdV.SearchBin(DstNId);
+  const int64 NodeN = SrcNI.NodeHI.GetDat().OutNIdV.SearchBin(DstNId);
   if (NodeN == -1) { return EndEI(); }
   return TEdgeI(SrcNI, EndNI(), NodeN);
 }
 
 template <class TNodeData>
 void TNodeNet<TNodeData>::Defrag(const bool& OnlyNodeLinks) {
-  for (int n = NodeH.FFirstKeyId(); NodeH.FNextKeyId(n); ) {
+  for (int64 n = NodeH.FFirstKeyId(); NodeH.FNextKeyId(n); ) {
     TNode& Node = NodeH[n];
     Node.InNIdV.Pack();  Node.OutNIdV.Pack();
   }
@@ -365,7 +365,7 @@ void TNodeNet<TNodeData>::Defrag(const bool& OnlyNodeLinks) {
 template <class TNodeData>
 bool TNodeNet<TNodeData>::IsOk(const bool& ThrowExcept) const {
   bool RetVal = true;
-  for (int N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
     if (! Node.OutNIdV.IsSorted()) {
       const TStr Msg = TStr::Fmt("Out-neighbor list of node %d is not sorted.", Node.GetId());
@@ -376,8 +376,8 @@ bool TNodeNet<TNodeData>::IsOk(const bool& ThrowExcept) const {
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     // check out-edges
-    int prevNId = -1;
-    for (int e = 0; e < Node.GetOutDeg(); e++) {
+    int64 prevNId = -1;
+    for (int64 e = 0; e < Node.GetOutDeg(); e++) {
       if (! IsNode(Node.GetOutNId(e))) {
         const TStr Msg = TStr::Fmt("Out-edge %d --> %d: node %d does not exist.",
           Node.GetId(), Node.GetOutNId(e), Node.GetOutNId(e));
@@ -392,7 +392,7 @@ bool TNodeNet<TNodeData>::IsOk(const bool& ThrowExcept) const {
     }
     // check in-edges
     prevNId = -1;
-    for (int e = 0; e < Node.GetInDeg(); e++) {
+    for (int64 e = 0; e < Node.GetInDeg(); e++) {
       if (! IsNode(Node.GetInNId(e))) {
         const TStr Msg = TStr::Fmt("In-edge %d <-- %d: node %d does not exist.",
           Node.GetId(), Node.GetInNId(e), Node.GetInNId(e));
@@ -411,7 +411,7 @@ bool TNodeNet<TNodeData>::IsOk(const bool& ThrowExcept) const {
 
 /////////////////////////////////////////////////
 // Common network types
-typedef TNodeNet<TInt> TIntNNet;
+typedef TNodeNet<TInt64> TIntNNet;
 typedef TPt<TIntNNet> PIntNNet;
 typedef TNodeNet<TFlt> TFltNNet;
 typedef TPt<TFltNNet> PFltNNet;
@@ -427,35 +427,35 @@ public:
   typedef TEdgeData TEdgeDat;
   typedef TNodeEDatNet<TNodeData, TEdgeData> TNet;
   typedef TPt<TNet> PNet;
-  typedef TVec<TPair<TInt, TEdgeData> > TNIdDatPrV;
+  typedef TVec<TPair<TInt64, TEdgeData>, int64> TNIdDatPrV;
 public:
   class TNode {
   private:
-    TInt  Id;
+    TInt64  Id;
     TNodeData NodeDat;
-    TIntV InNIdV;
+    TInt64V InNIdV;
     TNIdDatPrV OutNIdV;
   public:
     TNode() : Id(-1), NodeDat(), InNIdV(), OutNIdV() { }
-    TNode(const int& NId) : Id(NId), NodeDat(), InNIdV(), OutNIdV() { }
-    TNode(const int& NId, const TNodeData& NodeData) : Id(NId), NodeDat(NodeData), InNIdV(), OutNIdV() { }
+    TNode(const int64& NId) : Id(NId), NodeDat(), InNIdV(), OutNIdV() { }
+    TNode(const int64& NId, const TNodeData& NodeData) : Id(NId), NodeDat(NodeData), InNIdV(), OutNIdV() { }
     TNode(const TNode& Node) : Id(Node.Id), NodeDat(Node.NodeDat), InNIdV(Node.InNIdV), OutNIdV(Node.OutNIdV) { }
     TNode(TSIn& SIn) : Id(SIn), NodeDat(SIn), InNIdV(SIn), OutNIdV(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut);  NodeDat.Save(SOut);  InNIdV.Save(SOut);  OutNIdV.Save(SOut); }
-    int GetId() const { return Id; }
-    int GetDeg() const { return GetInDeg() + GetOutDeg(); }
-    int GetInDeg() const { return InNIdV.Len(); }
-    int GetOutDeg() const { return OutNIdV.Len(); }
+    int64 GetId() const { return Id; }
+    int64 GetDeg() const { return GetInDeg() + GetOutDeg(); }
+    int64 GetInDeg() const { return InNIdV.Len(); }
+    int64 GetOutDeg() const { return OutNIdV.Len(); }
     const TNodeData& GetDat() const { return NodeDat; }
     TNodeData& GetDat() { return NodeDat; }
-    int GetInNId(const int& EdgeN) const { return InNIdV[EdgeN]; }
-    int GetOutNId(const int& EdgeN) const { return OutNIdV[EdgeN].Val1; }
-    int GetNbrNId(const int& EdgeN) const { return EdgeN<GetOutDeg() ? GetOutNId(EdgeN):GetInNId(EdgeN-GetOutDeg()); }
-    TEdgeData& GetOutEDat(const int& EdgeN) { return OutNIdV[EdgeN].Val2; }
-    const TEdgeData& GetOutEDat(const int& EdgeN) const { return OutNIdV[EdgeN].Val2; }
-    bool IsInNId(const int& NId) const { return InNIdV.SearchBin(NId)!=-1; }
-    bool IsOutNId(const int& NId) const { return TNodeEDatNet::GetNIdPos(OutNIdV, NId)!=-1; }
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    int64 GetInNId(const int64& EdgeN) const { return InNIdV[EdgeN]; }
+    int64 GetOutNId(const int64& EdgeN) const { return OutNIdV[EdgeN].Val1; }
+    int64 GetNbrNId(const int64& EdgeN) const { return EdgeN<GetOutDeg() ? GetOutNId(EdgeN):GetInNId(EdgeN-GetOutDeg()); }
+    TEdgeData& GetOutEDat(const int64& EdgeN) { return OutNIdV[EdgeN].Val2; }
+    const TEdgeData& GetOutEDat(const int64& EdgeN) const { return OutNIdV[EdgeN].Val2; }
+    bool IsInNId(const int64& NId) const { return InNIdV.SearchBin(NId)!=-1; }
+    bool IsOutNId(const int64& NId) const { return TNodeEDatNet::GetNIdPos(OutNIdV, NId)!=-1; }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     bool operator < (const TNode& Node) const { return NodeDat < Node.NodeDat; }
     friend class TNodeEDatNet<TNodeData, TEdgeData>;
   };
@@ -463,7 +463,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   private:
-    typedef typename THash<TInt, TNode>::TIter THashIter;
+    typedef typename THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
     TNodeEDatNet *Net;
   public:
@@ -477,43 +477,43 @@ public:
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
 
     /// Returns ID of the current node.
-    int GetId() const { return NodeHI.GetDat().GetId(); }
+    int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node.
-    int GetDeg() const { return NodeHI.GetDat().GetDeg(); }
+    int64 GetDeg() const { return NodeHI.GetDat().GetDeg(); }
     /// Returns in-degree of the current node.
-    int GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
+    int64 GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
     /// Returns out-degree of the current node.
-    int GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
+    int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Returns ID of NodeN-th in-node (the node pointing to the current node). ##TNodeEDatNet::TNodeI::GetInNId
-    int GetInNId(const int& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
+    int64 GetInNId(const int64& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
     /// Returns ID of NodeN-th out-node (the node the current node points to). ##TNodeEDatNet::TNodeI::GetOutNId
-    int GetOutNId(const int& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
+    int64 GetOutNId(const int64& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
     /// Returns ID of NodeN-th neighboring node. ##TNodeEDatNet::TNodeI::GetNbrNId
-    int GetNbrNId(const int& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
+    int64 GetNbrNId(const int64& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
     /// Tests whether node with ID NId points to the current node.
-    bool IsInNId(const int& NId) const { return NodeHI.GetDat().IsInNId(NId); }
+    bool IsInNId(const int64& NId) const { return NodeHI.GetDat().IsInNId(NId); }
     /// Tests whether the current node points to node with ID NId.
-    bool IsOutNId(const int& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
+    bool IsOutNId(const int64& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
     /// Tests whether node with ID NId is a neighbor of the current node.
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     // node data
     const TNodeData& operator () () const { return NodeHI.GetDat().NodeDat; }
     TNodeData& operator () () { return NodeHI.GetDat().GetDat(); }
     const TNodeData& GetDat() const { return NodeHI.GetDat().GetDat(); }
     TNodeData& GetDat() { return NodeHI.GetDat().GetDat(); }
-    const TNodeData& GetOutNDat(const int& NodeN) const { return Net->GetNDat(GetOutNId(NodeN)); }
-    TNodeData& GetOutNDat(const int& NodeN) { return Net->GetNDat(GetOutNId(NodeN)); }
-    const TNodeData& GetInNDat(const int& NodeN) const { return Net->GetNDat(GetInNId(NodeN)); }
-    TNodeData& GetInNDat(const int& NodeN) { return Net->GetNDat(GetInNId(NodeN)); }
-    const TNodeData& GetNbrNDat(const int& NodeN) const { return Net->GetNDat(GetNbrNId(NodeN)); }
-    TNodeData& GetNbrNDat(const int& NodeN) { return Net->GetNDat(GetNbrNId(NodeN)); }
+    const TNodeData& GetOutNDat(const int64& NodeN) const { return Net->GetNDat(GetOutNId(NodeN)); }
+    TNodeData& GetOutNDat(const int64& NodeN) { return Net->GetNDat(GetOutNId(NodeN)); }
+    const TNodeData& GetInNDat(const int64& NodeN) const { return Net->GetNDat(GetInNId(NodeN)); }
+    TNodeData& GetInNDat(const int64& NodeN) { return Net->GetNDat(GetInNId(NodeN)); }
+    const TNodeData& GetNbrNDat(const int64& NodeN) const { return Net->GetNDat(GetNbrNId(NodeN)); }
+    TNodeData& GetNbrNDat(const int64& NodeN) { return Net->GetNDat(GetNbrNId(NodeN)); }
     // edge data
-    TEdgeData& GetOutEDat(const int& EdgeN) { return NodeHI.GetDat().GetOutEDat(EdgeN); }
-    const TEdgeData& GetOutEDat(const int& EdgeN) const { return NodeHI.GetDat().GetOutEDat(EdgeN); }
-    TEdgeData& GetInEDat(const int& EdgeN) { return Net->GetEDat(GetInNId(EdgeN), GetId()); }
-    const TEdgeData& GetInEDat(const int& EdgeN) const { return Net->GetEDat(GetInNId(EdgeN), GetId()); }
-    TEdgeData& GetNbrEDat(const int& EdgeN) { return EdgeN<GetOutDeg() ? GetOutEDat(EdgeN) : GetInEDat(EdgeN-GetOutDeg()); }
-    const TEdgeData& GetNbrEDat(const int& EdgeN) const { return EdgeN<GetOutDeg() ? GetOutEDat(EdgeN) : GetInEDat(EdgeN-GetOutDeg()); }
+    TEdgeData& GetOutEDat(const int64& EdgeN) { return NodeHI.GetDat().GetOutEDat(EdgeN); }
+    const TEdgeData& GetOutEDat(const int64& EdgeN) const { return NodeHI.GetDat().GetOutEDat(EdgeN); }
+    TEdgeData& GetInEDat(const int64& EdgeN) { return Net->GetEDat(GetInNId(EdgeN), GetId()); }
+    const TEdgeData& GetInEDat(const int64& EdgeN) const { return Net->GetEDat(GetInNId(EdgeN), GetId()); }
+    TEdgeData& GetNbrEDat(const int64& EdgeN) { return EdgeN<GetOutDeg() ? GetOutEDat(EdgeN) : GetInEDat(EdgeN-GetOutDeg()); }
+    const TEdgeData& GetNbrEDat(const int64& EdgeN) const { return EdgeN<GetOutDeg() ? GetOutEDat(EdgeN) : GetInEDat(EdgeN-GetOutDeg()); }
     friend class TNodeEDatNet<TNodeData, TEdgeData>;
   };
 
@@ -521,10 +521,10 @@ public:
   class TEdgeI {
   private:
     TNodeI CurNode, EndNode;
-    int CurEdge;
+    int64 CurEdge;
   public:
     TEdgeI() : CurNode(), EndNode(), CurEdge(0) { }
-    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
+    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int64& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
     TEdgeI(const TEdgeI& EdgeI) : CurNode(EdgeI.CurNode), EndNode(EdgeI.EndNode), CurEdge(EdgeI.CurEdge) { }
     TEdgeI& operator = (const TEdgeI& EdgeI) { if (this!=&EdgeI) { CurNode=EdgeI.CurNode;  EndNode=EdgeI.EndNode;  CurEdge=EdgeI.CurEdge; }  return *this; }
     /// Increment iterator.
@@ -533,11 +533,11 @@ public:
     bool operator < (const TEdgeI& EdgeI) const { return CurNode<EdgeI.CurNode || (CurNode==EdgeI.CurNode && CurEdge<EdgeI.CurEdge); }
     bool operator == (const TEdgeI& EdgeI) const { return CurNode == EdgeI.CurNode && CurEdge == EdgeI.CurEdge; }
     /// Gets edge ID. Always returns -1 since only edges in multigraphs have explicit IDs.
-    int GetId() const { return -1; }
+    int64 GetId() const { return -1; }
     /// Gets the source node of an edge.
-    int GetSrcNId() const { return CurNode.GetId(); }
+    int64 GetSrcNId() const { return CurNode.GetId(); }
     /// Gets the destination node of an edge.
-    int GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
+    int64 GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
     TEdgeData& operator () () { return CurNode.GetOutEDat(CurEdge); }
     const TEdgeData& operator () () const { return CurNode.GetOutEDat(CurEdge); }
     TEdgeData& GetDat() { return CurNode.GetOutEDat(CurEdge); }
@@ -550,16 +550,16 @@ public:
   };
 
 protected:
-  TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
-  static int GetNIdPos(const TVec<TPair<TInt, TEdgeData> >& NIdV, const int& NId);
+  TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
+  static int64 GetNIdPos(const TVec<TPair<TInt64, TEdgeData>, int64>& NIdV, const int64& NId);
 protected:
   TCRef CRef;
-  TInt MxNId;
-  THash<TInt, TNode> NodeH;
+  TInt64 MxNId;
+  THash<TInt64, TNode, int64> NodeH;
 public:
   TNodeEDatNet() : CRef(), MxNId(0), NodeH() { }
   /// Constructor that reserves enough memory for a network of Nodes nodes and Edges edges.
-  explicit TNodeEDatNet(const int& Nodes, const int& Edges) : MxNId(0) { Reserve(Nodes, Edges); }
+  explicit TNodeEDatNet(const int64& Nodes, const int64& Edges) : MxNId(0) { Reserve(Nodes, Edges); }
   TNodeEDatNet(const TNodeEDatNet& NodeNet) : MxNId(NodeNet.MxNId), NodeH(NodeNet.NodeH) { }
   /// Constructor that loads the network from a (binary) stream SIn.
   TNodeEDatNet(TSIn& SIn) : MxNId(SIn), NodeH(SIn) { }
@@ -576,76 +576,76 @@ public:
     NodeH=NodeNet.NodeH;  MxNId=NodeNet.MxNId; }  return *this; }
   // nodes
   /// Returns the number of nodes in the network.
-  int GetNodes() const { return NodeH.Len(); }
+  int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the network. ##TNodeEDatNet::AddNode
-  int AddNode(int NId = -1);
+  int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNodeEDatNet::AddNodeUnchecked
-  int AddNodeUnchecked(int NId = -1);
+  int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds a node of ID NId and node data NodeDat to the network. ##TNodeEDatNet::AddNode-1
-  int AddNode(int NId, const TNodeData& NodeDat);
+  int64 AddNode(int64 NId, const TNodeData& NodeDat);
   /// Adds a node NodeI and its node data to the network.
-  int AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId(), NodeI.GetDat()); }
+  int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId(), NodeI.GetDat()); }
   /// Deletes node of ID NId from the network. ##TNodeEDatNet::DelNode
-  void DelNode(const int& NId);
+  void DelNode(const int64& NId);
   /// Deletes node of ID NodeI.GetId() from the network.
   void DelNode(const TNode& NodeI) { DelNode(NodeI.GetId()); }
   /// Tests whether ID NId is a node.
-  bool IsNode(const int& NId) const { return NodeH.IsKey(NId); }
+  bool IsNode(const int64& NId) const { return NodeH.IsKey(NId); }
   /// Returns an iterator referring to the first node in the network.
   TNodeI BegNI() const { return TNodeI(NodeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end node in the network.
   TNodeI EndNI() const { return TNodeI(NodeH.EndI(), this); }
   /// Returns an iterator referring to the node of ID NId in the network.
-  TNodeI GetNI(const int& NId) const { return TNodeI(NodeH.GetI(NId), this); }
+  TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId), this); }
   /// Returns node element for the node of ID NId in the network.
-  const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
+  const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
   /// Sets node data for the node of ID NId in the network.
-  void SetNDat(const int& NId, const TNodeData& NodeDat);
+  void SetNDat(const int64& NId, const TNodeData& NodeDat);
   /// Returns node data for the node of ID NId in the network.
-  TNodeData& GetNDat(const int& NId) { return NodeH.GetDat(NId).NodeDat; }
+  TNodeData& GetNDat(const int64& NId) { return NodeH.GetDat(NId).NodeDat; }
   /// Returns node data for the node of ID NId in the network.
-  const TNodeData& GetNDat(const int& NId) const { return NodeH.GetDat(NId).NodeDat; }
+  const TNodeData& GetNDat(const int64& NId) const { return NodeH.GetDat(NId).NodeDat; }
   /// Returns an ID that is larger than any node ID in the network.
-  int GetMxNId() const { return MxNId; }
+  int64 GetMxNId() const { return MxNId; }
 
   // edges
   /// Returns the number of edges in the network.
-  int GetEdges() const;
+  int64 GetEdges() const;
   /// Adds an edge from node SrcNId to node DstNId to the network. ##TNodeEDatNet::AddEdge
-  int AddEdge(const int& SrcNId, const int& DstNId);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId);
   /// Adds an edge and edge data from node IDs SrcNId to node DstNId. ##TNodeEDatNet::AddEdge-1
-  int AddEdge(const int& SrcNId, const int& DstNId, const TEdgeData& EdgeDat);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId, const TEdgeData& EdgeDat);
   /// Adds an edge from EdgeI.GetSrcNId() to EdgeI.GetDstNId() and its edge data to the network.
-  int AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI()); }
+  int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI()); }
   /// Deletes an edge from node IDs SrcNId to DstNId from the network. ##TNodeEDatNet::DelEdge
-  void DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true);
+  void DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true);
   /// Tests whether an edge from node IDs SrcNId to DstNId exists in the network.
-  bool IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true) const;
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true) const;
   /// Returns an iterator referring to the first edge in the network.
   TEdgeI BegEI() const { TNodeI NI=BegNI();  while(NI<EndNI() && NI.GetOutDeg()==0) NI++; return TEdgeI(NI, EndNI()); }
   /// Returns an iterator referring to the past-the-end edge in the network.
   TEdgeI EndEI() const { return TEdgeI(EndNI(), EndNI()); }
   /// Not supported/implemented!
-  TEdgeI GetEI(const int& EId) const; // not supported
+  TEdgeI GetEI(const int64& EId) const; // not supported
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the network.
-  TEdgeI GetEI(const int& SrcNId, const int& DstNId) const;
+  TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
   /// Sets edge data for the edge between nodes SrcNId and DstNId in the network.
-  void SetEDat(const int& SrcNId, const int& DstNId, const TEdgeData& EdgeDat);
+  void SetEDat(const int64& SrcNId, const int64& DstNId, const TEdgeData& EdgeDat);
   /// Returns edge data in Data for the edge from node IDs SrcNId to DstNId. ##TNodeEDatNet::GetEDat
-  bool GetEDat(const int& SrcNId, const int& DstNId, TEdgeData& EdgeDat) const;
+  bool GetEDat(const int64& SrcNId, const int64& DstNId, TEdgeData& EdgeDat) const;
   /// Returns edge data for the edge from node IDs SrcNId to DstNId.
-  TEdgeData& GetEDat(const int& SrcNId, const int& DstNId);
+  TEdgeData& GetEDat(const int64& SrcNId, const int64& DstNId);
   /// Returns edge data for the edge from node IDs SrcNId to DstNId.
-  const TEdgeData& GetEDat(const int& SrcNId, const int& DstNId) const;
+  const TEdgeData& GetEDat(const int64& SrcNId, const int64& DstNId) const;
   /// Sets edge data for all the edges in the network to EDat.
   void SetAllEDat(const TEdgeData& EdgeDat);
 
   /// Returns an ID of a random node in the network.
-  int GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the network.
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Gets a vector IDs of all nodes in the network.
-  void GetNIdV(TIntV& NIdV) const;
+  void GetNIdV(TInt64V& NIdV) const;
 
   /// Tests whether the network is empty (has zero nodes).
   bool Empty() const { return GetNodes()==0; }
@@ -653,7 +653,7 @@ public:
   void Clr(const bool& DoDel=true, const bool& ResetDat=true) {
     MxNId = 0;  NodeH.Clr(DoDel, -1, ResetDat); }
   /// Reserves memory for a network of Nodes nodes and Edges edges.
-  void Reserve(const int& Nodes, const int& Edges) { if (Nodes>0) { NodeH.Gen(Nodes/2); } }
+  void Reserve(const int64& Nodes, const int64& Edges) { if (Nodes>0) { NodeH.Gen(Nodes/2); } }
   /// Sorts nodes by node IDs.
   void SortNIdById(const bool& Asc=true) { NodeH.SortByKey(Asc); }
   /// Sorts nodes by node data.
@@ -679,11 +679,11 @@ bool TNodeEDatNet<TNodeData, TEdgeData>::HasFlag(const TGraphFlag& Flag) const {
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::GetNIdPos(const TVec<TPair<TInt, TEdgeData> >& NIdV, const int& NId) {
-  int LValN=0, RValN = NIdV.Len()-1;
+int64 TNodeEDatNet<TNodeData, TEdgeData>::GetNIdPos(const TVec<TPair<TInt64, TEdgeData>, int64>& NIdV, const int64& NId) {
+  int64 LValN=0, RValN = NIdV.Len()-1;
   while (RValN >= LValN) {
-    const int ValN = (LValN+RValN)/2;
-    const int CurNId = NIdV[ValN].Val1;
+    const int64 ValN = (LValN+RValN)/2;
+    const int64 CurNId = NIdV[ValN].Val1;
     if (NId == CurNId) { return ValN; }
     if (NId < CurNId) { RValN=ValN-1; }
     else { LValN=ValN+1; }
@@ -692,7 +692,7 @@ int TNodeEDatNet<TNodeData, TEdgeData>::GetNIdPos(const TVec<TPair<TInt, TEdgeDa
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::AddNode(int NId) {
+int64 TNodeEDatNet<TNodeData, TEdgeData>::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -704,7 +704,7 @@ int TNodeEDatNet<TNodeData, TEdgeData>::AddNode(int NId) {
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::AddNodeUnchecked(int NId) {
+int64 TNodeEDatNet<TNodeData, TEdgeData>::AddNodeUnchecked(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -716,7 +716,7 @@ int TNodeEDatNet<TNodeData, TEdgeData>::AddNodeUnchecked(int NId) {
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::AddNode(int NId, const TNodeData& NodeDat) {
+int64 TNodeEDatNet<TNodeData, TEdgeData>::AddNode(int64 NId, const TNodeData& NodeDat) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -728,61 +728,61 @@ int TNodeEDatNet<TNodeData, TEdgeData>::AddNode(int NId, const TNodeData& NodeDa
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEDatNet<TNodeData, TEdgeData>::SetNDat(const int& NId, const TNodeData& NodeDat) {
+void TNodeEDatNet<TNodeData, TEdgeData>::SetNDat(const int64& NId, const TNodeData& NodeDat) {
   IAssertR(IsNode(NId), TStr::Fmt("NodeId %d does not exist.", NId).CStr());
   NodeH.GetDat(NId).NodeDat = NodeDat;
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEDatNet<TNodeData, TEdgeData>::DelNode(const int& NId) {
+void TNodeEDatNet<TNodeData, TEdgeData>::DelNode(const int64& NId) {
   const TNode& Node = GetNode(NId);
-  for (int out = 0; out < Node.GetOutDeg(); out++) {
-    const int nbr = Node.GetOutNId(out);
+  for (int64 out = 0; out < Node.GetOutDeg(); out++) {
+    const int64 nbr = Node.GetOutNId(out);
     if (nbr == NId) { continue; }
-    TIntV& NIdV = GetNode(nbr).InNIdV;
-    const int pos = NIdV.SearchBin(NId);
+    TInt64V& NIdV = GetNode(nbr).InNIdV;
+    const int64 pos = NIdV.SearchBin(NId);
     if (pos != -1) { NIdV.Del(pos); }
   }
-  for (int in = 0; in < Node.GetInDeg(); in++) {
-    const int nbr = Node.GetInNId(in);
+  for (int64 in = 0; in < Node.GetInDeg(); in++) {
+    const int64 nbr = Node.GetInNId(in);
     if (nbr == NId) { continue; }
     TNIdDatPrV& NIdDatV = GetNode(nbr).OutNIdV;
-    const int pos = GetNIdPos(NIdDatV, NId);
+    const int64 pos = GetNIdPos(NIdDatV, NId);
     if (pos != -1) { NIdDatV.Del(pos); }
   }
   NodeH.DelKey(NId);
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::GetEdges() const {
-  int edges=0;
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+int64 TNodeEDatNet<TNodeData, TEdgeData>::GetEdges() const {
+  int64 edges=0;
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     edges+=NodeH[N].GetOutDeg(); }
   return edges;
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::AddEdge(const int& SrcNId, const int& DstNId) {
+int64 TNodeEDatNet<TNodeData, TEdgeData>::AddEdge(const int64& SrcNId, const int64& DstNId) {
   return AddEdge(SrcNId, DstNId, TEdgeData());
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEDatNet<TNodeData, TEdgeData>::AddEdge(const int& SrcNId, const int& DstNId, const TEdgeData& EdgeDat) {
+int64 TNodeEDatNet<TNodeData, TEdgeData>::AddEdge(const int64& SrcNId, const int64& DstNId, const TEdgeData& EdgeDat) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   //IAssert(! IsEdge(SrcNId, DstNId));
   if (IsEdge(SrcNId, DstNId)) {
     GetEDat(SrcNId, DstNId) = EdgeDat;
     return -2;
   }
-  GetNode(SrcNId).OutNIdV.AddSorted(TPair<TInt, TEdgeData>(DstNId, EdgeDat));
+  GetNode(SrcNId).OutNIdV.AddSorted(TPair<TInt64, TEdgeData>(DstNId, EdgeDat));
   GetNode(DstNId).InNIdV.AddSorted(SrcNId);
   return -1; // no edge id
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEDatNet<TNodeData, TEdgeData>::DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) {
+void TNodeEDatNet<TNodeData, TEdgeData>::DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
-  int pos = GetNIdPos(GetNode(SrcNId).OutNIdV, DstNId);
+  int64 pos = GetNIdPos(GetNode(SrcNId).OutNIdV, DstNId);
   if (pos != -1) { GetNode(SrcNId).OutNIdV.Del(pos); }
   pos = GetNode(DstNId).InNIdV.SearchBin(SrcNId);
   if (pos != -1) { GetNode(DstNId).InNIdV.Del(pos); }
@@ -795,21 +795,21 @@ void TNodeEDatNet<TNodeData, TEdgeData>::DelEdge(const int& SrcNId, const int& D
 }
 
 template <class TNodeData, class TEdgeData>
-bool TNodeEDatNet<TNodeData, TEdgeData>::IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) const {
+bool TNodeEDatNet<TNodeData, TEdgeData>::IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) const {
   if (! IsNode(SrcNId) || ! IsNode(DstNId)) { return false; }
   if (IsDir) { return GetNode(SrcNId).IsOutNId(DstNId); }
   else { return GetNode(SrcNId).IsOutNId(DstNId) || GetNode(DstNId).IsOutNId(SrcNId); }
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEDatNet<TNodeData, TEdgeData>::SetEDat(const int& SrcNId, const int& DstNId, const TEdgeData& EdgeDat) {
+void TNodeEDatNet<TNodeData, TEdgeData>::SetEDat(const int64& SrcNId, const int64& DstNId, const TEdgeData& EdgeDat) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   IAssertR(IsEdge(SrcNId, DstNId), TStr::Fmt("Edge between %d and %d does not exist.", SrcNId, DstNId).CStr());
   GetEDat(SrcNId, DstNId) = EdgeDat;
 }
 
 template <class TNodeData, class TEdgeData>
-bool TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int& SrcNId, const int& DstNId, TEdgeData& EdgeDat) const {
+bool TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int64& SrcNId, const int64& DstNId, TEdgeData& EdgeDat) const {
   if (! IsEdge(SrcNId, DstNId)) { return false; }
   const TNode& N = GetNode(SrcNId);
   EdgeDat = N.GetOutEDat(GetNIdPos(N.OutNIdV, DstNId));
@@ -817,14 +817,14 @@ bool TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int& SrcNId, const int& D
 }
 
 template <class TNodeData, class TEdgeData>
-TEdgeData& TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int& SrcNId, const int& DstNId) {
+TEdgeData& TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int64& SrcNId, const int64& DstNId) {
   Assert(IsEdge(SrcNId, DstNId));
   TNode& N = GetNode(SrcNId);
   return N.GetOutEDat(GetNIdPos(N.OutNIdV, DstNId));
 }
 
 template <class TNodeData, class TEdgeData>
-const TEdgeData& TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int& SrcNId, const int& DstNId) const {
+const TEdgeData& TNodeEDatNet<TNodeData, TEdgeData>::GetEDat(const int64& SrcNId, const int64& DstNId) const {
   Assert(IsEdge(SrcNId, DstNId));
   const TNode& N = GetNode(SrcNId);
   return N.GetOutEDat(GetNIdPos(N.OutNIdV, DstNId));
@@ -838,14 +838,14 @@ void TNodeEDatNet<TNodeData, TEdgeData>::SetAllEDat(const TEdgeData& EdgeDat) {
 }
 
 template <class TNodeData, class TEdgeData>
-typename TNodeEDatNet<TNodeData, TEdgeData>::TEdgeI  TNodeEDatNet<TNodeData, TEdgeData>::GetEI(const int& SrcNId, const int& DstNId) const {
+typename TNodeEDatNet<TNodeData, TEdgeData>::TEdgeI  TNodeEDatNet<TNodeData, TEdgeData>::GetEI(const int64& SrcNId, const int64& DstNId) const {
   const TNodeI SrcNI = GetNI(SrcNId);
-  int NodeN = -1;
+  int64 NodeN = -1;
   //SrcNI.NodeHI.GetDat().OutNIdV.SearchBin(DstNId);
   const TNIdDatPrV& NIdDatV = SrcNI.NodeHI.GetDat().OutNIdV;
-  int LValN=0, RValN=NIdDatV.Len()-1;
+  int64 LValN=0, RValN=NIdDatV.Len()-1;
   while (RValN>=LValN){
-    int ValN=(LValN+RValN)/2;
+    int64 ValN=(LValN+RValN)/2;
     if (DstNId==NIdDatV[ValN].Val1){ NodeN=ValN; break; }
     if (DstNId<NIdDatV[ValN].Val1){RValN=ValN-1;} else {LValN=ValN+1;}
   }
@@ -854,15 +854,15 @@ typename TNodeEDatNet<TNodeData, TEdgeData>::TEdgeI  TNodeEDatNet<TNodeData, TEd
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEDatNet<TNodeData, TEdgeData>::GetNIdV(TIntV& NIdV) const {
+void TNodeEDatNet<TNodeData, TEdgeData>::GetNIdV(TInt64V& NIdV) const {
   NIdV.Reserve(GetNodes(), 0);
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     NIdV.Add(NodeH.GetKey(N)); }
 }
 
 template <class TNodeData, class TEdgeData>
 void TNodeEDatNet<TNodeData, TEdgeData>::Defrag(const bool& OnlyNodeLinks) {
-  for (int n = NodeH.FFirstKeyId(); NodeH.FNextKeyId(n);) {
+  for (int64 n = NodeH.FFirstKeyId(); NodeH.FNextKeyId(n);) {
     TNode& Node = NodeH[n];
     Node.InNIdV.Pack();  Node.OutNIdV.Pack();
   }
@@ -874,7 +874,7 @@ void TNodeEDatNet<TNodeData, TEdgeData>::Defrag(const bool& OnlyNodeLinks) {
 template <class TNodeData, class TEdgeData>
 bool TNodeEDatNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
   bool RetVal = true;
-  for (int N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
     if (! Node.OutNIdV.IsSorted()) {
       const TStr Msg = TStr::Fmt("Out-neighbor list of node %d is not sorted.", Node.GetId());
@@ -885,8 +885,8 @@ bool TNodeEDatNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     // check out-edges
-    int prevNId = -1;
-    for (int e = 0; e < Node.GetOutDeg(); e++) {
+    int64 prevNId = -1;
+    for (int64 e = 0; e < Node.GetOutDeg(); e++) {
       if (! IsNode(Node.GetOutNId(e))) {
         const TStr Msg = TStr::Fmt("Out-edge %d --> %d: node %d does not exist.",
           Node.GetId(), Node.GetOutNId(e), Node.GetOutNId(e));
@@ -901,7 +901,7 @@ bool TNodeEDatNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
     }
     // check in-edges
     prevNId = -1;
-    for (int e = 0; e < Node.GetInDeg(); e++) {
+    for (int64 e = 0; e < Node.GetInDeg(); e++) {
       if (! IsNode(Node.GetInNId(e))) {
         const TStr Msg = TStr::Fmt("In-edge %d <-- %d: node %d does not exist.",
           Node.GetId(), Node.GetInNId(e), Node.GetInNId(e));
@@ -920,11 +920,11 @@ bool TNodeEDatNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
 
 /////////////////////////////////////////////////
 // Common network types
-typedef TNodeEDatNet<TInt, TInt> TIntNEDNet;
+typedef TNodeEDatNet<TInt64, TInt64> TIntNEDNet;
 typedef TPt<TIntNEDNet> PIntNEDNet;
-typedef TNodeEDatNet<TInt, TFlt> TIntFltNEDNet;
+typedef TNodeEDatNet<TInt64, TFlt> TIntFltNEDNet;
 typedef TPt<TIntFltNEDNet> PIntFltNEDNet;
-typedef TNodeEDatNet<TStr, TInt> TStrIntNEDNet;
+typedef TNodeEDatNet<TStr, TInt64> TStrIntNEDNet;
 typedef TPt<TStrIntNEDNet> PStrIntNEDNet;
 
 //#//////////////////////////////////////////////
@@ -939,47 +939,47 @@ public:
 public:
   class TNode {
   private:
-    TInt Id;
-    TIntV InEIdV, OutEIdV;
+    TInt64 Id;
+    TInt64V InEIdV, OutEIdV;
     TNodeData NodeDat;
   public:
     TNode() : Id(-1), InEIdV(), OutEIdV(), NodeDat() { }
-    TNode(const int& NId) : Id(NId), InEIdV(), OutEIdV(), NodeDat()  { }
-    TNode(const int& NId, const TNodeData& NodeData) : Id(NId), InEIdV(), OutEIdV(), NodeDat(NodeData) { }
+    TNode(const int64& NId) : Id(NId), InEIdV(), OutEIdV(), NodeDat()  { }
+    TNode(const int64& NId, const TNodeData& NodeData) : Id(NId), InEIdV(), OutEIdV(), NodeDat(NodeData) { }
     TNode(const TNode& Node) : Id(Node.Id), InEIdV(Node.InEIdV), OutEIdV(Node.OutEIdV), NodeDat(Node.NodeDat) { }
     TNode(TSIn& SIn) : Id(SIn), InEIdV(SIn), OutEIdV(SIn), NodeDat(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut);  InEIdV.Save(SOut);  OutEIdV.Save(SOut);  NodeDat.Save(SOut); }
     bool operator < (const TNode& Node) const { return NodeDat < Node.NodeDat; }
-    int GetId() const { return Id; }
-    int GetDeg() const { return GetInDeg() + GetOutDeg(); }
-    int GetInDeg() const { return InEIdV.Len(); }
-    int GetOutDeg() const { return OutEIdV.Len(); }
+    int64 GetId() const { return Id; }
+    int64 GetDeg() const { return GetInDeg() + GetOutDeg(); }
+    int64 GetInDeg() const { return InEIdV.Len(); }
+    int64 GetOutDeg() const { return OutEIdV.Len(); }
     const TNodeData& GetDat() const { return NodeDat; }
     TNodeData& GetDat() { return NodeDat; }
-    int GetInEId(const int& NodeN) const { return InEIdV[NodeN]; }
-    int GetOutEId(const int& NodeN) const { return OutEIdV[NodeN]; }
-    int GetNbrEId(const int& EdgeN) const { return EdgeN<GetOutDeg()?GetOutEId(EdgeN):GetInEId(EdgeN-GetOutDeg()); }
-    bool IsInEId(const int& EId) const { return InEIdV.SearchBin(EId) != -1; }
-    bool IsOutEId(const int& EId) const { return OutEIdV.SearchBin(EId) != -1; }
-    bool IsNbrEId(const int& EId) const { return IsInEId(EId) || IsOutEId(EId); }
+    int64 GetInEId(const int64& NodeN) const { return InEIdV[NodeN]; }
+    int64 GetOutEId(const int64& NodeN) const { return OutEIdV[NodeN]; }
+    int64 GetNbrEId(const int64& EdgeN) const { return EdgeN<GetOutDeg()?GetOutEId(EdgeN):GetInEId(EdgeN-GetOutDeg()); }
+    bool IsInEId(const int64& EId) const { return InEIdV.SearchBin(EId) != -1; }
+    bool IsOutEId(const int64& EId) const { return OutEIdV.SearchBin(EId) != -1; }
+    bool IsNbrEId(const int64& EId) const { return IsInEId(EId) || IsOutEId(EId); }
     friend class TNodeEdgeNet<TNodeData, TEdgeData>;
   };
 
   class TEdge {
   private:
-    TInt Id, SrcNId, DstNId;
+    TInt64 Id, SrcNId, DstNId;
     TEdgeData EdgeDat;
   public:
     TEdge() : Id(-1), SrcNId(-1), DstNId(-1), EdgeDat() { }
-    TEdge(const int& EId, const int& SourceNId, const int& DestNId) : Id(EId), SrcNId(SourceNId), DstNId(DestNId), EdgeDat() { }
-    TEdge(const int& EId, const int& SourceNId, const int& DestNId, const TEdgeData& EdgeData) : Id(EId), SrcNId(SourceNId), DstNId(DestNId), EdgeDat(EdgeData) { }
+    TEdge(const int64& EId, const int64& SourceNId, const int64& DestNId) : Id(EId), SrcNId(SourceNId), DstNId(DestNId), EdgeDat() { }
+    TEdge(const int64& EId, const int64& SourceNId, const int64& DestNId, const TEdgeData& EdgeData) : Id(EId), SrcNId(SourceNId), DstNId(DestNId), EdgeDat(EdgeData) { }
     TEdge(const TEdge& Edge) : Id(Edge.Id), SrcNId(Edge.SrcNId), DstNId(Edge.DstNId), EdgeDat(Edge.EdgeDat) { }
     TEdge(TSIn& SIn) : Id(SIn), SrcNId(SIn), DstNId(SIn), EdgeDat(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut);  SrcNId.Save(SOut);  DstNId.Save(SOut);  EdgeDat.Save(SOut); }
     bool operator < (const TEdge& Edge) const { return EdgeDat < Edge.EdgeDat; }
-    int GetId() const { return Id; }
-    int GetSrcNId() const { return SrcNId; }
-    int GetDstNId() const { return DstNId; }
+    int64 GetId() const { return Id; }
+    int64 GetSrcNId() const { return SrcNId; }
+    int64 GetDstNId() const { return DstNId; }
     const TEdgeData& GetDat() const { return EdgeDat; }
     TEdgeData& GetDat() { return EdgeDat; }
     friend class TNodeEdgeNet;
@@ -988,7 +988,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   private:
-    typedef typename THash<TInt, TNode>::TIter THashIter;
+    typedef typename THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
     TNodeEdgeNet *Net;
   public:
@@ -1001,64 +1001,64 @@ public:
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
     /// Returns ID of the current node.
-    int GetId() const { return NodeHI.GetDat().GetId(); }
+    int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node, the sum of in-degree and out-degree.
-    int GetDeg() const { return NodeHI.GetDat().GetDeg(); }
+    int64 GetDeg() const { return NodeHI.GetDat().GetDeg(); }
     /// Returns in-degree of the current node.
-    int GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
+    int64 GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
     /// Returns out-degree of the current node.
-    int GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
+    int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Returns ID of EdgeN-th in-node (the node pointing to the current node). ##TNodeEdgeNet::TNodeI::GetInNId
-    int GetInNId(const int& EdgeN) const { return Net->GetEdge(NodeHI.GetDat().GetInEId(EdgeN)).GetSrcNId(); }
+    int64 GetInNId(const int64& EdgeN) const { return Net->GetEdge(NodeHI.GetDat().GetInEId(EdgeN)).GetSrcNId(); }
     /// Returns ID of EdgeN-th out-node (the node the current node points to). ##TNodeEdgeNet::TNodeI::GetOutNId
-    int GetOutNId(const int& EdgeN) const { return Net->GetEdge(NodeHI.GetDat().GetOutEId(EdgeN)).GetDstNId(); }
+    int64 GetOutNId(const int64& EdgeN) const { return Net->GetEdge(NodeHI.GetDat().GetOutEId(EdgeN)).GetDstNId(); }
     /// Returns ID of EdgeN-th neighboring node. ##TNodeEdgeNet::TNodeI::GetNbrNId
-    int GetNbrNId(const int& EdgeN) const { const TEdge& E = Net->GetEdge(NodeHI.GetDat().GetNbrEId(EdgeN));
+    int64 GetNbrNId(const int64& EdgeN) const { const TEdge& E = Net->GetEdge(NodeHI.GetDat().GetNbrEId(EdgeN));
       return GetId()==E.GetSrcNId() ? E.GetDstNId():E.GetSrcNId(); }
     /// Tests whether node with ID NId points to the current node.
-    bool IsInNId(const int& NId) const;
+    bool IsInNId(const int64& NId) const;
     /// Tests whether the current node points to node with ID NId.
-    bool IsOutNId(const int& NId) const;
+    bool IsOutNId(const int64& NId) const;
     /// Tests whether node with ID NId is a neighbor of the current node.
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     // node data
     const TNodeData& operator () () const { return NodeHI.GetDat().GetDat(); }
     TNodeData& operator () () { return NodeHI.GetDat().GetDat(); }
     const TNodeData& GetDat() const { return NodeHI.GetDat().GetDat(); }
     TNodeData& GetDat() { return NodeHI.GetDat().GetDat(); }
-    const TNodeData& GetInNDat(const int& EdgeN) const { return Net->GetNDat(GetInNId(EdgeN)); }
-    TNodeData& GetInNDat(const int& EdgeN) { return Net->GetNDat(GetInNId(EdgeN)); }
-    const TNodeData& GetOutNDat(const int& EdgeN) const { return Net->GetNDat(GetOutNId(EdgeN)); }
-    TNodeData& GetOutNDat(const int& EdgeN) { return Net->GetNDat(GetOutNId(EdgeN)); }
-    const TNodeData& GetNbrNDat(const int& EdgeN) const { return Net->GetNDat(GetNbrNId(EdgeN)); }
-    TNodeData& GetNbrNDat(const int& EdgeN) { return Net->GetNDat(GetNbrNId(EdgeN)); }
+    const TNodeData& GetInNDat(const int64& EdgeN) const { return Net->GetNDat(GetInNId(EdgeN)); }
+    TNodeData& GetInNDat(const int64& EdgeN) { return Net->GetNDat(GetInNId(EdgeN)); }
+    const TNodeData& GetOutNDat(const int64& EdgeN) const { return Net->GetNDat(GetOutNId(EdgeN)); }
+    TNodeData& GetOutNDat(const int64& EdgeN) { return Net->GetNDat(GetOutNId(EdgeN)); }
+    const TNodeData& GetNbrNDat(const int64& EdgeN) const { return Net->GetNDat(GetNbrNId(EdgeN)); }
+    TNodeData& GetNbrNDat(const int64& EdgeN) { return Net->GetNDat(GetNbrNId(EdgeN)); }
     // edges
     /// Returns ID of EdgeN-th in-edge.
-    int GetInEId(const int& EdgeN) const { return NodeHI.GetDat().GetInEId(EdgeN); }
+    int64 GetInEId(const int64& EdgeN) const { return NodeHI.GetDat().GetInEId(EdgeN); }
     /// Returns ID of EdgeN-th out-edge.
-    int GetOutEId(const int& EdgeN) const { return NodeHI.GetDat().GetOutEId(EdgeN); }
+    int64 GetOutEId(const int64& EdgeN) const { return NodeHI.GetDat().GetOutEId(EdgeN); }
     /// Returns ID of EdgeN-th in or out-edge.
-    int GetNbrEId(const int& EdgeN) const { return NodeHI.GetDat().GetNbrEId(EdgeN); }
+    int64 GetNbrEId(const int64& EdgeN) const { return NodeHI.GetDat().GetNbrEId(EdgeN); }
     /// Tests whether the edge with ID EId is an in-edge of current node.
-    bool IsInEId(const int& EId) const { return NodeHI.GetDat().IsInEId(EId); }
+    bool IsInEId(const int64& EId) const { return NodeHI.GetDat().IsInEId(EId); }
     /// Tests whether the edge with ID EId is an out-edge of current node.
-    bool IsOutEId(const int& EId) const { return NodeHI.GetDat().IsOutEId(EId); }
+    bool IsOutEId(const int64& EId) const { return NodeHI.GetDat().IsOutEId(EId); }
     /// Tests whether the edge with ID EId is an in or out-edge of current node.
-    bool IsNbrEId(const int& EId) const { return NodeHI.GetDat().IsNbrEId(EId); }
+    bool IsNbrEId(const int64& EId) const { return NodeHI.GetDat().IsNbrEId(EId); }
     // edge data
-    TEdgeDat& GetInEDat(const int& EdgeN) { return Net->GetEDat(GetInEId(EdgeN)); }
-    const TEdgeDat& GetInEDat(const int& EdgeN) const { return Net->GetEDat(GetInEId(EdgeN)); }
-    TEdgeDat& GetOutEDat(const int& EdgeN) { return Net->GetEDat(GetOutEId(EdgeN)); }
-    const TEdgeDat& GetOutEDat(const int& EdgeN) const { return Net->GetEDat(GetOutEId(EdgeN)); }
-    TEdgeDat& GetNbrEDat(const int& EdgeN) { return Net->GetEDat(GetNbrEId(EdgeN)); }
-    const TEdgeDat& GetNbrEDat(const int& EdgeN) const { return Net->GetEDat(GetNbrEId(EdgeN)); }
+    TEdgeDat& GetInEDat(const int64& EdgeN) { return Net->GetEDat(GetInEId(EdgeN)); }
+    const TEdgeDat& GetInEDat(const int64& EdgeN) const { return Net->GetEDat(GetInEId(EdgeN)); }
+    TEdgeDat& GetOutEDat(const int64& EdgeN) { return Net->GetEDat(GetOutEId(EdgeN)); }
+    const TEdgeDat& GetOutEDat(const int64& EdgeN) const { return Net->GetEDat(GetOutEId(EdgeN)); }
+    TEdgeDat& GetNbrEDat(const int64& EdgeN) { return Net->GetEDat(GetNbrEId(EdgeN)); }
+    const TEdgeDat& GetNbrEDat(const int64& EdgeN) const { return Net->GetEDat(GetNbrEId(EdgeN)); }
     friend class TNodeEdgeNet;
   };
 
   /// Edge iterator. Only forward iteration (operator++) is supported.
   class TEdgeI {
   private:
-    typedef typename THash<TInt, TEdge>::TIter THashIter;
+    typedef typename THash<TInt64, TEdge, int64>::TIter THashIter;
     THashIter EdgeHI;
     TNodeEdgeNet *Net;
   public:
@@ -1070,11 +1070,11 @@ public:
     bool operator < (const TEdgeI& EdgeI) const { return EdgeHI < EdgeI.EdgeHI; }
     bool operator == (const TEdgeI& EdgeI) const { return EdgeHI == EdgeI.EdgeHI; }
     /// Gets edge ID.
-    int GetId() const { return EdgeHI.GetDat().GetId(); }
+    int64 GetId() const { return EdgeHI.GetDat().GetId(); }
     /// Gets the source of an edge.
-    int GetSrcNId() const { return EdgeHI.GetDat().GetSrcNId(); }
+    int64 GetSrcNId() const { return EdgeHI.GetDat().GetSrcNId(); }
     /// Gets destination of an edge.
-    int GetDstNId() const { return EdgeHI.GetDat().GetDstNId(); }
+    int64 GetDstNId() const { return EdgeHI.GetDat().GetDstNId(); }
     const TEdgeData& operator () () const { return EdgeHI.GetDat().GetDat(); }
     TEdgeData& operator () () { return EdgeHI.GetDat().GetDat(); }
     const TEdgeData& GetDat() const { return EdgeHI.GetDat().GetDat(); }
@@ -1087,21 +1087,21 @@ public:
   };
 
 private:
-  TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
-  const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
-  const TNode& GetNodeKId(const int& NodeKeyId) const { return NodeH[NodeKeyId]; }
-  TEdge& GetEdge(const int& EId) { return EdgeH.GetDat(EId); }
-  const TEdge& GetEdge(const int& EId) const { return EdgeH.GetDat(EId); }
-  const TEdge& GetEdgeKId(const int& EdgeKeyId) const { return EdgeH[EdgeKeyId]; }
+  TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
+  const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
+  const TNode& GetNodeKId(const int64& NodeKeyId) const { return NodeH[NodeKeyId]; }
+  TEdge& GetEdge(const int64& EId) { return EdgeH.GetDat(EId); }
+  const TEdge& GetEdge(const int64& EId) const { return EdgeH.GetDat(EId); }
+  const TEdge& GetEdgeKId(const int64& EdgeKeyId) const { return EdgeH[EdgeKeyId]; }
 protected:
   TCRef CRef;
-  TInt MxNId, MxEId;
-  THash<TInt, TNode> NodeH;
-  THash<TInt, TEdge> EdgeH;
+  TInt64 MxNId, MxEId;
+  THash<TInt64, TNode, int64> NodeH;
+  THash<TInt64, TEdge, int64> EdgeH;
 public:
   TNodeEdgeNet() : CRef(), MxNId(0), MxEId(0) { }
   /// Constructor that reserves enough memory for a network of Nodes nodes and Edges edges.
-  explicit TNodeEdgeNet(const int& Nodes, const int& Edges) : CRef(), MxNId(0), MxEId(0) { Reserve(Nodes, Edges); }
+  explicit TNodeEdgeNet(const int64& Nodes, const int64& Edges) : CRef(), MxNId(0), MxEId(0) { Reserve(Nodes, Edges); }
   TNodeEdgeNet(const TNodeEdgeNet& Net) : MxNId(Net.MxNId), MxEId(Net.MxEId), NodeH(Net.NodeH), EdgeH(Net.EdgeH) { }
   /// Constructor that loads the network from a (binary) stream SIn.
   TNodeEdgeNet(TSIn& SIn) : MxNId(SIn), MxEId(SIn), NodeH(SIn), EdgeH(SIn) { }
@@ -1118,95 +1118,95 @@ public:
     if (this!=&Net) { NodeH=Net.NodeH; EdgeH=Net.EdgeH; MxNId=Net.MxNId; MxEId=Net.MxEId; }  return *this; }
   // nodes
   /// Returns the number of nodes in the network.
-  int GetNodes() const { return NodeH.Len(); }
+  int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the network. ##TNodeEdgeNet::AddNode
-  int AddNode(int NId = -1);
+  int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNodeEdgeNet::AddNodeUnchecked
-  int AddNodeUnchecked(int NId = -1);
+  int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds node data to node with ID NId. ##TNodeEdgeNet::AddNode-1
-  int AddNode(int NId, const TNodeData& NodeDat);
+  int64 AddNode(int64 NId, const TNodeData& NodeDat);
   /// Adds a node NodeI and its node data to the network.
   friend class TCrossNet;
-  int AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId(), NodeI.GetDat()); }
+  int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId(), NodeI.GetDat()); }
   /// Deletes node of ID NId from the network. ##TNodeEdgeNet::DelNode
-  void DelNode(const int& NId);
+  void DelNode(const int64& NId);
   /// Deletes node of ID NodeI.GetId() from the network.
   void DelNode(const TNode& NodeI) { DelNode(NodeI.GetId()); }
   /// Tests whether ID NId is a node.
-  bool IsNode(const int& NId) const { return NodeH.IsKey(NId); }
+  bool IsNode(const int64& NId) const { return NodeH.IsKey(NId); }
   /// Returns an iterator referring to the first node in the network.
   TNodeI BegNI() const { return TNodeI(NodeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end node in the network.
   TNodeI EndNI() const { return TNodeI(NodeH.EndI(), this); }
   /// Returns an iterator referring to the node of ID NId in the network.
-  TNodeI GetNI(const int& NId) const { return TNodeI(NodeH.GetI(NId), this); }
+  TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId), this); }
   /// Sets node data for the node of ID NId in the network.
-  void SetNDat(const int& NId, const TNodeData& NodeDat);
+  void SetNDat(const int64& NId, const TNodeData& NodeDat);
   /// Returns node data for the node of ID NId in the network.
-  TNodeData& GetNDat(const int& NId) { return NodeH.GetDat(NId).NodeDat; }
+  TNodeData& GetNDat(const int64& NId) { return NodeH.GetDat(NId).NodeDat; }
   /// Returns node data for the node of ID NId in the network.
-  const TNodeData& GetNDat(const int& NId) const { return NodeH.GetDat(NId).NodeDat; }
+  const TNodeData& GetNDat(const int64& NId) const { return NodeH.GetDat(NId).NodeDat; }
   /// Returns an ID that is larger than any node ID in the network.
-  int GetMxNId() const { return MxNId; }
+  int64 GetMxNId() const { return MxNId; }
 
   // edges
   /// Returns the number of edges in the network.
-  int GetEdges() const { return EdgeH.Len(); }
+  int64 GetEdges() const { return EdgeH.Len(); }
   /// Returns the number of edges in the network with a unique pair of nodes.
-  int GetUniqEdges(const bool& IsDir=true) const;
+  int64 GetUniqEdges(const bool& IsDir=true) const;
   /// Adds an edge between node IDs SrcNId and DstNId to the graph. ##TNodeEdgeNet::AddEdge
-  int AddEdge(const int& SrcNId, const int& DstNId, int EId = -1);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId = -1);
   /// Adds an edge and edge data from node IDs SrcNId to node DstNId. ##TNodeEdgeNet::AddEdge-1
-  int AddEdge(const int& SrcNId, const int& DstNId, int EId, const TEdgeData& EdgeDat);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId, const TEdgeData& EdgeDat);
   /// Adds an edge from EdgeI.GetSrcNId() to EdgeI.GetDstNId() and its edge data to the network.
-  int AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId(), EdgeI.GetDat()); }
+  int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId(), EdgeI.GetDat()); }
   /// Deletes an edge with ID EId from the network.
-  void DelEdge(const int& EId);
+  void DelEdge(const int64& EId);
   /// Deletes an edge from node IDs SrcNId to DstNId from the network. ##TNodeEDatNet::DelEdge
-  void DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true);
+  void DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true);
   /// Tests whether an edge with ID EId exists in the network.
-  bool IsEdge(const int& EId) const { return EdgeH.IsKey(EId); }
+  bool IsEdge(const int64& EId) const { return EdgeH.IsKey(EId); }
   /// Tests whether an edge from node IDs SrcNId to DstNId exists in the network.
-  bool IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true) const { int EId;  return IsEdge(SrcNId, DstNId, EId, IsDir); }
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true) const { int64 EId;  return IsEdge(SrcNId, DstNId, EId, IsDir); }
   /// Tests whether an edge from node IDs SrcNId to DstNId with edge ID EId exists in the network.
-  bool IsEdge(const int& SrcNId, const int& DstNId, int& EId, const bool& IsDir = true) const;
-  int GetEId(const int& SrcNId, const int& DstNId) const { int EId; return IsEdge(SrcNId, DstNId, EId)?EId:-1; }
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, int64& EId, const bool& IsDir = true) const;
+  int64 GetEId(const int64& SrcNId, const int64& DstNId) const { int64 EId; return IsEdge(SrcNId, DstNId, EId)?EId:-1; }
   /// Returns an iterator referring to the first edge in the network.
   TEdgeI BegEI() const { return TEdgeI(EdgeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end edge in the network.
   TEdgeI EndEI() const { return TEdgeI(EdgeH.EndI(), this); }
   /// Not supported/implemented!
-  TEdgeI GetEI(const int& EId) const { return TEdgeI(EdgeH.GetI(EId), this); }
+  TEdgeI GetEI(const int64& EId) const { return TEdgeI(EdgeH.GetI(EId), this); }
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the graph.
-  TEdgeI GetEI(const int& SrcNId, const int& DstNId) const { return GetEI(GetEId(SrcNId, DstNId)); }
+  TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const { return GetEI(GetEId(SrcNId, DstNId)); }
   /// Sets edge data for the edge of ID NId in the network.
-  void SetEDat(const int& EId, const TEdgeData& EdgeDat);
+  void SetEDat(const int64& EId, const TEdgeData& EdgeDat);
   /// Returns edge data for the edge with ID EId.
-  TEdgeData& GetEDat(const int& EId) { return EdgeH.GetDat(EId).EdgeDat; }
+  TEdgeData& GetEDat(const int64& EId) { return EdgeH.GetDat(EId).EdgeDat; }
   /// Returns edge data for the edge with ID EId.
-  const TEdgeData& GetEDat(const int& EId) const { return EdgeH.GetDat(EId).EdgeDat; }
+  const TEdgeData& GetEDat(const int64& EId) const { return EdgeH.GetDat(EId).EdgeDat; }
   /// Sets edge data for all the edges in the network to EDat.
   void SetAllEDat(const TEdgeData& EdgeDat);
 
   /// Returns an ID of a random node in the network.
-  int GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the network.
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Returns an ID of a random edge in the network.
-  int GetRndEId(TRnd& Rnd=TInt::Rnd) { return EdgeH.GetKey(EdgeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndEId(TRnd& Rnd=TInt::Rnd) { return EdgeH.GetKey(EdgeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random edge in the network.
   TEdgeI GetRndEI(TRnd& Rnd=TInt::Rnd) { return GetEI(GetRndEId(Rnd)); }
   /// Returns a vector of all node IDs in the network.
-  void GetNIdV(TIntV& NIdV) const;
+  void GetNIdV(TInt64V& NIdV) const;
   /// Returns a vector of all edge IDs in the network.
-  void GetEIdV(TIntV& EIdV) const;
+  void GetEIdV(TInt64V& EIdV) const;
 
   /// Tests whether the network is empty (has zero nodes).
   bool Empty() const { return GetNodes()==0; }
   /// Deletes all nodes and edges from the network.
   void Clr() { MxNId=0;  MxEId=0;  NodeH.Clr();  EdgeH.Clr(); }
   /// Reserves memory for a network of Nodes nodes and Edges edges.
-  void Reserve(const int& Nodes, const int& Edges) {
+  void Reserve(const int64& Nodes, const int64& Edges) {
     if (Nodes>0) { NodeH.Gen(Nodes/2); }  if (Edges>0) { EdgeH.Gen(Edges/2); } }
   /// Sorts nodes by node IDs.
   void SortNIdById(const bool& Asc=true) { NodeH.SortByKey(Asc); }
@@ -1238,9 +1238,9 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::HasFlag(const TGraphFlag& Flag) const {
 }
 
 template <class TNodeData, class TEdgeData>
-bool TNodeEdgeNet<TNodeData, TEdgeData>::TNodeI::IsInNId(const int& NId) const {
+bool TNodeEdgeNet<TNodeData, TEdgeData>::TNodeI::IsInNId(const int64& NId) const {
   const TNode& Node = NodeHI.GetDat();
-  for (int edge = 0; edge < Node.GetInDeg(); edge++) {
+  for (int64 edge = 0; edge < Node.GetInDeg(); edge++) {
     if (NId == Net->GetEdge(Node.GetInEId(edge)).GetSrcNId())
       return true;
   }
@@ -1248,9 +1248,9 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::TNodeI::IsInNId(const int& NId) const {
 }
 
 template <class TNodeData, class TEdgeData>
-bool TNodeEdgeNet<TNodeData, TEdgeData>::TNodeI::IsOutNId(const int& NId) const {
+bool TNodeEdgeNet<TNodeData, TEdgeData>::TNodeI::IsOutNId(const int64& NId) const {
   const TNode& Node = NodeHI.GetDat();
-  for (int edge = 0; edge < Node.GetOutDeg(); edge++) {
+  for (int64 edge = 0; edge < Node.GetOutDeg(); edge++) {
     if (NId == Net->GetEdge(Node.GetOutEId(edge)).GetDstNId())
       return true;
   }
@@ -1258,7 +1258,7 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::TNodeI::IsOutNId(const int& NId) const 
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEdgeNet<TNodeData, TEdgeData>::AddNode(int NId) {
+int64 TNodeEdgeNet<TNodeData, TEdgeData>::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -1270,7 +1270,7 @@ int TNodeEdgeNet<TNodeData, TEdgeData>::AddNode(int NId) {
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEdgeNet<TNodeData, TEdgeData>::AddNodeUnchecked(int NId) {
+int64 TNodeEdgeNet<TNodeData, TEdgeData>::AddNodeUnchecked(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -1282,7 +1282,7 @@ int TNodeEdgeNet<TNodeData, TEdgeData>::AddNodeUnchecked(int NId) {
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEdgeNet<TNodeData, TEdgeData>::AddNode(int NId, const TNodeData& NodeDat) {
+int64 TNodeEdgeNet<TNodeData, TEdgeData>::AddNode(int64 NId, const TNodeData& NodeDat) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
@@ -1294,17 +1294,17 @@ int TNodeEdgeNet<TNodeData, TEdgeData>::AddNode(int NId, const TNodeData& NodeDa
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::DelNode(const int& NId) {
+void TNodeEdgeNet<TNodeData, TEdgeData>::DelNode(const int64& NId) {
   const TNode& Node = GetNode(NId);
-  for (int out = 0; out < Node.GetOutDeg(); out++) {
-    const int EId = Node.GetOutEId(out);
+  for (int64 out = 0; out < Node.GetOutDeg(); out++) {
+    const int64 EId = Node.GetOutEId(out);
     const TEdge& Edge = GetEdge(EId);
     IAssert(Edge.GetSrcNId() == NId);
     GetNode(Edge.GetDstNId()).InEIdV.DelIfIn(EId);
     EdgeH.DelKey(EId);
   }
-  for (int in = 0; in < Node.GetInDeg(); in++) {
-    const int EId = Node.GetInEId(in);
+  for (int64 in = 0; in < Node.GetInDeg(); in++) {
+    const int64 EId = Node.GetInEId(in);
     const TEdge& Edge = GetEdge(EId);
     IAssert(Edge.GetDstNId() == NId);
     GetNode(Edge.GetSrcNId()).OutEIdV.DelIfIn(EId);
@@ -1314,25 +1314,25 @@ void TNodeEdgeNet<TNodeData, TEdgeData>::DelNode(const int& NId) {
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::SetNDat(const int& NId, const TNodeData& NodeDat) {
+void TNodeEdgeNet<TNodeData, TEdgeData>::SetNDat(const int64& NId, const TNodeData& NodeDat) {
   IAssertR(IsNode(NId), TStr::Fmt("NodeId %d does not exist.", NId).CStr());
   NodeH.GetDat(NId).NodeDat = NodeDat;
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEdgeNet<TNodeData, TEdgeData>::GetUniqEdges(const bool& IsDir) const {
-  TIntPrSet UniqESet(GetEdges());
+int64 TNodeEdgeNet<TNodeData, TEdgeData>::GetUniqEdges(const bool& IsDir) const {
+  TInt64PrSet UniqESet(GetEdges());
   for (TEdgeI EI = BegEI(); EI < EndEI(); EI++) {
-    const int Src = EI.GetSrcNId();
-    const int Dst = EI.GetDstNId();
-    if (IsDir) { UniqESet.AddKey(TIntPr(Src, Dst)); }
-    else { UniqESet.AddKey(TIntPr(TMath::Mn(Src, Dst), TMath::Mx(Src, Dst))); }
+    const int64 Src = EI.GetSrcNId();
+    const int64 Dst = EI.GetDstNId();
+    if (IsDir) { UniqESet.AddKey(TInt64Pr(Src, Dst)); }
+    else { UniqESet.AddKey(TInt64Pr(TMath::Mn(Src, Dst), TMath::Mx(Src, Dst))); }
   }
   return UniqESet.Len();
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEdgeNet<TNodeData, TEdgeData>::AddEdge(const int& SrcNId, const int& DstNId, int EId) {
+int64 TNodeEdgeNet<TNodeData, TEdgeData>::AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId) {
   if (EId == -1) { EId = MxEId;  MxEId++; }
   else { MxEId = TMath::Mx(EId+1, MxEId()); }
   IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %d already exists", EId));
@@ -1344,7 +1344,7 @@ int TNodeEdgeNet<TNodeData, TEdgeData>::AddEdge(const int& SrcNId, const int& Ds
 }
 
 template <class TNodeData, class TEdgeData>
-int TNodeEdgeNet<TNodeData, TEdgeData>::AddEdge(const int& SrcNId, const int& DstNId, int EId, const TEdgeData& EdgeDat) {
+int64 TNodeEdgeNet<TNodeData, TEdgeData>::AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId, const TEdgeData& EdgeDat) {
   if (EId == -1) { EId = MxEId;  MxEId++; }
   else { MxEId = TMath::Mx(EId+1, MxEId()); }
   IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %d already exists", EId));
@@ -1356,18 +1356,18 @@ int TNodeEdgeNet<TNodeData, TEdgeData>::AddEdge(const int& SrcNId, const int& Ds
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::DelEdge(const int& EId) {
+void TNodeEdgeNet<TNodeData, TEdgeData>::DelEdge(const int64& EId) {
   IAssert(IsEdge(EId));
-  const int SrcNId = GetEdge(EId).GetSrcNId();
-  const int DstNId = GetEdge(EId).GetDstNId();
+  const int64 SrcNId = GetEdge(EId).GetSrcNId();
+  const int64 DstNId = GetEdge(EId).GetDstNId();
   GetNode(SrcNId).OutEIdV.DelIfIn(EId);
   GetNode(DstNId).InEIdV.DelIfIn(EId);
   EdgeH.DelKey(EId);
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) {
-  int EId;
+void TNodeEdgeNet<TNodeData, TEdgeData>::DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir) {
+  int64 EId;
   IAssert(IsEdge(SrcNId, DstNId, EId, IsDir));
   GetNode(SrcNId).OutEIdV.DelIfIn(EId);
   GetNode(DstNId).InEIdV.DelIfIn(EId);
@@ -1375,17 +1375,17 @@ void TNodeEdgeNet<TNodeData, TEdgeData>::DelEdge(const int& SrcNId, const int& D
 }
 
 template <class TNodeData, class TEdgeData>
-bool TNodeEdgeNet<TNodeData, TEdgeData>::IsEdge(const int& SrcNId, const int& DstNId, int& EId, const bool& IsDir) const {
+bool TNodeEdgeNet<TNodeData, TEdgeData>::IsEdge(const int64& SrcNId, const int64& DstNId, int64& EId, const bool& IsDir) const {
   if (! IsNode(SrcNId)) { return false; }
   if (! IsNode(DstNId)) { return false; }
   const TNode& SrcNode = GetNode(SrcNId);
-  for (int edge = 0; edge < SrcNode.GetOutDeg(); edge++) {
+  for (int64 edge = 0; edge < SrcNode.GetOutDeg(); edge++) {
     const TEdge& Edge = GetEdge(SrcNode.GetOutEId(edge));
     if (DstNId == Edge.GetDstNId()) {
       EId = Edge.GetId();  return true; }
   }
   if (! IsDir) {
-    for (int edge = 0; edge < SrcNode.GetInDeg(); edge++) {
+    for (int64 edge = 0; edge < SrcNode.GetInDeg(); edge++) {
     const TEdge& Edge = GetEdge(SrcNode.GetInEId(edge));
     if (DstNId == Edge.GetSrcNId()) {
       EId = Edge.GetId();  return true; }
@@ -1395,7 +1395,7 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::IsEdge(const int& SrcNId, const int& Ds
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::SetEDat(const int& EId, const TEdgeData& EdgeDat) {
+void TNodeEdgeNet<TNodeData, TEdgeData>::SetEDat(const int64& EId, const TEdgeData& EdgeDat) {
   IAssertR(IsEdge(EId), TStr::Fmt("EdgeId %d does not exist.", EId).CStr());
   GetEI(EId).GetDat() = EdgeDat;
 }
@@ -1409,24 +1409,24 @@ void TNodeEdgeNet<TNodeData, TEdgeData>::SetAllEDat(const TEdgeData& EdgeDat) {
 
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::GetNIdV(TIntV& NIdV) const {
+void TNodeEdgeNet<TNodeData, TEdgeData>::GetNIdV(TInt64V& NIdV) const {
   NIdV.Gen(GetNodes(), 0);
-  for (int N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N);) {
+  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N);) {
     NIdV.Add(NodeH.GetKey(N));
   }
 }
 
 template <class TNodeData, class TEdgeData>
-void TNodeEdgeNet<TNodeData, TEdgeData>::GetEIdV(TIntV& EIdV) const {
+void TNodeEdgeNet<TNodeData, TEdgeData>::GetEIdV(TInt64V& EIdV) const {
   EIdV.Gen(GetEdges(), 0);
-  for (int E=EdgeH.FFirstKeyId(); EdgeH.FNextKeyId(E);) {
+  for (int64 E=EdgeH.FFirstKeyId(); EdgeH.FNextKeyId(E);) {
     EIdV.Add(EdgeH.GetKey(E));
   }
 }
 
 template <class TNodeData, class TEdgeData>
 void TNodeEdgeNet<TNodeData, TEdgeData>::Defrag(const bool& OnlyNodeLinks) {
-  for (int kid = NodeH.FFirstKeyId(); NodeH.FNextKeyId(kid);) {
+  for (int64 kid = NodeH.FFirstKeyId(); NodeH.FNextKeyId(kid);) {
     TNode& Node = NodeH[kid];
     Node.InEIdV.Pack();  Node.OutEIdV.Pack();
   }
@@ -1437,7 +1437,7 @@ void TNodeEdgeNet<TNodeData, TEdgeData>::Defrag(const bool& OnlyNodeLinks) {
 template <class TNodeData, class TEdgeData>
 bool TNodeEdgeNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
   bool RetVal = true;
-  for (int N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
     if (! Node.OutEIdV.IsSorted()) {
       const TStr Msg = TStr::Fmt("Out-edge list of node %d is not sorted.", Node.GetId());
@@ -1448,8 +1448,8 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     // check out-edge ids
-    int prevEId = -1;
-    for (int e = 0; e < Node.GetOutDeg(); e++) {
+    int64 prevEId = -1;
+    for (int64 e = 0; e < Node.GetOutDeg(); e++) {
       if (! IsEdge(Node.GetOutEId(e))) {
         const TStr Msg = TStr::Fmt("Out-edge id %d of node %d does not exist.",  Node.GetOutEId(e), Node.GetId());
         if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
@@ -1462,7 +1462,7 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
     }
     // check in-edge ids
     prevEId = -1;
-    for (int e = 0; e < Node.GetInDeg(); e++) {
+    for (int64 e = 0; e < Node.GetInDeg(); e++) {
       if (! IsEdge(Node.GetInEId(e))) {
         const TStr Msg = TStr::Fmt("Out-edge id %d of node %d does not exist.",  Node.GetInEId(e), Node.GetId());
         if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
@@ -1474,7 +1474,7 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
       prevEId = Node.GetInEId(e);
     }
   }
-  for (int E = EdgeH.FFirstKeyId(); EdgeH.FNextKeyId(E); ) {
+  for (int64 E = EdgeH.FFirstKeyId(); EdgeH.FNextKeyId(E); ) {
     const TEdge& Edge = EdgeH[E];
     if (! IsNode(Edge.GetSrcNId())) {
       const TStr Msg = TStr::Fmt("Edge %d source node %d does not exist.", Edge.GetId(), Edge.GetSrcNId());
@@ -1490,7 +1490,7 @@ bool TNodeEdgeNet<TNodeData, TEdgeData>::IsOk(const bool& ThrowExcept) const {
 
 /////////////////////////////////////////////////
 // Common Node-Edge Network Types
-typedef TNodeEdgeNet<TInt, TInt> TIntNENet;
+typedef TNodeEdgeNet<TInt64, TInt64> TIntNENet;
 typedef TPt<TIntNENet> PIntNENet;
 typedef TNodeEdgeNet<TFlt, TFlt> TFltNENet;
 typedef TPt<TFltNENet> PFltNENet;
@@ -1508,43 +1508,43 @@ public:
 public:
   class TNode {
   private:
-    TInt Id;
-    TIntV InEIdV, OutEIdV;
+    TInt64 Id;
+    TInt64V InEIdV, OutEIdV;
   public:
     TNode() : Id(-1), InEIdV(), OutEIdV() { }
-    TNode(const int& NId) : Id(NId), InEIdV(), OutEIdV() { }
+    TNode(const int64& NId) : Id(NId), InEIdV(), OutEIdV() { }
     TNode(const TNode& Node) : Id(Node.Id), InEIdV(Node.InEIdV), OutEIdV(Node.OutEIdV) { }
     TNode(TSIn& SIn) : Id(SIn), InEIdV(SIn), OutEIdV(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut); InEIdV.Save(SOut); OutEIdV.Save(SOut); }
-    int GetId() const { return Id; }
-    int GetDeg() const { return GetInDeg() + GetOutDeg(); }
-    int GetInDeg() const { return InEIdV.Len(); }
-    int GetOutDeg() const { return OutEIdV.Len(); }
-    int GetInEId(const int& EdgeN) const { return InEIdV[EdgeN]; }
-    int GetOutEId(const int& EdgeN) const { return OutEIdV[EdgeN]; }
-    int GetNbrEId(const int& EdgeN) const { return EdgeN<GetOutDeg()?GetOutEId(EdgeN):GetInEId(EdgeN-GetOutDeg()); }
-    bool IsInEId(const int& EId) const { return InEIdV.SearchBin(EId) != -1; }
-    bool IsOutEId(const int& EId) const { return OutEIdV.SearchBin(EId) != -1; }
+    int64 GetId() const { return Id; }
+    int64 GetDeg() const { return GetInDeg() + GetOutDeg(); }
+    int64 GetInDeg() const { return InEIdV.Len(); }
+    int64 GetOutDeg() const { return OutEIdV.Len(); }
+    int64 GetInEId(const int64& EdgeN) const { return InEIdV[EdgeN]; }
+    int64 GetOutEId(const int64& EdgeN) const { return OutEIdV[EdgeN]; }
+    int64 GetNbrEId(const int64& EdgeN) const { return EdgeN<GetOutDeg()?GetOutEId(EdgeN):GetInEId(EdgeN-GetOutDeg()); }
+    bool IsInEId(const int64& EId) const { return InEIdV.SearchBin(EId) != -1; }
+    bool IsOutEId(const int64& EId) const { return OutEIdV.SearchBin(EId) != -1; }
     friend class TNEANet;
   };
   class TEdge {
   private:
-    TInt Id, SrcNId, DstNId;
+    TInt64 Id, SrcNId, DstNId;
   public:
     TEdge() : Id(-1), SrcNId(-1), DstNId(-1) { }
-    TEdge(const int& EId, const int& SourceNId, const int& DestNId) : Id(EId), SrcNId(SourceNId), DstNId(DestNId) { }
+    TEdge(const int64& EId, const int64& SourceNId, const int64& DestNId) : Id(EId), SrcNId(SourceNId), DstNId(DestNId) { }
     TEdge(const TEdge& Edge) : Id(Edge.Id), SrcNId(Edge.SrcNId), DstNId(Edge.DstNId) { }
     TEdge(TSIn& SIn) : Id(SIn), SrcNId(SIn), DstNId(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut); SrcNId.Save(SOut); DstNId.Save(SOut); }
-    int GetId() const { return Id; }
-    int GetSrcNId() const { return SrcNId; }
-    int GetDstNId() const { return DstNId; }
+    int64 GetId() const { return Id; }
+    int64 GetSrcNId() const { return SrcNId; }
+    int64 GetDstNId() const { return DstNId; }
     friend class TNEANet;
   };
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   protected:
-    typedef THash<TInt, TNode>::TIter THashIter;
+    typedef THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
     const TNEANet *Graph;
   public:
@@ -1557,63 +1557,63 @@ public:
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
     /// Returns ID of the current node.
-    int GetId() const { return NodeHI.GetDat().GetId(); }
+    int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node, the sum of in-degree and out-degree.
-    int GetDeg() const { return NodeHI.GetDat().GetDeg(); }
+    int64 GetDeg() const { return NodeHI.GetDat().GetDeg(); }
     /// Returns in-degree of the current node.
-    int GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
+    int64 GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
     /// Returns out-degree of the current node.
-    int GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
+    int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Returns ID of EdgeN-th in-node (the node pointing to the current node). ##TNEANet::TNodeI::GetInNId
-    int GetInNId(const int& EdgeN) const { return Graph->GetEdge(NodeHI.GetDat().GetInEId(EdgeN)).GetSrcNId(); }
+    int64 GetInNId(const int64& EdgeN) const { return Graph->GetEdge(NodeHI.GetDat().GetInEId(EdgeN)).GetSrcNId(); }
     /// Returns ID of EdgeN-th out-node (the node the current node points to). ##TNEANet::TNodeI::GetOutNId
-    int GetOutNId(const int& EdgeN) const { return Graph->GetEdge(NodeHI.GetDat().GetOutEId(EdgeN)).GetDstNId(); }
+    int64 GetOutNId(const int64& EdgeN) const { return Graph->GetEdge(NodeHI.GetDat().GetOutEId(EdgeN)).GetDstNId(); }
     /// Returns ID of EdgeN-th neighboring node. ##TNEANet::TNodeI::GetNbrNId
-    int GetNbrNId(const int& EdgeN) const { const TEdge& E = Graph->GetEdge(NodeHI.GetDat().GetNbrEId(EdgeN)); return GetId()==E.GetSrcNId() ? E.GetDstNId():E.GetSrcNId(); }
+    int64 GetNbrNId(const int64& EdgeN) const { const TEdge& E = Graph->GetEdge(NodeHI.GetDat().GetNbrEId(EdgeN)); return GetId()==E.GetSrcNId() ? E.GetDstNId():E.GetSrcNId(); }
     /// Tests whether node with ID NId points to the current node.
-    bool IsInNId(const int& NId) const;
+    bool IsInNId(const int64& NId) const;
     /// Tests whether the current node points to node with ID NId.
-    bool IsOutNId(const int& NId) const;
+    bool IsOutNId(const int64& NId) const;
     /// Tests whether node with ID NId is a neighbor of the current node.
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     /// Returns ID of EdgeN-th in-edge.
-    int GetInEId(const int& EdgeN) const { return NodeHI.GetDat().GetInEId(EdgeN); }
+    int64 GetInEId(const int64& EdgeN) const { return NodeHI.GetDat().GetInEId(EdgeN); }
     /// Returns ID of EdgeN-th out-edge.
-    int GetOutEId(const int& EdgeN) const { return NodeHI.GetDat().GetOutEId(EdgeN); }
+    int64 GetOutEId(const int64& EdgeN) const { return NodeHI.GetDat().GetOutEId(EdgeN); }
     /// Returns ID of EdgeN-th in or out-edge.
-    int GetNbrEId(const int& EdgeN) const { return NodeHI.GetDat().GetNbrEId(EdgeN); }
+    int64 GetNbrEId(const int64& EdgeN) const { return NodeHI.GetDat().GetNbrEId(EdgeN); }
     /// Tests whether the edge with ID EId is an in-edge of current node.
-    bool IsInEId(const int& EId) const { return NodeHI.GetDat().IsInEId(EId); }
+    bool IsInEId(const int64& EId) const { return NodeHI.GetDat().IsInEId(EId); }
     /// Tests whether the edge with ID EId is an out-edge of current node.
-    bool IsOutEId(const int& EId) const { return NodeHI.GetDat().IsOutEId(EId); }
+    bool IsOutEId(const int64& EId) const { return NodeHI.GetDat().IsOutEId(EId); }
     /// Tests whether the edge with ID EId is an in or out-edge of current node.
-    bool IsNbrEId(const int& EId) const { return IsInEId(EId) || IsOutEId(EId); }
+    bool IsNbrEId(const int64& EId) const { return IsInEId(EId) || IsOutEId(EId); }
     /// Gets vector of attribute names.
-    void GetAttrNames(TStrV& Names) const { Graph->AttrNameNI(GetId(), Names); }
+    void GetAttrNames(TStr64V& Names) const { Graph->AttrNameNI(GetId(), Names); }
     /// Gets vector of attribute values.
-    void GetAttrVal(TStrV& Val) const { Graph->AttrValueNI(GetId(), Val); }
+    void GetAttrVal(TStr64V& Val) const { Graph->AttrValueNI(GetId(), Val); }
     /// Gets vector of int attribute names.
-    void GetIntAttrNames(TStrV& Names) const { Graph->IntAttrNameNI(GetId(), Names); }
+    void GetIntAttrNames(TStr64V& Names) const { Graph->IntAttrNameNI(GetId(), Names); }
     /// Gets vector of int attribute values.
-    void GetIntAttrVal(TIntV& Val) const { Graph->IntAttrValueNI(GetId(), Val); }
+    void GetIntAttrVal(TInt64V& Val) const { Graph->IntAttrValueNI(GetId(), Val); }
     /// Gets vector of int attribute names.
-    void GetIntVAttrNames(TStrV& Names) const { Graph->IntVAttrNameNI(GetId(), Names); }
+    void GetIntVAttrNames(TStr64V& Names) const { Graph->IntVAttrNameNI(GetId(), Names); }
     /// Gets vector of int attribute values.
-    void GetIntVAttrVal(TVec<TIntV>& Val) const { Graph->IntVAttrValueNI(GetId(), Val); }
+    void GetIntVAttrVal(TVec<TInt64V, int64>& Val) const { Graph->IntVAttrValueNI(GetId(), Val); }
     /// Gets vector of str attribute names.
-    void GetStrAttrNames(TStrV& Names) const { Graph->StrAttrNameNI(GetId(), Names); }
+    void GetStrAttrNames(TStr64V& Names) const { Graph->StrAttrNameNI(GetId(), Names); }
     /// Gets vector of str attribute values.
-    void GetStrAttrVal(TStrV& Val) const { Graph->StrAttrValueNI(GetId(), Val); }
+    void GetStrAttrVal(TStr64V& Val) const { Graph->StrAttrValueNI(GetId(), Val); }
     /// Gets vector of flt attribute names.
-    void GetFltAttrNames(TStrV& Names) const { Graph->FltAttrNameNI(GetId(), Names); }
+    void GetFltAttrNames(TStr64V& Names) const { Graph->FltAttrNameNI(GetId(), Names); }
     /// Gets vector of flt attribute values.
-    void GetFltAttrVal(TFltV& Val) const { Graph->FltAttrValueNI(GetId(), Val); }
+    void GetFltAttrVal(TFlt64V& Val) const { Graph->FltAttrValueNI(GetId(), Val); }
     friend class TNEANet;
   };
   /// Edge iterator. Only forward iteration (operator++) is supported.
   class TEdgeI {
   private:
-    typedef THash<TInt, TEdge>::TIter THashIter;
+    typedef THash<TInt64, TEdge, int64>::TIter THashIter;
     THashIter EdgeHI;
     const TNEANet *Graph;
   public:
@@ -1626,38 +1626,38 @@ public:
     bool operator < (const TEdgeI& EdgeI) const { return EdgeHI < EdgeI.EdgeHI; }
     bool operator == (const TEdgeI& EdgeI) const { return EdgeHI == EdgeI.EdgeHI; }
     /// Returns edge ID.
-    int GetId() const { return EdgeHI.GetDat().GetId(); }
+    int64 GetId() const { return EdgeHI.GetDat().GetId(); }
     /// Returns the source of the edge.
-    int GetSrcNId() const { return EdgeHI.GetDat().GetSrcNId(); }
+    int64 GetSrcNId() const { return EdgeHI.GetDat().GetSrcNId(); }
     /// Returns the destination of the edge.
-    int GetDstNId() const { return EdgeHI.GetDat().GetDstNId(); }
+    int64 GetDstNId() const { return EdgeHI.GetDat().GetDstNId(); }
     /// Gets vector of attribute names.
-    void GetAttrNames(TStrV& Names) const { Graph->AttrNameEI(GetId(), Names); }
+    void GetAttrNames(TStr64V& Names) const { Graph->AttrNameEI(GetId(), Names); }
     /// Gets vector of attribute values.
-    void GetAttrVal(TStrV& Val) const { Graph->AttrValueEI(GetId(), Val); }
+    void GetAttrVal(TStr64V& Val) const { Graph->AttrValueEI(GetId(), Val); }
     /// Gets vector of int attribute names.
-    void GetIntAttrNames(TStrV& Names) const { Graph->IntAttrNameEI(GetId(), Names); }
+    void GetIntAttrNames(TStr64V& Names) const { Graph->IntAttrNameEI(GetId(), Names); }
     /// Gets vector of int attribute values.
-    void GetIntAttrVal(TIntV& Val) const { Graph->IntAttrValueEI(GetId(), Val); }
+    void GetIntAttrVal(TInt64V& Val) const { Graph->IntAttrValueEI(GetId(), Val); }
     /// Gets vector of int attribute names.
-    void GetIntVAttrNames(TStrV& Names) const { Graph->IntVAttrNameEI(GetId(), Names); }
+    void GetIntVAttrNames(TStr64V& Names) const { Graph->IntVAttrNameEI(GetId(), Names); }
     /// Gets vector of int attribute values.
-    void GetIntVAttrVal(TVec<TIntV>& Val) const { Graph->IntVAttrValueEI(GetId(), Val); }
+    void GetIntVAttrVal(TVec<TInt64V, int64>& Val) const { Graph->IntVAttrValueEI(GetId(), Val); }
     /// Gets vector of str attribute names.
-    void GetStrAttrNames(TStrV& Names) const { Graph->StrAttrNameEI(GetId(), Names); }
+    void GetStrAttrNames(TStr64V& Names) const { Graph->StrAttrNameEI(GetId(), Names); }
     /// Gets vector of str attribute values.
-    void GetStrAttrVal(TStrV& Val) const { Graph->StrAttrValueEI(GetId(), Val); }
+    void GetStrAttrVal(TStr64V& Val) const { Graph->StrAttrValueEI(GetId(), Val); }
     /// Gets vector of flt attribute names.
-    void GetFltAttrNames(TStrV& Names) const { Graph->FltAttrNameEI(GetId(), Names); }
+    void GetFltAttrNames(TStr64V& Names) const { Graph->FltAttrNameEI(GetId(), Names); }
     /// Gets vector of flt attribute values.
-    void GetFltAttrVal(TFltV& Val) const { Graph->FltAttrValueEI(GetId(), Val); }
+    void GetFltAttrVal(TFlt64V& Val) const { Graph->FltAttrValueEI(GetId(), Val); }
     friend class TNEANet;
   };
 
   /// Node/edge integer attribute iterator. Iterates through all nodes/edges for one integer attribute.
   class TAIntI {
   private:
-    typedef TIntV::TIter TIntVecIter;
+    typedef TInt64V::TIter TIntVecIter;
     TIntVecIter HI;
     bool isNode;
     TStr attr;
@@ -1670,7 +1670,7 @@ public:
     bool operator < (const TAIntI& I) const { return HI < I.HI; }
     bool operator == (const TAIntI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TInt GetDat() const { return HI[0]; }
+    TInt64 GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return isNode ? GetDat() == Graph->GetIntAttrDefaultN(attr) : GetDat() == Graph->GetIntAttrDefaultE(attr); };
     TAIntI& operator++(int) { HI++; return *this; }
@@ -1679,7 +1679,7 @@ public:
 
   class TAIntVI {
   private:
-    typedef TVec<TIntV>::TIter TIntVVecIter;
+    typedef TVec<TInt64V, int64>::TIter TIntVVecIter;
     TIntVVecIter HI;
     bool isNode;
     TStr attr;
@@ -1692,7 +1692,7 @@ public:
     bool operator < (const TAIntVI& I) const { return HI < I.HI; }
     bool operator == (const TAIntVI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TIntV GetDat() const { return HI[0]; }
+    TInt64V GetDat() const { return HI[0]; }
     TAIntVI& operator++(int) { HI++; return *this; }
     friend class TNEANet;
   };
@@ -1700,7 +1700,7 @@ public:
   /// Node/edge string attribute iterator. Iterates through all nodes/edges for one string attribute.
   class TAStrI {
   private:
-    typedef TStrV::TIter TStrVecIter;
+    typedef TStr64V::TIter TStrVecIter;
     TStrVecIter HI;
     bool isNode;
     TStr attr;
@@ -1723,7 +1723,7 @@ public:
   /// Node/edge float attribute iterator. Iterates through all nodes/edges for one float attribute.
   class TAFltI {
   private:
-    typedef TFltV::TIter TFltVecIter;
+    typedef TFlt64V::TIter TFltVecIter;
     TFltVecIter HI;
     bool isNode;
     TStr attr;
@@ -1744,21 +1744,21 @@ public:
   };
 
 protected:
-  TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
-  const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
-  TEdge& GetEdge(const int& EId) { return EdgeH.GetDat(EId); }
-  const TEdge& GetEdge(const int& EId) const { return EdgeH.GetDat(EId); }
-  int AddAttributes(const int NId);
+  TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
+  const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
+  TEdge& GetEdge(const int64& EId) { return EdgeH.GetDat(EId); }
+  const TEdge& GetEdge(const int64& EId) const { return EdgeH.GetDat(EId); }
+  int64 AddAttributes(const int64 NId);
 
 protected:
   /// Gets Int node attribute val.  If not a proper attr, return default.
-  TInt GetIntAttrDefaultN(const TStr& attribute) const { return IntDefaultsN.IsKey(attribute) ? IntDefaultsN.GetDat(attribute) : (TInt) TInt::Mn; }
+  TInt64 GetIntAttrDefaultN(const TStr& attribute) const { return IntDefaultsN.IsKey(attribute) ? IntDefaultsN.GetDat(attribute) : (TInt64) TInt64::Mn; }
   /// Gets Str node attribute val.  If not a proper attr, return default.
   TStr GetStrAttrDefaultN(const TStr& attribute) const { return StrDefaultsN.IsKey(attribute) ? StrDefaultsN.GetDat(attribute) : (TStr) TStr::GetNullStr(); }
   /// Gets Flt node attribute val.  If not a proper attr, return default.
   TFlt GetFltAttrDefaultN(const TStr& attribute) const { return FltDefaultsN.IsKey(attribute) ? FltDefaultsN.GetDat(attribute) : (TFlt) TFlt::Mn; }
   /// Gets Int edge attribute val.  If not a proper attr, return default.
-  TInt GetIntAttrDefaultE(const TStr& attribute) const { return IntDefaultsE.IsKey(attribute) ? IntDefaultsE.GetDat(attribute) : (TInt) TInt::Mn; }
+  TInt64 GetIntAttrDefaultE(const TStr& attribute) const { return IntDefaultsE.IsKey(attribute) ? IntDefaultsE.GetDat(attribute) : (TInt64) TInt64::Mn; }
   /// Gets Str edge attribute val.  If not a proper attr, return default.
   TStr GetStrAttrDefaultE(const TStr& attribute) const { return StrDefaultsE.IsKey(attribute) ? StrDefaultsE.GetDat(attribute) : (TStr) TStr::GetNullStr(); }
   /// Gets Flt edge attribute val.  If not a proper attr, return default.
@@ -1766,19 +1766,19 @@ protected:
 public:
   TCRef CRef;
 protected:
-  TInt MxNId, MxEId;
-  THash<TInt, TNode> NodeH;
-  THash<TInt, TEdge> EdgeH;
+  TInt64 MxNId, MxEId;
+  THash<TInt64, TNode, int64> NodeH;
+  THash<TInt64, TEdge, int64> EdgeH;
   /// KeyToIndexType[N|E]: Key->(Type,Index).
-  TStrIntPrH KeyToIndexTypeN, KeyToIndexTypeE;
+  TStrIntPr64H KeyToIndexTypeN, KeyToIndexTypeE;
 
-  THash<TStr, TInt> IntDefaultsN, IntDefaultsE;
-  THash<TStr, TStr> StrDefaultsN, StrDefaultsE;
-  THash<TStr, TFlt> FltDefaultsN, FltDefaultsE;
-  TVec<TIntV> VecOfIntVecsN, VecOfIntVecsE;
-  TVec<TStrV> VecOfStrVecsN, VecOfStrVecsE;
-  TVec<TFltV> VecOfFltVecsN, VecOfFltVecsE;
-  TVec<TVec<TIntV> > VecOfIntVecVecsN, VecOfIntVecVecsE;
+  THash<TStr, TInt64, int64> IntDefaultsN, IntDefaultsE;
+  THash<TStr, TStr, int64> StrDefaultsN, StrDefaultsE;
+  THash<TStr, TFlt, int64> FltDefaultsN, FltDefaultsE;
+  TVec<TInt64V, int64> VecOfIntVecsN, VecOfIntVecsE;
+  TVec<TStr64V, int64> VecOfStrVecsN, VecOfStrVecsE;
+  TVec<TFlt64V, int64> VecOfFltVecsN, VecOfFltVecsE;
+  TVec<TVec<TInt64V, int64>, int64> VecOfIntVecVecsN, VecOfIntVecVecsE;
   enum { IntType, StrType, FltType, IntVType };
 
   TAttr SAttrN;
@@ -1791,7 +1791,7 @@ public:
     VecOfIntVecsN(), VecOfIntVecsE(), VecOfStrVecsN(), VecOfStrVecsE(),
     VecOfFltVecsN(), VecOfFltVecsE(),  VecOfIntVecVecsN(), VecOfIntVecVecsE(), SAttrN(), SAttrE(){ }
   /// Constructor that reserves enough memory for a graph of nodes and edges.
-  explicit TNEANet(const int& Nodes, const int& Edges) : CRef(),
+  explicit TNEANet(const int64& Nodes, const int64& Edges) : CRef(),
     MxNId(0), MxEId(0), NodeH(), EdgeH(), KeyToIndexTypeN(), KeyToIndexTypeE(),
     IntDefaultsN(), IntDefaultsE(), StrDefaultsN(), StrDefaultsE(),
     FltDefaultsN(), FltDefaultsE(), VecOfIntVecsN(), VecOfIntVecsE(),
@@ -1848,7 +1848,7 @@ public:
   /// Static cons returns pointer to graph. Ex: PNEANet Graph=TNEANet::New().
   static PNEANet New() { return PNEANet(new TNEANet()); }
   /// Static constructor that returns a pointer to the graph and reserves enough memory for Nodes nodes and Edges edges. ##TNEANet::New
-  static PNEANet New(const int& Nodes, const int& Edges) { return PNEANet(new TNEANet(Nodes, Edges)); }
+  static PNEANet New(const int64& Nodes, const int64& Edges) { return PNEANet(new TNEANet(Nodes, Edges)); }
   /// Static constructor that loads the graph from a stream SIn and returns a pointer to it.
   static PNEANet Load(TSIn& SIn) { return PNEANet(new TNEANet(SIn)); }
   /// Static constructor that loads the graph from a stream SIn and returns a pointer to it. Backwards compatible.
@@ -1873,25 +1873,25 @@ public:
     return *this; }
 
   /// Returns the number of nodes in the network.
-  int GetNodes() const { return NodeH.Len(); }
+  int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the network. ##TNEANet::AddNode
-  int AddNode(int NId = -1);
+  int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNEANet::AddNodeUnchecked
-  int AddNodeUnchecked(int NId = -1);
+  int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds a node of ID NodeI.GetId() to the graph.
-  int AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
+  int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
   /// Deletes node of ID NId from the graph. ##TNEANet::DelNode
-  virtual void DelNode(const int& NId);
+  virtual void DelNode(const int64& NId);
   /// Deletes node of ID NodeI.GetId() from the graph.
   void DelNode(const TNode& NodeI) { DelNode(NodeI.GetId()); }
   /// Tests whether ID NId is a node.
-  bool IsNode(const int& NId) const { return NodeH.IsKey(NId); }
+  bool IsNode(const int64& NId) const { return NodeH.IsKey(NId); }
   /// Returns an iterator referring to the first node in the graph.
   TNodeI BegNI() const { return TNodeI(NodeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end node in the graph.
   TNodeI EndNI() const { return TNodeI(NodeH.EndI(), this); }
   /// Returns an iterator referring to the node of ID NId in the graph.
-  TNodeI GetNI(const int& NId) const { return TNodeI(NodeH.GetI(NId), this); }
+  TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId), this); }
   /// Returns an iterator referring to the first node's int attribute.
   TAIntI BegNAIntI(const TStr& attr) const {
     return TAIntI(VecOfIntVecsN[KeyToIndexTypeN.GetDat(attr).Val2].BegI(), attr, false, this); }
@@ -1899,7 +1899,7 @@ public:
   TAIntI EndNAIntI(const TStr& attr) const {
     return TAIntI(VecOfIntVecsN[KeyToIndexTypeN.GetDat(attr).Val2].EndI(), attr, false, this); }
   /// Returns an iterator referring to the node of ID NId in the graph.
-  TAIntI GetNAIntI(const TStr& attr, const int& NId) const {
+  TAIntI GetNAIntI(const TStr& attr, const int64& NId) const {
     return TAIntI(VecOfIntVecsN[KeyToIndexTypeN.GetDat(attr).Val2].GetI(NodeH.GetKeyId(NId)), attr, false, this); }
 
   /// Returns an iterator referring to the first node's int attribute.
@@ -1909,7 +1909,7 @@ public:
   TAIntVI EndNAIntVI(const TStr& attr) const {
     return TAIntVI(VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2].EndI(), attr, false, this); }
   /// Returns an iterator referring to the node of ID NId in the graph.
-  TAIntVI GetNAIntVI(const TStr& attr, const int& NId) const {
+  TAIntVI GetNAIntVI(const TStr& attr, const int64& NId) const {
     return TAIntVI(VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2].GetI(NodeH.GetKeyId(NId)), attr, false, this); }
 
 
@@ -1921,7 +1921,7 @@ public:
   TAStrI EndNAStrI(const TStr& attr) const {
     return TAStrI(VecOfStrVecsN[KeyToIndexTypeN.GetDat(attr).Val2].EndI(), attr, false, this); }
   /// Returns an iterator referring to the node of ID NId in the graph.
-  TAStrI GetNAStrI(const TStr& attr, const int& NId) const {
+  TAStrI GetNAStrI(const TStr& attr, const int64& NId) const {
     return TAStrI(VecOfStrVecsN[KeyToIndexTypeN.GetDat(attr).Val2].GetI(NodeH.GetKeyId(NId)), attr, false, this); }
   /// Returns an iterator referring to the first node's flt attribute.
   TAFltI BegNAFltI(const TStr& attr) const {
@@ -1930,99 +1930,99 @@ public:
   TAFltI EndNAFltI(const TStr& attr) const {
     return TAFltI(VecOfFltVecsN[KeyToIndexTypeN.GetDat(attr).Val2].EndI(), attr, false, this); }
   /// Returns an iterator referring to the node of ID NId in the graph.
-  TAFltI GetNAFltI(const TStr& attr, const int& NId) const {
+  TAFltI GetNAFltI(const TStr& attr, const int64& NId) const {
     return TAFltI(VecOfFltVecsN[KeyToIndexTypeN.GetDat(attr).Val2].GetI(NodeH.GetKeyId(NId)), attr, false, this); }
 
   /// Returns a vector of attr names for node NId.
-  void AttrNameNI(const TInt& NId, TStrV& Names) const {
+  void AttrNameNI(const TInt64& NId, TStr64V& Names) const {
     AttrNameNI(NId, KeyToIndexTypeN.BegI(), Names);}
-  void AttrNameNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Names) const;
+  void AttrNameNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void AttrValueNI(const TInt& NId, TStrV& Values) const {
+  void AttrValueNI(const TInt64& NId, TStr64V& Values) const {
     AttrValueNI(NId, KeyToIndexTypeN.BegI(), Values);}
-  void AttrValueNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Values) const;
+  void AttrValueNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Values) const;
 
   /// Returns a vector of int attr names for node NId.
-  void IntAttrNameNI(const TInt& NId, TStrV& Names) const {
+  void IntAttrNameNI(const TInt64& NId, TStr64V& Names) const {
     IntAttrNameNI(NId, KeyToIndexTypeN.BegI(), Names);}
-  void IntAttrNameNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Names) const;
+  void IntAttrNameNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void IntAttrValueNI(const TInt& NId, TIntV& Values) const {
+  void IntAttrValueNI(const TInt64& NId, TInt64V& Values) const {
     IntAttrValueNI(NId, KeyToIndexTypeN.BegI(), Values);}
-  void IntAttrValueNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TIntV& Values) const;
+  void IntAttrValueNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TInt64V& Values) const;
 
 
   /// Returns a vector of int attr names for node NId.
-  void IntVAttrNameNI(const TInt& NId, TStrV& Names) const {
+  void IntVAttrNameNI(const TInt64& NId, TStr64V& Names) const {
     IntVAttrNameNI(NId, KeyToIndexTypeN.BegI(), Names);}
-  void IntVAttrNameNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Names) const;
+  void IntVAttrNameNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void IntVAttrValueNI(const TInt& NId, TVec<TIntV>& Values) const {
+  void IntVAttrValueNI(const TInt64& NId, TVec<TInt64V, int64>& Values) const {
     IntVAttrValueNI(NId, KeyToIndexTypeN.BegI(), Values);}
-  void IntVAttrValueNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TVec<TIntV>& Values) const;
+  void IntVAttrValueNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TVec<TInt64V, int64>& Values) const;
 
 
   /// Returns a vector of str attr names for node NId.
-  void StrAttrNameNI(const TInt& NId, TStrV& Names) const {
+  void StrAttrNameNI(const TInt64& NId, TStr64V& Names) const {
     StrAttrNameNI(NId, KeyToIndexTypeN.BegI(), Names);}
-  void StrAttrNameNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Names) const;
+  void StrAttrNameNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void StrAttrValueNI(const TInt& NId, TStrV& Values) const {
+  void StrAttrValueNI(const TInt64& NId, TStr64V& Values) const {
     StrAttrValueNI(NId, KeyToIndexTypeN.BegI(), Values);}
-  void StrAttrValueNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Values) const;
+  void StrAttrValueNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Values) const;
   /// Returns a vector of int attr names for node NId.
-  void FltAttrNameNI(const TInt& NId, TStrV& Names) const {
+  void FltAttrNameNI(const TInt64& NId, TStr64V& Names) const {
     FltAttrNameNI(NId, KeyToIndexTypeN.BegI(), Names);}
-  void FltAttrNameNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TStrV& Names) const;
+  void FltAttrNameNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void FltAttrValueNI(const TInt& NId, TFltV& Values) const {
+  void FltAttrValueNI(const TInt64& NId, TFlt64V& Values) const {
     FltAttrValueNI(NId, KeyToIndexTypeN.BegI(), Values);}
-  void FltAttrValueNI(const TInt& NId, TStrIntPrH::TIter NodeHI, TFltV& Values) const;
+  void FltAttrValueNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TFlt64V& Values) const;
 
   /// Returns a vector of attr names for edge EId.
-  void AttrNameEI(const TInt& EId, TStrV& Names) const {
+  void AttrNameEI(const TInt64& EId, TStr64V& Names) const {
     AttrNameEI(EId, KeyToIndexTypeE.BegI(), Names);}
-  void AttrNameEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Names) const;
+  void AttrNameEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for edge EId.
-  void AttrValueEI(const TInt& EId, TStrV& Values) const {
+  void AttrValueEI(const TInt64& EId, TStr64V& Values) const {
     AttrValueEI(EId, KeyToIndexTypeE.BegI(), Values);}
-  void AttrValueEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Values) const;
+  void AttrValueEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Values) const;
   /// Returns a vector of int attr names for edge EId.
-  void IntAttrNameEI(const TInt& EId, TStrV& Names) const {
+  void IntAttrNameEI(const TInt64& EId, TStr64V& Names) const {
     IntAttrNameEI(EId, KeyToIndexTypeE.BegI(), Names);}
-  void IntAttrNameEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Names) const;
+  void IntAttrNameEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for edge EId.
-  void IntAttrValueEI(const TInt& EId, TIntV& Values) const {
+  void IntAttrValueEI(const TInt64& EId, TInt64V& Values) const {
     IntAttrValueEI(EId, KeyToIndexTypeE.BegI(), Values);}
-  void IntAttrValueEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TIntV& Values) const;
+  void IntAttrValueEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TInt64V& Values) const;
 
 
   /// Returns a vector of int attr names for edge EId.
-  void IntVAttrNameEI(const TInt& EId, TStrV& Names) const {
+  void IntVAttrNameEI(const TInt64& EId, TStr64V& Names) const {
     IntVAttrNameEI(EId, KeyToIndexTypeE.BegI(), Names);}
-  void IntVAttrNameEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Names) const;
+  void IntVAttrNameEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for edge EId.
-  void IntVAttrValueEI(const TInt& EId, TVec<TIntV>& Values) const {
+  void IntVAttrValueEI(const TInt64& EId, TVec<TInt64V, int64>& Values) const {
     IntVAttrValueEI(EId, KeyToIndexTypeE.BegI(), Values);}
-  void IntVAttrValueEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TVec<TIntV>& Values) const;
+  void IntVAttrValueEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TVec<TInt64V, int64>& Values) const;
 
 
   /// Returns a vector of str attr names for node NId.
-  void StrAttrNameEI(const TInt& EId, TStrV& Names) const {
+  void StrAttrNameEI(const TInt64& EId, TStr64V& Names) const {
     StrAttrNameEI(EId, KeyToIndexTypeE.BegI(), Names);}
-  void StrAttrNameEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Names) const;
+  void StrAttrNameEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void StrAttrValueEI(const TInt& EId, TStrV& Values) const {
+  void StrAttrValueEI(const TInt64& EId, TStr64V& Values) const {
     StrAttrValueEI(EId, KeyToIndexTypeE.BegI(), Values);}
-  void StrAttrValueEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Values) const;
+  void StrAttrValueEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Values) const;
   /// Returns a vector of int attr names for node NId.
-  void FltAttrNameEI(const TInt& EId, TStrV& Names) const {
+  void FltAttrNameEI(const TInt64& EId, TStr64V& Names) const {
     FltAttrNameEI(EId, KeyToIndexTypeE.BegI(), Names);}
-  void FltAttrNameEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TStrV& Names) const;
+  void FltAttrNameEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Names) const;
   /// Returns a vector of attr values for node NId.
-  void FltAttrValueEI(const TInt& EId, TFltV& Values) const {
+  void FltAttrValueEI(const TInt64& EId, TFlt64V& Values) const {
     FltAttrValueEI(EId, KeyToIndexTypeE.BegI(), Values);}
-  void FltAttrValueEI(const TInt& EId, TStrIntPrH::TIter EdgeHI, TFltV& Values) const;
+  void FltAttrValueEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TFlt64V& Values) const;
 
   /// Returns an iterator referring to the first edge's int attribute.
   TAIntI BegEAIntI(const TStr& attr) const {
@@ -2033,7 +2033,7 @@ public:
     return TAIntI(VecOfIntVecsE[KeyToIndexTypeE.GetDat(attr).Val2].EndI(), attr, true, this);
   }
   /// Returns an iterator referring to the edge of ID EId in the graph.
-  TAIntI GetEAIntI(const TStr& attr, const int& EId) const {
+  TAIntI GetEAIntI(const TStr& attr, const int64& EId) const {
     return TAIntI(VecOfIntVecsE[KeyToIndexTypeE.GetDat(attr).Val2].GetI(EdgeH.GetKeyId(EId)), attr, true, this);
   }
 
@@ -2046,7 +2046,7 @@ public:
     return TAIntVI(VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2].EndI(), attr, true, this);
   }
   /// Returns an iterator referring to the edge of ID EId in the graph.
-  TAIntVI GetEAIntVI(const TStr& attr, const int& EId) const {
+  TAIntVI GetEAIntVI(const TStr& attr, const int64& EId) const {
     return TAIntVI(VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2].GetI(EdgeH.GetKeyId(EId)), attr, true, this);
   }
 
@@ -2058,7 +2058,7 @@ public:
     return TAStrI(VecOfStrVecsE[KeyToIndexTypeE.GetDat(attr).Val2].EndI(), attr, true, this);
   }
   /// Returns an iterator referring to the edge of ID EId in the graph.
-  TAStrI GetEAStrI(const TStr& attr, const int& EId) const {
+  TAStrI GetEAStrI(const TStr& attr, const int64& EId) const {
     return TAStrI(VecOfStrVecsE[KeyToIndexTypeE.GetDat(attr).Val2].GetI(EdgeH.GetKeyId(EId)), attr, true, this);
   }
   /// Returns an iterator referring to the first edge's flt attribute.
@@ -2070,53 +2070,53 @@ public:
     return TAFltI(VecOfFltVecsE[KeyToIndexTypeE.GetDat(attr).Val2].EndI(), attr, true, this);
   }
   /// Returns an iterator referring to the edge of ID EId in the graph.
-  TAFltI GetEAFltI(const TStr& attr, const int& EId) const {
+  TAFltI GetEAFltI(const TStr& attr, const int64& EId) const {
     return TAFltI(VecOfFltVecsE[KeyToIndexTypeE.GetDat(attr).Val2].GetI(EdgeH.GetKeyId(EId)), attr, true, this);
   }
   /// Returns an ID that is larger than any node ID in the network.
-  int GetMxNId() const { return MxNId; }
+  int64 GetMxNId() const { return MxNId; }
   /// Returns an ID that is larger than any edge ID in the network.
-  int GetMxEId() const { return MxEId; }
+  int64 GetMxEId() const { return MxEId; }
 
   /// Returns the number of edges in the graph.
-  int GetEdges() const { return EdgeH.Len(); }
+  int64 GetEdges() const { return EdgeH.Len(); }
   /// Adds an edge with ID EId between node IDs SrcNId and DstNId to the graph. ##TNEANet::AddEdge
-  int AddEdge(const int& SrcNId, const int& DstNId, int EId  = -1);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
   /// Adds an edge between EdgeI.GetSrcNId() and EdgeI.GetDstNId() to the graph.
-  int AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId()); }
+  int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId()); }
   /// Deletes an edge with edge ID EId from the graph.
-  void DelEdge(const int& EId);
+  void DelEdge(const int64& EId);
   /// Deletes all edges between node IDs SrcNId and DstNId from the graph. ##TNEANet::DelEdge
-  void DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true);
+  void DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true);
   /// Tests whether an edge with edge ID EId exists in the graph.
-  bool IsEdge(const int& EId) const { return EdgeH.IsKey(EId); }
+  bool IsEdge(const int64& EId) const { return EdgeH.IsKey(EId); }
   /// Tests whether an edge between node IDs SrcNId and DstNId exists in the graph.
-  bool IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true) const { int EId; return IsEdge(SrcNId, DstNId, EId, IsDir); }
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true) const { int64 EId; return IsEdge(SrcNId, DstNId, EId, IsDir); }
   /// Tests whether an edge between node IDs SrcNId and DstNId exists in the graph. if an edge exists, return its edge ID in EId
-  bool IsEdge(const int& SrcNId, const int& DstNId, int& EId, const bool& IsDir = true) const;
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, int64& EId, const bool& IsDir = true) const;
   /// Returns an edge ID between node IDs SrcNId and DstNId, if such an edge exists. Otherwise, return -1.
-  int GetEId(const int& SrcNId, const int& DstNId) const { int EId; return IsEdge(SrcNId, DstNId, EId)?EId:-1; }
+  int64 GetEId(const int64& SrcNId, const int64& DstNId) const { int64 EId; return IsEdge(SrcNId, DstNId, EId)?EId:-1; }
   /// Returns an iterator referring to the first edge in the graph.
   TEdgeI BegEI() const { return TEdgeI(EdgeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end edge in the graph.
   TEdgeI EndEI() const { return TEdgeI(EdgeH.EndI(), this); }
   /// Returns an iterator referring to edge with edge ID EId.
-  TEdgeI GetEI(const int& EId) const { return TEdgeI(EdgeH.GetI(EId), this); }
+  TEdgeI GetEI(const int64& EId) const { return TEdgeI(EdgeH.GetI(EId), this); }
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the graph.
-  TEdgeI GetEI(const int& SrcNId, const int& DstNId) const { return GetEI(GetEId(SrcNId, DstNId)); }
+  TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const { return GetEI(GetEId(SrcNId, DstNId)); }
 
   /// Returns an ID of a random node in the graph.
-  int GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the graph.
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Returns an ID of a random edge in the graph.
-  int GetRndEId(TRnd& Rnd=TInt::Rnd) { return EdgeH.GetKey(EdgeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndEId(TRnd& Rnd=TInt::Rnd) { return EdgeH.GetKey(EdgeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random edge in the graph.
   TEdgeI GetRndEI(TRnd& Rnd=TInt::Rnd) { return GetEI(GetRndEId(Rnd)); }
   /// Gets a vector IDs of all nodes in the graph.
-  void GetNIdV(TIntV& NIdV) const;
+  void GetNIdV(TInt64V& NIdV) const;
   /// Gets a vector IDs of all edges in the graph.
-  void GetEIdV(TIntV& EIdV) const;
+  void GetEIdV(TInt64V& EIdV) const;
 
   /// Tests whether the graph is empty (has zero nodes).
   bool Empty() const { return GetNodes()==0; }
@@ -2128,7 +2128,7 @@ public:
     VecOfFltVecsN.Clr(); VecOfFltVecsE.Clr(); VecOfIntVecVecsN.Clr(); VecOfIntVecVecsE.Clr(); 
     SAttrN.Clr(); SAttrE.Clr();}
   /// Reserves memory for a graph of Nodes nodes and Edges edges.
-  void Reserve(const int& Nodes, const int& Edges) {
+  void Reserve(const int64& Nodes, const int64& Edges) {
     if (Nodes>0) { NodeH.Gen(Nodes/2); } if (Edges>0) { EdgeH.Gen(Edges/2); } }
   /// Defragments the graph. ##TNEANet::Defrag
   void Defrag(const bool& OnlyNodeLinks=false);
@@ -2138,183 +2138,183 @@ public:
   void Dump(FILE *OutF=stdout) const;
 
   /// Attribute based add function for attr to Int value. ##TNEANet::AddIntAttrDatN
-  int AddIntAttrDatN(const TNodeI& NodeI, const TInt& value, const TStr& attr) { return AddIntAttrDatN(NodeI.GetId(), value, attr); }
-  int AddIntAttrDatN(const int& NId, const TInt& value, const TStr& attr);
+  int64 AddIntAttrDatN(const TNodeI& NodeI, const TInt64& value, const TStr& attr) { return AddIntAttrDatN(NodeI.GetId(), value, attr); }
+  int64 AddIntAttrDatN(const int64& NId, const TInt64& value, const TStr& attr);
   /// Attribute based add function for attr to Str value. ##TNEANet::AddStrAttrDatN
-  int AddStrAttrDatN(const TNodeI& NodeI, const TStr& value, const TStr& attr) { return AddStrAttrDatN(NodeI.GetId(), value, attr); }
-  int AddStrAttrDatN(const int& NId, const TStr& value, const TStr& attr);
+  int64 AddStrAttrDatN(const TNodeI& NodeI, const TStr& value, const TStr& attr) { return AddStrAttrDatN(NodeI.GetId(), value, attr); }
+  int64 AddStrAttrDatN(const int64& NId, const TStr& value, const TStr& attr);
   /// Attribute based add function for attr to Flt value. ##TNEANet::AddFltAttrDatN
-  int AddFltAttrDatN(const TNodeI& NodeI, const TFlt& value, const TStr& attr) { return AddFltAttrDatN(NodeI.GetId(), value, attr); }
-  int AddFltAttrDatN(const int& NId, const TFlt& value, const TStr& attr);
+  int64 AddFltAttrDatN(const TNodeI& NodeI, const TFlt& value, const TStr& attr) { return AddFltAttrDatN(NodeI.GetId(), value, attr); }
+  int64 AddFltAttrDatN(const int64& NId, const TFlt& value, const TStr& attr);
   /// Attribute based add function for attr to IntV value. ##TNEANet::AddIntVAttrDatN
-  int AddIntVAttrDatN(const TNodeI& NodeI, const TIntV& value, const TStr& attr) { return AddIntVAttrDatN(NodeI.GetId(), value, attr); }
-  int AddIntVAttrDatN(const int& NId, const TIntV& value, const TStr& attr);
+  int64 AddIntVAttrDatN(const TNodeI& NodeI, const TInt64V& value, const TStr& attr) { return AddIntVAttrDatN(NodeI.GetId(), value, attr); }
+  int64 AddIntVAttrDatN(const int64& NId, const TInt64V& value, const TStr& attr);
   /// Appends value onto the TIntV attribute for the given node.
-  int AppendIntVAttrDatN(const TNodeI& NodeI, const TInt& value, const TStr& attr) { return AppendIntVAttrDatN(NodeI.GetId(), value, attr); }
-  int AppendIntVAttrDatN(const int& NId, const TInt& value, const TStr& attr);
+  int64 AppendIntVAttrDatN(const TNodeI& NodeI, const TInt64& value, const TStr& attr) { return AppendIntVAttrDatN(NodeI.GetId(), value, attr); }
+  int64 AppendIntVAttrDatN(const int64& NId, const TInt64& value, const TStr& attr);
   /// Deletes value from the TIntV attribute for the given node.
-  int DelFromIntVAttrDatN(const TNodeI& NodeI, const TInt& value, const TStr& attr) { return DelFromIntVAttrDatN(NodeI.GetId(), value, attr); }
-  int DelFromIntVAttrDatN(const int& NId, const TInt& value, const TStr& attr);
+  int64 DelFromIntVAttrDatN(const TNodeI& NodeI, const TInt64& value, const TStr& attr) { return DelFromIntVAttrDatN(NodeI.GetId(), value, attr); }
+  int64 DelFromIntVAttrDatN(const int64& NId, const TInt64& value, const TStr& attr);
   /// Attribute based add function for attr to Int value. ##TNEANet::AddIntAttrDatE
-  int AddIntAttrDatE(const TEdgeI& EdgeI, const TInt& value, const TStr& attr) { return AddIntAttrDatE(EdgeI.GetId(), value, attr); }
-  int AddIntAttrDatE(const int& EId, const TInt& value, const TStr& attr);
+  int64 AddIntAttrDatE(const TEdgeI& EdgeI, const TInt64& value, const TStr& attr) { return AddIntAttrDatE(EdgeI.GetId(), value, attr); }
+  int64 AddIntAttrDatE(const int64& EId, const TInt64& value, const TStr& attr);
   /// Attribute based add function for attr to Str value. ##TNEANet::AddStrAttrDatE
-  int AddStrAttrDatE(const TEdgeI& EdgeI, const TStr& value, const TStr& attr) { return AddStrAttrDatE(EdgeI.GetId(), value, attr); }
-  int AddStrAttrDatE(const int& EId, const TStr& value, const TStr& attr);
+  int64 AddStrAttrDatE(const TEdgeI& EdgeI, const TStr& value, const TStr& attr) { return AddStrAttrDatE(EdgeI.GetId(), value, attr); }
+  int64 AddStrAttrDatE(const int64& EId, const TStr& value, const TStr& attr);
   /// Attribute based add function for attr to Flt value. ##TNEANet::AddFltAttrDatE
-  int AddFltAttrDatE(const TEdgeI& EdgeI, const TFlt& value, const TStr& attr) { return AddFltAttrDatE(EdgeI.GetId(), value, attr); }
-  int AddFltAttrDatE(const int& EId, const TFlt& value, const TStr& attr);
+  int64 AddFltAttrDatE(const TEdgeI& EdgeI, const TFlt& value, const TStr& attr) { return AddFltAttrDatE(EdgeI.GetId(), value, attr); }
+  int64 AddFltAttrDatE(const int64& EId, const TFlt& value, const TStr& attr);
   /// Attribute based add function for attr to IntV value. ##TNEANet::AddIntVAttrDatE
-  int AddIntVAttrDatE(const TEdgeI& EdgeI, const TIntV& value, const TStr& attr) { return AddIntVAttrDatE(EdgeI.GetId(), value, attr); }
-  int AddIntVAttrDatE(const int& EId, const TIntV& value, const TStr& attr);
+  int64 AddIntVAttrDatE(const TEdgeI& EdgeI, const TInt64V& value, const TStr& attr) { return AddIntVAttrDatE(EdgeI.GetId(), value, attr); }
+  int64 AddIntVAttrDatE(const int64& EId, const TInt64V& value, const TStr& attr);
   /// Appends value onto the TIntV attribute for the given node.
-  int AppendIntVAttrDatE(const TEdgeI& EdgeI, const TInt& value, const TStr& attr) { return AppendIntVAttrDatE(EdgeI.GetId(), value, attr); }
-  int AppendIntVAttrDatE(const int& EId, const TInt& value, const TStr& attr);
+  int64 AppendIntVAttrDatE(const TEdgeI& EdgeI, const TInt64& value, const TStr& attr) { return AppendIntVAttrDatE(EdgeI.GetId(), value, attr); }
+  int64 AppendIntVAttrDatE(const int64& EId, const TInt64& value, const TStr& attr);
   /// Gets the value of int attr from the node attr value vector.
-  TInt GetIntAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetIntAttrDatN(NodeI.GetId(), attr); }
-  TInt GetIntAttrDatN(const int& NId, const TStr& attr);
+  TInt64 GetIntAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetIntAttrDatN(NodeI.GetId(), attr); }
+  TInt64 GetIntAttrDatN(const int64& NId, const TStr& attr);
 
   /// Gets the value of str attr from the node attr value vector.
   TStr GetStrAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetStrAttrDatN(NodeI.GetId(), attr); }
-  TStr GetStrAttrDatN(const int& NId, const TStr& attr);
+  TStr GetStrAttrDatN(const int64& NId, const TStr& attr);
   /// Gets the value of flt attr from the node attr value vector.
   TFlt GetFltAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetFltAttrDatN(NodeI.GetId(), attr); }
-  TFlt GetFltAttrDatN(const int& NId, const TStr& attr);
+  TFlt GetFltAttrDatN(const int64& NId, const TStr& attr);
   /// Gets the value of the intv attr from the node attr value vector.
-  TIntV GetIntVAttrDatN(const TNodeI& NodeI, const TStr& attr) const { return GetIntVAttrDatN(NodeI.GetId(), attr); }
-  TIntV GetIntVAttrDatN(const int& NId, const TStr& attr) const;
+  TInt64V GetIntVAttrDatN(const TNodeI& NodeI, const TStr& attr) const { return GetIntVAttrDatN(NodeI.GetId(), attr); }
+  TInt64V GetIntVAttrDatN(const int64& NId, const TStr& attr) const;
 
   /// Gets the index of the node attr value vector specified by \c attr (same as GetAttrIndN for compatibility reasons).
-  int GetIntAttrIndN(const TStr& attr);
+  int64 GetIntAttrIndN(const TStr& attr);
   /// Gets the index of the node attr value vector specified by \c attr.
-  int GetAttrIndN(const TStr& attr);
+  int64 GetAttrIndN(const TStr& attr);
 
   /// Gets the value of an int node attr specified by node iterator \c NodeI and the attr \c index.
-  TInt GetIntAttrIndDatN(const TNodeI& NodeI, const int& index) { return GetIntAttrIndDatN(NodeI.GetId(), index); }
+  TInt64 GetIntAttrIndDatN(const TNodeI& NodeI, const int64& index) { return GetIntAttrIndDatN(NodeI.GetId(), index); }
   /// Gets the value of an int node attr specified by node ID \c NId and the attr \c index.
-  TInt GetIntAttrIndDatN(const int& NId, const int& index);
+  TInt64 GetIntAttrIndDatN(const int64& NId, const int64& index);
 
   /// Gets the value of a string node attr specified by node iterator \c NodeI and the attr \c index.
-  TStr GetStrAttrIndDatN(const TNodeI& NodeI, const int& index) { return GetStrAttrIndDatN(NodeI.GetId(), index); }
+  TStr GetStrAttrIndDatN(const TNodeI& NodeI, const int64& index) { return GetStrAttrIndDatN(NodeI.GetId(), index); }
   /// Gets the value of a string node attr specified by node ID \c NId and the attr \c index.
-  TStr GetStrAttrIndDatN(const int& NId, const int& index);
+  TStr GetStrAttrIndDatN(const int64& NId, const int64& index);
 
   /// Gets the value of a float node attr specified by node iterator \c NodeI and the attr \c index.
-  TFlt GetFltAttrIndDatN(const TNodeI& NodeI, const int& index) { return GetFltAttrIndDatN(NodeI.GetId(), index); }
+  TFlt GetFltAttrIndDatN(const TNodeI& NodeI, const int64& index) { return GetFltAttrIndDatN(NodeI.GetId(), index); }
   /// Gets the value of a float node attr specified by node ID \c NId and the attr \c index.
-  TFlt GetFltAttrIndDatN(const int& NId, const int& index);
+  TFlt GetFltAttrIndDatN(const int64& NId, const int64& index);
 
   /// Gets the value of int attr from the edge attr value vector.
-  TInt GetIntAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetIntAttrDatE(EdgeI.GetId(), attr); }
-  TInt GetIntAttrDatE(const int& EId, const TStr& attr);
+  TInt64 GetIntAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetIntAttrDatE(EdgeI.GetId(), attr); }
+  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr);
   /// Gets the value of str attr from the edge attr value vector.
   TStr GetStrAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetStrAttrDatE(EdgeI.GetId(), attr); }
-  TStr GetStrAttrDatE(const int& EId, const TStr& attr);
+  TStr GetStrAttrDatE(const int64& EId, const TStr& attr);
   /// Gets the value of flt attr from the edge attr value vector.
   TFlt GetFltAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetFltAttrDatE(EdgeI.GetId(), attr); }
-  TFlt GetFltAttrDatE(const int& EId, const TStr& attr);
+  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr);
   /// Gets the value of the intv attr from the edge attr value vector.
-  TIntV GetIntVAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetIntVAttrDatE(EdgeI.GetId(), attr); }
-  TIntV GetIntVAttrDatE(const int& EId, const TStr& attr);
+  TInt64V GetIntVAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetIntVAttrDatE(EdgeI.GetId(), attr); }
+  TInt64V GetIntVAttrDatE(const int64& EId, const TStr& attr);
 
   /// Gets the index of the edge attr value vector specified by \c attr (same as GetAttrIndE for compatibility reasons).
-  int GetIntAttrIndE(const TStr& attr);
+  int64 GetIntAttrIndE(const TStr& attr);
   /// Gets the index of the edge attr value vector specified by \c attr.
-  int GetAttrIndE(const TStr& attr);
+  int64 GetAttrIndE(const TStr& attr);
 
   /// Gets the value of an int edge attr specified by edge iterator \c EdgeI and the attr \c index.
-  TInt GetIntAttrIndDatE(const TEdgeI& EdgeI, const int& index) { return GetIntAttrIndDatE(EdgeI.GetId(), index); }
+  TInt64 GetIntAttrIndDatE(const TEdgeI& EdgeI, const int64& index) { return GetIntAttrIndDatE(EdgeI.GetId(), index); }
   /// Gets the value of an int edge attr specified by edge ID \c EId and the attr \c index.
-  TInt GetIntAttrIndDatE(const int& EId, const int& index);
+  TInt64 GetIntAttrIndDatE(const int64& EId, const int64& index);
  
   /// Gets the value of a float edge attr specified by edge iterator \c EdgeI and the attr \c index.
   TFlt GetFltAttrIndDatE(const TEdgeI& EdgeI, const int& index) { return GetFltAttrIndDatE(EdgeI.GetId(), index); }
   /// Gets the value of an int edge attr specified by edge ID \c EId and the attr \c index.
-  TFlt GetFltAttrIndDatE(const int& EId, const int& index);
+  TFlt GetFltAttrIndDatE(const int64& EId, const int64& index);
  
   /// Gets the value of a string edge attr specified by edge iterator \c EdgeI and the attr \c index.
-  TStr GetStrAttrIndDatE(const TEdgeI& EdgeI, const int& index) { return GetStrAttrIndDatE(EdgeI.GetId(), index); }
+  TStr GetStrAttrIndDatE(const TEdgeI& EdgeI, const int64& index) { return GetStrAttrIndDatE(EdgeI.GetId(), index); }
   /// Gets the value of an int edge attr specified by edge ID \c EId and the attr \c index.
-  TStr GetStrAttrIndDatE(const int& EId, const int& index);
+  TStr GetStrAttrIndDatE(const int64& EId, const int64& index);
  
   /// Deletes the node attribute for NodeI.
-  int DelAttrDatN(const TNodeI& NodeI, const TStr& attr) { return DelAttrDatN(NodeI.GetId(), attr); } 
-  int DelAttrDatN(const int& NId, const TStr& attr); 
+  int64 DelAttrDatN(const TNodeI& NodeI, const TStr& attr) { return DelAttrDatN(NodeI.GetId(), attr); } 
+  int64 DelAttrDatN(const int64& NId, const TStr& attr); 
   /// Deletes the edge attribute for NodeI.
-  int DelAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return DelAttrDatE(EdgeI.GetId(), attr); } 
-  int DelAttrDatE(const int& EId, const TStr& attr); 
+  int64 DelAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return DelAttrDatE(EdgeI.GetId(), attr); } 
+  int64 DelAttrDatE(const int64& EId, const TStr& attr); 
 
   /// Adds a new Int node attribute to the hashmap.
-  int AddIntAttrN(const TStr& attr, TInt defaultValue=TInt::Mn);
+  int64 AddIntAttrN(const TStr& attr, TInt64 defaultValue=TInt64::Mn);
   /// Adds a new Str node attribute to the hashmap.
-  int AddStrAttrN(const TStr& attr, TStr defaultValue=TStr::GetNullStr());
+  int64 AddStrAttrN(const TStr& attr, TStr defaultValue=TStr::GetNullStr());
   /// Adds a new Flt node attribute to the hashmap.
-  int AddFltAttrN(const TStr& attr, TFlt defaultValue=TFlt::Mn);
+  int64 AddFltAttrN(const TStr& attr, TFlt defaultValue=TFlt::Mn);
   /// Adds a new IntV node attribute to the hashmap.
-  int AddIntVAttrN(const TStr& attr);
+  int64 AddIntVAttrN(const TStr& attr);
 
   /// Adds a new Int edge attribute to the hashmap.
-  int AddIntAttrE(const TStr& attr, TInt defaultValue=TInt::Mn);
+  int64 AddIntAttrE(const TStr& attr, TInt64 defaultValue=TInt64::Mn);
   /// Adds a new Str edge attribute to the hashmap.
-  int AddStrAttrE(const TStr& attr, TStr defaultValue=TStr::GetNullStr());
+  int64 AddStrAttrE(const TStr& attr, TStr defaultValue=TStr::GetNullStr());
   /// Adds a new Flt edge attribute to the hashmap.
-  int AddFltAttrE(const TStr& attr, TFlt defaultValue=TFlt::Mn);
+  int64 AddFltAttrE(const TStr& attr, TFlt defaultValue=TFlt::Mn);
   /// Adds a new IntV edge attribute to the hashmap.
-  int AddIntVAttrE(const TStr& attr);
+  int64 AddIntVAttrE(const TStr& attr);
 
   /// Removes all the values for node attr.
-  int DelAttrN(const TStr& attr);
+  int64 DelAttrN(const TStr& attr);
   /// Removes all the values for edge  attr.
-  int DelAttrE(const TStr& attr);
+  int64 DelAttrE(const TStr& attr);
 
   /// Returns true if \c attr exists for node \c NId and has default value.
-  bool IsAttrDeletedN(const int& NId, const TStr& attr) const;
+  bool IsAttrDeletedN(const int64& NId, const TStr& attr) const;
   /// Returns true if Int \c attr exists for node \c NId and has default value.
-  bool IsIntAttrDeletedN(const int& NId, const TStr& attr) const;
+  bool IsIntAttrDeletedN(const int64& NId, const TStr& attr) const;
   /// Returns true if IntV \c attr exists for node \c NId and is an empty vector.
-  bool IsIntVAttrDeletedN(const int& NId, const TStr& attr) const;
+  bool IsIntVAttrDeletedN(const int64& NId, const TStr& attr) const;
   /// Returns true if Str \c attr exists for node \c NId and has default value.
-  bool IsStrAttrDeletedN(const int& NId, const TStr& attr) const;
+  bool IsStrAttrDeletedN(const int64& NId, const TStr& attr) const;
   /// Returns true if Flt \c attr exists for node \c NId and has default value.
-  bool IsFltAttrDeletedN(const int& NId, const TStr& attr) const;
+  bool IsFltAttrDeletedN(const int64& NId, const TStr& attr) const;
 
   /// Returns true if NId attr deleted for current node attr iterator.
-  bool NodeAttrIsDeleted(const int& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   /// Returns true if NId attr deleted value for current node int attr iterator.
-  bool NodeAttrIsIntDeleted(const int& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsIntDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   /// Returns true if NId attr deleted value for current node int vector attr iterator.
-  bool NodeAttrIsIntVDeleted(const int& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsIntVDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   /// Returns true if NId attr deleted value for current node str attr iterator.
-  bool NodeAttrIsStrDeleted(const int& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsStrDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   /// Returns true if NId attr deleted value for current node flt attr iterator.
-  bool NodeAttrIsFltDeleted(const int& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsFltDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
 
   /// Returns true if \c attr exists for edge \c EId and has default value.
-  bool IsAttrDeletedE(const int& EId, const TStr& attr) const;
+  bool IsAttrDeletedE(const int64& EId, const TStr& attr) const;
   /// Returns true if Int \c attr exists for edge \c EId and has default value.
-  bool IsIntAttrDeletedE(const int& EId, const TStr& attr) const;
+  bool IsIntAttrDeletedE(const int64& EId, const TStr& attr) const;
   /// Returns true if IntV \c attr exists for edge \c EId and is an empty vector.
-  bool IsIntVAttrDeletedE(const int& EId, const TStr& attr) const;
+  bool IsIntVAttrDeletedE(const int64& EId, const TStr& attr) const;
   /// Returns true if Str \c attr exists for edge \c NId and has default value.
-  bool IsStrAttrDeletedE(const int& EId, const TStr& attr) const;
+  bool IsStrAttrDeletedE(const int64& EId, const TStr& attr) const;
   /// Returns true if Flt \c attr exists for edge \c NId and has default value.
-  bool IsFltAttrDeletedE(const int& EId, const TStr& attr) const;
+  bool IsFltAttrDeletedE(const int64& EId, const TStr& attr) const;
 
   /// Returns true if EId attr deleted for current edge attr iterator.
-  bool EdgeAttrIsDeleted(const int& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   /// Returns true if EId attr deleted for current edge int attr iterator.
-  bool EdgeAttrIsIntDeleted(const int& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsIntDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   /// Returns true if EId attr deleted for current edge int vector attr iterator.
-  bool EdgeAttrIsIntVDeleted(const int& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsIntVDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   /// Returns true if EId attr deleted for current edge str attr iterator.
-  bool EdgeAttrIsStrDeleted(const int& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsStrDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   /// Returns true if EId attr deleted for current edge flt attr iterator.
-  bool EdgeAttrIsFltDeleted(const int& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsFltDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
 
   /// Returns node attribute value, converted to Str type.
-  TStr GetNodeAttrValue(const int& NId, const TStrIntPrH::TIter& NodeHI) const;
+  TStr GetNodeAttrValue(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   /// Returns edge attribute value, converted to Str type.
-  TStr GetEdgeAttrValue(const int& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  TStr GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
 
   /// Gets the sum of the weights of all the outgoing edges of the node.
   TFlt GetWeightOutEdges(const TNodeI& NI, const TStr& attr);
@@ -2325,252 +2325,252 @@ public:
   /// Checks if there is an edge attribute with name attr.
   bool IsStrAttrE(const TStr& attr);
   /// Gets Vector for the Flt Attribute attr.
-  TVec<TFlt>& GetFltAttrVecE(const TStr& attr);
+  TVec<TFlt, int64>& GetFltAttrVecE(const TStr& attr);
   /// Gets keyid for edge with id EId.
-  int GetFltKeyIdE(const int& EId);
+  int64 GetFltKeyIdE(const int64& EId);
 
   /// Fills OutWeights with the outgoing weight from each node.
-  void GetWeightOutEdgesV(TFltV& OutWeights, const TFltV& AttrVal) ;
+  void GetWeightOutEdgesV(TFlt64V& OutWeights, const TFlt64V& AttrVal) ;
   /// Fills each of the vectors with the names of node attributes of the given type.
-  void GetAttrNNames(TStrV& IntAttrNames, TStrV& FltAttrNames, TStrV& StrAttrNames) const;
+  void GetAttrNNames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
   /// Fills each of the vectors with the names of edge attributes of the given type.
-  void GetAttrENames(TStrV& IntAttrNames, TStrV& FltAttrNames, TStrV& StrAttrNames) const;
+  void GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
 
 
   /// Adds Int sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TInt64& Val);
   /// Adds Int sparse attribute with id \c AttrId to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TInt64& Val);
 
   /// Adds Int sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TInt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TInt64& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Int sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TInt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TInt64& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Adds Flt sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TFlt& Val);
   /// Adds Flt sparse attribute with id \c AttrId to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TFlt& Val);
 
   /// Adds Flt sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TFlt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TFlt& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Flt sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TFlt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TFlt& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Adds Str sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TStr& Val);
   /// Adds Str sparse attribute with id \c AttrId to the given node with id \c NId. 
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TStr& Val);
 
   /// Adds Str sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TStr& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TStr& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Str sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TStr& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TStr& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Gets Int sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TInt64& ValX) const;
   /// Gets Int sparse attribute with id \c AttrId from node with id \c NId. 
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Gets Int sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TInt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TInt64& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   }
   /// Gets Int sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TInt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TInt64& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Gets Flt sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TFlt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TFlt& ValX) const;
   /// Gets Flt sparse attribute with id \c AttrId from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Gets Flt sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TFlt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TFlt& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   } 
   /// Gets Flt sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TFlt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TFlt& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Gets Str sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TStr& ValX) const;
   /// Gets Str sparse attribute with id \c AttrId from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TStr& ValX) const;
 
   /// Gets Str sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TStr& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TStr& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   }
   /// Gets Str sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TStr& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TStr& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Deletes sparse attribute with name \c AttrName from node with id \c NId.
-  int DelSAttrDatN(const TInt& NId, const TStr& AttrName);
+  int64 DelSAttrDatN(const TInt64& NId, const TStr& AttrName);
   /// Deletes sparse attribute with id \c AttrId from node with id \c NId.
-  int DelSAttrDatN(const TInt& NId, const TInt& AttrId);
+  int64 DelSAttrDatN(const TInt64& NId, const TInt64& AttrId);
 
   /// Deletes sparse attribute with name \c AttrName from \c NodeI.
-  int DelSAttrDatN(const TNodeI& NodeI, const TStr& AttrName) {
+  int64 DelSAttrDatN(const TNodeI& NodeI, const TStr& AttrName) {
     return DelSAttrDatN(NodeI.GetId(), AttrName);
   }
   /// Deletes sparse attribute with id \c AttrId from \c NodeI.
-  int DelSAttrDatN(const TNodeI& NodeI, const TInt& AttrId) {
+  int64 DelSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId) {
     return DelSAttrDatN(NodeI.GetId(), AttrId);
   }
 
   /// Gets a list of all sparse attributes of type \c AttrType for node with id \c NId.
-  int GetSAttrVN(const TInt& NId, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  int64 GetSAttrVN(const TInt64& NId, const TAttrType AttrType, TAttrPrV& AttrV) const;
   /// Gets a list of all sparse attributes of type \c AttrType for \c NodeI.
-  int GetSAttrVN(const TNodeI& NodeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
+  int64 GetSAttrVN(const TNodeI& NodeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
     return GetSAttrVN(NodeI.GetId(), AttrType, AttrV);
   }
 
   /// Gets a list of all nodes that have a sparse attribute with name \c AttrName.
-  int GetIdVSAttrN(const TStr& AttrName, TIntV& IdV) const;
+  int64 GetIdVSAttrN(const TStr& AttrName, TInt64V& IdV) const;
   /// Gets a list of all nodes that have a sparse attribute with id \c AttrId.
-  int GetIdVSAttrN(const TInt& AttrId, TIntV& IdV) const;
+  int64 GetIdVSAttrN(const TInt64& AttrId, TInt64V& IdV) const;
 
   /// Adds mapping for sparse attribute with name \c Name and type \c AttrType.
-  int AddSAttrN(const TStr& Name, const TAttrType& AttrType, TInt& AttrId);
+  int64 AddSAttrN(const TStr& Name, const TAttrType& AttrType, TInt64& AttrId);
 
   /// Gets id and type for attribute with name \c Name.
-  int GetSAttrIdN(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrIdN(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Gets name and type for attribute with id \c AttrId.
-  int GetSAttrNameN(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrNameN(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 
   /// Adds Int sparse attribute with name \c AttrName to the given edge with id \c EId.
-  int AddSAttrDatE(const TInt& EId, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDatE(const TInt64& EId, const TStr& AttrName, const TInt64& Val);
   /// Adds Int sparse attribute with id \c AttrId to the given edge with id \c EId. 
-  int AddSAttrDatE(const TInt& EId, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDatE(const TInt64& EId, const TInt64& AttrId, const TInt64& Val);
 
   /// Adds Int sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TInt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TInt64& Val) {
     return AddSAttrDatE(EdgeI.GetId(), AttrName, Val);
   }
   /// Adds Int sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TInt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TInt64& Val) {
     return AddSAttrDatE(EdgeI.GetId(), AttrId, Val);
   }
 
   /// Adds Flt sparse attribute with name \c AttrName to the given edge with id \c EId.
-  int AddSAttrDatE(const TInt& EId, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDatE(const TInt64& EId, const TStr& AttrName, const TFlt& Val);
   /// Adds Flt sparse attribute with id \c AttrId to the given edge with id \c EId.
-  int AddSAttrDatE(const TInt& EId, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDatE(const TInt64& EId, const TInt64& AttrId, const TFlt& Val);
 
   /// Adds Flt sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TFlt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TFlt& Val) {
     return AddSAttrDatE(EdgeI.GetId(), AttrName, Val);
   }
   /// Adds Flt sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TFlt& Val){
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TFlt& Val){
     return AddSAttrDatE(EdgeI.GetId(), AttrId, Val);
   }
 
   /// Adds Str sparse attribute with name \c AttrName to the given edge with id \c EId.
-  int AddSAttrDatE(const TInt& EId, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDatE(const TInt64& EId, const TStr& AttrName, const TStr& Val);
   /// Adds Str sparse attribute with id \c AttrId to the given edge with id \c EId.
-  int AddSAttrDatE(const TInt& EId, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDatE(const TInt64& EId, const TInt64& AttrId, const TStr& Val);
 
   /// Adds Str sparse attribute with name \c AttrName to \c EdgeI.
   int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TStr& Val) {
     return AddSAttrDatE(EdgeI.GetId(), AttrName, Val);
   }
   /// Adds Str sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TStr& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TStr& Val) {
     return AddSAttrDatE(EdgeI.GetId(), AttrId, Val);
   }
 
   /// Gets Int sparse attribute with name \c AttrName from edge with id \c EId.
-  int GetSAttrDatE(const TInt& EId, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDatE(const TInt64& EId, const TStr& AttrName, TInt64& ValX) const;
   /// Gets Int sparse attribute with id \c AttrId from edge with id \c EId.
-  int GetSAttrDatE(const TInt& EId, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDatE(const TInt64& EId, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Gets Int sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TInt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TInt64& ValX) const {
     return GetSAttrDatE(EdgeI.GetId(), AttrName, ValX);
   }
   /// Gets Int sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TInt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TInt64& ValX) const {
     return GetSAttrDatE(EdgeI.GetId(), AttrId, ValX);
   } 
 
   /// Gets Flt sparse attribute with name \c AttrName from edge with id \c EId.
-  int GetSAttrDatE(const TInt& EId, const TStr& AttrName, TFlt& ValX) const; 
+  int64 GetSAttrDatE(const TInt64& EId, const TStr& AttrName, TFlt& ValX) const; 
   /// Gets Flt sparse attribute with id \c AttrId from edge with id \c EId.
-  int GetSAttrDatE(const TInt& EId, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDatE(const TInt64& EId, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Gets Flt sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TFlt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TFlt& ValX) const {
     return GetSAttrDatE(EdgeI.GetId(), AttrName, ValX);
   }
   /// Gets Flt sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TFlt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TFlt& ValX) const {
     return GetSAttrDatE(EdgeI.GetId(), AttrId, ValX);
   } 
 
   /// Gets Str sparse attribute with name \c AttrName from edge with id \c EId.
-  int GetSAttrDatE(const TInt& EId, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDatE(const TInt64& EId, const TStr& AttrName, TStr& ValX) const;
   /// Gets Str sparse attribute with id \c AttrId from edge with id \c EId.
-  int GetSAttrDatE(const TInt& EId, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDatE(const TInt64& EId, const TInt64& AttrId, TStr& ValX) const;
 
   /// Gets Str sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TStr& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TStr& ValX) const {
     return GetSAttrDatE(EdgeI.GetId(), AttrName, ValX);
   }
   /// Gets Str sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TStr& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TStr& ValX) const {
     return GetSAttrDatE(EdgeI.GetId(), AttrId, ValX);
   }
 
   /// Deletes sparse attribute with name \c AttrName from edge with id \c EId.
-  int DelSAttrDatE(const TInt& EId, const TStr& AttrName);
+  int64 DelSAttrDatE(const TInt64& EId, const TStr& AttrName);
   /// Deletes sparse attribute with id \c AttrId from edge with id \c EId.
-  int DelSAttrDatE(const TInt& EId, const TInt& AttrId);
+  int64 DelSAttrDatE(const TInt64& EId, const TInt64& AttrId);
 
   /// Deletes sparse attribute with name \c AttrName from \c EdgeI.
-  int DelSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName) {
+  int64 DelSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName) {
     return DelSAttrDatE(EdgeI.GetId(), AttrName);
   }
   /// Deletes sparse attribute with id \c AttrId from \c EdgeI.
-  int DelSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId) {
+  int64 DelSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId) {
     return DelSAttrDatE(EdgeI.GetId(), AttrId);
   } 
   /// Gets a list of all sparse attributes of type \c AttrType for edge with id \c EId.
-  int GetSAttrVE(const TInt& EId, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  int64 GetSAttrVE(const TInt64& EId, const TAttrType AttrType, TAttrPrV& AttrV) const;
   /// Gets a list of all sparse attributes of type \c AttrType for \c EdgeI.
-  int GetSAttrVE(const TEdgeI& EdgeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
+  int64 GetSAttrVE(const TEdgeI& EdgeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
     return GetSAttrVE(EdgeI.GetId(), AttrType, AttrV);
   }
 
   /// Gets a list of all edges that have a sparse attribute with name \c AttrName.
-  int GetIdVSAttrE(const TStr& AttrName, TIntV& IdV) const;
+  int64 GetIdVSAttrE(const TStr& AttrName, TInt64V& IdV) const;
   /// Gets a list of all edges that have a sparse attribute with id \c AttrId.
-  int GetIdVSAttrE(const TInt& AttrId, TIntV& IdV) const;
+  int64 GetIdVSAttrE(const TInt64& AttrId, TInt64V& IdV) const;
 
   /// Adds mapping for sparse attribute with name \c Name and type \c AttrType.
-  int AddSAttrE(const TStr& Name, const TAttrType& AttrType, TInt& AttrId);
+  int64 AddSAttrE(const TStr& Name, const TAttrType& AttrType, TInt64& AttrId);
 
   /// Gets id and type for attribute with name \c Name.
-  int GetSAttrIdE(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrIdE(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Gets name and type for attribute with id \c AttrId.
-  int GetSAttrNameE(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrNameE(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 
   /// Returns a small multigraph on 5 nodes and 6 edges. ##TNEANet::GetSmallGraph
   static PNEANet GetSmallGraph();
@@ -2607,24 +2607,24 @@ public:
 public:
   class TNode {
   private:
-    TInt Id;
-    TIntV NIdV;
+    TInt64 Id;
+    TInt64V NIdV;
   public:
     TNode() : Id(-1), NIdV() { }
-    TNode(const int& NId) : Id(NId), NIdV() { }
+    TNode(const int64& NId) : Id(NId), NIdV() { }
     TNode(const TNode& Node) : Id(Node.Id), NIdV(Node.NIdV) { }
     TNode(TSIn& SIn) : Id(SIn), NIdV(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut); NIdV.Save(SOut); }
-    int GetId() const { return Id; }
-    int GetDeg() const { return NIdV.Len(); }
-    int GetInDeg() const { return GetDeg(); }
-    int GetOutDeg() const { return GetDeg(); }
-    int GetInNId(const int& NodeN) const { return GetNbrNId(NodeN); }
-    int GetOutNId(const int& NodeN) const { return GetNbrNId(NodeN); }
-    int GetNbrNId(const int& NodeN) const { return NIdV[NodeN]; }
-    bool IsNbrNId(const int& NId) const { return NIdV.SearchBin(NId)!=-1; }
-    bool IsInNId(const int& NId) const { return IsNbrNId(NId); }
-    bool IsOutNId(const int& NId) const { return IsNbrNId(NId); }
+    int64 GetId() const { return Id; }
+    int64 GetDeg() const { return NIdV.Len(); }
+    int64 GetInDeg() const { return GetDeg(); }
+    int64 GetOutDeg() const { return GetDeg(); }
+    int64 GetInNId(const int64& NodeN) const { return GetNbrNId(NodeN); }
+    int64 GetOutNId(const int64& NodeN) const { return GetNbrNId(NodeN); }
+    int64 GetNbrNId(const int64& NodeN) const { return NIdV[NodeN]; }
+    bool IsNbrNId(const int64& NId) const { return NIdV.SearchBin(NId)!=-1; }
+    bool IsInNId(const int64& NId) const { return IsNbrNId(NId); }
+    bool IsOutNId(const int64& NId) const { return IsNbrNId(NId); }
     void PackOutNIdV() { NIdV.Pack(); }
     void PackNIdV() { NIdV.Pack(); }
     void SortNIdV() { NIdV.Sort();}
@@ -2634,7 +2634,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   private:
-    typedef THash<TInt, TNode>::TIter THashIter;
+    typedef THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
   public:
     TNodeI() : NodeHI() { }
@@ -2652,37 +2652,37 @@ public:
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
 
     /// Returns ID of the current node.
-    int GetId() const { return NodeHI.GetDat().GetId(); }
+    int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node.
-    int GetDeg() const { return NodeHI.GetDat().GetDeg(); }
+    int64 GetDeg() const { return NodeHI.GetDat().GetDeg(); }
     /// Returns in-degree of the current node (returns same as value GetDeg() since the network is undirected).
-    int GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
+    int64 GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
     /// Returns out-degree of the current node (returns same as value GetDeg() since the network is undirected).
-    int GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
+    int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Sorts the adjacency lists of the current node.
     void SortNIdV() { NodeHI.GetDat().SortNIdV(); }
     /// Returns ID of NodeN-th in-node (the node pointing to the current node). ##TUndirNet::TNodeI::GetInNId
-    int GetInNId(const int& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
+    int64 GetInNId(const int64& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
     /// Returns ID of NodeN-th out-node (the node the current node points to). ##TUndirNet::TNodeI::GetOutNId
-    int GetOutNId(const int& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
+    int64 GetOutNId(const int64& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
     /// Returns ID of NodeN-th neighboring node. ##TUndirNet::TNodeI::GetNbrNId
-    int GetNbrNId(const int& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
+    int64 GetNbrNId(const int64& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
     /// Tests whether node with ID NId points to the current node.
-    bool IsInNId(const int& NId) const { return NodeHI.GetDat().IsInNId(NId); }
+    bool IsInNId(const int64& NId) const { return NodeHI.GetDat().IsInNId(NId); }
     /// Tests whether the current node points to node with ID NId.
-    bool IsOutNId(const int& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
+    bool IsOutNId(const int64& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
     /// Tests whether node with ID NId is a neighbor of the current node.
-    bool IsNbrNId(const int& NId) const { return NodeHI.GetDat().IsNbrNId(NId); }
+    bool IsNbrNId(const int64& NId) const { return NodeHI.GetDat().IsNbrNId(NId); }
     friend class TUndirNet;
   };
   /// Edge iterator. Only forward iteration (operator++) is supported.
   class TEdgeI {
   private:
     TNodeI CurNode, EndNode;
-    int CurEdge;
+    int64 CurEdge;
   public:
     TEdgeI() : CurNode(), EndNode(), CurEdge(0) { }
-    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
+    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int64& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
     TEdgeI(const TEdgeI& EdgeI) : CurNode(EdgeI.CurNode), EndNode(EdgeI.EndNode), CurEdge(EdgeI.CurEdge) { }
     TEdgeI& operator = (const TEdgeI& EdgeI) { if (this!=&EdgeI) { CurNode=EdgeI.CurNode; EndNode=EdgeI.EndNode; CurEdge=EdgeI.CurEdge; } return *this; }
     /// Increment iterator.
@@ -2690,28 +2690,28 @@ public:
     bool operator < (const TEdgeI& EdgeI) const { return CurNode<EdgeI.CurNode || (CurNode==EdgeI.CurNode && CurEdge<EdgeI.CurEdge); }
     bool operator == (const TEdgeI& EdgeI) const { return CurNode == EdgeI.CurNode && CurEdge == EdgeI.CurEdge; }
     /// Returns edge ID. Always returns -1 since only edges in multigraphs have explicit IDs.
-    int GetId() const { return -1; }
+    int64 GetId() const { return -1; }
     /// Returns the source of the edge. Since the network is undirected, this is the node with a smaller ID of the edge endpoints.
-    int GetSrcNId() const { return CurNode.GetId(); }
+    int64 GetSrcNId() const { return CurNode.GetId(); }
     /// Returns the destination of the edge. Since the network is undirected, this is the node with a greater ID of the edge endpoints.
-    int GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
+    int64 GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
     friend class TUndirNet;
   };
 private:
   TCRef CRef;
-  TInt MxNId, NEdges;
-  THash<TInt, TNode> NodeH;
+  TInt64 MxNId, NEdges;
+  THash<TInt64, TNode, int64> NodeH;
 
   TAttr SAttrN;
   TAttrPair SAttrE;
 private:
-  TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
-  const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
-  TIntPr OrderEdgeNodes(const int& SrcNId, const int& DstNId) const;
+  TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
+  const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
+  TInt64Pr OrderEdgeNodes(const int64& SrcNId, const int64& DstNId) const;
 public:
   TUndirNet() : CRef(), MxNId(0), NEdges(0), NodeH(), SAttrN(), SAttrE() { }
   /// Constructor that reserves enough memory for a network of Nodes nodes and Edges edges.
-  explicit TUndirNet(const int& Nodes, const int& Edges) : MxNId(0), NEdges(0), SAttrN(), SAttrE() { Reserve(Nodes, Edges); }
+  explicit TUndirNet(const int64& Nodes, const int64& Edges) : MxNId(0), NEdges(0), SAttrN(), SAttrE() { Reserve(Nodes, Edges); }
   TUndirNet(const TUndirNet& Graph) : MxNId(Graph.MxNId), NEdges(Graph.NEdges), NodeH(Graph.NodeH),
     SAttrN(), SAttrE() { }
   /// Constructor that loads the network from a (binary) stream SIn.
@@ -2724,7 +2724,7 @@ public:
   /// Static constructor that returns a pointer to the network. Call: PUndirNet Graph = TUndirNet::New().
   static PUndirNet New() { return new TUndirNet(); }
   /// Static constructor that returns a pointer to the network and reserves enough memory for Nodes nodes and Edges edges. ##TUndirNet::New
-  static PUndirNet New(const int& Nodes, const int& Edges) { return new TUndirNet(Nodes, Edges); }
+  static PUndirNet New(const int64& Nodes, const int64& Edges) { return new TUndirNet(Nodes, Edges); }
   /// Static constructor that loads the network from a stream SIn and returns a pointer to it.
   static PUndirNet Load(TSIn& SIn) { return PUndirNet(new TUndirNet(SIn)); }
   /// Static constructor that loads the network from a stream SIn and returns a pointer to it. Backwards compatible.
@@ -2738,68 +2738,68 @@ public:
     if (this!=&Graph) { MxNId=Graph.MxNId; NEdges=Graph.NEdges; NodeH=Graph.NodeH; } return *this; }
   
   /// Returns the number of nodes in the network.
-  int GetNodes() const { return NodeH.Len(); }
+  int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the network. ##TUndirNet::AddNode
-  int AddNode(int NId = -1);
+  int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TUndirNet::AddNodeUnchecked
-  int AddNodeUnchecked(int NId = -1);
+  int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds a node of ID NodeI.GetId() to the network.
-  int AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
+  int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
   /// Adds a node of ID NId to the network and create edges to all nodes in vector NbrNIdV. ##TUndirNet::AddNode-1
-  int AddNode(const int& NId, const TIntV& NbrNIdV);
+  int64 AddNode(const int64& NId, const TInt64V& NbrNIdV);
   /// Adds a node of ID NId to the network and create edges to all nodes in vector NIdVId in the vector pool Pool. ##TUndirNet::AddNode-2
-  int AddNode(const int& NId, const TVecPool<TInt>& Pool, const int& NIdVId);
+  int64 AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, const int64& NIdVId);
   /// Deletes node of ID NId from the network. ##TUndirNet::DelNode
-  void DelNode(const int& NId);
+  void DelNode(const int64& NId);
   /// Deletes node of ID NodeI.GetId() from the network.
   void DelNode(const TNode& NodeI) { DelNode(NodeI.GetId()); }
   /// Tests whether ID NId is a node.
-  bool IsNode(const int& NId) const { return NodeH.IsKey(NId); }
+  bool IsNode(const int64& NId) const { return NodeH.IsKey(NId); }
   /// Returns an iterator referring to the first node in the network.
   TNodeI BegNI() const { return TNodeI(NodeH.BegI()); }
   /// Returns an iterator referring to the past-the-end node in the network.
   TNodeI EndNI() const { return TNodeI(NodeH.EndI()); }
   /// Returns an iterator referring to the node of ID NId in the network.
-  TNodeI GetNI(const int& NId) const { return TNodeI(NodeH.GetI(NId)); }
+  TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId)); }
   /// Returns an ID that is larger than any node ID in the network.
-  int GetMxNId() const { return MxNId; }
+  int64 GetMxNId() const { return MxNId; }
 
   /// Returns the number of edges in the network.
-  int GetEdges() const;
+  int64 GetEdges() const;
   /// Adds an edge between node IDs SrcNId and DstNId to the network. ##TUndirNet::AddEdge
-  int AddEdge(const int& SrcNId, const int& DstNId);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId);
   /// Adds an edge between node IDs SrcNId and DstNId to the network. ##TUndirNet::AddEdgeUnchecked
-  int AddEdgeUnchecked(const int& SrcNId, const int& DstNId);
+  int64 AddEdgeUnchecked(const int64& SrcNId, const int64& DstNId);
   /// Adds an edge between EdgeI.GetSrcNId() and EdgeI.GetDstNId() to the network.
-  int AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId()); }
+  int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId()); }
   /// Deletes an edge between node IDs SrcNId and DstNId from the network. ##TUndirNet::DelEdge
-  void DelEdge(const int& SrcNId, const int& DstNId);
+  void DelEdge(const int64& SrcNId, const int64& DstNId);
   /// Tests whether an edge between node IDs SrcNId and DstNId exists in the network.
-  bool IsEdge(const int& SrcNId, const int& DstNId) const;
+  bool IsEdge(const int64& SrcNId, const int64& DstNId) const;
   /// Returns an iterator referring to the first edge in the network.
   TEdgeI BegEI() const { TNodeI NI = BegNI(); TEdgeI EI(NI, EndNI(), 0); if (GetNodes() != 0 && (NI.GetOutDeg()==0 || NI.GetId()>NI.GetOutNId(0))) { EI++; } return EI; }
   /// Returns an iterator referring to the past-the-end edge in the network.
   TEdgeI EndEI() const { return TEdgeI(EndNI(), EndNI()); }
   /// Not supported/implemented!
-  TEdgeI GetEI(const int& EId) const;
+  TEdgeI GetEI(const int64& EId) const;
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the network. ##TUndirNet::GetEI
-  TEdgeI GetEI(const int& SrcNId, const int& DstNId) const;
+  TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
 
   /// Returns an ID of a random node in the network.
-  int GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the network.
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Gets a vector IDs of all nodes in the network.
-  void GetNIdV(TIntV& NIdV) const;
+  void GetNIdV(TInt64V& NIdV) const;
 
   /// Tests whether the network is empty (has zero nodes).
   bool Empty() const { return GetNodes()==0; }
   /// Deletes all nodes and edges from the network.
   void Clr() { MxNId=0; NEdges=0; NodeH.Clr(); SAttrN.Clr(); SAttrE.Clr(); }
   /// Reserves memory for a network of Nodes nodes and Edges edges.
-  void Reserve(const int& Nodes, const int& Edges) { if (Nodes>0) NodeH.Gen(Nodes/2); }
+  void Reserve(const int64& Nodes, const int64& Edges) { if (Nodes>0) NodeH.Gen(Nodes/2); }
   /// Reserves memory for node ID NId having Deg edges.
-  void ReserveNIdDeg(const int& NId, const int& Deg) { GetNode(NId).NIdV.Reserve(Deg); }
+  void ReserveNIdDeg(const int64& NId, const int64& Deg) { GetNode(NId).NIdV.Reserve(Deg); }
   /// Sorts the adjacency lists of each node.
   void SortNodeAdjV() { for (TNodeI NI = BegNI(); NI < EndNI(); NI++) { NI.SortNIdV();} }
   /// Defragments the network. ##TUndirNet::Defrag
@@ -2812,239 +2812,239 @@ public:
   static PUndirNet GetSmallGraph();
 
   /// Adds Int sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TInt64& Val);
   /// Adds Int sparse attribute with id \c AttrId to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TInt64& Val);
 
   /// Adds Int sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TInt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TInt64& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Int sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TInt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TInt64& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Adds Flt sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TFlt& Val);
   /// Adds Flt sparse attribute with id \c AttrId to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TFlt& Val);
 
   /// Adds Flt sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TFlt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TFlt& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Flt sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TFlt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TFlt& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Adds Str sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TStr& Val);
   /// Adds Str sparse attribute with id \c AttrId to the given node with id \c NId. 
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TStr& Val);
 
   /// Adds Str sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TStr& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TStr& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Str sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TStr& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TStr& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Gets Int sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TInt64& ValX) const;
   /// Gets Int sparse attribute with id \c AttrId from node with id \c NId. 
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Gets Int sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TInt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TInt64& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   }
   /// Gets Int sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TInt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TInt64& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Gets Flt sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TFlt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TFlt& ValX) const;
   /// Gets Flt sparse attribute with id \c AttrId from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Gets Flt sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TFlt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TFlt& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   } 
   /// Gets Flt sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TFlt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TFlt& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Gets Str sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TStr& ValX) const;
   /// Gets Str sparse attribute with id \c AttrId from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TStr& ValX) const;
 
   /// Gets Str sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TStr& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TStr& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   }
   /// Gets Str sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TStr& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TStr& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Deletes sparse attribute with name \c AttrName from node with id \c NId.
-  int DelSAttrDatN(const TInt& NId, const TStr& AttrName);
+  int64 DelSAttrDatN(const TInt64& NId, const TStr& AttrName);
   /// Deletes sparse attribute with id \c AttrId from node with id \c NId.
-  int DelSAttrDatN(const TInt& NId, const TInt& AttrId);
+  int64 DelSAttrDatN(const TInt64& NId, const TInt64& AttrId);
 
   /// Deletes sparse attribute with name \c AttrName from \c NodeI.
-  int DelSAttrDatN(const TNodeI& NodeI, const TStr& AttrName) {
+  int64 DelSAttrDatN(const TNodeI& NodeI, const TStr& AttrName) {
     return DelSAttrDatN(NodeI.GetId(), AttrName);
   }
   /// Deletes sparse attribute with id \c AttrId from \c NodeI.
-  int DelSAttrDatN(const TNodeI& NodeI, const TInt& AttrId) {
+  int64 DelSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId) {
     return DelSAttrDatN(NodeI.GetId(), AttrId);
   }
 
   /// Gets a list of all sparse attributes of type \c AttrType for node with id \c NId.
-  int GetSAttrVN(const TInt& NId, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  int64 GetSAttrVN(const TInt64& NId, const TAttrType AttrType, TAttrPrV& AttrV) const;
   /// Gets a list of all sparse attributes of type \c AttrType for \c NodeI.
-  int GetSAttrVN(const TNodeI& NodeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
+  int64 GetSAttrVN(const TNodeI& NodeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
     return GetSAttrVN(NodeI.GetId(), AttrType, AttrV);
   }
 
   /// Gets a list of all nodes that have a sparse attribute with name \c AttrName.
-  int GetIdVSAttrN(const TStr& AttrName, TIntV& IdV) const;
+  int64 GetIdVSAttrN(const TStr& AttrName, TInt64V& IdV) const;
   /// Gets a list of all nodes that have a sparse attribute with id \c AttrId.
-  int GetIdVSAttrN(const TInt& AttrId, TIntV& IdV) const;
+  int64 GetIdVSAttrN(const TInt64& AttrId, TInt64V& IdV) const;
 
   /// Adds mapping for sparse attribute with name \c Name and type \c AttrType.
-  int AddSAttrN(const TStr& Name, const TAttrType& AttrType, TInt& AttrId);
+  int64 AddSAttrN(const TStr& Name, const TAttrType& AttrType, TInt64& AttrId);
 
   /// Gets id and type for attribute with name \c Name.
-  int GetSAttrIdN(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrIdN(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Gets name and type for attribute with id \c AttrId.
-  int GetSAttrNameN(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrNameN(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 
   /// Adds Int sparse attribute with name \c AttrName to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, const TInt64& Val);
   /// Adds Int sparse attribute with id \c AttrId to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, const TInt64& Val);
 
   /// Adds Int sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TInt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TInt64& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, Val);
   }
   /// Adds Int sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TInt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TInt64& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, Val);
   }
 
   /// Adds Flt sparse attribute with name \c AttrName to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, const TFlt& Val);
   /// Adds Flt sparse attribute with id \c AttrId to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, const TFlt& Val);
 
   /// Adds Flt sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TFlt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TFlt& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, Val);
   }
   /// Adds Flt sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TFlt& Val){
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TFlt& Val){
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, Val);
   }
 
   /// Adds Str sparse attribute with name \c AttrName to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, const TStr& Val);
   /// Adds Str sparse attribute with id \c AttrId to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, const TStr& Val);
 
   /// Adds Str sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TStr& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TStr& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, Val);
   }
   /// Adds Str sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TStr& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TStr& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, Val);
   }
 
   /// Gets Int sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, TInt64& ValX) const;
   /// Gets Int sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Gets Int sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TInt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TInt64& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, ValX);
   }
   /// Gets Int sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TInt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TInt64& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, ValX);
   } 
 
   /// Gets Flt sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, TFlt& ValX) const; 
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, TFlt& ValX) const; 
   /// Gets Flt sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Gets Flt sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TFlt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TFlt& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, ValX);
   }
   /// Gets Flt sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TFlt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TFlt& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, ValX);
   } 
 
   /// Gets Str sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, TStr& ValX) const;
   /// Gets Str sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, TStr& ValX) const;
 
   /// Gets Str sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TStr& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TStr& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, ValX);
   }
   /// Gets Str sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TStr& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TStr& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, ValX);
   }
 
   /// Deletes sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int DelSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName);
+  int64 DelSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName);
   /// Deletes sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int DelSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId);
+  int64 DelSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId);
 
   /// Deletes sparse attribute with name \c AttrName from \c EdgeI.
-  int DelSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName) {
+  int64 DelSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName) {
     return DelSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName);
   }
   /// Deletes sparse attribute with id \c AttrId from \c EdgeI.
-  int DelSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId) {
+  int64 DelSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId) {
     return DelSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId);
   } 
   /// Gets a list of all sparse attributes of type \c AttrType for edge with ids \c SrcId and \c DstId.
-  int GetSAttrVE(const int& SrcNId, const int& DstNId, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  int64 GetSAttrVE(const int64& SrcNId, const int64& DstNId, const TAttrType AttrType, TAttrPrV& AttrV) const;
   /// Gets a list of all sparse attributes of type \c AttrType for \c EdgeI.
-  int GetSAttrVE(const TEdgeI& EdgeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
+  int64 GetSAttrVE(const TEdgeI& EdgeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
     return GetSAttrVE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrType, AttrV);
   }
 
   /// Gets a list of all edges that have a sparse attribute with name \c AttrName.
-  int GetIdVSAttrE(const TStr& AttrName, TIntPrV& IdV) const;
+  int64 GetIdVSAttrE(const TStr& AttrName, TIntPr64V& IdV) const;
   /// Gets a list of all edges that have a sparse attribute with id \c AttrId.
-  int GetIdVSAttrE(const TInt& AttrId, TIntPrV& IdV) const;
+  int64 GetIdVSAttrE(const TInt64& AttrId, TIntPr64V& IdV) const;
 
   /// Adds mapping for sparse attribute with name \c Name and type \c AttrType.
-  int AddSAttrE(const TStr& Name, const TAttrType& AttrType, TInt& AttrId);
+  int64 AddSAttrE(const TStr& Name, const TAttrType& AttrType, TInt64& AttrId);
 
   /// Gets id and type for attribute with name \c Name.
-  int GetSAttrIdE(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrIdE(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Gets name and type for attribute with id \c AttrId.
-  int GetSAttrNameE(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrNameE(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 
   friend class TUndirNetMtx;
   friend class TPt<TUndirNet>;
@@ -3059,24 +3059,24 @@ public:
 public:
   class TNode {
   private:
-    TInt Id;
-    TIntV InNIdV, OutNIdV;
+    TInt64 Id;
+    TInt64V InNIdV, OutNIdV;
   public:
     TNode() : Id(-1), InNIdV(), OutNIdV() { }
-    TNode(const int& NId) : Id(NId), InNIdV(), OutNIdV() { }
+    TNode(const int64& NId) : Id(NId), InNIdV(), OutNIdV() { }
     TNode(const TNode& Node) : Id(Node.Id), InNIdV(Node.InNIdV), OutNIdV(Node.OutNIdV) { }
     TNode(TSIn& SIn) : Id(SIn), InNIdV(SIn), OutNIdV(SIn) { }
     void Save(TSOut& SOut) const { Id.Save(SOut); InNIdV.Save(SOut); OutNIdV.Save(SOut); }
-    int GetId() const { return Id; }
-    int GetDeg() const { return GetInDeg() + GetOutDeg(); }
-    int GetInDeg() const { return InNIdV.Len(); }
-    int GetOutDeg() const { return OutNIdV.Len(); }
-    int GetInNId(const int& NodeN) const { return InNIdV[NodeN]; }
-    int GetOutNId(const int& NodeN) const { return OutNIdV[NodeN]; }
-    int GetNbrNId(const int& NodeN) const { return NodeN<GetOutDeg()?GetOutNId(NodeN):GetInNId(NodeN-GetOutDeg()); }
-    bool IsInNId(const int& NId) const { return InNIdV.SearchBin(NId) != -1; }
-    bool IsOutNId(const int& NId) const { return OutNIdV.SearchBin(NId) != -1; }
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    int64 GetId() const { return Id; }
+    int64 GetDeg() const { return GetInDeg() + GetOutDeg(); }
+    int64 GetInDeg() const { return InNIdV.Len(); }
+    int64 GetOutDeg() const { return OutNIdV.Len(); }
+    int64 GetInNId(const int64& NodeN) const { return InNIdV[NodeN]; }
+    int64 GetOutNId(const int64& NodeN) const { return OutNIdV[NodeN]; }
+    int64 GetNbrNId(const int64& NodeN) const { return NodeN<GetOutDeg()?GetOutNId(NodeN):GetInNId(NodeN-GetOutDeg()); }
+    bool IsInNId(const int64& NId) const { return InNIdV.SearchBin(NId) != -1; }
+    bool IsOutNId(const int64& NId) const { return OutNIdV.SearchBin(NId) != -1; }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     void PackOutNIdV() { OutNIdV.Pack(); }
     void PackNIdV() { InNIdV.Pack(); }
     void SortNIdV() { InNIdV.Sort(); OutNIdV.Sort();}
@@ -3086,7 +3086,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   private:
-    typedef THash<TInt, TNode>::TIter THashIter;
+    typedef THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
   public:
     TNodeI() : NodeHI() { }
@@ -3101,37 +3101,37 @@ public:
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
     /// Returns ID of the current node.
-    int GetId() const { return NodeHI.GetDat().GetId(); }
+    int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node, the sum of in-degree and out-degree.
-    int GetDeg() const { return NodeHI.GetDat().GetDeg(); }
+    int64 GetDeg() const { return NodeHI.GetDat().GetDeg(); }
     /// Returns in-degree of the current node.
-    int GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
+    int64 GetInDeg() const { return NodeHI.GetDat().GetInDeg(); }
     /// Returns out-degree of the current node.
-    int GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
+    int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Sorts the adjacency lists of the current node.
     void SortNIdV() { NodeHI.GetDat().SortNIdV(); }
     /// Returns ID of NodeN-th in-node (the node pointing to the current node). ##TDirNet::TNodeI::GetInNId
-    int GetInNId(const int& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
+    int64 GetInNId(const int64& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
     /// Returns ID of NodeN-th out-node (the node the current node points to). ##TDirNet::TNodeI::GetOutNId
-    int GetOutNId(const int& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
+    int64 GetOutNId(const int64& NodeN) const { return NodeHI.GetDat().GetOutNId(NodeN); }
     /// Returns ID of NodeN-th neighboring node. ##TDirNet::TNodeI::GetNbrNId
-    int GetNbrNId(const int& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
+    int64 GetNbrNId(const int64& NodeN) const { return NodeHI.GetDat().GetNbrNId(NodeN); }
     /// Tests whether node with ID NId points to the current node.
-    bool IsInNId(const int& NId) const { return NodeHI.GetDat().IsInNId(NId); }
+    bool IsInNId(const int64& NId) const { return NodeHI.GetDat().IsInNId(NId); }
     /// Tests whether the current node points to node with ID NId.
-    bool IsOutNId(const int& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
+    bool IsOutNId(const int64& NId) const { return NodeHI.GetDat().IsOutNId(NId); }
     /// Tests whether node with ID NId is a neighbor of the current node.
-    bool IsNbrNId(const int& NId) const { return IsOutNId(NId) || IsInNId(NId); }
+    bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     friend class TDirNet;
   };
   /// Edge iterator. Only forward iteration (operator++) is supported.
   class TEdgeI {
   private:
     TNodeI CurNode, EndNode;
-    int CurEdge;
+    int64 CurEdge;
   public:
     TEdgeI() : CurNode(), EndNode(), CurEdge(0) { }
-    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
+    TEdgeI(const TNodeI& NodeI, const TNodeI& EndNodeI, const int64& EdgeN=0) : CurNode(NodeI), EndNode(EndNodeI), CurEdge(EdgeN) { }
     TEdgeI(const TEdgeI& EdgeI) : CurNode(EdgeI.CurNode), EndNode(EdgeI.EndNode), CurEdge(EdgeI.CurEdge) { }
     TEdgeI& operator = (const TEdgeI& EdgeI) { if (this!=&EdgeI) { CurNode=EdgeI.CurNode; EndNode=EdgeI.EndNode; CurEdge=EdgeI.CurEdge; }  return *this; }
     /// Increment iterator.
@@ -3140,26 +3140,26 @@ public:
     bool operator < (const TEdgeI& EdgeI) const { return CurNode<EdgeI.CurNode || (CurNode==EdgeI.CurNode && CurEdge<EdgeI.CurEdge); }
     bool operator == (const TEdgeI& EdgeI) const { return CurNode == EdgeI.CurNode && CurEdge == EdgeI.CurEdge; }
     /// Returns edge ID. Always returns -1 since only edges in multigraphs have explicit IDs.
-    int GetId() const { return -1; }
+    int64 GetId() const { return -1; }
     /// Returns the source node of the edge.
-    int GetSrcNId() const { return CurNode.GetId(); }
+    int64 GetSrcNId() const { return CurNode.GetId(); }
     /// Returns the destination node of the edge.
-    int GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
+    int64 GetDstNId() const { return CurNode.GetOutNId(CurEdge); }
     friend class TDirNet;
   };
 private:
   TCRef CRef;
-  TInt MxNId;
-  THash<TInt, TNode> NodeH;
+  TInt64 MxNId;
+  THash<TInt64, TNode, int64> NodeH;
   TAttr SAttrN;
   TAttrPair SAttrE;
 private:
-  TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
-  const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
+  TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
+  const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
 public:
   TDirNet() : CRef(), MxNId(0), NodeH(), SAttrN(), SAttrE() { }
   /// Constructor that reserves enough memory for a network of Nodes nodes and Edges edges.
-  explicit TDirNet(const int& Nodes, const int& Edges) : MxNId(0), SAttrN(), SAttrE() { Reserve(Nodes, Edges); }
+  explicit TDirNet(const int64& Nodes, const int64& Edges) : MxNId(0), SAttrN(), SAttrE() { Reserve(Nodes, Edges); }
   TDirNet(const TDirNet& Graph) : MxNId(Graph.MxNId), NodeH(Graph.NodeH), SAttrN(), SAttrE() { }
   /// Constructor that loads the network from a (binary) stream SIn.
   TDirNet(TSIn& SIn) : MxNId(SIn), NodeH(SIn), SAttrN(SIn), SAttrE(SIn) { }
@@ -3170,7 +3170,7 @@ public:
   /// Static constructor that returns a pointer to the network. Call: PDirNet Graph = TDirNet::New().
   static PDirNet New() { return new TDirNet(); }
   /// Static constructor that returns a pointer to the network and reserves enough memory for Nodes nodes and Edges edges. ##TDirNet::New
-  static PDirNet New(const int& Nodes, const int& Edges) { return new TDirNet(Nodes, Edges); }
+  static PDirNet New(const int64& Nodes, const int64& Edges) { return new TDirNet(Nodes, Edges); }
   /// Static constructor that loads the network from a stream SIn and returns a pointer to it.
   static PDirNet Load(TSIn& SIn) { return PDirNet(new TDirNet(SIn)); }
   /// Static constructor that loads the network from a stream SIn and returns a pointer to it. Backwards compatible.
@@ -3183,72 +3183,72 @@ public:
     if (this!=&Graph) { MxNId=Graph.MxNId; NodeH=Graph.NodeH; }  return *this; }
   
   /// Returns the number of nodes in the network.
-  int GetNodes() const { return NodeH.Len(); }
+  int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the network. ##TDirNet::AddNode
-  int AddNode(int NId = -1);
+  int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TDirNet::AddNodeUnchecked
-  int AddNodeUnchecked(int NId = -1);
+  int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds a node of ID NodeI.GetId() to the network.
-  int AddNode(const TNodeI& NodeId) { return AddNode(NodeId.GetId()); }
+  int64 AddNode(const TNodeI& NodeId) { return AddNode(NodeId.GetId()); }
   /// Adds a node of ID NId to the network, creates edges to the node from all nodes in vector InNIdV, creates edges from the node to all nodes in vector OutNIdV. ##TDirNet::AddNode-1
-  int AddNode(const int& NId, const TIntV& InNIdV, const TIntV& OutNIdV);
+  int64 AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NId to the network, creates edges to the node from all nodes in vector InNIdV in the vector pool Pool, creates edges from the node to all nodes in vector OutNIdVin the vector pool Pool . ##TDirNet::AddNode-2
-  int AddNode(const int& NId, const TVecPool<TInt>& Pool, const int& SrcVId, const int& DstVId);
+  int64 AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, const int64& SrcVId, const int64& DstVId);
   /// Deletes node of ID NId from the network. ##TDirNet::DelNode
-  void DelNode(const int& NId);
+  void DelNode(const int64& NId);
   /// Deletes node of ID NodeI.GetId() from the network.
   void DelNode(const TNode& NodeI) { DelNode(NodeI.GetId()); }
   /// Tests whether ID NId is a node.
-  bool IsNode(const int& NId) const { return NodeH.IsKey(NId); }
+  bool IsNode(const int64& NId) const { return NodeH.IsKey(NId); }
   /// Returns an iterator referring to the first node in the network.
   TNodeI BegNI() const { return TNodeI(NodeH.BegI()); }
   /// Returns an iterator referring to the past-the-end node in the network.
   TNodeI EndNI() const { return TNodeI(NodeH.EndI()); }
   /// Returns an iterator referring to the node of ID NId in the network.
-  TNodeI GetNI(const int& NId) const { return TNodeI(NodeH.GetI(NId)); }
+  TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId)); }
   // GetNodeC() has been commented out. It was a quick shortcut, do not use.
   //const TNode& GetNodeC(const int& NId) const { return NodeH.GetDat(NId); }
   /// Returns an ID that is larger than any node ID in the network.
-  int GetMxNId() const { return MxNId; }
+  int64 GetMxNId() const { return MxNId; }
 
   /// Returns the number of edges in the network.
-  int GetEdges() const;
+  int64 GetEdges() const;
   /// Adds an edge from node SrcNId to node DstNId to the network. ##TDirNet::AddEdge
-  int AddEdge(const int& SrcNId, const int& DstNId);
+  int64 AddEdge(const int64& SrcNId, const int64& DstNId);
   /// Adds an edge from node SrcNId to node DstNId to the network. ##TDirNet::AddEdgeUnchecked
-  int AddEdgeUnchecked(const int& SrcNId, const int& DstNId);
+  int64 AddEdgeUnchecked(const int64& SrcNId, const int64& DstNId);
   // Adds an edge from EdgeI.GetSrcNId() to EdgeI.GetDstNId() to the network.
-  int AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId()); }
+  int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId()); }
   /// Deletes an edge from node IDs SrcNId to DstNId from the network. ##TDirNet::DelEdge
-  void DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true);
+  void DelEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true);
   /// Tests whether an edge from node IDs SrcNId to DstNId exists in the network.
-  bool IsEdge(const int& SrcNId, const int& DstNId, const bool& IsDir = true) const;
+  bool IsEdge(const int64& SrcNId, const int64& DstNId, const bool& IsDir = true) const;
   /// Returns an iterator referring to the first edge in the network.
   TEdgeI BegEI() const { TNodeI NI=BegNI(); while(NI<EndNI() && NI.GetOutDeg()==0){NI++;} return TEdgeI(NI, EndNI()); }
   /// Returns an iterator referring to the past-the-end edge in the network.
   TEdgeI EndEI() const { return TEdgeI(EndNI(), EndNI()); }
   /// Not supported/implemented!
-  TEdgeI GetEI(const int& EId) const; // not supported
+  TEdgeI GetEI(const int64& EId) const; // not supported
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the network.
-  TEdgeI GetEI(const int& SrcNId, const int& DstNId) const;
+  TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
 
   /// Returns an ID of a random node in the network.
-  int GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
+  int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
   /// Returns an interator referring to a random node in the network.
   TNodeI GetRndNI(TRnd& Rnd=TInt::Rnd) { return GetNI(GetRndNId(Rnd)); }
   /// Gets a vector IDs of all nodes in the network.
-  void GetNIdV(TIntV& NIdV) const;
+  void GetNIdV(TInt64V& NIdV) const;
 
   /// Tests whether the network is empty (has zero nodes).
   bool Empty() const { return GetNodes()==0; }
   /// Deletes all nodes and edges from the network.
   void Clr() { MxNId=0; NodeH.Clr(); SAttrN.Clr(); SAttrE.Clr(); }
   /// Reserves memory for a network of Nodes nodes and Edges edges.
-  void Reserve(const int& Nodes, const int& Edges) { if (Nodes>0) { NodeH.Gen(Nodes/2); } }
+  void Reserve(const int64& Nodes, const int64& Edges) { if (Nodes>0) { NodeH.Gen(Nodes/2); } }
   /// Reserves memory for node ID NId having InDeg in-edges.
-  void ReserveNIdInDeg(const int& NId, const int& InDeg) { GetNode(NId).InNIdV.Reserve(InDeg); }
+  void ReserveNIdInDeg(const int64& NId, const int64& InDeg) { GetNode(NId).InNIdV.Reserve(InDeg); }
   /// Reserves memory for node ID NId having OutDeg out-edges.
-  void ReserveNIdOutDeg(const int& NId, const int& OutDeg) { GetNode(NId).OutNIdV.Reserve(OutDeg); }
+  void ReserveNIdOutDeg(const int64& NId, const int64& OutDeg) { GetNode(NId).OutNIdV.Reserve(OutDeg); }
   /// Sorts the adjacency lists of each node.
   void SortNodeAdjV() { for (TNodeI NI = BegNI(); NI < EndNI(); NI++) { NI.SortNIdV();} }
   /// Defragments the network. ##TDirNet::Defrag
@@ -3261,239 +3261,239 @@ public:
   static PDirNet GetSmallGraph();
 
   /// Adds Int sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TInt64& Val);
   /// Adds Int sparse attribute with id \c AttrId to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TInt64& Val);
 
   /// Adds Int sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TInt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TInt64& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Int sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TInt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TInt64& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Adds Flt sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TFlt& Val);
   /// Adds Flt sparse attribute with id \c AttrId to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TFlt& Val);
 
   /// Adds Flt sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TFlt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TFlt& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Flt sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TFlt& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TFlt& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Adds Str sparse attribute with name \c AttrName to the given node with id \c NId.
-  int AddSAttrDatN(const TInt& NId, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TStr& Val);
   /// Adds Str sparse attribute with id \c AttrId to the given node with id \c NId. 
-  int AddSAttrDatN(const TInt& NId, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDatN(const TInt64& NId, const TInt64& AttrId, const TStr& Val);
 
   /// Adds Str sparse attribute with name \c AttrName to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TStr& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, const TStr& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrName, Val);
   }
   /// Adds Str sparse attribute with id \c AttrId to \c NodeI.
-  int AddSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, const TStr& Val) {
+  int64 AddSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, const TStr& Val) {
     return AddSAttrDatN(NodeI.GetId(), AttrId, Val);
   }
 
   /// Gets Int sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TInt64& ValX) const;
   /// Gets Int sparse attribute with id \c AttrId from node with id \c NId. 
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Gets Int sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TInt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TInt64& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   }
   /// Gets Int sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TInt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TInt64& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Gets Flt sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TFlt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TFlt& ValX) const;
   /// Gets Flt sparse attribute with id \c AttrId from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Gets Flt sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TFlt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TFlt& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   } 
   /// Gets Flt sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TFlt& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TFlt& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Gets Str sparse attribute with name \c AttrName from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TStr& AttrName, TStr& ValX) const;
   /// Gets Str sparse attribute with id \c AttrId from node with id \c NId.
-  int GetSAttrDatN(const TInt& NId, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDatN(const TInt64& NId, const TInt64& AttrId, TStr& ValX) const;
 
   /// Gets Str sparse attribute with name \c AttrName from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TStr& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TStr& AttrName, TStr& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrName, ValX);
   }
   /// Gets Str sparse attribute with id \c AttrId from \c NodeI.
-  int GetSAttrDatN(const TNodeI& NodeI, const TInt& AttrId, TStr& ValX) const {
+  int64 GetSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId, TStr& ValX) const {
     return GetSAttrDatN(NodeI.GetId(), AttrId, ValX);
   }
 
   /// Deletes sparse attribute with name \c AttrName from node with id \c NId.
-  int DelSAttrDatN(const TInt& NId, const TStr& AttrName);
+  int64 DelSAttrDatN(const TInt64& NId, const TStr& AttrName);
   /// Deletes sparse attribute with id \c AttrId from node with id \c NId.
-  int DelSAttrDatN(const TInt& NId, const TInt& AttrId);
+  int64 DelSAttrDatN(const TInt64& NId, const TInt64& AttrId);
 
   /// Deletes sparse attribute with name \c AttrName from \c NodeI.
-  int DelSAttrDatN(const TNodeI& NodeI, const TStr& AttrName) {
+  int64 DelSAttrDatN(const TNodeI& NodeI, const TStr& AttrName) {
     return DelSAttrDatN(NodeI.GetId(), AttrName);
   }
   /// Deletes sparse attribute with id \c AttrId from \c NodeI.
-  int DelSAttrDatN(const TNodeI& NodeI, const TInt& AttrId) {
+  int64 DelSAttrDatN(const TNodeI& NodeI, const TInt64& AttrId) {
     return DelSAttrDatN(NodeI.GetId(), AttrId);
   }
 
   /// Gets a list of all sparse attributes of type \c AttrType for node with id \c NId.
-  int GetSAttrVN(const TInt& NId, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  int64 GetSAttrVN(const TInt64& NId, const TAttrType AttrType, TAttrPrV& AttrV) const;
   /// Gets a list of all sparse attributes of type \c AttrType for \c NodeI.
-  int GetSAttrVN(const TNodeI& NodeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
+  int64 GetSAttrVN(const TNodeI& NodeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
     return GetSAttrVN(NodeI.GetId(), AttrType, AttrV);
   }
 
   /// Gets a list of all nodes that have a sparse attribute with name \c AttrName.
-  int GetIdVSAttrN(const TStr& AttrName, TIntV& IdV) const;
+  int64 GetIdVSAttrN(const TStr& AttrName, TInt64V& IdV) const;
   /// Gets a list of all nodes that have a sparse attribute with id \c AttrId.
-  int GetIdVSAttrN(const TInt& AttrId, TIntV& IdV) const;
+  int64 GetIdVSAttrN(const TInt64& AttrId, TInt64V& IdV) const;
 
   /// Adds mapping for sparse attribute with name \c Name and type \c AttrType.
-  int AddSAttrN(const TStr& Name, const TAttrType& AttrType, TInt& AttrId);
+  int64 AddSAttrN(const TStr& Name, const TAttrType& AttrType, TInt64& AttrId);
 
   /// Gets id and type for attribute with name \c Name.
-  int GetSAttrIdN(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrIdN(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Gets name and type for attribute with id \c AttrId.
-  int GetSAttrNameN(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrNameN(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 
   /// Adds Int sparse attribute with name \c AttrName to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, const TInt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, const TInt64& Val);
   /// Adds Int sparse attribute with id \c AttrId to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, const TInt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, const TInt64& Val);
 
   /// Adds Int sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TInt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TInt64& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, Val);
   }
   /// Adds Int sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TInt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TInt64& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, Val);
   }
 
   /// Adds Flt sparse attribute with name \c AttrName to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, const TFlt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, const TFlt& Val);
   /// Adds Flt sparse attribute with id \c AttrId to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, const TFlt& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, const TFlt& Val);
 
   /// Adds Flt sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TFlt& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TFlt& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, Val);
   }
   /// Adds Flt sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TFlt& Val){
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TFlt& Val){
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, Val);
   }
 
   /// Adds Str sparse attribute with name \c AttrName to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, const TStr& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, const TStr& Val);
   /// Adds Str sparse attribute with id \c AttrId to the given edge with ids \c SrcId and \c DstId.
-  int AddSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, const TStr& Val);
+  int64 AddSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, const TStr& Val);
 
   /// Adds Str sparse attribute with name \c AttrName to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TStr& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, const TStr& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, Val);
   }
   /// Adds Str sparse attribute with id \c AttrId to \c EdgeI.
-  int AddSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, const TStr& Val) {
+  int64 AddSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, const TStr& Val) {
     return AddSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, Val);
   }
 
   /// Gets Int sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, TInt& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, TInt64& ValX) const;
   /// Gets Int sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, TInt& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, TInt64& ValX) const;
 
   /// Gets Int sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TInt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TInt64& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, ValX);
   }
   /// Gets Int sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TInt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TInt64& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, ValX);
   } 
 
   /// Gets Flt sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, TFlt& ValX) const; 
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, TFlt& ValX) const; 
   /// Gets Flt sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, TFlt& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, TFlt& ValX) const;
 
   /// Gets Flt sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TFlt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TFlt& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, ValX);
   }
   /// Gets Flt sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TFlt& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TFlt& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, ValX);
   } 
 
   /// Gets Str sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName, TStr& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName, TStr& ValX) const;
   /// Gets Str sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int GetSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId, TStr& ValX) const;
+  int64 GetSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId, TStr& ValX) const;
 
   /// Gets Str sparse attribute with name \c AttrName from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TStr& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName, TStr& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName, ValX);
   }
   /// Gets Str sparse attribute with id \c AttrId from \c EdgeI.
-  int GetSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId, TStr& ValX) const {
+  int64 GetSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId, TStr& ValX) const {
     return GetSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId, ValX);
   }
 
   /// Deletes sparse attribute with name \c AttrName from edge with ids \c SrcId and \c DstId.
-  int DelSAttrDatE(const int& SrcNId, const int& DstNId, const TStr& AttrName);
+  int64 DelSAttrDatE(const int64& SrcNId, const int64& DstNId, const TStr& AttrName);
   /// Deletes sparse attribute with id \c AttrId from edge with ids \c SrcId and \c DstId.
-  int DelSAttrDatE(const int& SrcNId, const int& DstNId, const TInt& AttrId);
+  int64 DelSAttrDatE(const int64& SrcNId, const int64& DstNId, const TInt64& AttrId);
 
   /// Deletes sparse attribute with name \c AttrName from \c EdgeI.
-  int DelSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName) {
+  int64 DelSAttrDatE(const TEdgeI& EdgeI, const TStr& AttrName) {
     return DelSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrName);
   }
   /// Deletes sparse attribute with id \c AttrId from \c EdgeI.
-  int DelSAttrDatE(const TEdgeI& EdgeI, const TInt& AttrId) {
+  int64 DelSAttrDatE(const TEdgeI& EdgeI, const TInt64& AttrId) {
     return DelSAttrDatE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrId);
   } 
   /// Gets a list of all sparse attributes of type \c AttrType for edge with ids \c SrcId and \c DstId.
-  int GetSAttrVE(const int& SrcNId, const int& DstNId, const TAttrType AttrType, TAttrPrV& AttrV) const;
+  int64 GetSAttrVE(const int64& SrcNId, const int64& DstNId, const TAttrType AttrType, TAttrPrV& AttrV) const;
   /// Gets a list of all sparse attributes of type \c AttrType for \c EdgeI.
-  int GetSAttrVE(const TEdgeI& EdgeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
+  int64 GetSAttrVE(const TEdgeI& EdgeI, const TAttrType AttrType, TAttrPrV& AttrV) const {
     return GetSAttrVE(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), AttrType, AttrV);
   }
 
   /// Gets a list of all edges that have a sparse attribute with name \c AttrName.
-  int GetIdVSAttrE(const TStr& AttrName, TIntPrV& IdV) const;
+  int64 GetIdVSAttrE(const TStr& AttrName, TIntPr64V& IdV) const;
   /// Gets a list of all edges that have a sparse attribute with id \c AttrId.
-  int GetIdVSAttrE(const TInt& AttrId, TIntPrV& IdV) const;
+  int64 GetIdVSAttrE(const TInt64& AttrId, TIntPr64V& IdV) const;
 
   /// Adds mapping for sparse attribute with name \c Name and type \c AttrType.
-  int AddSAttrE(const TStr& Name, const TAttrType& AttrType, TInt& AttrId);
+  int64 AddSAttrE(const TStr& Name, const TAttrType& AttrType, TInt64& AttrId);
 
   /// Gets id and type for attribute with name \c Name.
-  int GetSAttrIdE(const TStr& Name, TInt& AttrIdX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrIdE(const TStr& Name, TInt64& AttrIdX, TAttrType& AttrTypeX) const;
   /// Gets name and type for attribute with id \c AttrId.
-  int GetSAttrNameE(const TInt& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
+  int64 GetSAttrNameE(const TInt64& AttrId, TStr& NameX, TAttrType& AttrTypeX) const;
 
   friend class TPt<TDirNet>;
   friend class TDirNetMtx;
