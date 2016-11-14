@@ -440,8 +440,6 @@ public:
 
 /// The name of the friend is not found by simple name lookup until a matching declaration is provided in that namespace scope (either before or after the class declaration granting friendship).
 namespace TSnap{
-  // TODO64
-  /*
 	/// Converts table to a directed/undirected graph. Suitable for PUNGraph and PNGraph, but not for PNEANet where attributes are expected.
 	template<class PGraph> PGraph ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
@@ -468,7 +466,6 @@ namespace TSnap{
 
   int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV);
-*/
 #ifdef GCC_ATOMIC
 // TODO64
 /*
@@ -500,8 +497,6 @@ protected:
 
   static TInt64 UseMP; ///< Global switch for choosing multi-threaded versions of TTable functions.
 public:
-  // TODO64
-  /*
   template<class PGraph> friend PGraph TSnap::ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
     template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
@@ -523,7 +518,6 @@ public:
       TStr64V& EdgeAttrV);
     friend int64 TSnap::LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV); 
-  */
 #ifdef GCC_ATOMIC
 // TODO64
 /*
@@ -590,7 +584,7 @@ protected:
   TStr64V SrcNodeAttrV; ///< List of columns (attributes) to serve as source node attributes.
   TStr64V DstNodeAttrV; ///< List of columns (attributes) to serve as destination node attributes.
   TStrTr64V CommonNodeAttrs; ///< List of attribute pairs with values common to source and destination and their common given name. ##TTable::CommonNodeAttrs
-  TVec<TIntV> RowIdBuckets; ///< Partitioning of row ids into buckets corresponding to different graph objects when generating a sequence of graphs.
+  TVec<TInt64V, int64> RowIdBuckets; ///< Partitioning of row ids into buckets corresponding to different graph objects when generating a sequence of graphs.
   TInt64 CurrBucket; ///< Current row id bucket - used when generating a sequence of graphs using an iterator.
   TAttrAggr AggrPolicy; ///< Aggregation policy used for solving conflicts between different values of an attribute of the same node.
 
@@ -682,22 +676,20 @@ protected:
   void AddRow(const TInt64V& IntVals, const TFlt64V& FltVals, const TStr64V& StrVals);
 
 /***** Utility functions for building graph from TTable *****/
-  // TODO64
-  /*
   /// Adds names of columns to be used as graph attributes.
   void AddGraphAttribute(const TStr& Attr, TBool IsEdge, TBool IsSrc, TBool IsDst);
   /// Adds vector of names of columns to be used as graph attributes.
   void AddGraphAttributeV(TStr64V& Attrs, TBool IsEdge, TBool IsSrc, TBool IsDst);
   /// Checks if given \c NodeId is seen earlier; if not, add it to \c Graph and hashmap \c NodeVals.
-  void CheckAndAddIntNode(PNEANet Graph, THashSet<TInt64>& NodeVals, TInt64 NodeId);
+  void CheckAndAddIntNode(PNEANet Graph, THashSet<TInt64, int64>& NodeVals, TInt64 NodeId);
   /// Checks if given \c NodeVal is seen earlier; if not, add it to \c Graph and hashmap \c NodeVals.
   template<class T> TInt64 CheckAndAddFltNode(T Graph, THash<TFlt, TInt64, int64>& NodeVals, TFlt FNodeVal);
   /// Adds attributes of edge corresponding to \c RowId to the \c Graph.
   void AddEdgeAttributes(PNEANet& Graph, int64 RowId);
   /// Takes as parameters, and updates, maps NodeXAttrs: Node Id --> (attribute name --> Vector of attribute values).
   void AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowId,
-   THash<TInt64, TStrInt64V64H, int64>& NodeIntAttrs, THash<TInt64, TStrFlt64V64H, int64>& NodeFltAttrs,
-   THash<TInt64, TStrStr64V64H, int64>& NodeStrAttrs);
+   THash<TInt64, TStrInt64VH, int64>& NodeIntAttrs, THash<TInt64, TStrFlt64VH, int64>& NodeFltAttrs,
+   THash<TInt64, TStrStr64VH, int64>& NodeStrAttrs);
   /// Makes a single pass over the rows in the given row id set, and creates nodes, edges, assigns node and edge attributes.
   PNEANet BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy);
   /// Initializes the RowIdBuckets vector which will be used for the graph sequence creation.
@@ -713,7 +705,6 @@ protected:
   PNEANet GetFirstGraphFromSequence(TAttrAggr AggrPolicy);
   /// Returns the next graph in sequence corresponding to RowIdBuckets. ##TTable::GetNextGraphFromSequence
   PNEANet GetNextGraphFromSequence();
-  */
   /// Aggregates vector into a single scalar value according to a policy. ##TTable::AggregateVector
   template <class T> T AggregateVector(TVec<T, int64>& V, TAttrAggr Policy);
 
@@ -1031,15 +1022,13 @@ public:
   Schema GetSchema() { return DenormalizeSchema(); }
 
 /***** Graph handling *****/
-  // TODO64
-  /*
   /// Creates a sequence of graphs based on values of column SplitAttr and windows specified by JumpSize and WindowSize.
   TVec<PNEANet, int64> ToGraphSequence(TStr SplitAttr, TAttrAggr AggrPolicy,
     TInt64 WindowSize, TInt64 JumpSize, TInt64 StartVal = TInt64::Mn, TInt64 EndVal = TInt64::Mx);
   /// Creates a sequence of graphs based on values of column SplitAttr and intervals specified by SplitIntervals.
   TVec<PNEANet, int64> ToVarGraphSequence(TStr SplitAttr, TAttrAggr AggrPolicy, TIntPr64V SplitIntervals);
   /// Creates a sequence of graphs based on grouping specified by GroupAttr.
-  TVec<PNEANet> ToGraphPerGroup(TStr GroupAttr, TAttrAggr AggrPolicy);
+  TVec<PNEANet, int64> ToGraphPerGroup(TStr GroupAttr, TAttrAggr AggrPolicy);
 
   /// Creates the graph sequence one at a time. ##TTable::ToGraphSequenceIterator
   PNEANet ToGraphSequenceIterator(TStr SplitAttr, TAttrAggr AggrPolicy,
@@ -1120,7 +1109,6 @@ public:
   static PTable GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property,
    const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName,
    TTableContext* Context);
-*/
 /***** Basic Getters *****/
   /// Gets type of column \c ColName.
 	TAttrType GetColType(const TStr& ColName) const {
@@ -1390,8 +1378,6 @@ public:
   PTable IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName = "");
 
   /// Gets sequence of PageRank tables from given \c GraphSeq.
-  // TODO64
-  /*
   static TTableIterator GetMapPageRank(const TVec<PNEANet, int64>& GraphSeq, TTableContext* Context,
    const double& C = 0.85, const double& Eps = 1e-4, const int64& MaxIter = 100) {
     TVec<PTable, int64> TableSeq(GraphSeq.Len());
@@ -1406,7 +1392,6 @@ public:
     TSnap::MapHits(GraphSeq, TableSeq, Context, MaxIter);
     return TTableIterator(TableSeq);
   }
-  */
   void PrintSize();
   void PrintContextSize();
   /// Returns approximate memory used by table in [KB]
@@ -1607,6 +1592,8 @@ void TTable::RegisterGrouping(const T& Grouping, const TStr& GroupByCol, TBool U
 }
 */
 
+// TODO64
+/*
 namespace TSnap {
 
   /// Gets sequence of PageRank tables from given \c GraphSeq into \c TableSeq.
@@ -1649,6 +1636,6 @@ namespace TSnap {
     }
   }
 }
-
+*/
 #endif //TABLE_H
 
