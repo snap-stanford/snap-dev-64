@@ -132,7 +132,7 @@ void TGraphKey::TakeSig(const PNGraph& Graph, const int& MnSvdGraph, const int& 
     try { // can fail to converge but results seem to be good
       TSvd::Svd(AdjMtx, LSingV, SngValV, RSingV);
     } catch(...) {
-      printf("\n***No SVD convergence: G(%d, %s): SngValV.Len():%d\n", Nodes(), TInt64::GetStr(Graph->GetEdges()), SngValV.Len());
+      printf("\n***No SVD convergence: G(%d, %s): SngValV.Len():%d\n", Nodes(), TInt64::GetStr(Graph->GetEdges()).CStr(), SngValV.Len());
     }
     // round singular values
     SngValV.Sort(false);

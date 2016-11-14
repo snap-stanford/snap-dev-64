@@ -1777,11 +1777,11 @@ void TTable::PrintGrouping(const THash<TGroupKey, TInt64V, int64>& Mapping) cons
   		TGroupKey gk = it.GetKey();
   		TInt64V ik = gk.Val1;
   		TFlt64V fk = gk.Val2;
-  		for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val));} 
+  		for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val).CStr());} 
   		for(int64 i = 0; i < fk.Len(); i++){ printf("%f ",fk[i].Val);} 
   		printf("-->");
   		TInt64V v = it.GetDat();
-  		for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val));} 
+  		for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val).CStr());} 
   		printf("\n");
   	}
 }
@@ -3918,11 +3918,11 @@ PTable TTable::IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, cons
 }
 
 void TTable::PrintSize(){
-	printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val));
-	printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val));
-	printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()));
-	printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()));
-	printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()));
+	printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val).CStr());
+	printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val).CStr());
+	printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()).CStr());
+	printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()).CStr());
+	printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()).CStr());
 	TSize MemUsed = GetMemUsedKB();
 	printf("Approximate table size is %s KB\n", TUInt64::GetStr(MemUsed).CStr());
 }
@@ -3948,9 +3948,9 @@ TSize TTable::GetMemUsedKB() {
 
 void TTable::PrintContextSize(){
 	printf("Number of strings in pool: ");
-	printf("%d\n", Context->StringVals.Len());
+	printf("%s\n", TInt64::GetStr(Context->StringVals.Len()).CStr());
 	printf("Number of entries in hash table: ");
-	printf("%d\n", Context->StringVals.Reserved());
+	printf("%s\n", TInt64::GetStr(Context->StringVals.Reserved()).CStr());
 	TSize MemUsed = GetContextMemUsedKB();
 	printf("Approximate context size is %s KB\n",
           TUInt64::GetStr(MemUsed).CStr());

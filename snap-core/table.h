@@ -1405,7 +1405,6 @@ public:
 };
 
 typedef TPair<TStr,TAttrType> TStrTypPr;
-/*
 template<class T>
 TInt64 TTable::CheckAndAddFltNode(T Graph, THash<TFlt, TInt64, int64>& NodeVals, TFlt FNodeVal) {
   if (!NodeVals.IsKey(FNodeVal)) {
@@ -1416,7 +1415,6 @@ TInt64 TTable::CheckAndAddFltNode(T Graph, THash<TFlt, TInt64, int64>& NodeVals,
     return NodeVal;
   } else { return NodeVals.GetDat(FNodeVal); }
 }
-*/
 template <class T>
 T TTable::AggregateVector(TVec<T, int64>& V, TAttrAggr Policy) {
   switch (Policy) {
