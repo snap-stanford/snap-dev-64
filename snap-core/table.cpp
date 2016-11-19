@@ -678,9 +678,6 @@ void TTable::LoadSSSeq(
   //printf("starting to populate table\n");
   uint64 Cnt = 0;
   while (Ss.Next()) {
-    if (Cnt % 100000000 == 0) {
-      printf("%ld\n", Cnt);
-    }  
     int64 IntColIdx = 0;
     int64 FltColIdx = 0;
     int64 StrColIdx = 0;
@@ -692,9 +689,9 @@ void TTable::LoadSSSeq(
       switch (ColTypes[i]) {
         case atInt:
           if (RelevantCols.Len() == 0) {
-            T->IntCols[IntColIdx].Add(Ss.GetInt(i));
+            T->IntCols[IntColIdx].Add(Ss.GetInt64(i));
           } else {
-            T->IntCols[IntColIdx].Add(Ss.GetInt(RelevantCols[i]));
+            T->IntCols[IntColIdx].Add(Ss.GetInt64(RelevantCols[i]));
           }
           IntColIdx++;
           break;
