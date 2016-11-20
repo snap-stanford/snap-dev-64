@@ -167,6 +167,24 @@ int TSsParserMP::GetIntFromFldV(TVec<char*>& FieldsV, const int& FldN) {
   return _Val;
 }
 
+int64 TSsParserMP::GetIntFromFldV(TVec<char*>& FieldsV, const int64& FldN) {
+  // parsing format {ws} [+/-] +{ddd}
+  int64 _Val = -1;
+  bool Minus=false;
+  const char *c = FieldsV[FldN];
+  while (TCh::IsWs(*c)) { c++; }
+  if (*c=='-') { Minus=true; c++; }
+  if (! TCh::IsNum(*c)) { return -1; }
+  _Val = TCh::GetNum(*c);  c++;
+  while (TCh::IsNum(*c)){ 
+    _Val = 10 * _Val + TCh::GetNum(*c); 
+    c++; 
+  }
+  if (Minus) { _Val = -_Val; }
+  //if (*c != 0) { return -1; }
+  return _Val;
+}
+
 double TSsParserMP::GetFltFromFldV(TVec<char*>& FieldsV, const int& FldN) {
   // parsing format {ws} [+/-] +{d} ([.]{d}) ([E|e] [+/-] +{d})
   const char *c = FieldsV[FldN];

@@ -484,7 +484,6 @@ void TTable::GetSchema(const TStr& InFNm, Schema& S, const char& Separator) {
 }
 
 #ifdef GCC_ATOMIC
-/*
 void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, 
                         const char& Separator, TBool HasTitleLine) {
   // preloaded necessary variables
@@ -506,7 +505,7 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
     }
     for (TInt64 i = 0; i < Ss.GetFlds(); i++) {
       // remove carriage return char
-      TInt64 L = strlen(Ss[i]);
+      int64 L = strlen(Ss[i]);
       if (Ss[i][L-1] < ' ') { Ss[i][L-1] = 0; }
       if (NormalizeColName(S[i].Val1) != NormalizeColName(Ss[i])) { TExcept::Throw("Table Schema Mismatch!"); }
     }
@@ -571,10 +570,10 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
   #pragma omp parallel for schedule(dynamic) reduction(+:Cnt)
   for (int64 i = 0; i < NumThreads; i++) {
     // calculate beginning of each line handled by thread
-    TVec<uint64, int64> LineStartPosV = Ss.GetStartPosV(StartIntV[i], StartIntV[i+1]);
+    TVec<uint64> LineStartPosV = Ss.GetStartPosV(StartIntV[i], StartIntV[i+1]);
     // parse line and fill rows
     for (uint64 k = 0; k < (uint64) LineStartPosV.Len(); k++) {
-      TVec<char*, int64> FieldsV;
+      TVec<char*> FieldsV;
       Ss.NextFromIndex(LineStartPosV[k], FieldsV);
       if (FieldsV.Len() != S.Len()) {
         TExcept::Throw("Error reading tsv file");
@@ -644,7 +643,6 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
   T->AddSchemaCol(T->IdColName, atInt);
   T->AddColType(T->IdColName, atInt, T->IntCols.Len()-1);
 }
-*/
 #endif // GCC_ATOMIC
 
 void TTable::LoadSSSeq(
@@ -765,8 +763,8 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
 #ifdef GLib_LINUX
      // Remove this when Parallel load works
      // TODO64
-     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
-     //LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+     //LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+     LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #endif

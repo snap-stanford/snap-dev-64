@@ -89,6 +89,9 @@ public:
 
   /// Gets integer at field \c FldN
   int GetIntFromFldV(TVec<char*>& FieldsV, const int& FldN);
+  
+  /// Gets integer at field \c FldN
+  int64 GetIntFromFldV(TVec<char*>& FieldsV, const int64& FldN);
 
   /// Gets float at field \c FldN
   double GetFltFromFldV(TVec<char*>& FieldsV, const int& FldN);
