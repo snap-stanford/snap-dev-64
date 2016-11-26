@@ -187,7 +187,7 @@ void WriteNodeSchemaToFile(FILE *F, TStr64V &IntAttrNNames, TStr64V &FltAttrNNam
 // in the order specified by FltAttrNNames, and the string attributes specified by StrAttrNNames. 
 void WriteNodesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrNNames, TStr64V &FltAttrNNames, TStr64V &StrAttrNNames) {
   for (TNEANet::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    fprintf(F, "%d", NI.GetId());
+    fprintf(F, "%s", TInt64::GetStr(NI.GetId()).CStr());
     for(int i = 0; i < IntAttrNNames.Len(); i++) {
       if (Graph->IsIntAttrDeletedN(NI.GetId(), IntAttrNNames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
@@ -237,7 +237,7 @@ void WriteEdgeSchemaToFile(FILE *F, TStr64V &IntAttrENames, TStr64V &FltAttrENam
 // in the order specified by FltAttrENames, and the string attributes specified by StrAttrENames. 
 void WriteEdgesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrENames, TStr64V &FltAttrENames, TStr64V &StrAttrENames) {
   for (TNEANet::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
-    fprintf(F, "%d\t%d", EI.GetSrcNId(), EI.GetDstNId());
+    fprintf(F, "%s\t%s", TInt64::GetStr(EI.GetSrcNId()).CStr(), TInt64::GetStr(EI.GetDstNId()).CStr());
     for(int i = 0; i < IntAttrENames.Len(); i++) {
       if (Graph->IsIntAttrDeletedE(EI.GetId(), IntAttrENames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
@@ -270,7 +270,7 @@ void SaveEdgeListNet(const PNEANet& Graph, const TStr& OutFNm, const TStr& Desc)
   FILE *F = fopen(OutFNm.CStr(), "wt");
   fprintf(F, "# Directed network: %s \n", OutFNm.CStr());
   if (! Desc.Empty()) { fprintf(F, "# %s\n", Desc.CStr()); }
-  fprintf(F, "# Nodes: %d Edges: %d\n", Graph->GetNodes(), Graph->GetEdges());
+  fprintf(F, "# Nodes: %s Edges: %s\n", TInt64::GetStr(Graph->GetNodes()).CStr(), TInt64::GetStr(Graph->GetEdges()).CStr());
 
   TStr64V IntAttrNNames;
   TStr64V FltAttrNNames;

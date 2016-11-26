@@ -484,7 +484,6 @@ void TTable::GetSchema(const TStr& InFNm, Schema& S, const char& Separator) {
 }
 
 #ifdef GCC_ATOMIC
-/*
 void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, 
                         const char& Separator, TBool HasTitleLine) {
   // preloaded necessary variables
@@ -506,7 +505,7 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
     }
     for (TInt64 i = 0; i < Ss.GetFlds(); i++) {
       // remove carriage return char
-      TInt64 L = strlen(Ss[i]);
+      int64 L = strlen(Ss[i]);
       if (Ss[i][L-1] < ' ') { Ss[i][L-1] = 0; }
       if (NormalizeColName(S[i].Val1) != NormalizeColName(Ss[i])) { TExcept::Throw("Table Schema Mismatch!"); }
     }
@@ -571,10 +570,10 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
   #pragma omp parallel for schedule(dynamic) reduction(+:Cnt)
   for (int64 i = 0; i < NumThreads; i++) {
     // calculate beginning of each line handled by thread
-    TVec<uint64, int64> LineStartPosV = Ss.GetStartPosV(StartIntV[i], StartIntV[i+1]);
+    TVec<uint64> LineStartPosV = Ss.GetStartPosV(StartIntV[i], StartIntV[i+1]);
     // parse line and fill rows
     for (uint64 k = 0; k < (uint64) LineStartPosV.Len(); k++) {
-      TVec<char*, int64> FieldsV;
+      TVec<char*> FieldsV;
       Ss.NextFromIndex(LineStartPosV[k], FieldsV);
       if (FieldsV.Len() != S.Len()) {
         TExcept::Throw("Error reading tsv file");
@@ -644,7 +643,6 @@ void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt
   T->AddSchemaCol(T->IdColName, atInt);
   T->AddColType(T->IdColName, atInt, T->IntCols.Len()-1);
 }
-*/
 #endif // GCC_ATOMIC
 
 void TTable::LoadSSSeq(
@@ -678,9 +676,6 @@ void TTable::LoadSSSeq(
   //printf("starting to populate table\n");
   uint64 Cnt = 0;
   while (Ss.Next()) {
-    if (Cnt % 1000000 == 0) {
-      printf("%ld\n", Cnt);
-    }  
     int64 IntColIdx = 0;
     int64 FltColIdx = 0;
     int64 StrColIdx = 0;
@@ -692,9 +687,9 @@ void TTable::LoadSSSeq(
       switch (ColTypes[i]) {
         case atInt:
           if (RelevantCols.Len() == 0) {
-            T->IntCols[IntColIdx].Add(Ss.GetInt(i));
+            T->IntCols[IntColIdx].Add(Ss.GetInt64(i));
           } else {
-            T->IntCols[IntColIdx].Add(Ss.GetInt(RelevantCols[i]));
+            T->IntCols[IntColIdx].Add(Ss.GetInt64(RelevantCols[i]));
           }
           IntColIdx++;
           break;
@@ -768,8 +763,8 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
 #ifdef GLib_LINUX
      // Remove this when Parallel load works
      // TODO64
-     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
-     //LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+     //LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+     LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #endif
@@ -968,8 +963,7 @@ void TTable::AddStrVal(const TStr& Col, const TStr& Key) {
   //printf("TTable::AddStrVal1  .%s.  .%s.\n", Col.CStr(), Key.CStr());
   AddStrVal(GetColIdx(Col), Key);
 }
-// TODO64 
-/*
+
 void TTable::AddGraphAttribute(const TStr& Attr, TBool IsEdge, TBool IsSrc, TBool IsDst) {
   if (!IsColName(Attr)) { TExcept::Throw(Attr + ": No such column"); }
   if (IsEdge) { EdgeAttrV.Add(NormalizeColName(Attr)); }
@@ -1089,7 +1083,7 @@ TStr64V TTable::GetEdgeStrAttrV() const {
   }
   return StrEA;
 }
-*/
+
 void TTable::Rename(const TStr& column, const TStr& NewLabel) {
   // This function is necessary, for example to take the union of two tables 
   // where the attribute names don't match.
@@ -1778,11 +1772,11 @@ void TTable::PrintGrouping(const THash<TGroupKey, TInt64V, int64>& Mapping) cons
   		TGroupKey gk = it.GetKey();
   		TInt64V ik = gk.Val1;
   		TFlt64V fk = gk.Val2;
-  		for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val));} 
+  		for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val).CStr());} 
   		for(int64 i = 0; i < fk.Len(); i++){ printf("%f ",fk[i].Val);} 
   		printf("-->");
   		TInt64V v = it.GetDat();
-  		for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val));} 
+  		for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val).CStr());} 
   		printf("\n");
   	}
 }
@@ -3378,9 +3372,8 @@ void TTable::SelectFirstNRows(const TInt64& N) {
   Next[LastId] = Last;
   LastValidRow = LastId;
 }
-// TODO64
-/*
-inline void TTable::CheckAndAddIntNode(PNEANet Graph, THashSet<TInt>& NodeVals, TInt64 NodeId) {
+
+inline void TTable::CheckAndAddIntNode(PNEANet Graph, THashSet<TInt64, int64>& NodeVals, TInt64 NodeId) {
   if (!NodeVals.IsKey(NodeId)) {
     Graph->AddNode(NodeId);
     NodeVals.AddKey(NodeId);
@@ -3406,8 +3399,8 @@ inline void TTable::AddEdgeAttributes(PNEANet& Graph, int64 RowId) {
   }
 }
 
-inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowId, THash<TInt64, TStrInt64V64H, int64>& NodeIntAttrs,
-  THash<TInt64, TStrFlt64V64H, int64>& NodeFltAttrs, THash<TInt64, TStrStr64V64H, int64>& NodeStrAttrs) {
+inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowId, THash<TInt64, TStrInt64VH, int64>& NodeIntAttrs,
+  THash<TInt64, TStrFlt64VH, int64>& NodeFltAttrs, THash<TInt64, TStrStr64VH, int64>& NodeStrAttrs) {
   for (TInt64 i = 0; i < NodeAttrV.Len(); i++) {
     TStr ColAttr = NodeAttrV[i];
     TAttrType CT = GetColType(ColAttr);
@@ -3434,11 +3427,8 @@ inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowI
     }
   }
 }
-*/
 // Makes one pass over all the rows in the vector RowIds, and builds
 // a PNEANet, with each row as an edge between SrcCol and DstCol.
-// TODO64
-/*
 PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
   PNEANet Graph = TNEANet::New();
   
@@ -3452,9 +3442,9 @@ PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
   THash<TFlt, TInt64, int64> FltNodeVals;
 
   // node attributes
-  THash<TInt64, TStrInt64V64H> NodeIntAttrs;
-  THash<TInt64, TStrFlt64V64H> NodeFltAttrs;
-  THash<TInt64, TStrStr64V64H> NodeStrAttrs;
+  THash<TInt64, TStrInt64VH, int64> NodeIntAttrs;
+  THash<TInt64, TStrFlt64VH, int64> NodeFltAttrs;
+  THash<TInt64, TStrStr64VH, int64> NodeStrAttrs;
 
   // make single pass over all rows in given row id set
   for (TVec<TInt64, int64>::TIter it = RowIds.BegI(); it < RowIds.EndI(); it++) {
@@ -3501,22 +3491,22 @@ PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
     for (TNEANet::TNodeI NodeI = Graph->BegNI(); NodeI < Graph->EndNI(); NodeI++) {
       TInt64 NId = NodeI.GetId();
       if (NodeIntAttrs.IsKey(NId)) {
-        TStrInt64V64H IntAttrVals = NodeIntAttrs.GetDat(NId);
-        for (TStrInt64V64H::TIter it = IntAttrVals.BegI(); it < IntAttrVals.EndI(); it++) {
+        TStrInt64VH IntAttrVals = NodeIntAttrs.GetDat(NId);
+        for (TStrInt64VH::TIter it = IntAttrVals.BegI(); it < IntAttrVals.EndI(); it++) {
           TInt64 AttrVal = AggregateVector<TInt64>(it.GetDat(), AggrPolicy);
           Graph->AddIntAttrDatN(NId, AttrVal, it.GetKey());
         }
       }
       if (NodeFltAttrs.IsKey(NId)) {
-        TStrFlt64V64H FltAttrVals = NodeFltAttrs.GetDat(NId);
-        for (TStrFlt64V64H::TIter it = FltAttrVals.BegI(); it < FltAttrVals.EndI(); it++) {
+        TStrFlt64VH FltAttrVals = NodeFltAttrs.GetDat(NId);
+        for (TStrFlt64VH::TIter it = FltAttrVals.BegI(); it < FltAttrVals.EndI(); it++) {
           TFlt AttrVal = AggregateVector<TFlt>(it.GetDat(), AggrPolicy);
           Graph->AddFltAttrDatN(NId, AttrVal, it.GetKey());
         }
       }
       if (NodeStrAttrs.IsKey(NId)) {
-        TStrStr64V64H StrAttrVals = NodeStrAttrs.GetDat(NId);
-        for (TStrStr64V64H::TIter it = StrAttrVals.BegI(); it < StrAttrVals.EndI(); it++) {
+        TStrStr64VH StrAttrVals = NodeStrAttrs.GetDat(NId);
+        for (TStrStr64VH::TIter it = StrAttrVals.BegI(); it < StrAttrVals.EndI(); it++) {
           TStr AttrVal = AggregateVector<TStr>(it.GetDat(), AggrPolicy);
           Graph->AddStrAttrDatN(NId, AttrVal, it.GetKey());
         }
@@ -3789,7 +3779,6 @@ PTable TTable::GetEdgeTable(const PNEANet& Network, TTableContext* Context) {
   T->Next.Add(Last);
   return T;
 }
-*/
 #ifdef GCC_ATOMIC
 // TODO64
 /*
@@ -3846,8 +3835,6 @@ PTable TTable::GetEdgeTablePN(const PNGraphMP& Network, TTableContext* Context){
 }
 */
 #endif // GCC_ATOMIC
-// TODO64
-/*
 PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property, 
  const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName, 
  TTableContext* Context) {
@@ -3885,7 +3872,6 @@ PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H&
   T->Next.Add(Last);
   return T;
 }
-*/
 /*** Special Filters ***/
 PTable TTable::IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName) {
   TStr64V OrderBy;
@@ -3927,11 +3913,11 @@ PTable TTable::IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, cons
 }
 
 void TTable::PrintSize(){
-	printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val));
-	printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val));
-	printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()));
-	printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()));
-	printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()));
+	printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val).CStr());
+	printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val).CStr());
+	printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()).CStr());
+	printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()).CStr());
+	printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()).CStr());
 	TSize MemUsed = GetMemUsedKB();
 	printf("Approximate table size is %s KB\n", TUInt64::GetStr(MemUsed).CStr());
 }
@@ -3957,9 +3943,9 @@ TSize TTable::GetMemUsedKB() {
 
 void TTable::PrintContextSize(){
 	printf("Number of strings in pool: ");
-	printf("%d\n", Context->StringVals.Len());
+	printf("%s\n", TInt64::GetStr(Context->StringVals.Len()).CStr());
 	printf("Number of entries in hash table: ");
-	printf("%d\n", Context->StringVals.Reserved());
+	printf("%s\n", TInt64::GetStr(Context->StringVals.Reserved()).CStr());
 	TSize MemUsed = GetContextMemUsedKB();
 	printf("Approximate context size is %s KB\n",
           TUInt64::GetStr(MemUsed).CStr());

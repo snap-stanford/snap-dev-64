@@ -206,12 +206,12 @@ bool TUNGraph::IsOk(const bool& ThrowExcept) const {
 // Print the graph in a human readable form to an output stream OutF.
 void TUNGraph::Dump(FILE *OutF) const {
   const int NodePlaces = (int) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nUndirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()), TInt64::GetStr(GetEdges()));
+  fprintf(OutF, "-------------------------------------------------\nUndirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()).CStr(), TInt64::GetStr(GetEdges()).CStr());
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
-    fprintf(OutF, "  %*s [%s] ", NodePlaces, TInt64::GetStr(Node.GetId()), TInt64::GetStr(Node.GetDeg()));
+    fprintf(OutF, "  %*s [%s] ", NodePlaces, TInt64::GetStr(Node.GetId()).CStr(), TInt64::GetStr(Node.GetDeg()).CStr());
     for (int64 edge = 0; edge < Node.GetDeg(); edge++) {
-      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetNbrNId(edge))); }
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetNbrNId(edge)).CStr()); }
     fprintf(OutF, "\n");
   }
   fprintf(OutF, "\n");
@@ -237,7 +237,7 @@ int64 TNGraph::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId)));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
     MxNId = TMath::Mx(NId+1, MxNId());
   }
   NodeH.AddDat(NId, TNode(NId));
@@ -258,7 +258,7 @@ int64 TNGraph::AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& O
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId)));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
     NewNId = NId;
     MxNId = TMath::Mx(NewNId+1, MxNId());
   }
@@ -436,16 +436,16 @@ bool TNGraph::IsOk(const bool& ThrowExcept) const {
 
 void TNGraph::Dump(FILE *OutF) const {
   const int NodePlaces = (int) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()), TInt64::GetStr(GetEdges()));
+  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()).CStr(), TInt64::GetStr(GetEdges()).CStr());
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
-    fprintf(OutF, "  %*ld]\n", NodePlaces, Node.GetId());
-    fprintf(OutF, "    in [%s]", TInt64::GetStr(Node.GetInDeg()));
+    fprintf(OutF, "  %*s]\n", NodePlaces, TInt64::GetStr(Node.GetId()).CStr());
+    fprintf(OutF, "    in [%s]", TInt64::GetStr(Node.GetInDeg()).CStr());
     for (int edge = 0; edge < Node.GetInDeg(); edge++) {
-      fprintf(OutF, " %*ld", NodePlaces, Node.GetInNId(edge)); }
-    fprintf(OutF, "\n    out[%s]", TInt64::GetStr(Node.GetOutDeg()));
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetInNId(edge)).CStr()); }
+    fprintf(OutF, "\n    out[%s]", TInt64::GetStr(Node.GetOutDeg()).CStr());
     for (int edge = 0; edge < Node.GetOutDeg(); edge++) {
-      fprintf(OutF, " %*ld", NodePlaces, Node.GetOutNId(edge)); }
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetOutNId(edge)).CStr()); }
     fprintf(OutF, "\n");
   }
   fprintf(OutF, "\n");

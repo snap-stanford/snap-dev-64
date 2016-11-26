@@ -382,7 +382,7 @@ int64 TNEANet::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
     MxNId = TMath::Mx(NId+1, MxNId());
   }
   NodeH.AddDat(NId, TNode(NId));
@@ -543,8 +543,8 @@ int64 TNEANet::AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId) {
 
   if (EId == -1) { EId = MxEId;  MxEId++; }
   else { MxEId = TMath::Mx(EId+1, MxEId()); }
-  IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %d already exists", EId));
-  IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
+  IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %s already exists", TInt64::GetStr(EId).CStr()));
+  IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%s or %s not a node.", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr()).CStr());
   EdgeH.AddDat(EId, TEdge(EId, SrcNId, DstNId));
   GetNode(SrcNId).OutEIdV.AddSorted(EId);
   GetNode(DstNId).InEIdV.AddSorted(EId);
@@ -695,22 +695,22 @@ bool TNEANet::IsOk(const bool& ThrowExcept) const {
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
     if (! Node.OutEIdV.IsSorted()) {
-      const TStr Msg = TStr::Fmt("Out-edge list of node %d is not sorted.", Node.GetId());
+      const TStr Msg = TStr::Fmt("Out-edge list of node %s is not sorted.", TInt64::GetStr(Node.GetId()).CStr());
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     if (! Node.InEIdV.IsSorted()) {
-      const TStr Msg = TStr::Fmt("In-edge list of node %d is not sorted.", Node.GetId());
+      const TStr Msg = TStr::Fmt("In-edge list of node %s is not sorted.", TInt64::GetStr(Node.GetId()).CStr());
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     // check out-edge ids
     int64 prevEId = -1;
     for (int64 e = 0; e < Node.GetOutDeg(); e++) {
       if (! IsEdge(Node.GetOutEId(e))) {
-        const TStr Msg = TStr::Fmt("Out-edge id %d of node %d does not exist.",  Node.GetOutEId(e), Node.GetId());
+        const TStr Msg = TStr::Fmt("Out-edge id %s of node %s does not exist.",  TInt64::GetStr(Node.GetOutEId(e)).CStr(), TInt64::GetStr(Node.GetId()).CStr());
         if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
       }
       if (e > 0 && prevEId == Node.GetOutEId(e)) {
-        const TStr Msg = TStr::Fmt("Node %d has duplidate out-edge id %d.", Node.GetId(), Node.GetOutEId(e));
+        const TStr Msg = TStr::Fmt("Node %s has duplidate out-edge id %s.", TInt64::GetStr(Node.GetId()).CStr(), TInt64::GetStr(Node.GetOutEId(e)).CStr());
         if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
       }
       prevEId = Node.GetOutEId(e);
@@ -719,11 +719,11 @@ bool TNEANet::IsOk(const bool& ThrowExcept) const {
     prevEId = -1;
     for (int64 e = 0; e < Node.GetInDeg(); e++) {
       if (! IsEdge(Node.GetInEId(e))) {
-      const TStr Msg = TStr::Fmt("Out-edge id %d of node %d does not exist.",  Node.GetInEId(e), Node.GetId());
+      const TStr Msg = TStr::Fmt("Out-edge id %s of node %s does not exist.",  TInt64::GetStr(Node.GetInEId(e)).CStr(), TInt64::GetStr(Node.GetId()).CStr());
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
       }
       if (e > 0 && prevEId == Node.GetInEId(e)) {
-        const TStr Msg = TStr::Fmt("Node %d has duplidate out-edge id %d.", Node.GetId(), Node.GetInEId(e));
+        const TStr Msg = TStr::Fmt("Node %s has duplidate out-edge id %s.", TInt64::GetStr(Node.GetId()).CStr(), TInt64::GetStr(Node.GetInEId(e)).CStr());
         if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
       }
       prevEId = Node.GetInEId(e);
@@ -732,11 +732,11 @@ bool TNEANet::IsOk(const bool& ThrowExcept) const {
   for (int64 E = EdgeH.FFirstKeyId(); EdgeH.FNextKeyId(E); ) {
     const TEdge& Edge = EdgeH[E];
     if (! IsNode(Edge.GetSrcNId())) {
-      const TStr Msg = TStr::Fmt("Edge %d source node %d does not exist.", Edge.GetId(), Edge.GetSrcNId());
+      const TStr Msg = TStr::Fmt("Edge %s source node %s does not exist.", TInt64::GetStr(Edge.GetId()).CStr(), TInt64::GetStr(Edge.GetSrcNId()).CStr());
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
     if (! IsNode(Edge.GetDstNId())) {
-      const TStr Msg = TStr::Fmt("Edge %d destination node %d does not exist.", Edge.GetId(), Edge.GetDstNId());
+      const TStr Msg = TStr::Fmt("Edge %s destination node %s does not exist.", TInt64::GetStr(Edge.GetId()).CStr(), TInt64::GetStr(Edge.GetDstNId()).CStr());
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false;
     }
   }
@@ -744,62 +744,62 @@ bool TNEANet::IsOk(const bool& ThrowExcept) const {
 }
 
 void TNEANet::Dump(FILE *OutF) const {
-  const int64 NodePlaces = (int64) ceil(log10((double) GetNodes()));
-  const int64 EdgePlaces = (int64) ceil(log10((double) GetEdges()));
-  fprintf(OutF, "-------------------------------------------------\nDirected Node-Edge Network with Attributes: nodes: %d, edges: %d\n", GetNodes(), GetEdges());
+  const int NodePlaces = (int) ceil(log10((double) GetNodes()));
+  const int EdgePlaces = (int) ceil(log10((double) GetEdges()));
+  fprintf(OutF, "-------------------------------------------------\nDirected Node-Edge Network with Attributes: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()).CStr(), TInt64::GetStr(GetEdges()).CStr());
   for (TNodeI NodeI = BegNI(); NodeI < EndNI(); NodeI++) {
-    fprintf(OutF, "  %*d:", NodePlaces, NodeI.GetId());
-    fprintf(OutF, "    in[%d]", NodeI.GetInDeg());
+    fprintf(OutF, "  %*s:", NodePlaces, TInt64::GetStr(NodeI.GetId()).CStr());
+    fprintf(OutF, "    in[%s]", TInt64::GetStr(NodeI.GetInDeg()).CStr());
     for (int64 edge = 0; edge < NodeI.GetInDeg(); edge++) {
-      fprintf(OutF, " %*d", EdgePlaces, NodeI.GetInEId(edge)); }
+      fprintf(OutF, " %*s", EdgePlaces, TInt64::GetStr(NodeI.GetInEId(edge)).CStr()); }
     //fprintf(OutF, "\n");
-    fprintf(OutF, "    out[%d]", NodeI.GetOutDeg());
+    fprintf(OutF, "    out[%s]", TInt64::GetStr(NodeI.GetOutDeg()).CStr());
     for (int64 edge = 0; edge < NodeI.GetOutDeg(); edge++) {
-      fprintf(OutF, " %*d", EdgePlaces, NodeI.GetOutEId(edge)); }
+      fprintf(OutF, " %*s", EdgePlaces, TInt64::GetStr(NodeI.GetOutEId(edge)).CStr()); }
     //fprintf(OutF, "\n");
 
     // load node attributes
     TInt64V IntAttrN;
     IntAttrValueNI(NodeI.GetId(), IntAttrN);
-    fprintf(OutF, "    nai[%d]", IntAttrN.Len());
+    fprintf(OutF, "    nai[%s]", TInt64::GetStr(IntAttrN.Len()).CStr());
     for (int64 i = 0; i < IntAttrN.Len(); i++) {
-      fprintf(OutF, " %*i", NodePlaces, IntAttrN[i]()); }
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(IntAttrN[i]()).CStr()); }
     //fprintf(OutF, "\n");
 
     TStr64V StrAttrN;
     StrAttrValueNI(NodeI.GetId(), StrAttrN);
-    fprintf(OutF, "    nas[%d]", StrAttrN.Len());
+    fprintf(OutF, "    nas[%s]", TInt64::GetStr(StrAttrN.Len()).CStr());
     for (int64 i = 0; i < StrAttrN.Len(); i++) {
       fprintf(OutF, " %*s", NodePlaces, StrAttrN[i]()); }
     //fprintf(OutF, "\n");
 
     TFlt64V FltAttrN;
     FltAttrValueNI(NodeI.GetId(), FltAttrN);
-    fprintf(OutF, "    naf[%d]", FltAttrN.Len());
+    fprintf(OutF, "    naf[%s]", TInt64::GetStr(FltAttrN.Len()).CStr());
     for (int64 i = 0; i < FltAttrN.Len(); i++) {
       fprintf(OutF, " %*f", NodePlaces, FltAttrN[i]()); }
     //fprintf(OutF, "\n");
     fprintf(OutF, "\n");
   }
   for (TEdgeI EdgeI = BegEI(); EdgeI < EndEI(); EdgeI++) {
-    fprintf(OutF, "  %*d:  %*d  ->  %*d", EdgePlaces, EdgeI.GetId(), NodePlaces, EdgeI.GetSrcNId(), NodePlaces, EdgeI.GetDstNId());
+    fprintf(OutF, "  %*s:  %*s  ->  %*s", EdgePlaces, TInt64::GetStr(EdgeI.GetId()).CStr(), NodePlaces, TInt64::GetStr(EdgeI.GetSrcNId()).CStr(), NodePlaces, TInt64::GetStr(EdgeI.GetDstNId()).CStr());
 
     // load edge attributes
     TInt64V IntAttrE;
     IntAttrValueEI(EdgeI.GetId(), IntAttrE);
-    fprintf(OutF, "    eai[%d]", IntAttrE.Len());
+    fprintf(OutF, "    eai[%s]", TInt64::GetStr(IntAttrE.Len()).CStr());
     for (int64 i = 0; i < IntAttrE.Len(); i++) {
-      fprintf(OutF, " %*i", EdgePlaces, IntAttrE[i]()); 
+      fprintf(OutF, " %*s", EdgePlaces, TInt64::GetStr(IntAttrE[i]()).CStr()); 
     }
     TStr64V StrAttrE;
     StrAttrValueEI(EdgeI.GetId(), StrAttrE);
-    fprintf(OutF, "    eas[%d]", StrAttrE.Len());
+    fprintf(OutF, "    eas[%s]", TInt64::GetStr(StrAttrE.Len()).CStr());
     for (int64 i = 0; i < StrAttrE.Len(); i++) {
       fprintf(OutF, " %*s", EdgePlaces, StrAttrE[i]()); 
     }
     TFlt64V FltAttrE;
     FltAttrValueEI(EdgeI.GetId(), FltAttrE);
-    fprintf(OutF, "    eaf[%d]", FltAttrE.Len());
+    fprintf(OutF, "    eaf[%s]", TInt64::GetStr(FltAttrE.Len()).CStr());
     for (int64 i = 0; i < FltAttrE.Len(); i++) {
       fprintf(OutF, " %*f", EdgePlaces, FltAttrE[i]()); 
     }
@@ -1682,7 +1682,7 @@ int64 TUndirNet::AddNode(int64 NId) {
   if (NId == -1) {
     NId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
     MxNId = TMath::Mx(NId+1, MxNId());
   }
   NodeH.AddDat(NId, TNode(NId));
@@ -1706,7 +1706,7 @@ int64 TUndirNet::AddNode(const int64& NId, const TInt64V& NbrNIdV) {
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
   } else {
-    IAssertR(! IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
+    IAssertR(! IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
     NewNId = NId;
     MxNId = TMath::Mx(NewNId+1, MxNId());
   }
@@ -1727,7 +1727,7 @@ int64 TUndirNet::AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, 
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
   } else {
-    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
     NewNId = NId;
     MxNId = TMath::Mx(NewNId+1, MxNId()); 
   }
@@ -1741,7 +1741,7 @@ int64 TUndirNet::AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, 
 
 // Delete node of ID NId from the graph.
 void TUndirNet::DelNode(const int64& NId) {
-  { AssertR(IsNode(NId), TStr::Fmt("NodeId %d does not exist", NId));
+  { AssertR(IsNode(NId), TStr::Fmt("NodeId %s does not exist", TInt64::GetStr(NId).CStr()));
   TInt64 Id(NId);
   SAttrN.DelSAttrId(Id);
   TNode& Node = GetNode(NId);
@@ -1768,7 +1768,7 @@ int64 TUndirNet::GetEdges() const {
 
 // Add an edge between SrcNId and DstNId to the graph.
 int64 TUndirNet::AddEdge(const int64& SrcNId, const int64& DstNId) {
-  IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
+  IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%s or %s not a node.", TInt::GetStr(SrcNId).CStr(), DstNId).CStr());
   if (IsEdge(SrcNId, DstNId)) { return -2; } // edge already exists
   GetNode(SrcNId).NIdV.AddSorted(DstNId);
   if (SrcNId!=DstNId) { // not a self edge
@@ -1874,13 +1874,13 @@ bool TUndirNet::IsOk(const bool& ThrowExcept) const {
 
 // Print the graph in a human readable form to an output stream OutF.
 void TUndirNet::Dump(FILE *OutF) const {
-  const int64 NodePlaces = (int64) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nUndirected Node Graph: nodes: %d, edges: %d\n", GetNodes(), GetEdges());
+  const int NodePlaces = (int) ceil(log10((double) GetNodes()));
+  fprintf(OutF, "-------------------------------------------------\nUndirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()).CStr(), TInt64::GetStr(GetEdges()).CStr());
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
-    fprintf(OutF, "  %*d [%d] ", NodePlaces, Node.GetId(), Node.GetDeg());
+    fprintf(OutF, "  %*s [%s] ", NodePlaces, TInt64::GetStr(Node.GetId()).CStr(), TInt64::GetStr(Node.GetDeg()).CStr());
     for (int64 edge = 0; edge < Node.GetDeg(); edge++) {
-      fprintf(OutF, " %*d", NodePlaces, Node.GetNbrNId(edge)); }
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetNbrNId(edge)).CStr()); }
     fprintf(OutF, "\n");
   }
   fprintf(OutF, "\n");
@@ -2377,17 +2377,17 @@ bool TDirNet::IsOk(const bool& ThrowExcept) const {
 }
 
 void TDirNet::Dump(FILE *OutF) const {
-  const int64 NodePlaces = (int64) ceil(log10((double) GetNodes()));
-  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %d, edges: %d\n", GetNodes(), GetEdges());
+  const int NodePlaces = (int) ceil(log10((double) GetNodes()));
+  fprintf(OutF, "-------------------------------------------------\nDirected Node Graph: nodes: %s, edges: %s\n", TInt64::GetStr(GetNodes()).CStr(), TInt64::GetStr(GetEdges()).CStr());
   for (int64 N = NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
     const TNode& Node = NodeH[N];
-    fprintf(OutF, "  %*d]\n", NodePlaces, Node.GetId());
-    fprintf(OutF, "    in [%d]", Node.GetInDeg());
+    fprintf(OutF, "  %*s]\n", NodePlaces, TInt64::GetStr(Node.GetId()).CStr());
+    fprintf(OutF, "    in [%s]", TInt64::GetStr(Node.GetInDeg()).CStr());
     for (int64 edge = 0; edge < Node.GetInDeg(); edge++) {
-      fprintf(OutF, " %*d", NodePlaces, Node.GetInNId(edge)); }
-    fprintf(OutF, "\n    out[%d]", Node.GetOutDeg());
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetInNId(edge)).CStr()); }
+    fprintf(OutF, "\n    out[%s]", TInt64::GetStr(Node.GetOutDeg()).CStr());
     for (int64 edge = 0; edge < Node.GetOutDeg(); edge++) {
-      fprintf(OutF, " %*d", NodePlaces, Node.GetOutNId(edge)); }
+      fprintf(OutF, " %*s", NodePlaces, TInt64::GetStr(Node.GetOutNId(edge)).CStr()); }
     fprintf(OutF, "\n");
   }
   fprintf(OutF, "\n");
