@@ -601,6 +601,18 @@ int64 TCrossNet::DelAttrE(const TStr& attr) {
   return 0;
 }
 
+PBPGraph TCrossNet::GetBipartiteGraph(){
+	PBPGraph Graph = TBPGraph::New();
+	for (TCrossEdgeI EI = BegEdgeI(); EI != EndEdgeI(); EI++){
+		if (!Graph->IsLNode(EI.GetSrcNId()))
+			Graph->AddNode(EI.GetSrcNId(), true);
+		if (!Graph->IsRNode(EI.GetDstNId()))
+			Graph->AddNode(EI.GetDstNId(), false);
+		Graph->AddEdge(EI.GetSrcNId(), EI.GetDstNId());
+	}
+	return Graph;
+}
+
 
 int64 TMMNet::AddModeNet(const TStr& ModeName) {
   if (ModeNameToIdH.IsKey(ModeName)) {

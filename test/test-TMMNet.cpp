@@ -114,6 +114,53 @@ TEST(TMMNet, GetCrossNet) {
   EXPECT_EQ(&C1, &C2);
 }
 
+TEST(TMMNet, GetBipartiteGraph) {
+  PMMNet Net;
+  Net = TMMNet::New();
+  TStr ModeName1("TestMode1");
+  Net->AddModeNet(ModeName1);
+  TStr ModeName2("TestMode2");
+  Net->AddModeNet(ModeName2);
+  TInt LinkId1(0);
+  TInt LinkId2(1);
+  TStr LinkName1("TestLink1");
+  Net->AddCrossNet(ModeName1, ModeName2, LinkName1);
+  TModeNet& M1 = Net->GetModeNetByName(ModeName1);
+  TModeNet& M2 = Net->GetModeNetByName(ModeName2);
+  TCrossNet& C = Net->GetCrossNetByName(LinkName1);
+  M1.AddNode(1);
+  M1.AddNode(2);
+  M2.AddNode(3);
+  M2.AddNode(4);
+  C.AddEdge(1,3);
+  C.AddEdge(1,4);
+  C.AddEdge(2,4);
+  PBPGraph G = C.GetBipartiteGraph();
+//	PBPGraph G = TBPGraph::New();
+//	G->AddNode(1,true);
+//	G->AddNode(2,true);
+//	G->AddNode(3,false);
+//	G->AddNode(4,false);
+//	G->AddEdge(1,3);
+//	G->AddEdge(1,4);
+//	G->AddEdge(2,4);
+  int s = 0;
+  TBPGraph::TNodeI NI = G->BegNI();
+  for(; NI < G->EndNI(); NI++){
+  	//printf("%d %d \n",NI.GetId(), NI.GetDeg());
+  	s += NI.GetDeg();
+  }
+  EXPECT_EQ(s, 3);
+  G->SetIteratorSideLeft(false);
+  //printf("%d ", G->IsIteratorSideLeft());
+  s = 0;
+  for(NI = G->BegNI(); NI < G->EndNI(); NI++){
+    	//printf("%d %d \n",NI.GetId(), NI.GetDeg());
+    	s += NI.GetDeg();
+    }
+  EXPECT_EQ(s, 3);
+}
+
 TEST(TMMNet, BegModeNetI) {
   PMMNet Net;
     Net = TMMNet::New();

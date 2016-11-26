@@ -449,6 +449,8 @@ public:
   // Returns edge attribute value, converted to Str type.
   TStr GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& CrossHI) const;
 
+  PBPGraph GetBipartiteGraph();
+
   friend class TMMNet;
   friend class TModeNet;
 };
