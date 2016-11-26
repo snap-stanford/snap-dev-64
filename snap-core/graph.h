@@ -715,22 +715,31 @@ public:
   private:
     typedef THash<TInt, TNode>::TIter THashIter;
     THashIter LeftHI, RightHI; // iterator over left and right hand-side nodes
+    bool leftActive; //true if the iterator passes over the left side nodes
   private:
-    inline THashIter HI() const { return ! LeftHI.IsEnd()?LeftHI:RightHI; }
+    inline THashIter HI() const { return leftActive?LeftHI:RightHI; }
   public:
-    TNodeI() : LeftHI(), RightHI() { }
-    TNodeI(const THashIter& LeftHIter, const THashIter& RightHIter) : LeftHI(LeftHIter), RightHI(RightHIter) { }
-    TNodeI(const TNodeI& NodeI) : LeftHI(NodeI.LeftHI), RightHI(NodeI.RightHI) { }
-    TNodeI& operator = (const TNodeI& NodeI) { LeftHI = NodeI.LeftHI; RightHI=NodeI.RightHI; return *this; }
+    TNodeI() : LeftHI(), RightHI() {leftActive = true; }
+    TNodeI(const THashIter& LeftHIter, const THashIter& RightHIter) : LeftHI(LeftHIter), RightHI(RightHIter) { leftActive = true; }
+    TNodeI(const THashIter& LeftHIter, const THashIter& RightHIter, const bool IteratorSideLeft) : LeftHI(LeftHIter), RightHI(RightHIter), leftActive(IteratorSideLeft) { }
+    TNodeI(const TNodeI& NodeI) : LeftHI(NodeI.LeftHI), RightHI(NodeI.RightHI), leftActive(NodeI.leftActive) { }
+    TNodeI& operator = (const TNodeI& NodeI) { LeftHI = NodeI.LeftHI; RightHI=NodeI.RightHI; leftActive = NodeI.leftActive; return *this; }
     /// Increment iterator.
     TNodeI& operator++ (int) { 
-      if (! LeftHI.IsEnd()) { 
-        LeftHI++; } 
-      else if (! RightHI.IsEnd()) { 
-        RightHI++; } 
+    	if (leftActive){
+				if (! LeftHI.IsEnd()) {
+					LeftHI++; }
+    	}
+			else{
+				if (! RightHI.IsEnd()) {
+					RightHI++; }
+			}
       return *this; }
-    bool operator < (const TNodeI& NodeI) const { return LeftHI < NodeI.LeftHI || (LeftHI==NodeI.LeftHI && RightHI < NodeI.RightHI); }
-    bool operator == (const TNodeI& NodeI) const { return LeftHI==NodeI.LeftHI && RightHI==NodeI.RightHI; }
+
+    bool operator < (const TNodeI& NodeI) const { //return LeftHI < NodeI.LeftHI || (LeftHI==NodeI.LeftHI && RightHI < NodeI.RightHI);
+    	return (leftActive && LeftHI < NodeI.LeftHI) || (!leftActive && RightHI < NodeI.RightHI);
+    }
+    bool operator == (const TNodeI& NodeI) const { return LeftHI==NodeI.LeftHI && RightHI==NodeI.RightHI && leftActive == NodeI.leftActive; }
     /// Returns ID of the current node.
     int GetId() const { return HI().GetDat().GetId(); }
     /// Tests whether the node is left hand side node.
@@ -789,16 +798,17 @@ private:
   TInt MxNId;                 // maximum node ID in the graph
   THash<TInt, TNode> LeftH;   // 'left' nodes
   THash<TInt, TNode> RightH;  // 'right' nodes
+  bool leftIterator;
 private:
   //TNode& GetNode(const int& NId) { return NodeH.GetDat(NId); }
   //const TNode& GetNode(const int& NId) const { return NodeH.GetDat(NId); }
 public:
-  TBPGraph() : CRef(), MxNId(0), LeftH(), RightH() { }
+  TBPGraph() : CRef(), MxNId(0), LeftH(), RightH(),leftIterator(true) { }
   /// Constructor that reserves enough memory for a graph of Nodes (LeftNodes+RightNodes) nodes and Edges edges.
-  explicit TBPGraph(const int& Nodes, const int& Edges) : MxNId(0) { } //!!! Reserve(Nodes, Edges); }
+  explicit TBPGraph(const int& Nodes, const int& Edges) : MxNId(0), leftIterator(true) { } //!!! Reserve(Nodes, Edges); }
   TBPGraph(const TBPGraph& BPGraph) : MxNId(BPGraph.MxNId), LeftH(BPGraph.LeftH), RightH(BPGraph.RightH) { }
   /// Constructor for loading the graph from a (binary) stream SIn.
-  TBPGraph(TSIn& SIn) : MxNId(SIn), LeftH(SIn), RightH(SIn) { }
+  TBPGraph(TSIn& SIn) : MxNId(SIn), LeftH(SIn), RightH(SIn), leftIterator(true) { }
   /// Saves the graph to a (binary) stream SOut.
   void Save(TSOut& SOut) const { MxNId.Save(SOut); LeftH.Save(SOut); RightH.Save(SOut); }
   /// Static constructor that returns a pointer to the graph. Call: PBPGraph BPGraph = TBPGraph::New();
@@ -834,19 +844,25 @@ public:
   bool IsRNode(const int& NId) const { return RightH.IsKey(NId); }
   /// Returns an ID that is larger than any node ID in the graph.
   int GetMxNId() const { return MxNId; }
-    
+
+  void SetIteratorSideLeft(bool val){
+  	leftIterator = val;
+  }
+  bool IsIteratorSideLeft(){
+  	return leftIterator;
+  }
   /// Returns an iterator referring to the first node in the graph.
-  TNodeI BegNI() const { return TNodeI(LeftH.BegI(), RightH.BegI()); }
+  TNodeI BegNI() const { return TNodeI(LeftH.BegI(), RightH.BegI(), leftIterator); }
   /// Returns an iterator referring to the past-the-end node in the graph.
   TNodeI EndNI() const { return TNodeI(LeftH.EndI(), RightH.EndI()); }
   /// Returns an iterator referring to the node of ID NId in the graph.
   TNodeI GetNI(const int& NId) const { return IsLNode(NId) ? TNodeI(LeftH.GetI(NId), RightH.EndI()) : TNodeI(LeftH.EndI(), RightH.GetI(NId)); }
   /// Returns an iterator referring to the first 'left' node in the graph.
-  TNodeI BegLNI() const { return TNodeI(LeftH.BegI(), RightH.EndI()); }
+  TNodeI BegLNI() const { return TNodeI(LeftH.BegI(), RightH.EndI(), true); }
   /// Returns an iterator referring to the past-the-end 'left' node in the graph.
   TNodeI EndLNI() const { return EndNI(); }
   /// Returns an iterator referring to the first 'right' node in the graph.
-  TNodeI BegRNI() const { return TNodeI(LeftH.EndI(), RightH.BegI()); }
+  TNodeI BegRNI() const { return TNodeI(LeftH.EndI(), RightH.BegI(), false); }
   /// Returns an iterator referring to the past-the-end 'right' node in the graph.
   TNodeI EndRNI() const { return EndNI(); }
 
