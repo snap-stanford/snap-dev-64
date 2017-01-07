@@ -195,6 +195,7 @@ class TTableContext {
 protected:
   TStrHash<TInt64, TBigStrPool, int64> StringVals; ///< StringPool - stores string data values and maps them to integers.
   friend class TTable;
+
 public:
   /// Default constructor.
   TTableContext() {}
@@ -202,6 +203,10 @@ public:
   TTableContext(TSIn& SIn): StringVals(SIn) {}
   /// Loads TTableContext in binary from \c SIn.
   void Load(TSIn& SIn) { StringVals.Load(SIn); }
+  /// Loads TTableContext using shared memory
+  void LoadShM(TShMIn& ShMin) {
+    StringVals.LoadShM(ShMin, true);
+  }
   /// Saves TTableContext in binary to \c SOut.
   void Save(TSOut& SOut) { StringVals.Save(SOut); }
   /// Adds string \c Key to the context, returns its KeyId.
@@ -439,30 +444,30 @@ public:
 };
 
 /// The name of the friend is not found by simple name lookup until a matching declaration is provided in that namespace scope (either before or after the class declaration granting friendship).
-namespace TSnap{
+namespace TSnap {
 	/// Converts table to a directed/undirected graph. Suitable for PUNGraph and PNGraph, but not for PNEANet where attributes are expected.
 	template<class PGraph> PGraph ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
 	/// Converts table to a network. Suitable for PNEANet - Requires node and edge attribute column names as vectors.
-	template<class PGraph> PGraph ToNetwork(PTable Table,
+  template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs,
     TAttrAggr AggrPolicy);
 	/// Converts table to a network. Suitable for PNEANet - Assumes no node and edge attributes.
-	template<class PGraph> PGraph ToNetwork(PTable Table,
+  template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
-
-    template<class PGraph> PGraph ToNetwork(PTable Table,
+  template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TStr64V& EdgeAttrV,
     TAttrAggr AggrPolicy);
-
-    template<class PGraph> PGraph ToNetwork(PTable Table,
+  template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV,
     TAttrAggr AggrPolicy);
   int64 LoadCrossNet(TCrossNet& Graph, PTable Table, const TStr& SrcCol, const TStr& DstCol,
   TStr64V& EdgeAttrV);
+  int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
+    TStrV& NodeAttrV);
 
   int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV);
@@ -499,25 +504,26 @@ protected:
 public:
   template<class PGraph> friend PGraph TSnap::ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
-    template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
+  template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs,
     TAttrAggr AggrPolicy);
-    template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
-    const TStr& SrcCol, const TStr& DstCol,
-    TStr64V& EdgeAttrV,
-    TAttrAggr AggrPolicy);
-    template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
+  template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TAttrAggr AggrPolicy);
-    template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
+  template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
-    TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV,
+    TStrV& EdgeAttrV,
     TAttrAggr AggrPolicy);
-    friend int64 TSnap::LoadCrossNet(TCrossNet& Graph, PTable Table, const TStr& SrcCol, const TStr& DstCol,
-      TStr64V& EdgeAttrV);
-    friend int64 TSnap::LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
-  TStr64V& NodeAttrV); 
+  template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
+    const TStr& SrcCol, const TStr& DstCol,
+    TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol,
+    TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
+  friend int64 TSnap::LoadCrossNet(TCrossNet& Graph, PTable Table,
+            const TStr& SrcCol, const TStr& DstCol, TStr64V& EdgeAttrV);
+  friend int64 TSnap::LoadMode(TModeNet& Graph, PTable Table,
+            const TStr& NCol, TStr64V& NodeAttrV); 
+
 #ifdef GCC_ATOMIC
 // TODO64
 /*
@@ -850,6 +856,16 @@ protected:
 
   /// Gets set of row ids of rows common with table \c T.
   void GetCollidingRows(const TTable& T, THashSet<TInt64, int64>& Collisions);
+private:
+  class TLoadVecInit {
+  public:
+    TLoadVecInit() {}
+    template<typename TElem>
+    void operator() (TVec<TElem, int64>* Node, TShMIn& ShMin) {Node->LoadShM(ShMin);}
+  };
+private:
+  void GenerateColTypeMap(THash<TStr,TPair<TInt64,TInt64>, int64 > & ColTypeIntMap);
+  void LoadTableShm(TShMIn& ShMIn, TTableContext* ContextTable);
 
 public:
 /***** Constructors *****/
@@ -918,6 +934,12 @@ public:
   void SaveBin(const TStr& OutFNm);
   /// Loads table from a binary format. ##TTable::Load
   static PTable Load(TSIn& SIn, TTableContext* Context){ return new TTable(SIn, Context);}
+  /// Static constructor to load table from memory ##TTable::LoadShM
+  static PTable LoadShM(TShMIn& ShMIn, TTableContext* Context) {
+    TTable* Table = new TTable();
+    Table->LoadTableShm(ShMIn, Context);
+    return PTable(Table);
+  }
   /// Saves table schema and content to a binary format. ##TTable::Save
   void Save(TSOut& SOut);
   /// Prints table contents to a text file.

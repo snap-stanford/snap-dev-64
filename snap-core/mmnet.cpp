@@ -613,6 +613,24 @@ PBPGraph TCrossNet::GetBipartiteGraph(){
 	return Graph;
 }
 
+void TMMNet::LoadNetworkShm(TShMIn& ShMin) {
+    MxModeId = TInt64(ShMin);
+    MxCrossNetId = TInt64(ShMin);
+    TModeNetInit Fm;
+    TModeNetH.LoadShM(ShMin, Fm);
+    TCrossNetInit Fc;
+    TCrossNetH.LoadShM(ShMin, Fc);
+    ModeIdToNameH.LoadShM(ShMin);
+    ModeNameToIdH.LoadShM(ShMin);
+    CrossIdToNameH.LoadShM(ShMin);
+    CrossNameToIdH.LoadShM(ShMin);
+    for (THash<TInt64, TModeNet, int64>::TIter it = TModeNetH.BegI(); it < TModeNetH.EndI(); it++) {
+      it.GetDat().SetParentPointer(this);
+    }
+    for (THash<TInt64, TCrossNet, int64>::TIter it = TCrossNetH.BegI(); it < TCrossNetH.EndI(); it++) {
+      it.GetDat().SetParentPointer(this);
+    }
+  }
 
 int64 TMMNet::AddModeNet(const TStr& ModeName) {
   if (ModeNameToIdH.IsKey(ModeName)) {

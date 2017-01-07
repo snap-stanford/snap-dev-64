@@ -535,7 +535,7 @@ void TNEGraph::DelEdge(const int& EId) {
 
 // delete all edges between the two nodes
 void TNEGraph::DelEdge(const int& SrcNId, const int& DstNId, const bool& IsDir) {
-  int EId;
+  int EId = 0;
   IAssert(IsEdge(SrcNId, DstNId, EId, IsDir)); // there is at least one edge
   while (IsEdge(SrcNId, DstNId, EId, IsDir)) {
     GetNode(SrcNId).OutEIdV.DelIfIn(EId);

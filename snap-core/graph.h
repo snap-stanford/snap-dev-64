@@ -36,6 +36,10 @@ public:
     TNode(const int64& NId) : Id(NId), NIdV() { }
     TNode(const TNode& Node) : Id(Node.Id), NIdV(Node.NIdV) { }
     TNode(TSIn& SIn) : Id(SIn), NIdV(SIn) { }
+    void LoadShM(TShMIn& ShMin) {
+      Id = TInt64(ShMin);
+      NIdV.LoadShM(ShMin);
+    }
     void Save(TSOut& SOut) const { Id.Save(SOut); NIdV.Save(SOut); }
     int64 GetId() const { return Id; }
     int64 GetDeg() const { return NIdV.Len(); }
@@ -124,8 +128,20 @@ private:
   TInt64 MxNId, NEdges;
   THash<TInt64, TNode, int64> NodeH;
 private:
+  class TLoadTNodeInitializer {
+  public:
+    TLoadTNodeInitializer() {}
+    void operator() (TNode* Node, TShMIn& ShMin) { Node->LoadShM(ShMin);}
+  };
+private:
   TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
   const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
+  void LoadGraphShm(TShMIn& ShMin) {
+    MxNId = TInt64(ShMin);
+    NEdges = TInt64(ShMin);
+    TLoadTNodeInitializer Fn;
+    NodeH.LoadShM(ShMin, Fn);
+  }
 public:
   TUNGraph() : CRef(), MxNId(0), NEdges(0), NodeH() { }
   /// Constructor that reserves enough memory for a graph of Nodes nodes and Edges edges.
@@ -134,6 +150,7 @@ public:
   /// Constructor that loads the graph from a (binary) stream SIn.
   TUNGraph(TSIn& SIn) : MxNId(SIn), NEdges(SIn), NodeH(SIn) { }
   /// Saves the graph to a (binary) stream SOut.
+
   void Save(TSOut& SOut) const { MxNId.Save(SOut); NEdges.Save(SOut); NodeH.Save(SOut); }
   /// Static constructor that returns a pointer to the graph. Call: PUNGraph Graph = TUNGraph::New().
   static PUNGraph New() { return new TUNGraph(); }
@@ -141,7 +158,12 @@ public:
   static PUNGraph New(const int64& Nodes, const int64& Edges) { return new TUNGraph(Nodes, Edges); }
   /// Static constructor that loads the graph from a stream SIn and returns a pointer to it.
   static PUNGraph Load(TSIn& SIn) { return PUNGraph(new TUNGraph(SIn)); }
-  /// Allows for run-time checking the type of the graph (see the TGraphFlag for flags).
+  /// Static constructor that loads the graph from shared memory ##TUNGraph::LoadShM
+  static PUNGraph LoadShM(TShMIn& ShMIn) {
+    TUNGraph* Graph = new TUNGraph();
+    Graph->LoadGraphShm(ShMIn);
+    return PUNGraph(Graph);
+  }  /// Allows for run-time checking the type of the graph (see the TGraphFlag for flags).
   bool HasFlag(const TGraphFlag& Flag) const;
   TUNGraph& operator = (const TUNGraph& Graph) {
     if (this!=&Graph) { MxNId=Graph.MxNId; NEdges=Graph.NEdges; NodeH=Graph.NodeH; } return *this; }
@@ -258,6 +280,11 @@ public:
     void PackOutNIdV() { OutNIdV.Pack(); }
     void PackNIdV() { InNIdV.Pack(); }
     void SortNIdV() { InNIdV.Sort(); OutNIdV.Sort();}
+    void LoadShM(TShMIn& ShMin) {
+      Id = TInt64(ShMin);
+      InNIdV.LoadShM(ShMin);
+      OutNIdV.LoadShM(ShMin);
+    }
     friend class TNGraph;
     friend class TNGraphMtx;
   };
@@ -330,8 +357,20 @@ private:
   TInt64 MxNId;
   THash<TInt64, TNode, int64> NodeH;
 private:
+  class TLoadTNodeInitializer {
+  public:
+    TLoadTNodeInitializer() {}
+    void operator() (TNode* Node, TShMIn& ShMin) {Node->LoadShM(ShMin);}
+  };
+private:
   TNode& GetNode(const int64& NId) { return NodeH.GetDat(NId); }
   const TNode& GetNode(const int64& NId) const { return NodeH.GetDat(NId); }
+  void LoadGraphShm(TShMIn& ShMin) {
+      MxNId = TInt64(ShMin);
+      TLoadTNodeInitializer Fn;
+      NodeH.LoadShM(ShMin, Fn);
+  }
+
 public:
   TNGraph() : CRef(), MxNId(0), NodeH() { }
   /// Constructor that reserves enough memory for a graph of Nodes nodes and Edges edges.
@@ -347,6 +386,12 @@ public:
   static PNGraph New(const int64& Nodes, const int64& Edges) { return new TNGraph(Nodes, Edges); }
   /// Static constructor that loads the graph from a stream SIn and returns a pointer to it.
   static PNGraph Load(TSIn& SIn) { return PNGraph(new TNGraph(SIn)); }
+  /// Static constructor that loads the graph from a shared memory stream and returns pointer to it. ##TNGraph::LoadShM
+  static PNGraph LoadShM(TShMIn& ShMIn) {
+    TNGraph* Graph = new TNGraph();
+    Graph->LoadGraphShm(ShMIn);
+    return PNGraph(Graph);
+  }
   /// Allows for run-time checking the type of the graph (see the TGraphFlag for flags).
   bool HasFlag(const TGraphFlag& Flag) const;
   TNGraph& operator = (const TNGraph& Graph) {

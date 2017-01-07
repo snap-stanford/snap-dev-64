@@ -1,4 +1,6 @@
 #include "bd.h"
+#include <stdio.h>
+
 /////////////////////////////////////////////////
 // Hash-Table-Key-Data
 #pragma pack(push, 1) // pack class size
@@ -21,6 +23,14 @@ public:
   void LoadXml(const PXmlTok& XmlTok, const TStr& Nm="");
   void SaveXml(TSOut& SOut, const TStr& Nm) const;
 
+  template<typename TDatFunctor>
+  void LoadShM(TShMIn& ShMin, TDatFunctor LoadDatFromShared) {
+    Next = TInt64(ShMin);
+    HashCd = TInt64(ShMin);
+    TKey K(ShMin);
+    Key = K;
+    LoadDatFromShared(&Dat, ShMin);
+  }
   bool operator==(const THashKeyDat& HashKeyDat) const {
     if (this==&HashKeyDat || (HashCd==HashKeyDat.HashCd
       && Key==HashKeyDat.Key && Dat==HashKeyDat.Dat)){return true;}
@@ -112,6 +122,16 @@ private:
         if (Asc) { return Hash[KeyId1] < Hash[KeyId2]; }
         else { return Hash[KeyId2] < Hash[KeyId1]; } } }
   };
+
+  template<typename TDatInitFn>
+  class TLoadTHKeyDatInitializer {
+  private:
+    TDatInitFn DatInitFn;
+  public:
+    TLoadTHKeyDatInitializer(TDatInitFn Fn) { DatInitFn = Fn;}
+    void operator() (THKeyDat* HKeyDat, TShMIn& ShMin) { HKeyDat->LoadShM(ShMin, DatInitFn);}
+  };
+
 private:
   THKeyDat& GetHashKeyDat(const TSizeTy& KeyId){
     THKeyDat& KeyDat=KeyDatV[KeyId];
@@ -133,10 +153,33 @@ public:
     PortV(SIn), KeyDatV(SIn),
     AutoSizeP(SIn), FFreeKeyId(SIn), FreeKeys(SIn){
     SIn.LoadCs();}
+  /// Load THash from shared memory file. Copying/Deleting Keys is illegal
+  void LoadShM(TShMIn& ShMin) {
+    PortV.LoadShM(ShMin);
+    KeyDatV.Load(ShMin);
+    AutoSizeP=TBool(ShMin);
+    FFreeKeyId=TInt64(ShMin);
+    FreeKeys=TInt64(ShMin);
+    ShMin.LoadCs();
+  }
+  /// Load THash from shared memory passing in the Dat initializer
+  template <typename TDatInitFn>
+  void LoadShM(TShMIn& ShMin, TDatInitFn Fn) {
+    TLoadTHKeyDatInitializer<TDatInitFn> HKeyDatFn(Fn);
+    PortV.LoadShM(ShMin);
+    KeyDatV.LoadShM(ShMin, HKeyDatFn);
+    AutoSizeP=TBool(ShMin);
+    FFreeKeyId=TInt64(ShMin);
+    FreeKeys=TInt64(ShMin);
+    ShMin.LoadCs();
+  }
+  
   void Load(TSIn& SIn){
     PortV.Load(SIn); KeyDatV.Load(SIn);
     AutoSizeP=TBool(SIn); FFreeKeyId=TInt64(SIn); FreeKeys=TInt64(SIn);
-    SIn.LoadCs();}
+    SIn.LoadCs();
+  }
+
   void Save(TSOut& SOut) const {
     PortV.Save(SOut); KeyDatV.Save(SOut);
     AutoSizeP.Save(SOut); FFreeKeyId.Save(SOut); FreeKeys.Save(SOut);
@@ -474,7 +517,7 @@ TSizeTy THash<TKey, TDat, TSizeTy, THashFunc>::GetKeyId(const TKey& Key) const {
 
 template<class TKey, class TDat, class TSizeTy, class THashFunc>
 bool THash<TKey, TDat, TSizeTy, THashFunc>::FNextKeyId(TSizeTy& KeyId) const {
-  do {KeyId++;} while ((KeyId<KeyDatV.Len())&&(KeyDatV[KeyId].HashCd==-1));
+  do {KeyId++;} while ((KeyId<KeyDatV.Len()) && (KeyDatV[KeyId].HashCd==-1));
   return KeyId<KeyDatV.Len();
 }
 
@@ -729,8 +772,10 @@ private:
   uint64 GrowBy;
   char *Bf;
   TVec<TSize, int64> IdOffV; // string ID to offset
+  bool IsShM; //True if BigStrPool backed by shared memory
 private:
   void Resize(TSize _MxBfL);
+  void LoadPoolShM(TShMIn& ShMin, bool LoadCompact = true);
 public:
   TBigStrPool(TSize MxBfLen = 0, uint64 _GrowBy = 16*1024*1024);
   TBigStrPool(TSIn& SIn, bool LoadCompact = true);
@@ -742,6 +787,12 @@ public:
   static PBigStrPool New(TSIn& SIn) { return new TBigStrPool(SIn); }
   static PBigStrPool New(const TStr& fileName) { PSIn SIn = TFIn::New(fileName); return new TBigStrPool(*SIn); }
   static PBigStrPool Load(TSIn& SIn, bool LoadCompacted = true) { return PBigStrPool(new TBigStrPool(SIn, LoadCompacted)); }
+  /// Load the string pool with the buffer backed by shared memory
+  static PBigStrPool LoadShM(TShMIn& ShMin, bool LoadCompact = true) {
+    TBigStrPool* StrPool = new TBigStrPool();
+    StrPool->LoadPoolShM(ShMin, LoadCompact);
+    return PBigStrPool(StrPool);
+  }
   void Save(TSOut& SOut) const;
   void Save(const TStr& fileName) { TFOut FOut(fileName); Save(FOut); }
 
@@ -769,7 +820,8 @@ public:
   const char *GetCStrFromOffset(const TSize& Offset) const { Assert(Offset < BfL);
     if (Offset == 0) return TStr::GetNullStr().CStr(); else return Bf + Offset; }
 
-  void Clr(bool DoDel = false) { BfL = 0; if (DoDel && Bf) { free(Bf); Bf = 0; MxBfL = 0; } }
+  void Clr(bool DoDel = false) {
+    BfL = 0; if (DoDel && Bf) {if (!IsShM) { free(Bf);} Bf = 0; MxBfL = 0;}}
   int Cmp(const int64& StrId, const char *Str) const { Assert(StrId < GetStrs());
     if (StrId != 0) return strcmp(Bf + (TSize)IdOffV[StrId], Str); else return strcmp("", Str); }
 
@@ -814,8 +866,24 @@ public:
       if (! Hash.Pool.Empty()) { Pool=PStringPool(new TStringPool(*Hash.Pool)); } }
   TStrHash(TSIn& SIn, bool PoolToo = true): PortV(SIn), KeyDatV(SIn), AutoSizeP(SIn), FFreeKeyId(SIn), FreeKeys(SIn){ SIn.LoadCs(); if (PoolToo) Pool = PStringPool(SIn); }
 
-  void Load(TSIn& SIn, bool PoolToo = true) { PortV.Load(SIn); KeyDatV.Load(SIn); AutoSizeP.Load(SIn); FFreeKeyId.Load(SIn);
-    FreeKeys.Load(SIn); SIn.LoadCs(); if (PoolToo) Pool = PStringPool(SIn); }
+  void Load(TSIn& SIn, bool PoolToo = true) {PortV.Load(SIn); KeyDatV.Load(SIn); AutoSizeP.Load(SIn); FFreeKeyId.Load(SIn);
+    FreeKeys.Load(SIn); SIn.LoadCs(); if (PoolToo) Pool = PStringPool(SIn);}
+
+  /// Load hash from shared memory. If shared pool is true load pool from shared memory
+  void LoadShM(TShMIn& ShMin, bool SharedPool=true) {
+    PortV.LoadShM(ShMin);
+    KeyDatV.Load(ShMin);
+    AutoSizeP=TBool(ShMin);
+    FFreeKeyId=TInt64(ShMin);
+    FreeKeys=TInt64(ShMin);
+    ShMin.LoadCs();
+    if (SharedPool) {
+      Pool = TStringPool::LoadShM(ShMin);
+    } else {
+      Pool = PStringPool(ShMin);
+    }
+  }
+
   void Save(TSOut& SOut, bool PoolToo = true) const { PortV.Save(SOut); KeyDatV.Save(SOut);
     AutoSizeP.Save(SOut); FFreeKeyId.Save(SOut); FreeKeys.Save(SOut); SOut.SaveCs(); if (PoolToo) Pool.Save(SOut); }
 
