@@ -108,12 +108,10 @@ TEST(TTable, ParallelJoin) {
   EXPECT_EQ(499, T2->GetNumRows().Val);
   EXPECT_EQ(499, T2->GetNumValidRows().Val); 
 
-  printf("***** TODO ***** join fails\n");
+  PTable P = T1->Join("Src", T2, "Dst");
 
-  //PTable P = T1->Join("Src", T2, "Dst");
-
-  //EXPECT_EQ(24, P->GetNumRows().Val);
-  //EXPECT_EQ(24, P->GetNumValidRows().Val); 
+  EXPECT_EQ(24, P->GetNumRows().Val);
+  EXPECT_EQ(24, P->GetNumValidRows().Val); 
 }
 /*
 // Tests sequential table to graph function.
