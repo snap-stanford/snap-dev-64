@@ -791,7 +791,7 @@ void TVec<TVal, TSizeTy>::Resize(const TSizeTy& _MxVals){
   TSizeTy OldMxVals = MxVals;
   if (MxVals == -1) {MxVals = Vals;}
   if (_MxVals==-1){
-    if (Vals==0){MxVals=16;} else {MxVals += MxVals/2;}
+    if (Vals==0){MxVals=16;} else {MxVals *= 2;}
   } else {
     if (_MxVals<=MxVals){return;} else {MxVals=_MxVals;}
   }
