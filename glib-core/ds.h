@@ -2574,6 +2574,7 @@ public:
 /////////////////////////////////////////////////
 // Common-Queue-Types
 typedef TQQueue<TInt> TIntQ;
+typedef TQQueue<TInt64, int64> TInt64Q;
 typedef TQQueue<TFlt> TFltQ;
 typedef TQQueue<TStr> TStrQ;
 typedef TQQueue<TIntPr> TIntPrQ;
