@@ -45,7 +45,7 @@ public:
     bool IsOutNId(const int64& NId) const { return OutNIdV.SearchBin(NId) != -1; }
     bool IsNbrNId(const int64& NId) const { return IsOutNId(NId) || IsInNId(NId); }
     void LoadShM(TShMIn& MStream) {
-      Id = TInt(MStream);
+      Id = TInt64(MStream);
       NodeDat = TNodeData(MStream);
       InNIdV.LoadShM(MStream);
       OutNIdV.LoadShM(MStream);
@@ -145,7 +145,7 @@ private:
   };
 private:
   void LoadNetworkShm(TShMIn& ShMin) {
-    MxNId = TInt(ShMin);
+    MxNId = TInt64(ShMin);
     TNodeFunctor f;
     NodeH.LoadShM(ShMin, f);
   }
@@ -1898,8 +1898,6 @@ private:
       n->LoadShM(ShMin, f);
     }
   };
-private:
-  void LoadNetworkShm(TShMIn& ShMin);
 
 public:
   TNEANet() : CRef(), MxNId(0), MxEId(0), NodeH(), EdgeH(),
@@ -1983,8 +1981,9 @@ public:
     return Graph;
   }
 
-  /* static constructor to load the network from memory. Cannot perform operations that edit the edge
-   * vectors of nodes or perform illegal operations on any internal hashes (deletion or swapping keys) */
+  /// load network from shared memory for this network
+  void LoadNetworkShm(TShMIn& ShMin);
+  /// static constructor to create and load a network from memory.
   static PNEANet LoadShM(TShMIn& ShMin) {
     TNEANet* Network = new TNEANet();
     Network->LoadNetworkShm(ShMin);
