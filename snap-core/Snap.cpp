@@ -31,7 +31,7 @@
 //#include "cmty.cpp"          // community detection algorithms   TODO 64
 #include "flow.cpp"          // network flow algorithms
 //#include "coreper.cpp"       // core-periphery algorithms        TODO 64
-//#include "triad.cpp"         // clustering coefficient and triads TODO 64
+#include "triad.cpp"         // clustering coefficient and triads TODO 64
 //#include "casc.cpp"          // cascade detection^M
 
 // graph generators

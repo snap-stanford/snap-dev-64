@@ -56,12 +56,12 @@ void GetMergeSortedV(TIntV& NeighbourV, TNGraph::TNodeI NI) {
 }
 #endif
 
-int GetCommon(TIntV& A, TIntV& B) {
-  int i, j;
-  int ret = 0;
-  int alen, blen;
-  int d;
-  TInt ai;
+int64 GetCommon(TInt64V& A, TInt64V& B) {
+  int64 i, j;
+  int64 ret = 0;
+  int64 alen, blen;
+  int64 d;
+  TInt64 ai;
 
   alen = A.Len();
   blen = B.Len();
