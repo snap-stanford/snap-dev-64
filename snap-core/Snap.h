@@ -40,7 +40,7 @@
 #include "randwalk.h"        // Personalized PageRank
 
 // graph generators
-//#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       TODO 64
+#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       TODO 64
 //#include "ff.h"              // forest fire graph generator            TODO 64
 
 #include "gio.h"

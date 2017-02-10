@@ -14,7 +14,7 @@ using namespace TSnap;
 template <class PGraph>
 void TestFull() {
   
-  const int NNodes = 500;
+  const int64 NNodes = 500;
   
   PGraph G = GenFull<PGraph>(NNodes);
     
@@ -24,14 +24,14 @@ void TestFull() {
   EXPECT_TRUE(IsWeaklyConn(G));
   
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
   EXPECT_TRUE(CnCom.Len() == G->GetNodes());
   
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
-  EXPECT_TRUE(WccSzCnt[0] == TIntPr(NNodes, 1));
+  EXPECT_TRUE(WccSzCnt[0] == TInt64Pr(NNodes, 1));
   EXPECT_TRUE(WccSzCnt.Len() == 1);
   
   // Get weakly connected components
@@ -72,23 +72,23 @@ TEST(CnComTest, UndirectedDisconnected) {
 //  SaveEdgeList(G, "sample_cncom_power.txt");
   
   G = LoadEdgeList<PUNGraph>(TStr::Fmt("%s/sample_cncom_unpower.txt", DIRNAME));
-  TIntStrH NodeLabelH;
-  for (int i = 0; i < G->GetNodes(); i++) {
+  TIntStr64H NodeLabelH;
+  for (int64 i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
-  DrawGViz(G, gvlNeato, TStr::Fmt("%s/sample_cncom_unpower.png", DIRNAME), "Sample CnCom Graph", NodeLabelH);
+  //DrawGViz(G, gvlNeato, TStr::Fmt("%s/sample_cncom_unpower.png", DIRNAME), "Sample CnCom Graph", NodeLabelH);
 
   EXPECT_FALSE(IsConnected(G));
   EXPECT_FALSE(IsWeaklyConn(G));
 
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
-  EXPECT_TRUE(WccSzCnt[0] == TIntPr(2, 2));
-  EXPECT_TRUE(WccSzCnt[1] == TIntPr(26,1));
+  EXPECT_TRUE(WccSzCnt[0] == TInt64Pr(2, 2));
+  EXPECT_TRUE(WccSzCnt[1] == TInt64Pr(26,1));
 
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
   EXPECT_TRUE(CnCom.Len() == 26);
 
@@ -122,16 +122,16 @@ TEST(CnComTest, UndirectedDisconnected) {
   EXPECT_TRUE(GMxBi->GetEdges() == 6);
 
   // Get bi-connected size components counts
-  TIntPrV SzCntV;
+  TIntPr64V SzCntV;
   GetBiConSzCnt(G, SzCntV);
-  EXPECT_TRUE(SzCntV[0] == TIntPr(2, 18));
-  EXPECT_TRUE(SzCntV[1] == TIntPr(5, 1));
-  EXPECT_TRUE(SzCntV[2] == TIntPr(6, 1));
+  EXPECT_TRUE(SzCntV[0] == TInt64Pr(2, 18));
+  EXPECT_TRUE(SzCntV[1] == TInt64Pr(5, 1));
+  EXPECT_TRUE(SzCntV[2] == TInt64Pr(6, 1));
 
   // Get bi-connected components
   TCnComV BiCnComV;
   GetBiCon(G, BiCnComV);
-  for (int i = 0; i < BiCnComV.Len(); i++) {
+  for (int64 i = 0; i < BiCnComV.Len(); i++) {
     if (i != 6 && i != 13) {
       EXPECT_TRUE(BiCnComV[i].Len() == 2);
     }
@@ -140,7 +140,7 @@ TEST(CnComTest, UndirectedDisconnected) {
   EXPECT_TRUE(BiCnComV[13].Len() == 5);
   
   // Get articulation points of a graph
-  TIntV ArtNIdV;
+  TInt64V ArtNIdV;
   GetArtPoints(G, ArtNIdV);
   EXPECT_TRUE(ArtNIdV.Len() == 12);
   EXPECT_TRUE(ArtNIdV[0] == 24);
@@ -151,23 +151,23 @@ TEST(CnComTest, UndirectedDisconnected) {
   EXPECT_TRUE(ArtNIdV[5] == 2);
 
   // Get edge bridges of a graph
-  TIntPrV EdgeV;
+  TIntPr64V EdgeV;
   GetEdgeBridges(G, EdgeV);
   EXPECT_TRUE(EdgeV.Len() == 18);
   
-  EXPECT_TRUE(EdgeV[0] == TIntPr(6, 24));
-  EXPECT_TRUE(EdgeV[1] == TIntPr(14, 24));
-  EXPECT_TRUE(EdgeV[2] == TIntPr(21, 24));
-  EXPECT_TRUE(EdgeV[3] == TIntPr(8, 21));
-  EXPECT_TRUE(EdgeV[4] == TIntPr(8, 9));
-  EXPECT_TRUE(EdgeV[5] == TIntPr(1, 23));
+  EXPECT_TRUE(EdgeV[0] == TInt64Pr(6, 24));
+  EXPECT_TRUE(EdgeV[1] == TInt64Pr(14, 24));
+  EXPECT_TRUE(EdgeV[2] == TInt64Pr(21, 24));
+  EXPECT_TRUE(EdgeV[3] == TInt64Pr(8, 21));
+  EXPECT_TRUE(EdgeV[4] == TInt64Pr(8, 9));
+  EXPECT_TRUE(EdgeV[5] == TInt64Pr(1, 23));
 
   // Get 1-components counts
-  TIntPrV SzCnt1ComV;
+  TIntPr64V SzCnt1ComV;
   Get1CnComSzCnt(G, SzCnt1ComV);
   EXPECT_TRUE(SzCnt1ComV.Len() == 2);
-  EXPECT_TRUE(SzCnt1ComV[0] == TIntPr(2, 2));
-  EXPECT_TRUE(SzCnt1ComV[1] == TIntPr(20, 1));
+  EXPECT_TRUE(SzCnt1ComV[0] == TInt64Pr(2, 2));
+  EXPECT_TRUE(SzCnt1ComV[1] == TInt64Pr(20, 1));
 
   // Get 1-components
   TCnComV Cn1ComV;
@@ -208,23 +208,23 @@ TEST(CnComTest, DirectedDisconnected) {
 //  SaveEdgeList(G, "sample_cncom_ngraph.txt");
   
   G = LoadEdgeList<PNGraph>(TStr::Fmt("%s/sample_cncom_ngraph.txt", DIRNAME));
-  TIntStrH NodeLabelH;
-  for (int i = 0; i < G->GetNodes(); i++) {
+  TIntStr64H NodeLabelH;
+  for (int64 i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
-  DrawGViz(G, gvlDot, TStr::Fmt("%s/sample_cncom_ngraph.png", DIRNAME), "Sample CnCom Graph", NodeLabelH);
+  //DrawGViz(G, gvlDot, TStr::Fmt("%s/sample_cncom_ngraph.png", DIRNAME), "Sample CnCom Graph", NodeLabelH);
   
   EXPECT_FALSE(IsConnected(G));
   EXPECT_FALSE(IsWeaklyConn(G));
   
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
-  EXPECT_TRUE(WccSzCnt[0] == TIntPr(3, 1));
-  EXPECT_TRUE(WccSzCnt[1] == TIntPr(30,1));
+  EXPECT_TRUE(WccSzCnt[0] == TInt64Pr(3, 1));
+  EXPECT_TRUE(WccSzCnt[1] == TInt64Pr(30,1));
   
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
   EXPECT_TRUE(CnCom.Len() == 30);
   
@@ -269,14 +269,14 @@ TEST(CnComTest, CompleteGraph) {
   TestFull<PNEGraph>();
 
   // Test the remaining functions (for undirected graphs only)
-  const int NNodes = 500;
+  const int64 NNodes = 500;
   
   PUNGraph G = GenFull<PUNGraph>(NNodes);
 
   // Get bi-connected size components counts
-  TIntPrV SzCntV;
+  TIntPr64V SzCntV;
   GetBiConSzCnt(G, SzCntV);
-  EXPECT_TRUE(SzCntV[0] == TIntPr(NNodes, 1));
+  EXPECT_TRUE(SzCntV[0] == TInt64Pr(NNodes, 1));
   EXPECT_TRUE(SzCntV.Len() == 1);
   
   // Get bi-connected components
@@ -286,17 +286,17 @@ TEST(CnComTest, CompleteGraph) {
   EXPECT_TRUE(BiCnComV.Len() == 1);
   
   // Get articulation points of a graph
-  TIntV ArtNIdV;
+  TInt64V ArtNIdV;
   GetArtPoints(G, ArtNIdV);
   EXPECT_TRUE(ArtNIdV.Len() == 0);
   
   // Get edge bridges of a graph
-  TIntPrV EdgeV;
+  TIntPr64V EdgeV;
   GetEdgeBridges(G, EdgeV);
   EXPECT_TRUE(EdgeV.Len() == 0);
   
   // Get 1-components counts
-  TIntPrV SzCnt1ComV;
+  TIntPr64V SzCnt1ComV;
   Get1CnComSzCnt(G, SzCnt1ComV);
   EXPECT_TRUE(SzCnt1ComV.Len() == 0);
   

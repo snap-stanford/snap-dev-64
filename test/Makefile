@@ -15,8 +15,7 @@ LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
-
-TEST_SRCS = test-TTable.cpp
+TEST_SRCS = test-alg.cpp
 
 #TODO 64
 #	test-helper.cpp \	

@@ -150,18 +150,18 @@ void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const 
 
 //#//////////////////////////////////////////////
 /// Fast Queue used by the \c TBreathFS (uses \c memcpy to move objects \c TVal around).
-template <class TVal>
+template <class TVal, class TSizeTy = int>
 class TSnapQueue {
 private:
-  TInt MxFirst; // how often we move the queue to the start of the array
-  TInt First, Last;
-  TVec<TVal> ValV;
+  TInt64 MxFirst; // how often we move the queue to the start of the array
+  TInt64 First, Last;
+  TVec<TVal, TSizeTy> ValV;
 public:
   TSnapQueue() : MxFirst(1024), First(0), Last(0), ValV(MxFirst, 0) { }
   /// Constructor that reserves enough memory for a queue with MxVals elements.
-  TSnapQueue(const int& MxVals) : MxFirst(1024+MxVals/10), First(0), Last(0), ValV(TInt::GetMx(MxFirst, MxVals), 0) { }
-  TSnapQueue(const int& MxVals, const int& MaxFirst) : MxFirst(MaxFirst),
-    First(0), Last(0), ValV(TInt::GetMx(MxFirst, MxVals), 0) { }
+  TSnapQueue(const TSizeTy& MxVals) : MxFirst(1024+MxVals/10), First(0), Last(0), ValV(TInt64::GetMx(MxFirst, MxVals), 0) { }
+  TSnapQueue(const TSizeTy& MxVals, const TSizeTy& MaxFirst) : MxFirst(MaxFirst),
+    First(0), Last(0), ValV(TInt64::GetMx(MxFirst, MxVals), 0) { }
   TSnapQueue(const TSnapQueue& Queue) : MxFirst(Queue.MxFirst), First(Queue.First), Last(Queue.Last), ValV(Queue.ValV) { }
   /// Constructor that loads the queue from a (binary) stream SIn.
   explicit TSnapQueue(TSIn& SIn): MxFirst(SIn), First(SIn), Last(SIn), ValV(SIn) { }
@@ -171,22 +171,22 @@ public:
   TSnapQueue& operator=(const TSnapQueue& Queue) { if (this != &Queue) { MxFirst=Queue.MxFirst;
     First=Queue.First; Last=Queue.Last; ValV=Queue.ValV; } return *this; }
   /// Returns the value of the ValN element in the queue, but does not remove the element.
-  const TVal& operator[](const int& ValN) const { return ValV[First+ValN]; }
+  const TVal& operator[](const TSizeTy& ValN) const { return ValV[First+ValN]; }
 
   /// Deletes all elements from the queue.
   void Clr(const bool& DoDel=true) { ValV.Clr(DoDel);  First=Last=0; }
-  void Gen(const int& MxVals, const int& MaxFirst=1024) {
+  void Gen(const TSizeTy& MxVals, const TSizeTy& MaxFirst=1024) {
     MxFirst=MaxFirst; First=Last=0; ValV.Gen(MxVals, 0); }
 
   /// Tests whether the queue is empty (contains no elements).
   bool Empty() const {return First==Last;}
   /// Returns the number of elements in the queue.
-  int Len() const {return Last-First;}
+  TSizeTy Len() const {return Last-First;}
   /// Returns the location of the first element in the queue.
-  int GetFirst() const { return First; }
+  TSizeTy GetFirst() const { return First; }
   /// Returns the location of the last element in the queue.
-  int GetLast() const { return Last; }
-  int Reserved() const { return ValV.Reserved(); }
+  TSizeTy GetLast() const { return Last; }
+  TSizeTy Reserved() const { return ValV.Reserved(); }
 
   /// Returns the value of the first element in the queue, but does not remove the element.
   const TVal& Top() const { return ValV[First]; }

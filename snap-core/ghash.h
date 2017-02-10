@@ -2,62 +2,62 @@
 /// Small Directed Graphs. ##TGraphKey
 class TGraphKey {
 public:
-  static const int RoundTo;
+  static const int64 RoundTo;
 private:
 public:
-  TInt Nodes;
-  TIntPrV EdgeV;  // renumbers the graph (node Ids 0..nodes-1)
-  TFltV SigV;     // signature (for hashing)
-  TInt VariantId; // graphs can have the same signature but are not-isomorphic. VariantId starts with 1.
+  TInt64 Nodes;
+  TIntPr64V EdgeV;  // renumbers the graph (node Ids 0..nodes-1)
+  TFlt64V SigV;     // signature (for hashing)
+  TInt64 VariantId; // graphs can have the same signature but are not-isomorphic. VariantId starts with 1.
 public:
   TGraphKey() : Nodes(-1), EdgeV(), SigV(), VariantId(0) { }
-  TGraphKey(const TSFltV& GraphSigV);
-  TGraphKey(const TIntV& GraphSigV);
-  TGraphKey(const TFltV& GraphSigV);
+  TGraphKey(const TSFlt64V& GraphSigV);
+  TGraphKey(const TInt64V& GraphSigV);
+  TGraphKey(const TFlt64V& GraphSigV);
   TGraphKey(const TGraphKey& GraphKey);
   TGraphKey(TSIn& SIn);
   void Save(TSOut& SOut) const;
   TGraphKey& operator = (const TGraphKey& GraphKey);
   bool operator == (const TGraphKey& GraphKey) const { return SigV==GraphKey.SigV && VariantId==GraphKey.VariantId; }
 
-  int GetPrimHashCd() const { return abs(SigV.GetPrimHashCd() ^ VariantId); }
-  int GetSecHashCd() const { return abs(SigV.GetSecHashCd() ^ VariantId<<8); }
+  int64 GetPrimHashCd() const { return abs(SigV.GetPrimHashCd() ^ VariantId); }
+  int64 GetSecHashCd() const { return abs(SigV.GetSecHashCd() ^ VariantId<<8); }
 
   /// Returns the number of nodes in the graph.
-  int GetNodes() const { return Nodes; }
+  int64 GetNodes() const { return Nodes; }
   /// Returns the number of edges in the graph.
-  int GetEdges() const { return EdgeV.Len(); }
+  int64 GetEdges() const { return EdgeV.Len(); }
   /// Returns the length of the signature vector of a graph. ##TGraphKey::GetSigLen
-  int GetSigLen() const { return SigV.Len(); }
+  int64 GetSigLen() const { return SigV.Len(); }
   /// Returns the graph variant Id. ##TGraphKey::GetVariant
-  int GetVariant() const { return VariantId; }
+  int64 GetVariant() const { return VariantId; }
   /// Sets the Variant Id of a given graph.
-  void SetVariant(const int& Variant) { VariantId = Variant; }
+  void SetVariant(const int64& Variant) { VariantId = Variant; }
   /// Returns a vector of directed edges of a graph.
-  void SetEdgeV(const TIntPrV& EdgeIdV) { EdgeV = EdgeIdV; }
+  void SetEdgeV(const TIntPr64V& EdgeIdV) { EdgeV = EdgeIdV; }
 
   /// Returns the directed graph stored in the GraphKey object.
   PNGraph GetNGraph() const;
   /// Creates a key from a given directed graph. ##TGraphKey::TakeGraph
   void TakeGraph(const PNGraph& Graph);
   /// Creates a key from a given directed graph. ##TGraphKey::TakeGraph-1
-  void TakeGraph(const PNGraph& Graph, TIntPrV& NodeMap);
+  void TakeGraph(const PNGraph& Graph, TIntPr64V& NodeMap);
   /// Creates a signature for a given directed graph. ##TGraphKey::TakeSig
-  void TakeSig(const PNGraph& Graph, const int& MnSvdGraph, const int& MxSvdGraph);
+  void TakeSig(const PNGraph& Graph, const int64& MnSvdGraph, const int64& MxSvdGraph);
   
   /// Saves the graph as a list of edges.
   void SaveTxt(FILE *F) const;
   /// Saves the graph to the .DOT file format used by GraphViz. ##TGraphKey::SaveGViz
-  void SaveGViz(const TStr& OutFNm, const TStr& Desc = TStr(), const TStr& NodeAttrs="", const int& Size=-1) const;
+  void SaveGViz(const TStr& OutFNm, const TStr& Desc = TStr(), const TStr& NodeAttrs="", const int64& Size=-1) const;
   /// Saves the graph to the .DOT file format and calls GraphViz to draw it. ##TGraphKey::DrawGViz
-  void DrawGViz(const TStr& OutFNm, const TStr& Desc = TStr(), const TStr& NodeAttrs="", const int& Size=-1) const;
+  void DrawGViz(const TStr& OutFNm, const TStr& Desc = TStr(), const TStr& NodeAttrs="", const int64& Size=-1) const;
 
   /// Checks whether directed graph Key1 is isomorphic to the directed graph Key2 under node Id permutation NodeIdMap. ##TGraphKey::IsIsomorph
-  static bool IsIsomorph(const TGraphKey& Key1, const TGraphKey& Key2, const TIntV& NodeIdMap);
+  static bool IsIsomorph(const TGraphKey& Key1, const TGraphKey& Key2, const TInt64V& NodeIdMap);
   /// Checks whether directed graph Key1 is isomorphic to the directed graph Key2 under all the permutations of node Ids stored in NodeIdMapV.
-  static bool IsIsomorph(const TGraphKey& Key1, const TGraphKey& Key2, const TVec<TIntV>& NodeIdMapV);
+  static bool IsIsomorph(const TGraphKey& Key1, const TGraphKey& Key2, const TVec<TInt64V, int64>& NodeIdMapV);
   /// Checks whether directed graph Key1 is isomorphic to the directed graph Key2 under all the permutations of node Ids stored in NodeIdMapV and returns the Id of the permutation of node Ids (IsoPermId) which makes the two graphs isomorphic.
-  static bool IsIsomorph(const TGraphKey& Key1, const TGraphKey& Key2, const TVec<TIntV>& NodeIdMapV, int& IsoPermId);
+  static bool IsIsomorph(const TGraphKey& Key1, const TGraphKey& Key2, const TVec<TInt64V, int64>& NodeIdMapV, int64& IsoPermId);
 };
 
 //#//////////////////////////////////////////////
@@ -65,28 +65,28 @@ public:
 template <class TDat>
 class TGHash {
 public:
-  typedef typename THash<TGraphKey, TDat>::TIter TIter;
+  typedef typename THash<TGraphKey, TDat, int64>::TIter TIter;
 private:
-  TInt MxIsoCheck;     // maximum graph size for which we perform brute force graph isomorphism check
-  TInt MxSvdGraph;     // maximum graph size for which we perform SVD-based approximate isomorphism check
-  THash<TInt, TVec<TIntV> > GSzToPermH; // Graph size to a vector of all node permutations (for graphs of up to MxIsoCkeck nodes)
+  TInt64 MxIsoCheck;     // maximum graph size for which we perform brute force graph isomorphism check
+  TInt64 MxSvdGraph;     // maximum graph size for which we perform SVD-based approximate isomorphism check
+  THash<TInt64, TVec<TInt64V, int64> > GSzToPermH; // Graph size to a vector of all node permutations (for graphs of up to MxIsoCkeck nodes)
   TBool HashOnlyTrees; // hashing only trees (exact isomorphism test)
-  THash<TGraphKey, TDat> GraphH;
+  THash<TGraphKey, TDat, int64> GraphH;
 private:
   void InitPermutations();
-  int IsGetKeyId(const PNGraph& Graph) const;
-  int IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey) const;
-  int IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey, TIntPrV& NodeMap) const;
+  int64 IsGetKeyId(const PNGraph& Graph) const;
+  int64 IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey) const;
+  int64 IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey, TIntPr64V& NodeMap) const;
 public:
   /// Default contructor. ##TGHash::TGHash
-  TGHash(const bool& HashTrees, const int& MaxIsoCheck=8, const int& MaxSvdGraph=500);
+  TGHash(const bool& HashTrees, const int64& MaxIsoCheck=8, const int64& MaxSvdGraph=500);
   TGHash(TSIn& SIn);
   void Save(TSOut& SOut) const;
 
   /// Accesses the data at hash table position index KeyId.
-  const TDat& operator [] (const int& KeyId) const { return GraphH[KeyId]; }
+  const TDat& operator [] (const int64& KeyId) const { return GraphH[KeyId]; }
   /// Accesses the data at hash table position index KeyId.
-  TDat& operator [] (const int& KeyId) { return GraphH[KeyId]; }
+  TDat& operator [] (const int64& KeyId) { return GraphH[KeyId]; }
   /// Accesses the data of graph-key Key.
   const TDat& operator () (const TGraphKey& Key) const { return GraphH.GetDat(Key); }
   /// Accesses the data of graph-key Key.
@@ -96,30 +96,30 @@ public:
   /// Returns iterator to one past the last element of the hash table.
   TIter EndI() const { return GraphH.EndI(); }
   /// Returns iterator to a key at position index KeyId.
-  TIter GetI(const int& KeyId) const  { return GraphH.GetI(KeyId); }
+  TIter GetI(const int64& KeyId) const  { return GraphH.GetI(KeyId); }
 
   /// Returns whether the hash table only hashes trees and not arbitrary directed graphs.
   bool HashTrees() const { return HashOnlyTrees; }
 
   /// Initializes the hash table for the expected number of keys ExpectVals.
-  void Gen(const int& ExpectVals) { GraphH.Gen(ExpectVals); }
+  void Gen(const int64& ExpectVals) { GraphH.Gen(ExpectVals); }
   /// Removes all the elements from the hash table. ##TGHash::Clr
-  void Clr(const bool& DoDel=true, const int& NoDelLim=-1) { GraphH.Clr(DoDel, NoDelLim); }
+  void Clr(const bool& DoDel=true, const int64& NoDelLim=-1) { GraphH.Clr(DoDel, NoDelLim); }
   /// Tests whether the hash table is empty.
   bool Empty() const { return GraphH.Empty(); }
   /// Returns the number of keys in the hash table.
-  int Len() const {  return GraphH.Len(); }
+  int64 Len() const {  return GraphH.Len(); }
   /// Returns the number of ports in the hash table.
-  int GetPorts() const { return GraphH.GetPorts(); }
+  int64 GetPorts() const { return GraphH.GetPorts(); }
   /// Tests whether the hash table automatically adjusts the number of ports based on the number of keys.
   bool IsAutoSize() const { return GraphH.IsAutoSize(); }
   /// Returns the maximum key Id of any element in the hash table.
-  int GetMxKeyIds() const { return GraphH.GetMxKeyIds(); }
+  int64 GetMxKeyIds() const { return GraphH.GetMxKeyIds(); }
   /// Tests whether there are any unused slots in the hash table. ##TGHash::IsKeyIdEqKeyN
   bool IsKeyIdEqKeyN() const { return GraphH.IsKeyIdEqKeyN(); }
 
   /// Adds a key Graph to the table and returns its KeyId. ##TGHash::AddKey
-  int AddKey(const PNGraph& Graph);
+  int64 AddKey(const PNGraph& Graph);
   /// Adds a key Graph to the table and returns its data value. ##TGHash::AddDat
   TDat& AddDat(const PNGraph& Graph) { return GraphH[AddKey(Graph)]; }
   /// Adds a key Graph to the table, sets its data value to value of Dat and returns Dat. ##TGHash::AddDat-1
@@ -128,57 +128,57 @@ public:
   /// Test whether Graph is an existing key in the hash table.
   bool IsKey(const PNGraph& Graph) const { int k=IsGetKeyId(Graph); return k!=-1; }
   /// Returns the KeyId (position index) of key Graph. ##TGHash::GetKeyId
-  int GetKeyId(const PNGraph& Graph) const { return IsGetKeyId(Graph); }
+  int64 GetKeyId(const PNGraph& Graph) const { return IsGetKeyId(Graph); }
   /// Returns the data associated with key Graph. ##TGHash::GetDat
   const TDat& GetDat(const PNGraph& Graph) const { return GraphH[GetKeyId(Graph)]; }
   /// Returns the data associated with key Graph. ##TGHash::GetDat-1
   TDat& GetDat(const PNGraph& Graph) { return GraphH[GetKeyId(Graph)]; }
 
   /// Returns the GraphKey with position index KeyId.
-  const TGraphKey& GetKey(const int& KeyId) const { return GraphH.GetKey(KeyId); }
+  const TGraphKey& GetKey(const int64& KeyId) const { return GraphH.GetKey(KeyId); }
   /// Returns the KeyId for a given Key. ##TGHash::GetKeyId
-  int GetKeyId(const TGraphKey& Key) const { return GraphH.GetKeyId(Key); }
+  int64 GetKeyId(const TGraphKey& Key) const { return GraphH.GetKeyId(Key); }
   /// Tests whether a given Key exists in the hash table.
   bool IsKey(const TGraphKey& Key) const { return GraphH.IsKey(Key); }
   /// Tests whether a given Key exists in the hash table.
-  bool IsKey(const TGraphKey& Key, int& KeyId) const { return GraphH.IsKey(Key, KeyId); }
+  bool IsKey(const TGraphKey& Key, int64& KeyId) const { return GraphH.IsKey(Key, KeyId); }
   /// Tests whether there exists a key at given position index KeyId.
-  bool IsKeyId(const int& KeyId) const { return GraphH.IsKeyId(KeyId); }
+  bool IsKeyId(const int64& KeyId) const { return GraphH.IsKeyId(KeyId); }
   /// Returns data with a given graph Key. ##TGHash::GetDat-2
   const TDat& GetDat(const TGraphKey& Key) const { return GraphH.GetDat(Key); }
   /// Returns data with a given graph Key. ##TGHash::GetDat-3
   TDat& GetDat(const TGraphKey& Key) { return GraphH.GetDat(Key); }
   /// Returns data at a given position index KeyId. ##TGHash::GetDatId
-  const TDat& GetDatId(const int& KeyId) const { return GraphH[KeyId]; }
+  const TDat& GetDatId(const int64& KeyId) const { return GraphH[KeyId]; }
   /// Returns data at a given position index KeyId. ##TGHash::GetDatId-1
-  TDat& GetDatId(const int& KeyId) { return GraphH[KeyId]; }
+  TDat& GetDatId(const int64& KeyId) { return GraphH[KeyId]; }
 
   /// Returns Key and Data at a given position index KeyId.
-  void GetKeyDat(const int& KeyId, TGraphKey& Key, TDat& Dat) const { GraphH.GetKeyDat(KeyId, Key, Dat); }
+  void GetKeyDat(const int64& KeyId, TGraphKey& Key, TDat& Dat) const { GraphH.GetKeyDat(KeyId, Key, Dat); }
   /// Test whether Key exists and sets its data to Dat.
   bool IsKeyGetDat(const TGraphKey& Key, TDat& Dat) const { return GraphH.IsKeyGetDat(Key, Dat); }
 
   /// Returns the mapping of node Ids of the Graph to those of the graph-key in the hash table. ##TGHash::GetNodeMap
-  bool GetNodeMap(const PNGraph& Graph, TIntPrV& NodeMapV) const;
+  bool GetNodeMap(const PNGraph& Graph, TIntPr64V& NodeMapV) const;
   /// Returns the mapping of node Ids of the Graph to those of the graph-key in the hash table and the Graph KeyId. ##TGHash::GetNodeMap-1
-  bool GetNodeMap(const PNGraph& Graph, TIntPrV& NodeMapV, int& KeyId) const;
+  bool GetNodeMap(const PNGraph& Graph, TIntPr64V& NodeMapV, int64& KeyId) const;
 
   /// Finds first KeyId. ##TGHash::FFirstKeyId
-  int FFirstKeyId() const { return 0-1; }
+  int64 FFirstKeyId() const { return 0-1; }
   /// Finds next KeyId. ##TGHash::FNextKeyId
-  bool FNextKeyId(int& KeyId) const { return GraphH.FNextKeyId(KeyId); }
+  bool FNextKeyId(int64& KeyId) const { return GraphH.FNextKeyId(KeyId); }
   /// Returns a vector of keys stored in the hash table.
-  void GetKeyV(TVec<TGraphKey>& KeyV) const { GraphH.GetKeyV(KeyV); }
+  void GetKeyV(TVec<TGraphKey, int64>& KeyV) const { GraphH.GetKeyV(KeyV); }
   /// Returns a vector of data elements stored in the hash table.
-  void GetDatV(TVec<TDat>& DatV) const { GraphH.GetDatV(DatV); }
+  void GetDatV(TVec<TDat, int64>& DatV) const { GraphH.GetDatV(DatV); }
   /// Returns a vector of KeyIds of hash table elements sorted by their data value. ##TGHash::GetKeyIdByDat
-  void GetKeyIdByDat(TIntV& KeyIdV, const bool& Asc = true) const;
+  void GetKeyIdByDat(TInt64V& KeyIdV, const bool& Asc = true) const;
   /// Returns a vector of KeyIds of hash table elements sorted by their graph size. ##TGHash::GetKeyIdByGSz
-  void GetKeyIdByGSz(TIntV& KeyIdV, const bool& Asc = true) const;
+  void GetKeyIdByGSz(TInt64V& KeyIdV, const bool& Asc = true) const;
   /// Returns a vector of pairs (Key, Data) elements stored in the hash table.
-  void GetKeyDatPrV(TVec<TPair<TGraphKey, TDat> >& KeyDatPrV) const { GraphH.GetKeyDatPrV(KeyDatPrV); }
+  void GetKeyDatPrV(TVec<TPair<TGraphKey, TDat>, int64>& KeyDatPrV) const { GraphH.GetKeyDatPrV(KeyDatPrV); }
   /// Returns a vector of pairs (Data, Key) elements stored in the hash table.
-  void GetDatKeyPrV(TVec<TPair<TDat, TGraphKey> >& DatKeyPrV) const { GraphH.GetDatKeyPrV(DatKeyPrV); }
+  void GetDatKeyPrV(TVec<TPair<TDat, TGraphKey>, int64>& DatKeyPrV) const { GraphH.GetDatKeyPrV(DatKeyPrV); }
 
   /// Removes unused slots from the hash table. ##TGHash::Defrag
   void Defrag() { GraphH.Defrag(); }
@@ -186,9 +186,9 @@ public:
   void Pack() { GraphH.Pack(); }
 
   /// Saves a given graph with key Id KeyId in DOT format and calls the GraphViz to draw it.
-  void DrawGViz(const int& KeyId, const TStr& OutFNmPref, const TStr& OutputType = "gif", TStr Desc="") const;
+  void DrawGViz(const int64& KeyId, const TStr& OutFNmPref, const TStr& OutputType = "gif", TStr Desc="") const;
   /// Saves a set of graphs with key Ids KeyIdV in DOT format and calls the GraphViz to draw them.
-  void DrawGViz(const TIntV& KeyIdV, const TStr& OutFNmPref, const TStr& OutputType = "gif") const;
+  void DrawGViz(const TInt64V& KeyIdV, const TStr& OutFNmPref, const TStr& OutputType = "gif") const;
   /// Saves all graphs stored in the hash table into a text file.
   void SaveTxt(const TStr& OutFNm, const TStr& Desc, const TStr& DatColNm, const bool& SortByKeyVal=true) const;
   /// Saves all graphs stored in the hash table into a text file and include additional information.
@@ -198,10 +198,10 @@ public:
 template <class TDat>
 void TGHash<TDat>::InitPermutations() {
   GSzToPermH.Clr();
-  for (int nodes = 2; nodes <= MxIsoCheck; nodes++) {
-    TVec<TIntV> NodePermutationV;
-    TIntV NodeIdV(nodes, 0);
-    for (int i = 0; i < nodes; i++)  NodeIdV.Add(i);
+  for (int64 nodes = 2; nodes <= MxIsoCheck; nodes++) {
+    TVec<TInt64V, int64> NodePermutationV;
+    TInt64V NodeIdV(nodes, 0);
+    for (int64 i = 0; i < nodes; i++)  NodeIdV.Add(i);
     NodeIdV.Pack();
     NodePermutationV.Add(NodeIdV);
     while (NodeIdV.NextPerm()) {
@@ -213,7 +213,7 @@ void TGHash<TDat>::InitPermutations() {
 }
 
 template <class TDat>
-TGHash<TDat>::TGHash(const bool& HashTrees, const int& MaxIsoCheck, const int& MaxSvdGraph) :
+TGHash<TDat>::TGHash(const bool& HashTrees, const int64& MaxIsoCheck, const int64& MaxSvdGraph) :
  MxIsoCheck(MaxIsoCheck), MxSvdGraph(MaxSvdGraph), GSzToPermH(), HashOnlyTrees(HashTrees), GraphH() {
   if (! HashTrees) {
     InitPermutations();
@@ -236,12 +236,12 @@ void TGHash<TDat>::Save(TSOut& SOut) const {
 }
 
 template <class TDat>
-int TGHash<TDat>::AddKey(const PNGraph& Graph) {
+int64 TGHash<TDat>::AddKey(const PNGraph& Graph) {
   if (HashOnlyTrees) {
-    int RootNId;  IAssert(TSnap::IsTree(Graph, RootNId));
-    TIntV TreeSig;  TSnap::GetTreeSig(Graph, RootNId, TreeSig);
+    int64 RootNId;  IAssert(TSnap::IsTree(Graph, RootNId));
+    TInt64V TreeSig;  TSnap::GetTreeSig(Graph, RootNId, TreeSig);
     TGraphKey GKey(TreeSig);
-    const int KeyId = GraphH.GetKeyId(GKey);
+    const int64 KeyId = GraphH.GetKeyId(GKey);
     if (KeyId == -1) {
       GKey.TakeGraph(Graph);
       return GraphH.AddKey(GKey);
@@ -250,13 +250,13 @@ int TGHash<TDat>::AddKey(const PNGraph& Graph) {
   } else {
     TGraphKey GKey;
     GKey.TakeSig(Graph, MxIsoCheck+1, MxSvdGraph); // get signature
-    const int Nodes = GKey.GetNodes();
+    const int64 Nodes = GKey.GetNodes();
     if (Nodes > 2 && Nodes <= MxIsoCheck) {
       GKey.TakeGraph(Graph);
       // Check all variants with same signature
-      for (int variant = 1; ; variant++) {
+      for (int64 variant = 1; ; variant++) {
         GKey.SetVariant(variant);
-        int KeyId = GraphH.GetKeyId(GKey);
+        int64 KeyId = GraphH.GetKeyId(GKey);
         if (KeyId == -1) { // Key of such signature and variant does not exist yet.
           KeyId = GraphH.AddKey(GKey);
           return KeyId;
@@ -266,7 +266,7 @@ int TGHash<TDat>::AddKey(const PNGraph& Graph) {
         }
       }
     } else {
-      const int KeyId = GraphH.GetKeyId(GKey);
+      const int64 KeyId = GraphH.GetKeyId(GKey);
       if (KeyId == -1) {
         GKey.TakeGraph(Graph);
         return GraphH.AddKey(GKey);
@@ -279,35 +279,35 @@ int TGHash<TDat>::AddKey(const PNGraph& Graph) {
 }
 
 template <class TDat>
-int TGHash<TDat>::IsGetKeyId(const PNGraph& Graph) const {
+int64 TGHash<TDat>::IsGetKeyId(const PNGraph& Graph) const {
   TGraphKey GKey;
   return IsGetKeyId(Graph, GKey);
 }
 
 template <class TDat>
-int TGHash<TDat>::IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey) const {
+int64 TGHash<TDat>::IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey) const {
   if (HashOnlyTrees) {
     // For trees we perform exact isomorshism test based on graph signatures
-    int RootNId;  IAssert(TSnap::IsTree(Graph, RootNId));
-    TIntV TreeSig;  TSnap::GetTreeSig(Graph, RootNId, TreeSig);
+    int64 RootNId;  IAssert(TSnap::IsTree(Graph, RootNId));
+    TInt64V TreeSig;  TSnap::GetTreeSig(Graph, RootNId, TreeSig);
     GKey = TGraphKey(TreeSig);
-    const int KeyId = GraphH.GetKeyId(GKey);
+    const int64 KeyId = GraphH.GetKeyId(GKey);
     return KeyId;
   } else {
     // For small graphs  of less than MxIsoCheck nodes we perform brute force isomorphism checking
     GKey.TakeSig(Graph, MxIsoCheck+1, MxSvdGraph);
-    const int Nodes = GKey.GetNodes();
+    const int64 Nodes = GKey.GetNodes();
     if (Nodes > 2 && Nodes <= MxIsoCheck) {
       GKey.TakeGraph(Graph);
-      for (int variant = 1; ; variant++) {
+      for (int64 variant = 1; ; variant++) {
         GKey.SetVariant(variant);
-        int KeyId = GraphH.GetKeyId(GKey); // Is there a graph of the same signature and same VariantId
+        int64 KeyId = GraphH.GetKeyId(GKey); // Is there a graph of the same signature and same VariantId
         if (KeyId == -1) { return -1; }
         if (TGraphKey::IsIsomorph(GKey, GraphH.GetKey(KeyId), GSzToPermH.GetDat(Nodes))) { return KeyId; } // perform brute force isomorphism check
       }
     } else {
       // For all other graphs we perform approximate graph isomorphism checking
-      const int KeyId = GraphH.GetKeyId(GKey);
+      const int64 KeyId = GraphH.GetKeyId(GKey);
       return KeyId;
     }
   }
@@ -316,39 +316,39 @@ int TGHash<TDat>::IsGetKeyId(const PNGraph& Graph, TGraphKey& GKey) const {
 }
 
 template <class TDat>
-bool TGHash<TDat>::GetNodeMap(const PNGraph& Graph, TIntPrV& NodeMapV) const {
-  int KeyId;
+bool TGHash<TDat>::GetNodeMap(const PNGraph& Graph, TIntPr64V& NodeMapV) const {
+  int64 KeyId;
   return GetNodeMap(Graph, NodeMapV, KeyId);
 }
 
 template <class TDat>
-bool TGHash<TDat>::GetNodeMap(const PNGraph& Graph, TIntPrV& NodeMapV, int& KeyId) const {
+bool TGHash<TDat>::GetNodeMap(const PNGraph& Graph, TIntPr64V& NodeMapV, int64& KeyId) const {
   NodeMapV.Clr(false);
   if (HashOnlyTrees) {
-    int RootNId;  IAssert(TSnap::IsTree(Graph, RootNId));
-    TIntV TreeSig;  TSnap::GetTreeSig(Graph, RootNId, TreeSig, NodeMapV);
+    int64 RootNId;  IAssert(TSnap::IsTree(Graph, RootNId));
+    TInt64V TreeSig;  TSnap::GetTreeSig(Graph, RootNId, TreeSig, NodeMapV);
     TGraphKey GKey(TreeSig);
     KeyId = GraphH.GetKeyId(GKey);
     return KeyId != -1;
   } else {
-    const int Nodes = Graph->GetNodes();
-    int IsoPermId = -1;
+    const int64 Nodes = Graph->GetNodes();
+    int64 IsoPermId = -1;
     NodeMapV.Clr(false);
     if (Nodes == 0) { return true; }
     else if (Nodes == 1) {
-      NodeMapV.Add(TIntPr(Graph->BegNI().GetId(), 0));  return true; }
+      NodeMapV.Add(TInt64Pr(Graph->BegNI().GetId(), 0));  return true; }
     else if (Nodes <= MxIsoCheck) {
       TGraphKey GKey;
       GKey.TakeSig(Graph, MxIsoCheck+1, MxSvdGraph);
       GKey.TakeGraph(Graph, NodeMapV);
-      for (int variant = 1; ; variant++) {
+      for (int64 variant = 1; ; variant++) {
         GKey.SetVariant(variant);
         KeyId = GraphH.GetKeyId(GKey);
         if (KeyId == -1) { return false; }
         if (TGraphKey::IsIsomorph(GKey, GraphH.GetKey(KeyId), GSzToPermH.GetDat(Nodes), IsoPermId)) {
-          const TIntV& K1K2Perm = GSzToPermH.GetDat(Nodes)[IsoPermId];
+          const TInt64V& K1K2Perm = GSzToPermH.GetDat(Nodes)[IsoPermId];
           // map from graph to key1 to key2
-          for  (int i = 0; i < NodeMapV.Len(); i++) {
+          for  (int64 i = 0; i < NodeMapV.Len(); i++) {
             NodeMapV[i].Val2 = K1K2Perm[NodeMapV[i].Val2]; }
           return true;
         }
@@ -363,33 +363,33 @@ bool TGHash<TDat>::GetNodeMap(const PNGraph& Graph, TIntPrV& NodeMapV, int& KeyI
 }
 
 template <class TDat>
-void TGHash<TDat>::GetKeyIdByDat(TIntV& KeyIdV, const bool& Asc) const {
-  TVec<TQuad<TDat, TInt,TInt, TInt> > DatKeyIdV(Len(), 0); // <TDat,Nodes,Edges,KeyId>
-  for (int i = FFirstKeyId(); FNextKeyId(i); ) {
-    DatKeyIdV.Add(TQuad<TDat, TInt,TInt, TInt>(GetDatId(i), GetKey(i).GetNodes(), GetKey(i).GetEdges(), i));
+void TGHash<TDat>::GetKeyIdByDat(TInt64V& KeyIdV, const bool& Asc) const {
+  TVec<TQuad<TDat, TInt64,TInt64, TInt64>, int64> DatKeyIdV(Len(), 0); // <TDat,Nodes,Edges,KeyId>
+  for (int64 i = FFirstKeyId(); FNextKeyId(i); ) {
+    DatKeyIdV.Add(TQuad<TDat, TInt64,TInt64, TInt64>(GetDatId(i), GetKey(i).GetNodes(), GetKey(i).GetEdges(), i));
   }
   DatKeyIdV.Sort(Asc);
   KeyIdV.Gen(Len(), 0);
-  for (int i = 0; i < Len(); i++) {
+  for (int64 i = 0; i < Len(); i++) {
     KeyIdV.Add(DatKeyIdV[i].Val4);
   }
 }
 
 template <class TDat>
-void TGHash<TDat>::GetKeyIdByGSz(TIntV& KeyIdV, const bool& Asc) const {
-  TVec<TQuad<TInt,TInt, TDat, TInt> > DatKeyIdV(Len(), 0); // <Nodes,Edges,TDat,KeyId>
-  for (int i = FFirstKeyId(); FNextKeyId(i); ) {
-    DatKeyIdV.Add(TQuad< TInt,TInt, TDat, TInt>(GetKey(i).GetNodes(), GetKey(i).GetEdges(), GetDatId(i), i));
+void TGHash<TDat>::GetKeyIdByGSz(TInt64V& KeyIdV, const bool& Asc) const {
+  TVec<TQuad<TInt64,TInt64, TDat, TInt64>, int64> DatKeyIdV(Len(), 0); // <Nodes,Edges,TDat,KeyId>
+  for (int64 i = FFirstKeyId(); FNextKeyId(i); ) {
+    DatKeyIdV.Add(TQuad< TInt64,TInt64, TDat, TInt64>(GetKey(i).GetNodes(), GetKey(i).GetEdges(), GetDatId(i), i));
   }
   DatKeyIdV.Sort(Asc);
   KeyIdV.Gen(Len(), 0);
-  for (int i = 0; i < Len(); i++) {
+  for (int64 i = 0; i < Len(); i++) {
     KeyIdV.Add(DatKeyIdV[i].Val4);
   }
 }
 
 template <class TDat>
-void TGHash<TDat>::DrawGViz(const int& KeyId, const TStr& OutFNmPref, const TStr& OutputType, TStr Desc) const {
+void TGHash<TDat>::DrawGViz(const int64& KeyId, const TStr& OutFNmPref, const TStr& OutputType, TStr Desc) const {
   IAssert(OutputType == "ps" || OutputType == "gif" || OutputType == "png");
   const TGraphKey& GKey = GetKey(KeyId);
   const TStr Desc1 = TStr::Fmt("%s (%d, %d)", Desc.CStr(), GKey.GetNodes(), GKey.GetEdges());
@@ -398,11 +398,11 @@ void TGHash<TDat>::DrawGViz(const int& KeyId, const TStr& OutFNmPref, const TStr
 }
 
 template <class TDat>
-void TGHash<TDat>::DrawGViz(const TIntV& KeyIdV, const TStr& OutFNmPref, const TStr& OutputType) const {
+void TGHash<TDat>::DrawGViz(const TInt64V& KeyIdV, const TStr& OutFNmPref, const TStr& OutputType) const {
   IAssert(OutputType == "ps" || OutputType == "gif" || OutputType == "png");
   TExeTm ExeTm;
   printf("Plotting %d graphs\n", KeyIdV.Len());
-  for (int i = 0; i < KeyIdV.Len(); i++) {
+  for (int64 i = 0; i < KeyIdV.Len(); i++) {
     const TStr FNm = TStr::Fmt("%s.%03d.key%d.", OutFNmPref.CStr(), i+1, KeyIdV[i]());
     const TStr Desc = TStr::Fmt("KeyId:%d", KeyIdV[i]());
     const TGraphKey& GKey = GetKey(KeyIdV[i]);
@@ -415,7 +415,7 @@ void TGHash<TDat>::DrawGViz(const TIntV& KeyIdV, const TStr& OutFNmPref, const T
 
 template <class TDat>
 void TGHash<TDat>::SaveTxt(const TStr& OutFNm, const TStr& Desc, const TStr& DatColNm, const bool& SortByKeyVal) const {
-  TIntV KeyIdV;
+  TInt64V KeyIdV;
   if (SortByKeyVal) GetKeyIdByDat(KeyIdV, false);
   else GetKeyIdByGSz(KeyIdV, true);
   FILE *F = fopen(OutFNm.CStr(), "wt");
@@ -433,7 +433,7 @@ void TGHash<TDat>::SaveTxt(const TStr& OutFNm, const TStr& Desc, const TStr& Dat
 
 template <class TDat>
 void TGHash<TDat>::SaveDetailTxt(const TStr& OutFNm, const TStr& Desc, const TStr& DatColNm) const {
-  TIntV KeyIdV;  GetKeyIdByDat(KeyIdV, false);
+  TInt64V KeyIdV;  GetKeyIdByDat(KeyIdV, false);
   FILE *F = fopen(OutFNm.CStr(), "wt");
   fprintf(F, "Graph-Hash-Table\n");
   fprintf(F, "%s\n", Desc.CStr());
@@ -450,39 +450,39 @@ void TGHash<TDat>::SaveDetailTxt(const TStr& OutFNm, const TStr& Desc, const TSt
 /// Simple directed/undirected graph defined by its edges.
 class TSimpleGraph {
 private:
-  TIntPrV EdgeV;
+  TIntPr64V EdgeV;
 public:
   TSimpleGraph() { }
-  TSimpleGraph(const TIntPrV& GEdgeV) : EdgeV(GEdgeV) { }
+  TSimpleGraph(const TIntPr64V& GEdgeV) : EdgeV(GEdgeV) { }
   bool operator == (const TSimpleGraph& Graph) const { return EdgeV == Graph.EdgeV; }
   bool operator < (const TSimpleGraph& Graph) const { return EdgeV < Graph.EdgeV; }
 
-  int GetEdges() const { return EdgeV.Len(); }
-  void AddEdge(const int& SrcNId, const int& DstNId) { EdgeV.Add(TIntPr(SrcNId, DstNId)); }
+  int64 GetEdges() const { return EdgeV.Len(); }
+  void AddEdge(const int64& SrcNId, const int64& DstNId) { EdgeV.Add(TInt64Pr(SrcNId, DstNId)); }
   bool Join(const TSimpleGraph& G1, const TSimpleGraph& G2);
-  TIntPrV& GetEdgeV() { return EdgeV; }
-  TIntPrV& operator () () { return EdgeV; }
+  TIntPr64V& GetEdgeV() { return EdgeV; }
+  TIntPr64V& operator () () { return EdgeV; }
 
   void Dump(const TStr& Desc = TStr()) const;
 };
-typedef TVec<TSimpleGraph> TSimpleGraphV;
+typedef TVec<TSimpleGraph, int64> TSimpleGraphV;
 
 //#//////////////////////////////////////////////
 /// Connected Sub-graph Enumeration.
 class TSubGraphsEnum {
 private:
   TSimpleGraphV SgV, NextSgV;
-  THash<TIntPr, TIntH> EdgeH;
+  THash<TInt64Pr, TInt64H, int64> EdgeH;
   PNGraph NGraph;
 public:
   TSubGraphsEnum(PNGraph Graph) : NGraph(Graph) { }
 
   void Gen2Graphs();
-  void EnumSubGraphs(const int& MaxEdges);
-  void RecurBfs(const int& MxDepth);
-  void RecurBfs(const int& NId, const int& Depth, TSimpleGraph& PrevG);
-  void RecurBfs1(const int& MxDepth);
-  void RecurBfs1(const int& NId, const int& Depth);
+  void EnumSubGraphs(const int64& MaxEdges);
+  void RecurBfs(const int64& MxDepth);
+  void RecurBfs(const int64& NId, const int64& Depth, TSimpleGraph& PrevG);
+  void RecurBfs1(const int64& MxDepth);
+  void RecurBfs1(const int64& NId, const int64& Depth);
   //void RecurBfs(const int& NId, const int& Depth, const THash<TIntPr, TInt>& EdgeH);
 };
 

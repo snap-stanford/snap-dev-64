@@ -35,7 +35,7 @@
 //#include "casc.cpp"          // cascade detection^M
 
 // graph generators
-//#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       TODO 64
+#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       TODO 64
 //#include "ff.cpp"            // forest fire graph generator           TODO 64
 
 #include "gviz.cpp"

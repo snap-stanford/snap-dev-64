@@ -10,47 +10,47 @@ namespace TSnap {
 
 // node subgraphs
 /// Returns an induced subgraph of graph Graph with NIdV nodes. ##TSnap::GetSubGraph
-template<class PGraph> PGraph GetSubGraph(const PGraph& Graph, const TIntV& NIdV);
+template<class PGraph> PGraph GetSubGraph(const PGraph& Graph, const TInt64V& NIdV);
 /// Returns an induced subgraph of an undirected graph Graph with NIdV nodes with an optional node renumbering. ##TSnap::GetSubGraph-1
-PUNGraph GetSubGraph(const PUNGraph& Graph, const TIntV& NIdV, const bool& RenumberNodes=false);
+PUNGraph GetSubGraph(const PUNGraph& Graph, const TInt64V& NIdV, const bool& RenumberNodes=false);
 // Returns an induced subgraph of a directed graph Graph with NIdV nodes with an optional node renumbering. ##TSnap::GetSubGraph-2
-PNGraph GetSubGraph(const PNGraph& Graph, const TIntV& NIdV, const bool& RenumberNodes=false);
+PNGraph GetSubGraph(const PNGraph& Graph, const TInt64V& NIdV, const bool& RenumberNodes=false);
 // TODO ROK 2012/08/15 PNGraph GetSubGraph is not documented by doxygen.
 //  It is combined with PUNGraph GetSubGraph.
 
 // edge subgraphs
 /// Returns a subgraph of graph Graph with EIdV edges. ##TSnap::GetESubGraph
-template<class PGraph> PGraph GetESubGraph(const PGraph& Graph, const TIntV& EIdV);
+template<class PGraph> PGraph GetESubGraph(const PGraph& Graph, const TInt64V& EIdV);
 // Returns a subgraph of graph Graph with EdgeV edges. ##TSnap::GetESubGraph-1
-template<class PGraph> PGraph GetESubGraph(const PGraph& Graph, const TIntPrV& EdgeV);
+template<class PGraph> PGraph GetESubGraph(const PGraph& Graph, const TIntPr64V& EdgeV);
 // TODO ROK 2012/08/15 PGraph GetESubGraph TIntPrV is not documented by doxygen.
 //  It is combined with PGraph GetESubGraph TIntV.
 /// Returns a subgraph of graph Graph with edges where edge data matches the parameters. ##TSnap::GetEDatSubGraph
-template<class PGraph, class TEdgeDat> PGraph GetEDatSubGraph(const PGraph& Graph, const TEdgeDat& EDat, const int& Cmp);
+template<class PGraph, class TEdgeDat> PGraph GetEDatSubGraph(const PGraph& Graph, const TEdgeDat& EDat, const int64& Cmp);
 /// Returns a subgraph of graph Graph with NIdV nodes and edges where edge data matches the parameters. ##TSnap::GetEDatSubGraph-1
-template<class PGraph, class TEdgeDat> PGraph GetEDatSubGraph(const PGraph& Graph, const TIntV& NIdV, const TEdgeDat& EDat, const int& Cmp);
+template<class PGraph, class TEdgeDat> PGraph GetEDatSubGraph(const PGraph& Graph, const TInt64V& NIdV, const TEdgeDat& EDat, const int64& Cmp);
 
 // convert between the graphs. Does NOT copy the data
 /// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertGraph
 template<class POutGraph, class PInGraph> POutGraph ConvertGraph(const PInGraph& InGraph, const bool& RenumberNodes=false);
 /// Returns an induced subgraph of graph InGraph with NIdV nodes with an optional node renumbering. ##TSnap::ConvertSubGraph
-template<class POutGraph, class PInGraph> POutGraph ConvertSubGraph(const PInGraph& InGraph, const TIntV& NIdV, const bool& RenumberNodes=false);
+template<class POutGraph, class PInGraph> POutGraph ConvertSubGraph(const PInGraph& InGraph, const TInt64V& NIdV, const bool& RenumberNodes=false);
 // TODO RS 2012/08/14 find out why TSnap::ConvertSubGraph<PUNGraph>(NGraph, NIdV, true) aborts
 /// Returns a subgraph of graph InGraph with EIdV edges with an optional node renumbering. ##TSnap::ConvertESubGraph
-template<class POutGraph, class PInGraph> POutGraph ConvertESubGraph(const PInGraph& InGraph, const TIntV& EIdV, const bool& RenumberNodes=false);
+template<class POutGraph, class PInGraph> POutGraph ConvertESubGraph(const PInGraph& InGraph, const TInt64V& EIdV, const bool& RenumberNodes=false);
 // does not work on multigraphs
 
 // get random (induced) subgraphs 
 /// Returns an induced random subgraph of graph Graph with NNodes nodes. ##TSnap::GetRndSubGraph
-template<class PGraph> PGraph GetRndSubGraph(const PGraph& Graph, const int& NNodes);
+template<class PGraph> PGraph GetRndSubGraph(const PGraph& Graph, const int64& NNodes);
 /// Returns a random subgraph of graph Graph with NEdges edges. ##TSnap::GetRndESubGraph
-template<class PGraph> PGraph GetRndESubGraph(const PGraph& Graph, const int& NEdges);
+template<class PGraph> PGraph GetRndESubGraph(const PGraph& Graph, const int64& NEdges);
 
 // get egonet of a center node
 /// Returns the egonet of node CtrNId as center in undirected graph Graph. And returns number of edges around the egonet.
-PUNGraph GetEgonet(const PUNGraph& Graph, const int CtrNId, int& ArndEdges);
+PUNGraph GetEgonet(const PUNGraph& Graph, const int64 CtrNId, int64& ArndEdges);
 /// Returns the egonet of node CtrNId as center in directed graph Graph. And returns number of edges go in and out the egonet.
-PNGraph GetEgonet(const PNGraph& Graph, const int CtrNId, int& InEdges, int& OutEdges);
+PNGraph GetEgonet(const PNGraph& Graph, const int64 CtrNId, int64& InEdges, int64& OutEdges);
 
 /////////////////////////////////////////////////
 // Implementation
@@ -58,11 +58,11 @@ namespace TSnapDetail {
 // Slow for small sub-graphs as it traverses all the edges of Graph
 template <class PGraph, bool IsMultiGraph>
 struct TGetSubGraph {
-  static PGraph Do(const PGraph& Graph, const TIntV& NIdV) {
+  static PGraph Do(const PGraph& Graph, const TInt64V& NIdV) {
     PGraph NewGraphPt = PGraph::TObj::New();
     typename PGraph::TObj& NewGraph = *NewGraphPt;
     NewGraph.Reserve(NIdV.Len(), -1);
-    for (int n = 0; n < NIdV.Len(); n++) {
+    for (int64 n = 0; n < NIdV.Len(); n++) {
       if (Graph->IsNode(NIdV[n])) {
         NewGraph.AddNode(Graph->GetNI(NIdV[n])); }
     }
@@ -77,23 +77,23 @@ struct TGetSubGraph {
 
 template <class PGraph> 
 struct TGetSubGraph<PGraph, false> { // not multigraph
-  static PGraph Do(const PGraph& Graph, const TIntV& NIdV) {
+  static PGraph Do(const PGraph& Graph, const TInt64V& NIdV) {
     CAssert(! HasGraphFlag(typename PGraph::TObj, gfMultiGraph));
     PGraph NewGraphPt = PGraph::TObj::New();
     typename PGraph::TObj& NewGraph = *NewGraphPt;
     NewGraph.Reserve(NIdV.Len(), -1);
-    TIntSet NodeSet;
-    for (int n = 0; n < NIdV.Len(); n++) {
+    TInt64Set NodeSet;
+    for (int64 n = 0; n < NIdV.Len(); n++) {
       if (! HasGraphFlag(typename PGraph::TObj, gfNodeDat)) {
         if (Graph->IsNode(NIdV[n])) { NewGraph.AddNode(NIdV[n]); NodeSet.AddKey(NIdV[n]); } }
       else {
         if (Graph->IsNode(NIdV[n])) { NewGraph.AddNode(Graph->GetNI(NIdV[n])); NodeSet.AddKey(NIdV[n]); } }
     }
-    for (int n = 0; n < NodeSet.Len(); n++) {
-      const int SrcNId = NodeSet[n];
+    for (int64 n = 0; n < NodeSet.Len(); n++) {
+      const int64 SrcNId = NodeSet[n];
       const typename PGraph::TObj::TNodeI NI = Graph->GetNI(SrcNId);
-      for (int edge = 0; edge < NI.GetOutDeg(); edge++) {
-        const int OutNId = NI.GetOutNId(edge);
+      for (int64 edge = 0; edge < NI.GetOutDeg(); edge++) {
+        const int64 OutNId = NI.GetOutNId(edge);
         if (NewGraph.IsNode(OutNId)) {
           if (! HasGraphFlag(typename PGraph::TObj, gfEdgeDat)) { 
             NewGraph.AddEdge(SrcNId, OutNId); }
@@ -109,19 +109,19 @@ struct TGetSubGraph<PGraph, false> { // not multigraph
 }; // TSnapDetail
 
 template<class PGraph> 
-PGraph GetSubGraph(const PGraph& Graph, const TIntV& NIdV) {
+PGraph GetSubGraph(const PGraph& Graph, const TInt64V& NIdV) {
   return TSnapDetail::TGetSubGraph<PGraph, HasGraphFlag(typename PGraph::TObj, gfMultiGraph)>
     ::Do(Graph, NIdV);
 }
 
 template<class PGraph> 
-PGraph GetESubGraph(const PGraph& Graph, const TIntV& EIdV) {
+PGraph GetESubGraph(const PGraph& Graph, const TInt64V& EIdV) {
   CAssert(HasGraphFlag(typename PGraph::TObj, gfMultiGraph));
   PGraph NewGraphPt = PGraph::TObj::New();
   typename PGraph::TObj& NewGraph = *NewGraphPt;
   NewGraph.Reserve(-1, EIdV.Len());
-  for (int edge = 0; edge < EIdV.Len(); edge++) {
-    const int EId = EIdV[edge];
+  for (int64 edge = 0; edge < EIdV.Len(); edge++) {
+    const int64 EId = EIdV[edge];
     IAssert(Graph->IsEdge(EId));
     const typename PGraph::TObj::TEdgeI EI = Graph->GetEI(EId);
     if (! NewGraph.IsNode(EI.GetSrcNId())) {
@@ -136,13 +136,13 @@ PGraph GetESubGraph(const PGraph& Graph, const TIntV& EIdV) {
 }
 
 template<class PGraph> 
-PGraph GetESubGraph(const PGraph& Graph, const TIntPrV& EdgeV) {
+PGraph GetESubGraph(const PGraph& Graph, const TIntPr64V& EdgeV) {
   PGraph NewGraphPt = PGraph::TObj::New();
   typename PGraph::TObj& NewGraph = *NewGraphPt;
   NewGraph.Reserve(-1, EdgeV.Len());
-  for (int edge = 0; edge < EdgeV.Len(); edge++) {
-    const int SrcNId = EdgeV[edge].Val1;
-    const int DstNId = EdgeV[edge].Val2;
+  for (int64 edge = 0; edge < EdgeV.Len(); edge++) {
+    const int64 SrcNId = EdgeV[edge].Val1;
+    const int64 DstNId = EdgeV[edge].Val2;
     const typename PGraph::TObj::TEdgeI EI = Graph->GetEI(SrcNId, DstNId);
     if (! NewGraph.IsNode(EI.GetSrcNId())) {
       NewGraph.AddNode(Graph->GetNI(EI.GetSrcNId())); 
@@ -157,7 +157,7 @@ PGraph GetESubGraph(const PGraph& Graph, const TIntPrV& EdgeV) {
 
 // Get a subgraph on NIdV nodes, where edge data is Cmp (-1:less, 0:equal, 1:greater) than EDat
 template<class PGraph, class TEdgeDat> 
-PGraph GetEDatSubGraph(const PGraph& Graph, const TEdgeDat& EDat, const int& Cmp) {
+PGraph GetEDatSubGraph(const PGraph& Graph, const TEdgeDat& EDat, const int64& Cmp) {
   CAssert(HasGraphFlag(typename PGraph::TObj, gfEdgeDat));
   PGraph NewGraphPt = PGraph::TObj::New();
   typename PGraph::TObj& NewGraph = *NewGraphPt;
@@ -177,12 +177,12 @@ PGraph GetEDatSubGraph(const PGraph& Graph, const TEdgeDat& EDat, const int& Cmp
 
 // Get a subgraph on NIdV nodes, where edge data is Cmp (-1:less, 0:equal, 1:greater) than EDat
 template<class PGraph, class TEdgeDat> 
-PGraph GetEDatSubGraph(const PGraph& Graph, const TIntV& NIdV, const TEdgeDat& EDat, const int& Cmp) {
+PGraph GetEDatSubGraph(const PGraph& Graph, const TInt64V& NIdV, const TEdgeDat& EDat, const int64& Cmp) {
   CAssert(HasGraphFlag(typename PGraph::TObj, gfEdgeDat));
   PGraph NewGraphPt = PGraph::TObj::New();
   typename PGraph::TObj& NewGraph = *NewGraphPt;
   NewGraph.Reserve(NIdV.Len(), -1);
-  for (int n = 0; n < NIdV.Len(); n++) {
+  for (int64 n = 0; n < NIdV.Len(); n++) {
     NewGraph.AddNode(Graph->GetNI(NIdV[n])); 
   }
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
@@ -211,14 +211,14 @@ POutGraph ConvertGraph(const PInGraph& InGraph, const bool& RenumberNodes) {
         OutGraph.AddEdge(EI.GetDstNId(), EI.GetSrcNId()); }
     }
   } else { // renumber nodes so that node ids are 0...N-1
-    TIntSet NIdSet(InGraph->GetNodes());
+    TInt64Set NIdSet(InGraph->GetNodes());
     for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
-      const int nid = NIdSet.AddKey(NI.GetId());
+      const int64 nid = NIdSet.AddKey(NI.GetId());
       OutGraph.AddNode(nid);
     }
     for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) {
-      const int SrcNId = NIdSet.GetKeyId(EI.GetSrcNId());
-      const int DstNId = NIdSet.GetKeyId(EI.GetDstNId());
+      const int64 SrcNId = NIdSet.GetKeyId(EI.GetSrcNId());
+      const int64 DstNId = NIdSet.GetKeyId(EI.GetDstNId());
       OutGraph.AddEdge(SrcNId, DstNId);
       if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) {
         OutGraph.AddEdge(DstNId, SrcNId); }
@@ -232,11 +232,11 @@ namespace TSnapDetail {
 // Slow for small sub-graphs as it traverses all the edges of Graph
 template <class POutGraph, class PInGraph, bool IsMultiGraph>
 struct TConvertSubGraph {
-  static POutGraph Do(const PInGraph& InGraph, const TIntV& NIdV, const bool& RenumberNodes) {
+  static POutGraph Do(const PInGraph& InGraph, const TInt64V& NIdV, const bool& RenumberNodes) {
     POutGraph OutGraphPt = POutGraph::TObj::New();
     typename POutGraph::TObj& OutGraph = *OutGraphPt;
     if (! RenumberNodes) {
-      for (int n = 0; n < NIdV.Len(); n++) {
+      for (int64 n = 0; n < NIdV.Len(); n++) {
         OutGraph.AddNode(NIdV[n]);
       }
       for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) {
@@ -247,14 +247,14 @@ struct TConvertSubGraph {
         }
       }
     } else { // renumber nodes so that node ids are 0...N-1
-      TIntSet NIdSet(InGraph->GetNodes());
-      for (int n = 0; n < NIdV.Len(); n++) {
-        const int NId = NIdSet.AddKey(NIdV[n]);
+      TInt64Set NIdSet(InGraph->GetNodes());
+      for (int64 n = 0; n < NIdV.Len(); n++) {
+        const int64 NId = NIdSet.AddKey(NIdV[n]);
         OutGraph.AddNode(NId);
       }
       for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) {
-        const int SrcNId = NIdSet.GetKeyId(EI.GetSrcNId());
-        const int DstNId = NIdSet.GetKeyId(EI.GetDstNId());
+        const int64 SrcNId = NIdSet.GetKeyId(EI.GetSrcNId());
+        const int64 DstNId = NIdSet.GetKeyId(EI.GetDstNId());
         if (! OutGraph.IsNode(SrcNId) || ! OutGraph.IsNode(DstNId)) { continue; }
         OutGraph.AddEdge(SrcNId, DstNId);
         if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) {
@@ -269,31 +269,31 @@ struct TConvertSubGraph {
 
 template <class POutGraph, class PInGraph>
 struct TConvertSubGraph<POutGraph, PInGraph, false> { // InGraph is not multigraph
-  static POutGraph Do(const PInGraph& InGraph, const TIntV& NIdV, const bool& RenumberNodes) {
+  static POutGraph Do(const PInGraph& InGraph, const TInt64V& NIdV, const bool& RenumberNodes) {
     POutGraph OutGraphPt = POutGraph::TObj::New();
     typename POutGraph::TObj& OutGraph = *OutGraphPt;
     if (! RenumberNodes) {
-      for (int n = 0; n < NIdV.Len(); n++) {
+      for (int64 n = 0; n < NIdV.Len(); n++) {
         OutGraph.AddNode(NIdV[n]); }
-      for (int n = 0; n < NIdV.Len(); n++) {
+      for (int64 n = 0; n < NIdV.Len(); n++) {
         typename PInGraph::TObj::TNodeI NI = InGraph->GetNI(NIdV[n]);
-        for (int e = 0; e < NI.GetOutDeg(); e++) {
-          const int dst = NI.GetOutNId(e);
+        for (int64 e = 0; e < NI.GetOutDeg(); e++) {
+          const int64 dst = NI.GetOutNId(e);
           if (! OutGraph.IsNode(dst)) { continue; }
           OutGraph.AddEdge(NIdV[n], dst);
         }
       }
     } else { // renumber nodes so that node ids are 0...N-1
-      TIntSet NIdSet(InGraph->GetNodes());
-      for (int n = 0; n < NIdV.Len(); n++) {
-        const int NId = NIdSet.AddKey(NIdV[n]);
+      TInt64Set NIdSet(InGraph->GetNodes());
+      for (int64 n = 0; n < NIdV.Len(); n++) {
+        const int64 NId = NIdSet.AddKey(NIdV[n]);
         OutGraph.AddNode(NId);
       }
-      for (int n = 0; n < NIdV.Len(); n++) {
+      for (int64 n = 0; n < NIdV.Len(); n++) {
         typename PInGraph::TObj::TNodeI NI = InGraph->GetNI(NIdV[n]);
-        const int src = NIdSet.GetKey(NIdV[n]);
-        for (int e = 0; e < NI.GetOutDeg(); e++) {
-          const int dst = NIdSet.GetKey(NI.GetOutNId(e));
+        const int64 src = NIdSet.GetKey(NIdV[n]);
+        for (int64 e = 0; e < NI.GetOutDeg(); e++) {
+          const int64 dst = NIdSet.GetKey(NI.GetOutNId(e));
           if (! OutGraph.IsNode(dst)) { continue; }
           OutGraph.AddEdge(src, dst);
         }
@@ -307,23 +307,23 @@ struct TConvertSubGraph<POutGraph, PInGraph, false> { // InGraph is not multigra
 
 // May be slow as it traverses all the edges of the in-graph to create the sub-graph
 template<class POutGraph, class PInGraph> 
-POutGraph ConvertSubGraph(const PInGraph& InGraph, const TIntV& NIdV, const bool& RenumberNodes) {
+POutGraph ConvertSubGraph(const PInGraph& InGraph, const TInt64V& NIdV, const bool& RenumberNodes) {
   return TSnapDetail::TConvertSubGraph<POutGraph, PInGraph, HasGraphFlag(typename PInGraph::TObj, gfMultiGraph)>::Do(InGraph, NIdV, RenumberNodes);
 }
 
 template<class POutGraph, class PInGraph> 
-POutGraph ConvertESubGraph(const PInGraph& InGraph, const TIntV& EIdV, const bool& RenumberNodes) {
+POutGraph ConvertESubGraph(const PInGraph& InGraph, const TInt64V& EIdV, const bool& RenumberNodes) {
   CAssert(HasGraphFlag(typename PInGraph::TObj, gfMultiGraph)); // needs to have explicit edges
   POutGraph NewGraphPt = POutGraph::TObj::New();
   typename POutGraph::TObj& NewGraph = *NewGraphPt;
   NewGraph.Reserve(-1, EIdV.Len());
   if (! RenumberNodes) {
-    for (int edge = 0; edge < EIdV.Len(); edge++) {
-      const int EId = EIdV[edge];
+    for (int64 edge = 0; edge < EIdV.Len(); edge++) {
+      const int64 EId = EIdV[edge];
       IAssert(InGraph->IsEdge(EId));
       const typename PInGraph::TObj::TEdgeI EI = InGraph->GetEI(EId);
-      const int SrcNId = EI.GetSrcNId();
-      const int DstNId = EI.GetDstNId();
+      const int64 SrcNId = EI.GetSrcNId();
+      const int64 DstNId = EI.GetDstNId();
       if (! NewGraph.IsNode(SrcNId)) {
         NewGraph.AddNode(SrcNId); }
       if (! NewGraph.IsNode(DstNId)) {
@@ -332,13 +332,13 @@ POutGraph ConvertESubGraph(const PInGraph& InGraph, const TIntV& EIdV, const boo
     }
   } else {
     // renumber nodes so that node ids are 0...N-1
-    TIntSet NIdSet(InGraph->GetNodes());
-    for (int edge = 0; edge < EIdV.Len(); edge++) {
-      const int EId = EIdV[edge];
+    TInt64Set NIdSet(InGraph->GetNodes());
+    for (int64 edge = 0; edge < EIdV.Len(); edge++) {
+      const int64 EId = EIdV[edge];
       IAssert(InGraph->IsEdge(EId));
       const typename PInGraph::TObj::TEdgeI EI = InGraph->GetEI(EId);
-      const int SrcNId = NIdSet.AddKey(EI.GetSrcNId()); // map node ids
-      const int DstNId = NIdSet.AddKey(EI.GetDstNId());
+      const int64 SrcNId = NIdSet.AddKey(EI.GetSrcNId()); // map node ids
+      const int64 DstNId = NIdSet.AddKey(EI.GetDstNId());
       if (! NewGraph.IsNode(SrcNId)) {
         NewGraph.AddNode(SrcNId); }
       if (! NewGraph.IsNode(DstNId)) {
@@ -350,9 +350,9 @@ POutGraph ConvertESubGraph(const PInGraph& InGraph, const TIntV& EIdV, const boo
 }
 
 template<class PGraph> 
-PGraph GetRndSubGraph(const PGraph& Graph, const int& NNodes) {
+PGraph GetRndSubGraph(const PGraph& Graph, const int64& NNodes) {
   IAssert(NNodes <= Graph->GetNodes());
-  TIntV NIdV;
+  TInt64V NIdV;
   Graph->GetNIdV(NIdV);
   NIdV.Shuffle(TInt::Rnd);
   NIdV.Del(NNodes, NIdV.Len()-1);
@@ -361,11 +361,11 @@ PGraph GetRndSubGraph(const PGraph& Graph, const int& NNodes) {
 }
 
 template<class PGraph> 
-PGraph GetRndESubGraph(const PGraph& Graph, const int& NEdges) {
+PGraph GetRndESubGraph(const PGraph& Graph, const int64& NEdges) {
   CAssert(! HasGraphFlag(typename PGraph::TObj, gfMultiGraph));
-  TIntPrV EdgeV(Graph->GetEdges(), 0);
+  TIntPr64V EdgeV(Graph->GetEdges(), 0);
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
-    EdgeV.Add(TIntPr(EI.GetSrcNId(), EI.GetDstNId()));
+    EdgeV.Add(TInt64Pr(EI.GetSrcNId(), EI.GetDstNId()));
   }
   EdgeV.Shuffle(TInt::Rnd);
   EdgeV.Del(NEdges, EdgeV.Len()-1);

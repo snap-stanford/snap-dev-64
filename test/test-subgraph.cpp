@@ -5,8 +5,8 @@
 PUNGraph GetTestTUNGraph();
 PNGraph GetTestTNGraph();
 PNEGraph GetTestTNEGraph();
-TPt <TNodeEDatNet<TInt, TInt> > GetTestTNodeEDatNet();
-TPt <TNodeEdgeNet<TInt, TInt> > GetTestTNodeEdgeNet();
+TPt <TNodeEDatNet<TInt64, TInt64> > GetTestTNodeEDatNet();
+TPt <TNodeEdgeNet<TInt64, TInt64> > GetTestTNodeEdgeNet();
 
 // Test subgraphs
 TEST(subgraph, TestSubTUNGraphs) {
@@ -14,9 +14,9 @@ TEST(subgraph, TestSubTUNGraphs) {
   PUNGraph Graph1;
   PUNGraph Graph2;
   PUNGraph Graph3;
-  int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  int64 i;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Graph = GetTestTUNGraph();
   EXPECT_EQ(20,Graph->GetNodes());
@@ -49,9 +49,9 @@ TEST(subgraph, TestSubTNGraphs) {
   PNGraph Graph1;
   PNGraph Graph2;
   PNGraph Graph3;
-  int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  int64 i;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Graph = GetTestTNGraph();
   EXPECT_EQ(20,Graph->GetNodes());
@@ -84,10 +84,10 @@ TEST(subgraph, TestSubTNEGraphs) {
   PNEGraph Graph1;
   PNEGraph Graph2;
   PNEGraph Graph3;
-  int i;
-  TIntV NIdV;
-  TIntV NIdV1;
-  TIntV EIdV;
+  int64 i;
+  TInt64V NIdV;
+  TInt64V NIdV1;
+  TInt64V EIdV;
 
   Graph = GetTestTNEGraph();
   EXPECT_EQ(20,Graph->GetNodes());
@@ -120,14 +120,14 @@ TEST(subgraph, TestSubTNEGraphs) {
 
 // Test node subgraphs
 TEST(subgraph, TestEDatSubNets) {
-  TPt <TNodeEDatNet<TInt, TInt> > Net;
-  TPt <TNodeEDatNet<TInt, TInt> > Net1;
-  TPt <TNodeEDatNet<TInt, TInt> > Net2;
-  TPt <TNodeEDatNet<TInt, TInt> > Net3;
-  TPt <TNodeEDatNet<TInt, TInt> > Net4;
-  int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net2;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net3;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net4;
+  int64 i;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Net = GetTestTNodeEDatNet();
   EXPECT_EQ(20,Net->GetNodes());
@@ -160,14 +160,14 @@ TEST(subgraph, TestEDatSubNets) {
 
 // Test edge subgraphs
 TEST(subgraph, TestEdgeSubNets) {
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net3;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net4;
-  int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net3;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net4;
+  int64 i;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Net = GetTestTNodeEdgeNet();
   EXPECT_EQ(20,Net->GetNodes());
@@ -220,8 +220,8 @@ TEST(subgraph, TestConvertGraphs) {
 TEST(subgraph, TestConvertSubGraphs) {
   PNGraph NGraph;
   PUNGraph UNGraph;
-  TIntV NIdV;
-  int i;
+  TInt64V NIdV;
+  int64 i;
 
   NGraph = GetTestTNGraph();
   EXPECT_EQ(20,NGraph->GetNodes());
@@ -246,9 +246,9 @@ TEST(subgraph, TestConvertSubGraphs) {
 TEST(subgraph, TestConvertESubGraphs) {
   PNEGraph NEGraph;
   PNGraph NGraph;
-  TIntV NIdV;
-  TIntV EIdV;
-  int i;
+  TInt64V NIdV;
+  TInt64V EIdV;
+  int64 i;
 
   NGraph = GetTestTNGraph();
   EXPECT_EQ(20,NGraph->GetNodes());
@@ -360,26 +360,26 @@ PNEGraph GetTestTNEGraph() {
 }
 
 // Generate TNodeEDatNet
-TPt <TNodeEDatNet<TInt, TInt> > GetTestTNodeEDatNet() {
-  TPt <TNodeEDatNet<TInt, TInt> > Net;
-  TPt <TNodeEDatNet<TInt, TInt> > Net1;
-  TPt <TNodeEDatNet<TInt, TInt> > Net2;
-  int n;
+TPt <TNodeEDatNet<TInt64, TInt64> > GetTestTNodeEDatNet() {
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEDatNet<TInt64, TInt64> > Net2;
+  int64 n;
 
-  Net = TNodeEDatNet<TInt, TInt>::New();
+  Net = TNodeEDatNet<TInt64, TInt64>::New();
 
-  for (int i = 0; i < 20; i++) {
+  for (int64 i = 0; i < 20; i++) {
     Net->AddNode(i);
   }
 
-  for (int i = 0; i < 20; i++) {
+  for (int64 i = 0; i < 20; i++) {
     Net->AddEdge(i,(i+1) % 20);
     Net->AddEdge(i,(i+2) % 20);
     Net->AddEdge(i,(i+3) % 20);
   }
 
   n = 0;
-  for (TNodeEDatNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEDatNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Net->SetEDat(EI.GetSrcNId(),EI.GetDstNId(),n);
     n = (n+1) % 4;
   }
@@ -388,19 +388,19 @@ TPt <TNodeEDatNet<TInt, TInt> > GetTestTNodeEDatNet() {
 }
 
 // Generate TNodeEdgeNet
-TPt <TNodeEdgeNet<TInt, TInt> > GetTestTNodeEdgeNet() {
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
-  int n;
+TPt <TNodeEdgeNet<TInt64, TInt64> > GetTestTNodeEdgeNet() {
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
+  int64 n;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
 
-  for (int i = 0; i < 20; i++) {
+  for (int64 i = 0; i < 20; i++) {
     Net->AddNode(i);
   }
 
-  for (int i = 0; i < 20; i++) {
+  for (int64 i = 0; i < 20; i++) {
     Net->AddEdge(i,(i+1) % 20);
     Net->AddEdge(i,(i+2) % 20);
     Net->AddEdge(i,(i+3) % 20);
@@ -410,7 +410,7 @@ TPt <TNodeEdgeNet<TInt, TInt> > GetTestTNodeEdgeNet() {
   }
 
   n = 0;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Net->SetEDat(EI.GetId(),n);
     n = (n+1) % 4;
   }
