@@ -15,7 +15,7 @@ LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
-TEST_SRCS = test-triad.cpp
+TEST_SRCS = test-priority-queue.cpp
 
 #TODO 64
 #	test-helper.cpp \	
