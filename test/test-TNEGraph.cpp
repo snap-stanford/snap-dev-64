@@ -18,18 +18,18 @@ TEST(TNEGraph, DefaultConstructor) {
 
 // Test node, edge creation
 TEST(TNEGraph, ManipulateNodesEdges) {
-  int NNodes = 1000;
-  int NEdges = 100000;
+  int64 NNodes = 1000;
+  int64 NEdges = 100000;
   const char *FName = "test.graph.dat";
 
   PNEGraph Graph;
   PNEGraph Graph1;
   PNEGraph Graph2;
-  int i;
-  int n;
-  int NCount;
-  int x,y;
-  int Deg, InDeg, OutDeg;
+  int64 i;
+  int64 n;
+  int64 NCount;
+  int64 x,y;
+  int64 Deg, InDeg, OutDeg;
 
   Graph = TNEGraph::New();
   EXPECT_EQ(1,Graph->Empty());
@@ -73,7 +73,7 @@ TEST(TNEGraph, ManipulateNodesEdges) {
   // edges per node iterator
   NCount = 0;
   for (TNEGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    for (int e = 0; e < NI.GetOutDeg(); e++) {
+    for (int64 e = 0; e < NI.GetOutDeg(); e++) {
       NCount++;
     }
   }

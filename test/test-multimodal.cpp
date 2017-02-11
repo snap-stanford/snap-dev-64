@@ -14,14 +14,14 @@ TEST(multimodal, AddNbrType) {
   TModeNet& M1 = Net->GetModeNetByName(ModeName1);
   TModeNet& M2 = Net->GetModeNetByName(ModeName2);
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
-  TStrV M1Names;
-  TStrV M2Names;
+  TStr64V M1Names;
+  TStr64V M2Names;
   M1.GetCrossNetNames(M1Names);
   EXPECT_EQ(M1Names.Len(), 1);
-  EXPECT_EQ(M1Names[0], CrossName);
+  EXPECT_EQ(M1Names[0].CStr(), CrossName.CStr());
   M2.GetCrossNetNames(M2Names);
   EXPECT_EQ(M2Names.Len(), 1);
-  EXPECT_EQ(M2Names[0], CrossName);
+  EXPECT_EQ(M2Names[0].CStr(), CrossName.CStr());
 
   EXPECT_EQ(Net->GetModeId(ModeName1), C1.GetMode1());
   EXPECT_EQ(Net->GetModeId(ModeName2), C1.GetMode2());
@@ -42,9 +42,9 @@ TEST(multimodal, CheckNeighborsDirected) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -66,11 +66,11 @@ TEST(multimodal, CheckNeighborsSameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -98,11 +98,11 @@ TEST(multimodal, CheckNeighborsSameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -136,9 +136,9 @@ TEST(multimodal, DelEdgeDirected) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -170,11 +170,11 @@ TEST(multimodal, DelEdgeSameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -219,11 +219,11 @@ TEST(multimodal, DelEdgeSameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -273,9 +273,9 @@ TEST(multimodal, DelNode1Directed) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -305,11 +305,11 @@ TEST(multimodal, DelNode1SameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -351,11 +351,11 @@ TEST(multimodal, DelNode1SameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -401,9 +401,9 @@ TEST(multimodal, DelNode2Directed) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -433,11 +433,11 @@ TEST(multimodal, DelNode2SameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -479,11 +479,11 @@ TEST(multimodal, DelNode2SameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -528,8 +528,8 @@ TEST(multimodal, DelCrossNetSameModeUndirected) {
   M1.AddNode(1);
   C1.AddEdge(0, 1);
 
-  TStrV InNeighbors;
-  TStrV OutNeighbors;
+  TStr64V InNeighbors;
+  TStr64V OutNeighbors;
 
   M1.IntVAttrNameNI(0, InNeighbors);
   M1.IntVAttrNameNI(0, OutNeighbors);
@@ -579,8 +579,8 @@ TEST(multimodal, DelCrossNetSameModeDirected) {
   M1.AddNode(1);
   C1.AddEdge(0, 1);
 
-  TStrV InNeighbors;
-  TStrV OutNeighbors;
+  TStr64V InNeighbors;
+  TStr64V OutNeighbors;
 
   M1.IntVAttrNameNI(0, InNeighbors);
   M1.IntVAttrNameNI(0, OutNeighbors);
@@ -633,8 +633,8 @@ TEST(multimodal, DelCrossNetDifModeUndirected) {
   M2.AddNode(0);
   C1.AddEdge(0, 0);
   
-  TStrV InNeighbors;
-  TStrV OutNeighbors;
+  TStr64V InNeighbors;
+  TStr64V OutNeighbors;
 
   M1.IntVAttrNameNI(0, InNeighbors);
   M2.IntVAttrNameNI(0, OutNeighbors);
@@ -671,8 +671,8 @@ TEST(multimodal, DelCrossNetDifModeDirected) {
   M2.AddNode(0);
   C1.AddEdge(0, 0);
   
-  TStrV InNeighbors;
-  TStrV OutNeighbors;
+  TStr64V InNeighbors;
+  TStr64V OutNeighbors;
 
   M1.IntVAttrNameNI(0, InNeighbors);
   M2.IntVAttrNameNI(0, OutNeighbors);
@@ -727,7 +727,7 @@ TEST(multimodal, DelModeNetWithCrossNet) {
 
   Net->DelModeNet(ModeName1);
 
-  TStrV OutNeighbors;
+  TStr64V OutNeighbors;
 
   M2.IntVAttrNameNI(0, OutNeighbors);
   EXPECT_EQ(0, OutNeighbors.Len());
@@ -778,9 +778,9 @@ TEST(multimodal, ClrCrossDirected) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -812,11 +812,11 @@ TEST(multimodal, ClrCrossSameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -861,11 +861,11 @@ TEST(multimodal, ClrCrossSameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -915,9 +915,9 @@ TEST(multimodal, ClrMode1Directed) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -947,11 +947,11 @@ TEST(multimodal, ClrMode1SameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -986,11 +986,11 @@ TEST(multimodal, ClrMode1SameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -1029,9 +1029,9 @@ TEST(multimodal, ClrMode2Directed) {
 
   M1.AddNode(0);
   M2.AddNode(0);
-  int EId = C1.AddEdge(0, 0);
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  int64 EId = C1.AddEdge(0, 0);
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
 
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors);
   EXPECT_EQ(1, InNeighbors.Len());
@@ -1061,11 +1061,11 @@ TEST(multimodal, ClrMode2SameModeDirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -1100,10 +1100,10 @@ TEST(multimodal, ClrMode2SameModeUndirected) {
   TCrossNet& C1 = Net->GetCrossNetByName(CrossName);
   M1.AddNode(0);
   M1.AddNode(1);
-  int EId = C1.AddEdge(0, 1);
+  int64 EId = C1.AddEdge(0, 1);
 
-  TIntV InNeighbors;
-  TIntV OutNeighbors;
+  TInt64V InNeighbors;
+  TInt64V OutNeighbors;
   M1.GetNeighborsByCrossNet(0, CrossName, InNeighbors, true);
   EXPECT_EQ(1, InNeighbors.Len());
   EXPECT_EQ(EId, InNeighbors[0]);
@@ -1127,8 +1127,8 @@ TEST(multimodal, ClrMode2SameModeUndirected) {
 }
 
 TEST(multimodal, GetSubgraph) {
-  int NNodes = 1000;
-  int NEdges = 1000;
+  int64 NNodes = 1000;
+  int64 NEdges = 1000;
 
   PMMNet Graph;
   Graph = PMMNet::New();
@@ -1136,10 +1136,10 @@ TEST(multimodal, GetSubgraph) {
   // Add mode2
   TStr TestMode1("TestMode1");
   Graph->AddModeNet(TestMode1);
-  TInt TestModeId1 = Graph->GetModeId(TestMode1);
+  TInt64 TestModeId1 = Graph->GetModeId(TestMode1);
   TStr TestMode2("TestMode2");
   Graph->AddModeNet(TestMode2);
-  TInt TestModeId2 = Graph->GetModeId(TestMode2);
+  TInt64 TestModeId2 = Graph->GetModeId(TestMode2);
 
   // Add crossnets
   TStr TestCross1("TestCross1");
@@ -1147,17 +1147,17 @@ TEST(multimodal, GetSubgraph) {
   Graph->GetCrossId(TestCross1);
   TStr TestCross2("TestCross2");
   Graph->AddCrossNet(TestModeId1, TestModeId1, TestCross2, false);
-  TInt TestCrossId2 = Graph->GetCrossId(TestCross2);
+  TInt64 TestCrossId2 = Graph->GetCrossId(TestCross2);
   TStr TestCross3("TestCross3");
   Graph->AddCrossNet(TestMode1, TestMode2, TestCross3, true);
   TStr TestCross4("TestCross4");
   Graph->AddCrossNet(TestModeId1, TestModeId2, TestCross4, false);
-  TInt TestCrossId4 = Graph->GetCrossId(TestCross4);
+  TInt64 TestCrossId4 = Graph->GetCrossId(TestCross4);
 
   // Add Nodes
   TModeNet& ModeNet1 = Graph->GetModeNetByName(TestMode1);
   TModeNet& ModeNet2 = Graph->GetModeNetById(TestModeId2);
-  for (int i=0; i < NNodes; i++) {
+  for (int64 i=0; i < NNodes; i++) {
     ModeNet1.AddNode(i);
     ModeNet2.AddNode(i*2);
   }
@@ -1167,7 +1167,7 @@ TEST(multimodal, GetSubgraph) {
   TCrossNet& CrossNet2 = Graph->GetCrossNetById(TestCrossId2);
   TCrossNet& CrossNet3 = Graph->GetCrossNetByName(TestCross3);
   TCrossNet& CrossNet4 = Graph->GetCrossNetById(TestCrossId4);
-  for (int i=0; i < NEdges; i++) {
+  for (int64 i=0; i < NEdges; i++) {
     CrossNet1.AddEdge(i, (i+1)%NNodes, i);
     CrossNet2.AddEdge((i+5)%NNodes, i, i);
     CrossNet3.AddEdge(i, (i%NNodes)*2, i);
@@ -1175,7 +1175,7 @@ TEST(multimodal, GetSubgraph) {
   }
 
   // Get subgraph
-  TStrV CrossNets;
+  TStr64V CrossNets;
   CrossNets.Add(TestCross1);
   PMMNet Subgraph = Graph->GetSubgraphByCrossNet(CrossNets);
   EXPECT_EQ(1, Subgraph->GetModeNets());
@@ -1183,19 +1183,19 @@ TEST(multimodal, GetSubgraph) {
   TModeNet& M1 = Subgraph->GetModeNetByName(TestMode1);
   
   // Get neighbor types
-  TStrV M1Names;
+  TStr64V M1Names;
   M1.GetCrossNetNames(M1Names);
   EXPECT_EQ(1, M1Names.Len());
   
   // Get Neighbors for node 0
-  TIntV Neighbors;
+  TInt64V Neighbors;
   M1.GetNeighborsByCrossNet(0, TestCross1, Neighbors);
   EXPECT_EQ(1, Neighbors.Len());
 }
 
 TEST(multimodal, ToNetwork) {
-    int NNodes = 1000;
-  int NEdges = 1000;
+    int64 NNodes = 1000;
+  int64 NEdges = 1000;
 
   PMMNet Graph;
   Graph = PMMNet::New();
@@ -1203,29 +1203,29 @@ TEST(multimodal, ToNetwork) {
   // Add mode2
   TStr TestMode1("TestMode1");
   Graph->AddModeNet(TestMode1);
-  TInt TestModeId1 = Graph->GetModeId(TestMode1);
+  TInt64 TestModeId1 = Graph->GetModeId(TestMode1);
   TStr TestMode2("TestMode2");
   Graph->AddModeNet(TestMode2);
-  TInt TestModeId2 = Graph->GetModeId(TestMode2);
+  TInt64 TestModeId2 = Graph->GetModeId(TestMode2);
 
   // Add crossnets
   TStr TestCross1("TestCross1");
   Graph->AddCrossNet(TestMode1, TestMode1, TestCross1, true);
-  TInt TestCrossId1 = Graph->GetCrossId(TestCross1);
+  TInt64 TestCrossId1 = Graph->GetCrossId(TestCross1);
   TStr TestCross2("TestCross2");
   Graph->AddCrossNet(TestModeId1, TestModeId1, TestCross2, false);
-  TInt TestCrossId2 = Graph->GetCrossId(TestCross2);
+  TInt64 TestCrossId2 = Graph->GetCrossId(TestCross2);
   TStr TestCross3("TestCross3");
   Graph->AddCrossNet(TestMode1, TestMode2, TestCross3, true);
-  TInt TestCrossId3 = Graph->GetCrossId(TestCross3);
+  TInt64 TestCrossId3 = Graph->GetCrossId(TestCross3);
   TStr TestCross4("TestCross4");
   Graph->AddCrossNet(TestModeId1, TestModeId2, TestCross4, false);
-  TInt TestCrossId4 = Graph->GetCrossId(TestCross4);
+  TInt64 TestCrossId4 = Graph->GetCrossId(TestCross4);
 
   // Add Nodes
   TModeNet& ModeNet1 = Graph->GetModeNetByName(TestMode1);
   TModeNet& ModeNet2 = Graph->GetModeNetById(TestModeId2);
-  for (int i=0; i < NNodes; i++) {
+  for (int64 i=0; i < NNodes; i++) {
     ModeNet1.AddNode(i);
     ModeNet2.AddNode(i*2);
   }
@@ -1235,7 +1235,7 @@ TEST(multimodal, ToNetwork) {
   TCrossNet& CrossNet2 = Graph->GetCrossNetById(TestCrossId2);
   TCrossNet& CrossNet3 = Graph->GetCrossNetByName(TestCross3);
   TCrossNet& CrossNet4 = Graph->GetCrossNetById(TestCrossId4);
-  for (int i=0; i < NEdges; i++) {
+  for (int64 i=0; i < NEdges; i++) {
     CrossNet1.AddEdge(i, (i+1)%NNodes, i);
     CrossNet2.AddEdge((i+5)%NNodes, i, i);
     CrossNet3.AddEdge(i, (i%NNodes)*2, i);
@@ -1243,13 +1243,13 @@ TEST(multimodal, ToNetwork) {
   }
 
   // Convert to TNEANet
-  TIntV CrossNetIds;
+  TInt64V CrossNetIds;
   CrossNetIds.Add(TestCrossId1);
   CrossNetIds.Add(TestCrossId2);
   CrossNetIds.Add(TestCrossId3);
   CrossNetIds.Add(TestCrossId4);
-  TVec<TTriple<TInt, TStr, TStr> > NodeAttrMapping; //Triples of (ModeId, OldAttrName, NewAttrName)
-  TVec<TTriple<TInt, TStr, TStr> > EdgeAttrMapping; //Triples of (CrossId, OldAttrName, NewAttrName)
+  TVec<TTriple<TInt64, TStr, TStr>, int64> NodeAttrMapping; //Triples of (ModeId, OldAttrName, NewAttrName)
+  TVec<TTriple<TInt64, TStr, TStr>, int64> EdgeAttrMapping; //Triples of (CrossId, OldAttrName, NewAttrName)
   PNEANet Net = Graph->ToNetwork(CrossNetIds, NodeAttrMapping, EdgeAttrMapping);
   EXPECT_EQ(NNodes*2, Net->GetNodes());
   EXPECT_EQ(NEdges*6, Net->GetEdges()); //undirected has 2*NEdges edges, one in each direction
