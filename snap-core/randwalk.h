@@ -31,23 +31,23 @@ namespace {
   template <class PGraph>
   void ApproxContributionsBalanced(const PGraph& Graph,
                                    double JumpProb,
-                                   int TargetNId,
+                                   int64 TargetNId,
                                    float ForwardSecondsRMaxRatio,
-                                   TIntFltH& ResultEstimates,
-                                   TIntFltH& ResultResiduals,
+                                   TIntFlt64H& ResultEstimates,
+                                   TIntFlt64H& ResultResiduals,
                                    float& ResultMaxResidual) {
     double startTime = WallClockTime();
-    TMaxPriorityQueue<TInt> nodesByResidual;
+    TMaxPriorityQueue<TInt64, int64> nodesByResidual;
     nodesByResidual.Insert(TargetNId, 1.0f);
     while (!nodesByResidual.IsEmpty() &&
            WallClockTime() - startTime < ForwardSecondsRMaxRatio * nodesByResidual.GetMaxPriority()) {
       float vPriority = nodesByResidual.GetMaxPriority();
-      int vId = nodesByResidual.PopMax();
+      int64 vId = nodesByResidual.PopMax();
       ResultEstimates(vId) = ResultEstimates(vId) + JumpProb * vPriority;
       //printf("set estimate(%d) to %g\n", vId, double(ResultEstimates(vId)));
       TNGraph::TNodeI v = Graph->GetNI(vId);
-      for (int i = 0; i < v.GetInDeg(); i++) {
-        int uId = v.GetInNId(i);
+      for (int64 i = 0; i < v.GetInDeg(); i++) {
+        int64 uId = v.GetInNId(i);
         TNGraph::TNodeI u = Graph->GetNI(uId);
         float residualChange = (1.0 - JumpProb) * vPriority / u.GetOutDeg();
         nodesByResidual.SetPriority(uId, nodesByResidual.GetPriority(uId) + residualChange);
@@ -64,12 +64,12 @@ namespace {
 namespace TSnap {
 // Returns the endpoint of a random walk sampled from a random start node in StartNIdV.  The walk has expected length 1/JumpProb, and restarts if it reaches a dead-end node (one with no out-neighbors).
 template <class PGraph>
-int SamplePersonalizedPageRank(const PGraph& Graph, double JumpProb, const TIntV& StartNIdV, TRnd& Rnd) {
-  int locationId = StartNIdV.GetRndVal(Rnd);
+int64 SamplePersonalizedPageRank(const PGraph& Graph, double JumpProb, const TInt64V& StartNIdV, TRnd& Rnd) {
+  int64 locationId = StartNIdV.GetRndVal(Rnd);
   //printf("starting walk at %d\n", locationId);
   while (Rnd.GetUniDev() >= JumpProb) {
     TNGraph::TNodeI location = Graph->GetNI(locationId);
-    int d = location.GetOutDeg();
+    int64 d = location.GetOutDeg();
     if (d > 0)
       locationId = location.GetOutNId(Rnd.GetUniDevInt(d));
     else
@@ -87,8 +87,8 @@ int SamplePersonalizedPageRank(const PGraph& Graph, double JumpProb, const TIntV
 template <class PGraph>
   double GetPersonalizedPageRankBidirectional(const PGraph& Graph,
                                               double JumpProb,
-                                              const TIntV& StartNIdV,
-                                              int TargetNId,
+                                              const TInt64V& StartNIdV,
+                                              int64 TargetNId,
                                               double MinProbability = -1.0,
                                               double RelativeError = 0.1,
                                               bool provableRelativeError = false,
@@ -105,7 +105,7 @@ template <class PGraph>
   
   double startTime = WallClockTime();
   // Results from ApproxContributionsBalanced are set by reference:
-  TIntFltH Estimates, Residuals;
+  TIntFlt64H Estimates, Residuals;
   float MaxResidual;
   ApproxContributionsBalanced(Graph, JumpProb, TargetNId, ForwardSecondsRMaxRatio, Estimates, Residuals, MaxResidual);
   
@@ -114,14 +114,14 @@ template <class PGraph>
   
   double Estimate = 0.0;
   // First incorporate the average Estimates value for starting nodes
-  for (int i = 0; i < StartNIdV.Len(); i++) {
+  for (int64 i = 0; i < StartNIdV.Len(); i++) {
     Estimate += Estimates.GetDatWithDefault(StartNIdV[i], 0.0) / StartNIdV.Len();
   }
   
-  int RandomWalkCount = static_cast<int>(WalkCountRMaxRatio * MaxResidual);
+  int64 RandomWalkCount = static_cast<int64>(WalkCountRMaxRatio * MaxResidual);
   TRnd Rnd(0); // 0 means seed from clock. We use an explicit Rnd for thread safety.
-  for (int i = 0; i < RandomWalkCount; i++) {
-    int vId = SamplePersonalizedPageRank(Graph, JumpProb, StartNIdV, Rnd);
+  for (int64 i = 0; i < RandomWalkCount; i++) {
+    int64 vId = SamplePersonalizedPageRank(Graph, JumpProb, StartNIdV, Rnd);
     Estimate += Residuals.GetDatWithDefault(vId, 0.0) / RandomWalkCount;
   }
   double forwardTime = WallClockTime() - startTime;
@@ -134,13 +134,13 @@ template <class PGraph>
 template <class PGraph>
   double GetRndWalkRestartBidirectional(const PGraph& Graph,
                                         double JumpProb,
-                                        int StartNId,
-                                        int TargetNId,
+                                        int64 StartNId,
+                                        int64 TargetNId,
                                         double minProbability = -1.0,
                                         double relativeError = 0.1,
                                         bool proveRelativeError = false,
                                         bool PrintTimeForTuning = false) {
-    return GetPersonalizedPageRankBidirectional(Graph, JumpProb, TIntV::GetV(StartNId), TargetNId,
+    return GetPersonalizedPageRankBidirectional(Graph, JumpProb, TInt64V::GetV(StartNId), TargetNId,
                                                 minProbability, relativeError, proveRelativeError, PrintTimeForTuning);
   }
 
