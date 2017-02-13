@@ -4,9 +4,9 @@
 
 // Test the default constructor
 TEST(TNodeEdgeNet, DefaultConstructor) {
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
 
   EXPECT_EQ(0,Net->GetNodes());
   EXPECT_EQ(0,Net->GetEdges());
@@ -23,16 +23,16 @@ TEST(TNodeEdgeNet, ManipulateNodesEdges) {
   int NEdges = 100000;
   const char *FName = "test.net.dat";
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int NCount;
   int x,y;
   int Deg, InDeg, OutDeg;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes
@@ -66,14 +66,14 @@ TEST(TNodeEdgeNet, ManipulateNodesEdges) {
 
   // nodes iterator
   NCount = 0;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     NCount++;
   }
   EXPECT_EQ(NNodes,NCount);
 
   // edges per node iterator
   NCount = 0;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     for (int e = 0; e < NI.GetOutDeg(); e++) {
       NCount++;
     }
@@ -82,13 +82,13 @@ TEST(TNodeEdgeNet, ManipulateNodesEdges) {
 
   // edges iterator
   NCount = 0;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     NCount++;
   }
   EXPECT_EQ(NEdges,NCount);
 
   // node degree
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Deg = NI.GetDeg();
     InDeg = NI.GetInDeg();
     OutDeg = NI.GetOutDeg();
@@ -97,7 +97,7 @@ TEST(TNodeEdgeNet, ManipulateNodesEdges) {
   }
 
   // assignment
-  Net1 = TNodeEdgeNet<TInt, TInt>::New();
+  Net1 = TNodeEdgeNet<TInt64, TInt64>::New();
   *Net1 = *Net;
 
   EXPECT_EQ(NNodes,Net1->GetNodes());
@@ -114,7 +114,7 @@ TEST(TNodeEdgeNet, ManipulateNodesEdges) {
 
   {
     TFIn FIn(FName);
-    Net2 = TNodeEdgeNet<TInt, TInt>::Load(FIn);
+    Net2 = TNodeEdgeNet<TInt64, TInt64>::Load(FIn);
   }
 
   EXPECT_EQ(NNodes,Net2->GetNodes());
@@ -148,15 +148,15 @@ TEST(TNodeEdgeNet, SetNodeData) {
   int NNodes = 10000;
   int NEdges = 100000;
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int NCount;
   int x,y;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes
@@ -189,12 +189,12 @@ TEST(TNodeEdgeNet, SetNodeData) {
   EXPECT_EQ(0,Net->IsNode(2*NNodes));
 
   // set node data, node ID + 10
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Net->SetNDat(NI.GetId(), NI.GetId()+10);
   }
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()+10, Net->GetNDat(NI.GetId()));
   }
 }
@@ -204,15 +204,15 @@ TEST(TNodeEdgeNet, UpdateNodeData) {
   int NNodes = 10000;
   int NEdges = 100000;
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int NCount;
   int x,y;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes
@@ -245,17 +245,17 @@ TEST(TNodeEdgeNet, UpdateNodeData) {
   EXPECT_EQ(0,Net->IsNode(2*NNodes));
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()+5, Net->GetNDat(NI.GetId()));
   }
 
   // update node data, node ID + 10
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Net->SetNDat(NI.GetId(), NI.GetId()+10);
   }
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()+10, Net->GetNDat(NI.GetId()));
   }
 }
@@ -265,15 +265,15 @@ TEST(TNodeEdgeNet, SetEdgeData) {
   int NNodes = 10000;
   int NEdges = 100000;
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int NCount;
   int x,y;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes
@@ -307,22 +307,22 @@ TEST(TNodeEdgeNet, SetEdgeData) {
   EXPECT_EQ(0,Net->IsNode(2*NNodes));
 
   // add data to nodes, square of node ID
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Net->SetNDat(NI.GetId(), NI.GetId()*NI.GetId());
   }
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()*NI.GetId(), Net->GetNDat(NI.GetId()));
   }
 
   // set edge data, source node ID * dest node ID
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Net->SetEDat(EI.GetId(),EI.GetSrcNId()*EI.GetDstNId());
   }
 
   // verify edge data
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     EXPECT_EQ(EI.GetSrcNId()*EI.GetDstNId(), Net->GetEDat(EI.GetId()));
   }
 
@@ -330,12 +330,12 @@ TEST(TNodeEdgeNet, SetEdgeData) {
   Net->SetAllEDat(42);
 
   // verify edge data
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     EXPECT_EQ(42, Net->GetEDat(EI.GetId()));
   }
 
   // test node data again
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()*NI.GetId(), Net->GetNDat(NI.GetId()));
   }
 }
@@ -345,15 +345,15 @@ TEST(TNodeEdgeNet, UpdateEdgeData) {
   int NNodes = 10000;
   int NEdges = 100000;
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int NCount;
   int x,y;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes
@@ -387,32 +387,32 @@ TEST(TNodeEdgeNet, UpdateEdgeData) {
   EXPECT_EQ(0,Net->IsNode(2*NNodes));
 
   // add data to nodes, square of node ID
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Net->SetNDat(NI.GetId(), NI.GetId()*NI.GetId());
   }
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()*NI.GetId(), Net->GetNDat(NI.GetId()));
   }
 
   // verify edge data, x+y+10
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     EXPECT_EQ(EI.GetSrcNId()+EI.GetDstNId()+10, Net->GetEDat(EI.GetId()));
   }
 
   // update edge data, x+y+5
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Net->SetEDat(EI.GetId(),EI.GetSrcNId()+EI.GetDstNId()+5);
   }
 
   // verify edge data, x+y+5
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     EXPECT_EQ(EI.GetSrcNId()+EI.GetDstNId()+5, Net->GetEDat(EI.GetId()));
   }
 
   // test node data again
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ(NI.GetId()*NI.GetId(), Net->GetNDat(NI.GetId()));
   }
 }
@@ -422,9 +422,9 @@ TEST(TNodeEdgeNet, SortNodeData) {
   int NNodes = 10000;
   int NEdges = 100000;
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int NCount;
@@ -433,7 +433,7 @@ TEST(TNodeEdgeNet, SortNodeData) {
   int Min;
   int Value;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes
@@ -466,20 +466,20 @@ TEST(TNodeEdgeNet, SortNodeData) {
   EXPECT_EQ(0,Net->IsNode(2*NNodes));
 
   // add data to nodes, square of node ID % NNodes
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     // Net->AddNode(NI.GetId(), (NI.GetId()*NI.GetId()) % NNodes);
     Net->SetNDat(NI.GetId(), NI.GetId()*NI.GetId() % NNodes);
   }
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ((NI.GetId()*NI.GetId()) % NNodes, Net->GetNDat(NI.GetId()));
   }
 
   // test sorting of node IDs (unsorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Value = NI.GetId();
     if (Min > Value) {
       Sorted = false;
@@ -494,7 +494,7 @@ TEST(TNodeEdgeNet, SortNodeData) {
   // test sorting of node IDs
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Value = NI.GetId();
     if (Min > Value) {
       Sorted = false;
@@ -506,7 +506,7 @@ TEST(TNodeEdgeNet, SortNodeData) {
   // test sorting of node data (unsorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Value = Net->GetNDat(NI.GetId());
     if (Min > Value) {
       Sorted = false;
@@ -521,7 +521,7 @@ TEST(TNodeEdgeNet, SortNodeData) {
   // test sorting of node data (sorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Value = Net->GetNDat(NI.GetId());
     if (Min > Value) {
       Sorted = false;
@@ -533,7 +533,7 @@ TEST(TNodeEdgeNet, SortNodeData) {
   // test sorting of node IDs (unsorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     Value = NI.GetId();
     if (Min > Value) {
       Sorted = false;
@@ -543,7 +543,7 @@ TEST(TNodeEdgeNet, SortNodeData) {
   EXPECT_EQ(false,Sorted);
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ((NI.GetId()*NI.GetId()) % NNodes, Net->GetNDat(NI.GetId()));
   }
 }
@@ -553,9 +553,9 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   int NNodes = 10000;
   int NEdges = 100000;
 
-  TPt <TNodeEdgeNet<TInt, TInt> > Net;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net1;
-  TPt <TNodeEdgeNet<TInt, TInt> > Net2;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net1;
+  TPt <TNodeEdgeNet<TInt64, TInt64> > Net2;
   int i;
   int n;
   int x,y;
@@ -563,7 +563,7 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   int Min;
   int Value;
 
-  Net = TNodeEdgeNet<TInt, TInt>::New();
+  Net = TNodeEdgeNet<TInt64, TInt64>::New();
   EXPECT_EQ(1,Net->Empty());
 
   // create the nodes with node data x*x % NNodes
@@ -595,19 +595,19 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   EXPECT_EQ(0,Net->IsNode(2*NNodes));
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ((NI.GetId()*NI.GetId()) % NNodes, Net->GetNDat(NI.GetId()));
   }
 
   // test edge data
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     EXPECT_EQ((EI.GetSrcNId()*EI.GetDstNId()) % NEdges, Net->GetEDat(EI.GetId()));
   }
 
   // test sorting of edge IDs (unsorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Value = EI.GetId();
     if (Min > Value) {
       Sorted = false;
@@ -622,7 +622,7 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   // test sorting of edge IDs
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Value = EI.GetId();
     if (Min > Value) {
       Sorted = false;
@@ -634,7 +634,7 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   // test sorting of edge data (unsorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Value = Net->GetEDat(EI.GetId());
     if (Min > Value) {
       Sorted = false;
@@ -649,7 +649,7 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   // test sorting of edge data (sorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Value = Net->GetEDat(EI.GetId());
     if (Min > Value) {
       Sorted = false;
@@ -661,7 +661,7 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   // test sorting of edge IDs (unsorted)
   Min = -1;
   Sorted = true;
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     Value = EI.GetId();
     if (Min > Value) {
       Sorted = false;
@@ -671,12 +671,12 @@ TEST(TNodeEdgeNet, SortEdgeData) {
   EXPECT_EQ(false,Sorted);
 
   // test edge data
-  for (TNodeEdgeNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     EXPECT_EQ((EI.GetSrcNId()*EI.GetDstNId()) % NEdges, Net->GetEDat(EI.GetId()));
   }
 
   // test node data
-  for (TNodeEdgeNet<TInt, TInt>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
+  for (TNodeEdgeNet<TInt64, TInt64>::TNodeI NI = Net->BegNI(); NI < Net->EndNI(); NI++) {
     EXPECT_EQ((NI.GetId()*NI.GetId()) % NNodes, Net->GetNDat(NI.GetId()));
   }
 }

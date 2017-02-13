@@ -388,6 +388,7 @@ typedef TKeyDat<TInt, TFlt> TIntFltKd;
 typedef TKeyDat<TInt64, TFlt> TIntFlt64Kd;
 typedef TKeyDat<TIntPr, TFlt> TIntPrFltKd;
 typedef TKeyDat<TInt, TFltPr> TIntFltPrKd;
+typedef TKeyDat<TInt64, TFltPr> TIntFltPr64Kd;
 typedef TKeyDat<TInt, TSFlt> TIntSFltKd;
 typedef TKeyDat<TInt, TStr> TIntStrKd;
 typedef TKeyDat<TUInt, TInt> TUIntIntKd;
@@ -792,7 +793,7 @@ void TVec<TVal, TSizeTy>::Resize(const TSizeTy& _MxVals){
   TSizeTy OldMxVals = MxVals;
   if (MxVals == -1) {MxVals = Vals;}
   if (_MxVals==-1){
-    if (Vals==0){MxVals=16;} else {MxVals += MxVals/2;}
+    if (Vals==0){MxVals=16;} else {MxVals *= 2;}
   } else {
     if (_MxVals<=MxVals){return;} else {MxVals=_MxVals;}
   }
@@ -1509,6 +1510,7 @@ typedef TVec<TUInt64> TUInt64V;
 typedef TVec<TFlt> TFltV;
 typedef TVec<TFlt, int64> TFlt64V;
 typedef TVec<TSFlt> TSFltV;
+typedef TVec<TSFlt, int64> TSFlt64V;
 typedef TVec<TAscFlt> TAscFltV;
 typedef TVec<TStr> TStrV;
 typedef TVec<TStr, int64> TStr64V;
@@ -1519,8 +1521,9 @@ typedef TVec<TIntTr> TIntTrV;
 typedef TVec<TInt64Tr> TIntTr64V;
 typedef TVec<TIntQu> TIntQuV;
 typedef TVec<TFltPr> TFltPrV;
-typedef TVec<TFltPr, int64> TFlt64PrV;
+typedef TVec<TFltPr, int64> TFltPr64V;
 typedef TVec<TFltTr> TFltTrV;
+typedef TVec<TFltTr, int64> TFltTr64V;
 typedef TVec<TIntKd> TIntKdV;
 typedef TVec<TUChIntPr> TUChIntPrV;
 typedef TVec<TUChUInt64Pr> TUChUInt64PrV;
@@ -1528,6 +1531,7 @@ typedef TVec<TIntUInt64Pr> TIntUInt64PrV;
 typedef TVec<TIntUInt64Kd> TIntUInt64KdV;
 typedef TVec<TIntFltPr> TIntFltPrV;
 typedef TVec<TIntFltPrKd> TIntFltPrKdV;
+typedef TVec<TIntFltPr64Kd, int64> TIntFltPrKd64V;
 typedef TVec<TFltIntPr> TFltIntPrV;
 typedef TVec<TFltUInt64Pr> TFltUInt64PrV;
 typedef TVec<TFltStrPr> TFltStrPrV;
@@ -1542,7 +1546,7 @@ typedef TVec<TInt64StrStrTr, int64> TIntStrStrTr64V;
 typedef TVec<TIntKd> TIntKdV;
 typedef TVec<TUIntIntKd> TUIntIntKdV;
 typedef TVec<TIntFltKd> TIntFltKdV;
-typedef TVec<TIntFlt64Kd> TIntFlt64KdV;
+typedef TVec<TIntFlt64Kd, int64> TIntFltKd64V;
 typedef TVec<TIntPrFltKd> TIntPrFltKdV;
 typedef TVec<TIntStrKd> TIntStrKdV;
 typedef TVec<TIntStrPrPr> TIntStrPrPrV;
@@ -1560,6 +1564,7 @@ typedef TVec<TFltIntKd> TFltIntKdV;
 typedef TVec<TFltUInt64Kd> TFltUInt64KdV;
 typedef TVec<TFltIntPrKd> TFltIntPrKdV;
 typedef TVec<TFltKd> TFltKdV;
+typedef TVec<TFltKd, int64> TFltKd64V;
 typedef TVec<TFltStrKd> TFltStrKdV;
 typedef TVec<TFltStrPrPr> TFltStrPrPrV;
 typedef TVec<TFltIntIntTr> TFltIntIntTrV;
@@ -2475,10 +2480,10 @@ typedef TTree<TStrIntStrVTr> TStrIntStrVTrTree;
 
 /////////////////////////////////////////////////
 // Stack
-template <class TVal>
+template <class TVal, class TSizeTy = int>
 class TSStack{
 private:
-  TVec<TVal> ValV;
+  TVec<TVal, TSizeTy> ValV;
 public:
   TSStack(): ValV(){}
   TSStack(const int& MxVals): ValV(MxVals, 0){}
@@ -2489,13 +2494,13 @@ public:
   TSStack& operator=(const TSStack& Stack){
     if (this!=&Stack){ValV=Stack.ValV;} return *this;}
   bool operator==(const TSStack& Stack) const {return this==&Stack;}
-  const TVal& operator[](const int& ValN) const {return ValV[ValV.Len()-ValN-1];}
-  TVal& operator[](const int& ValN) {return ValV[ValV.Len()-ValN-1];}
+  const TVal& operator[](const TSizeTy& ValN) const {return ValV[ValV.Len()-ValN-1];}
+  TVal& operator[](const TSizeTy& ValN) {return ValV[ValV.Len()-ValN-1];}
 
   bool Empty(){return ValV.Len()==0;}
   void Clr(const bool& DoDel=false) {ValV.Clr(DoDel);}
   bool IsIn(const TVal& Val) const {return ValV.IsIn(Val);}
-  int Len(){return ValV.Len();}
+  TSizeTy Len(){return ValV.Len();}
   TVal& Top(){Assert(0<ValV.Len()); return ValV.Last();}
   const TVal& Top() const {Assert(0<ValV.Len()); return ValV.Last();}
   void Push(){ValV.Add();}
@@ -2506,20 +2511,21 @@ public:
 /////////////////////////////////////////////////
 // Common-Stack-Types
 typedef TSStack<TInt> TIntS;
+typedef TSStack<TInt64, int64> TInt64S;
 typedef TSStack<TBoolChPr> TBoolChS;
 
 /////////////////////////////////////////////////
 // Queue
-template <class TVal>
+template <class TVal, class TSizeTy = int>
 class TQQueue{
 private:
-  TInt MxLast, MxLen;
-  TInt First, Last;
-  TVec<TVal> ValV;
+  TInt64 MxLast, MxLen;
+  TInt64 First, Last;
+  TVec<TVal, TSizeTy> ValV;
 public:
-  TQQueue(const int& _MxLast=64, const int& _MxLen=-1):
+  TQQueue(const TSizeTy& _MxLast=64, const TSizeTy& _MxLen=-1):
     MxLast(_MxLast), MxLen(_MxLen), First(0), Last(0), ValV(){
-    Assert(int(MxLast)>0); Assert((MxLen==-1)||(int(MxLen)>0));}
+    Assert(TSizeTy(MxLast)>0); Assert((MxLen==-1)||(TSizeTy(MxLen)>0));}
   TQQueue(const TQQueue& Queue):
     MxLast(Queue.MxLast), MxLen(Queue.MxLen),
     First(Queue.First), Last(Queue.Last), ValV(Queue.ValV){}
@@ -2533,22 +2539,22 @@ public:
     if (this!=&Queue){MxLast=Queue.MxLast; MxLen=Queue.MxLen;
       First=Queue.First; Last=Queue.Last; ValV=Queue.ValV;}
     return *this;}
-  const TVal& operator[](const int& ValN) const {Assert((0<=ValN)&&(ValN<Len()));
+  const TVal& operator[](const TSizeTy& ValN) const {Assert((0<=ValN)&&(ValN<Len()));
     return ValV[Last+ValN];}
 
   void Clr(const bool& DoDel=true){ValV.Clr(DoDel); First=Last=0;}
-  void Gen(const int& _MxLast=64, const int& _MxLen=-1){
+  void Gen(const TSizeTy& _MxLast=64, const TSizeTy& _MxLen=-1){
     MxLast=_MxLast; MxLen=_MxLen; First=0; Last=0; ValV.Clr();}
-  void GetSubValV(const int& _BValN, const int& _EValN, TVec<TVal>& SubValV) const {
-    int BValN=TInt::GetMx(0, _BValN);
-    int EValN=TInt::GetMn(Len()-1, _EValN);
+  void GetSubValV(const TSizeTy& _BValN, const TSizeTy& _EValN, TVec<TVal, TSizeTy>& SubValV) const {
+    TSizeTy BValN=TSizeTy::GetMx(0, _BValN);
+    TSizeTy EValN=TSizeTy::GetMn(Len()-1, _EValN);
     SubValV.Gen(EValN-BValN+1);
-    for (int ValN=BValN; ValN<=EValN; ValN++){
+    for (TSizeTy ValN=BValN; ValN<=EValN; ValN++){
       SubValV[ValN-BValN]=ValV[Last+ValN];}
   }
 
   bool Empty() const {return First==Last;}
-  int Len() const {return First-Last;}
+  TSizeTy Len() const {return First-Last;}
   const TVal& Top() const {
     Assert(First!=Last); return ValV[Last];}
   void Pop(){
@@ -2560,14 +2566,15 @@ public:
     First++; ValV.Add(Val);}
 
   void Shuffle(TRnd& Rnd){
-    TVec<TVal> ValV(Len(), 0); while (!Empty()){ValV.Add(Top()); Pop();}
+    TVec<TVal, TSizeTy> ValV(Len(), 0); while (!Empty()){ValV.Add(Top()); Pop();}
     ValV.Shuffle(Rnd); Clr();
-    for (int ValN=0; ValN<ValV.Len(); ValN++){Push(ValV[ValN]);}}
+    for (TSizeTy ValN=0; ValN<ValV.Len(); ValN++){Push(ValV[ValN]);}}
 };
 
 /////////////////////////////////////////////////
 // Common-Queue-Types
 typedef TQQueue<TInt> TIntQ;
+typedef TQQueue<TInt64, int64> TInt64Q;
 typedef TQQueue<TFlt> TFltQ;
 typedef TQQueue<TStr> TStrQ;
 typedef TQQueue<TIntPr> TIntPrQ;

@@ -19,18 +19,18 @@ TEST(TModeNet, DefaultConstructor) {
 
 // Test node, edge creation
 TEST(TModeNet, ManipulateNodesEdges) {
-  int NNodes = 1000;
-  int NEdges = 100000;
+  int64 NNodes = 1000;
+  int64 NEdges = 100000;
   const char *FName = "test.graph.dat";
 
   TModeNet Graph;
   TModeNet Graph1;
   TModeNet Graph2;
-  int i;
-  int n;
-  int NCount;
-  int x,y;
-  int Deg, InDeg, OutDeg;
+  int64 i;
+  int64 n;
+  int64 NCount;
+  int64 x,y;
+  int64 Deg, InDeg, OutDeg;
 
   Graph = TModeNet();
   EXPECT_EQ(1,Graph.Empty());
@@ -74,7 +74,7 @@ TEST(TModeNet, ManipulateNodesEdges) {
   // edges per node iterator
   NCount = 0;
   for (TModeNet::TNodeI NI = Graph.BegMMNI(); NI < Graph.EndMMNI(); NI++) {
-    for (int e = 0; e < NI.GetOutDeg(); e++) {
+    for (int64 e = 0; e < NI.GetOutDeg(); e++) {
       NCount++;
     }
   }
@@ -145,9 +145,9 @@ TEST(TModeNet, ManipulateNodesEdges) {
 TEST(TModeNet, IntVAttr) {
   TModeNet Graph;
   Graph = TModeNet();
-  int i;
-  TIntV test;
-  int numNodes = 10;
+  int64 i;
+  TInt64V test;
+  int64 numNodes = 10;
   Graph.AddNode(0);
   for (i = 1; i < numNodes; i++) {
     Graph.AddNode(i);
@@ -160,11 +160,11 @@ TEST(TModeNet, IntVAttr) {
     EXPECT_EQ(0, test.Len());
   }
 
-  TIntV testVB;
+  TInt64V testVB;
   for (i = 0; i < numNodes; i++) {
     testVB.Add(i);
   }
-  const TIntV testV = testVB;
+  const TInt64V testV = testVB;
   Graph.AddIntVAttrDatN(0, testV, TestAttr);
   test = Graph.GetIntVAttrDatN(0, TestAttr);
   EXPECT_EQ(numNodes, test.Len());
@@ -190,14 +190,14 @@ TEST(TModeNet, IntVAttr) {
 
 // Test node, edge attribute functionality
 TEST(TModeNet, ManipulateNodesEdgeAttributes) {
-  int NNodes = 1000;
-  int NEdges = 1000;
+  int64 NNodes = 1000;
+  int64 NEdges = 1000;
   const char *FName = "demo.graph.dat";
 
   TModeNet Graph;
   TModeNet Graph1;
-  int i;
-  int x, y;
+  int64 i;
+  int64 x, y;
   bool t;
 
   Graph = TModeNet();
@@ -234,9 +234,9 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
   EXPECT_EQ(3*2, Graph.GetNAIntI(attr2, 3).GetDat());
   EXPECT_EQ(50*2, Graph.GetNAIntI(attr2, 50).GetDat());
 
-  int NodeId = 0;
-  int DefNodes = 0;
-  TVec<TInt> TAIntIV = TVec<TInt>();
+  int64 NodeId = 0;
+  int64 DefNodes = 0;
+  TVec<TInt64, int64> TAIntIV = TVec<TInt64, int64>();
   for (TModeNet::TAIntI NI = Graph.BegNAIntI(attr2);
     NI < Graph.EndNAIntI(attr2); NI++) {
     if (NI.GetDat()() != 0) {
@@ -266,7 +266,7 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
 
   NodeId = 0;
   DefNodes = 0;
-  TVec<TFlt> TAFltIV = TVec<TFlt>();
+  TVec<TFlt, int64> TAFltIV = TVec<TFlt, int64>();
 
   for (TModeNet::TAFltI NI = Graph.BegNAFltI(attr3);
     NI < Graph.EndNAFltI(attr3); NI++) {
@@ -298,7 +298,7 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
 
   NodeId = 0;
   DefNodes = 0;
-  TVec<TStr> TAStrIV = TVec<TStr>();
+  TVec<TStr, int64> TAStrIV = TVec<TStr, int64>();
 
   for (TModeNet::TAStrI NI = Graph.BegNAStrI(attr1);
     NI < Graph.EndNAStrI(attr1); NI++) {
@@ -320,14 +320,14 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
   
     
   // Test vertical iterator over many types (must skip default/deleted attr) 
-  int NId = 55;
+  int64 NId = 55;
   Graph.AddStrAttrDatN(NId, "aaa", attr1);
   Graph.AddIntAttrDatN(NId, 3*2, attr2);
   Graph.AddFltAttrDatN(NId, 3.41, attr3);
   Graph.AddStrAttrDatN(80, "dont appear", attr4); // should not show up
-  TStrV NIdAttrName;
+  TStr64V NIdAttrName;
   Graph.AttrNameNI(NId, NIdAttrName);
-  int AttrLen = NIdAttrName.Len();
+  int64 AttrLen = NIdAttrName.Len();
   NodeId = 0;
   DefNodes = 0;
   EXPECT_EQ(3, AttrLen);
@@ -355,7 +355,7 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
   }
   EXPECT_EQ(2, AttrLen);
    
-  TStrV NIdAttrValue;
+  TStr64V NIdAttrValue;
   Graph.AttrValueNI(NId, NIdAttrValue);
   AttrLen = NIdAttrValue.Len();
   for (i = 0; i < AttrLen; i++) {
@@ -365,7 +365,7 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
     }
   } 
 
-  int expectedTotal = 0;
+  int64 expectedTotal = 0;
   for (i = 0; i <NNodes; i++) {
     Graph.AddIntAttrDatN(i, NNodes+i, attr2);
     EXPECT_EQ(NNodes+i, Graph.GetIntAttrDatN(i, attr2));
@@ -402,12 +402,12 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
   EXPECT_EQ(3*2, Graph.GetEAIntI(attr2, 3).GetDat());
   EXPECT_EQ(55*2, Graph.GetEAIntI(attr2, 55).GetDat());
 
-  int EdgeId = 0;
-  int DefEdges = 0;
+  int64 EdgeId = 0;
+  int64 DefEdges = 0;
   TAIntIV.Clr();
   for (TModeNet::TAIntI EI = Graph.BegEAIntI(attr2);
     EI < Graph.EndEAIntI(attr2); EI++) {
-    if (EI.GetDat() != TInt::Mn) {
+    if (EI.GetDat() != TInt64::Mn) {
       TAIntIV.Add(EI.GetDat());
       EdgeId++;
     } else {
@@ -489,13 +489,13 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
   EXPECT_EQ('i', TAStrIV[2].LastCh());
 
   // Test vertical iterator over many types (must skip default/deleted attr) 
-  int EId = 55;
+  int64 EId = 55;
   Graph.AddStrAttrDatE(EId, "aaa", attr1);
   Graph.AddIntAttrDatE(EId, 3*2, attr2);
   Graph.AddFltAttrDatE(EId, 3.41, attr3);
   Graph.AddStrAttrDatE(80, "dont appear", attr4); // should not show up  
 
-  TStrV EIdAttrName;
+  TStr64V EIdAttrName;
   Graph.AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   EXPECT_EQ(3, AttrLen);
@@ -521,7 +521,7 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
     }
   }
 
-  TStrV EIdAttrValue;
+  TStr64V EIdAttrValue;
   Graph.AttrValueEI(EId, EIdAttrValue);
   AttrLen = EIdAttrValue.Len();
   for (i = 0; i < AttrLen; i++) {
@@ -565,8 +565,8 @@ TEST(TModeNet, ManipulateNodesEdgeAttributes) {
 TEST(TModeNet, AddSAttrN) {
   TModeNet Graph;
   Graph = TModeNet();
-  TInt AttrId;
-  int status = Graph.AddSAttrN("TestInt", atInt, AttrId);
+  TInt64 AttrId;
+  int64 status = Graph.AddSAttrN("TestInt", atInt, AttrId);
   EXPECT_EQ(0, status);
   EXPECT_EQ(0, AttrId.Val);
   status = Graph.AddSAttrN("TestFlt", atFlt, AttrId);
@@ -582,12 +582,12 @@ TEST(TModeNet, AddSAttrN) {
 TEST(TModeNet, GetSAttrIdN) {
   TModeNet Graph;
   Graph = TModeNet();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph.AddSAttrN("TestInt", atInt, AttrId);
   Graph.AddSAttrN("TestFlt", atFlt, AttrId);
   Graph.AddSAttrN("TestStr", atStr, AttrId);
   TAttrType AttrType;
-  int status = Graph.GetSAttrIdN(TStr("TestInt"), AttrId, AttrType);
+  int64 status = Graph.GetSAttrIdN(TStr("TestInt"), AttrId, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_EQ(0, AttrId.Val);
@@ -606,13 +606,13 @@ TEST(TModeNet, GetSAttrIdN) {
 TEST(TModeNet, GetSAttrNameN) {
   TModeNet Graph;
   Graph = TModeNet();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph.AddSAttrN("TestInt", atInt, AttrId);
   Graph.AddSAttrN("TestFlt", atFlt, AttrId);
   Graph.AddSAttrN("TestStr", atStr, AttrId);
   TAttrType AttrType;
   TStr Name;
-  int status = Graph.GetSAttrNameN(0, Name, AttrType);
+  int64 status = Graph.GetSAttrNameN(0, Name, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_STREQ("TestInt", Name.CStr());
@@ -632,11 +632,11 @@ TEST(TModeNet, AddSAttrDatN_int) {
   TModeNet Graph;
   Graph = TModeNet();
   Graph.AddNode(0);
-  TInt Val(5);
-  TInt Id(0);
-  int status = Graph.AddSAttrDatN(Id, 1, Val);
+  TInt64 Val(5);
+  TInt64 Id(0);
+  int64 status = Graph.AddSAttrDatN(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestInt");
   Graph.AddSAttrN(AttrName, atInt, AttrId);
   TFlt ErrorVal(1);
@@ -649,7 +649,7 @@ TEST(TModeNet, AddSAttrDatN_int) {
   TStr NewName("TestInt2");
   status = Graph.AddSAttrDatN(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.AddSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -659,13 +659,13 @@ TEST(TModeNet, AddSAttrDatN_flt) {
   Graph = TModeNet();
   Graph.AddNode(0);
   TFlt Val(5.0);
-  TInt Id(0);
-  int status = Graph.AddSAttrDatN(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Graph.AddSAttrDatN(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph.AddSAttrN(AttrName, atFlt, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph.AddSAttrDatN(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph.AddSAttrDatN(Id, AttrId, Val);
@@ -675,7 +675,7 @@ TEST(TModeNet, AddSAttrDatN_flt) {
   TStr NewName("TestFlt2");
   status = Graph.AddSAttrDatN(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.AddSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -685,13 +685,13 @@ TEST(TModeNet, AddSAttrDatN_str) {
   Graph = TModeNet();
   Graph.AddNode(0);
   TStr Val("5");
-  TInt Id(0);
-  int status = Graph.AddSAttrDatN(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Graph.AddSAttrDatN(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph.AddSAttrN(AttrName, atStr, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph.AddSAttrDatN(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph.AddSAttrDatN(Id, AttrId, Val);
@@ -701,7 +701,7 @@ TEST(TModeNet, AddSAttrDatN_str) {
   TStr NewName("TestStr2");
   status = Graph.AddSAttrDatN(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.AddSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -710,16 +710,16 @@ TEST(TModeNet, GetSAttrDatN_int) {
   TModeNet Graph;
   Graph = TModeNet();
   Graph.AddNode(0);
-  TInt Val;
-  TInt AttrId(0);
+  TInt64 Val;
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Graph.GetSAttrDatN(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Graph.GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph.GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
   Graph.AddSAttrN(AttrName, atInt, AttrId);
-  TInt TestVal(5);
+  TInt64 TestVal(5);
   Graph.AddSAttrDatN(NId, AttrId, TestVal);
   status = Graph.GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(0, status);
@@ -727,7 +727,7 @@ TEST(TModeNet, GetSAttrDatN_int) {
   status = Graph.GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.GetSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -737,10 +737,10 @@ TEST(TModeNet, GetSAttrDatN_flt) {
   Graph = TModeNet();
   Graph.AddNode(0);
   TFlt Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Graph.GetSAttrDatN(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Graph.GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph.GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -753,7 +753,7 @@ TEST(TModeNet, GetSAttrDatN_flt) {
   status = Graph.GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.GetSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -763,10 +763,10 @@ TEST(TModeNet, GetSAttrDatN_str) {
   Graph = TModeNet();
   Graph.AddNode(0);
   TStr Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Graph.GetSAttrDatN(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Graph.GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph.GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -779,7 +779,7 @@ TEST(TModeNet, GetSAttrDatN_str) {
   status = Graph.GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_STREQ(TestVal.CStr(), Val.CStr());
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.GetSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -789,21 +789,21 @@ TEST(TModeNet, DelSAttrDatN) {
   Graph = TModeNet();
   Graph.AddNode(0);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph.AddSAttrN(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph.AddSAttrN(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph.AddSAttrN(StrAttr, atStr, StrId);
-  TInt Id(0);
-  int status = Graph.DelSAttrDatN(Id, IntAttr);
+  TInt64 Id(0);
+  int64 status = Graph.DelSAttrDatN(Id, IntAttr);
   EXPECT_EQ(-1, status);
   status = Graph.DelSAttrDatN(Id, IntId);
   EXPECT_EQ(-1, status);
 
-  TInt IntVal(5);
+  TInt64 IntVal(5);
   Graph.AddSAttrDatN(Id, IntId, IntVal);
   status = Graph.DelSAttrDatN(Id, IntAttr);
   EXPECT_EQ(0, status);
@@ -812,7 +812,7 @@ TEST(TModeNet, DelSAttrDatN) {
   EXPECT_EQ(0, status);
   status = Graph.DelSAttrDatN(Id, IntId);
   EXPECT_EQ(-1, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.DelSAttrDatN(ErrorId, IntId);
   EXPECT_EQ(-1, status);
 
@@ -846,17 +846,17 @@ TEST(TModeNet, GetSAttrVN) {
   Graph = TModeNet();
   Graph.AddNode(0);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph.AddSAttrN(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph.AddSAttrN(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph.AddSAttrN(StrAttr, atStr, StrId);
 
-  TInt Id(0);
-  TInt IntVal(5);
+  TInt64 Id(0);
+  TInt64 IntVal(5);
   Graph.AddSAttrDatN(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Graph.AddSAttrDatN(Id, FltId, FltVal);
@@ -864,7 +864,7 @@ TEST(TModeNet, GetSAttrVN) {
   Graph.AddSAttrDatN(Id, StrId, StrVal);
 
   TAttrPrV AttrV;
-  int status = Graph.GetSAttrVN(Id, atInt, AttrV);
+  int64 status = Graph.GetSAttrVN(Id, atInt, AttrV);
   EXPECT_EQ(0, status);
   EXPECT_EQ(1, AttrV.Len());
   status = Graph.GetSAttrVN(Id, atFlt, AttrV);
@@ -888,21 +888,21 @@ TEST(TModeNet, GetIdVSAttrN) {
   TModeNet Graph;
   Graph = TModeNet();
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph.AddSAttrN(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph.AddSAttrN(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph.AddSAttrN(StrAttr, atStr, StrId);
 
-  TInt IntVal(0);
+  TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
   for (int i = 0; i < 10; i++) {
     Graph.AddNode(i);
-    TInt Id(i);
+    TInt64 Id(i);
     Graph.AddSAttrDatN(Id, IntId, IntVal);
     if (i%2 == 0) {
       Graph.AddSAttrDatN(Id, FltId, FltVal);
@@ -910,7 +910,7 @@ TEST(TModeNet, GetIdVSAttrN) {
   }
   Graph.AddSAttrDatN(0, StrId, StrVal);
 
-  TIntV IdV;
+  TInt64V IdV;
   Graph.GetIdVSAttrN(IntAttr, IdV);
   EXPECT_EQ(10, IdV.Len());
   Graph.GetIdVSAttrN(IntId, IdV);
@@ -930,8 +930,8 @@ TEST(TModeNet, GetIdVSAttrN) {
 TEST(TModeNet, AddSAttrE) {
   TModeNet Graph;
   Graph = TModeNet();
-  TInt AttrId;
-  int status = Graph.AddSAttrE("TestInt", atInt, AttrId);
+  TInt64 AttrId;
+  int64 status = Graph.AddSAttrE("TestInt", atInt, AttrId);
   EXPECT_EQ(0, status);
   EXPECT_EQ(0, AttrId.Val);
   status = Graph.AddSAttrE("TestFlt", atFlt, AttrId);
@@ -947,12 +947,12 @@ TEST(TModeNet, AddSAttrE) {
 TEST(TModeNet, GetSAttrIdE) {
   TModeNet Graph;
   Graph = TModeNet();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph.AddSAttrE("TestInt", atInt, AttrId);
   Graph.AddSAttrE("TestFlt", atFlt, AttrId);
   Graph.AddSAttrE("TestStr", atStr, AttrId);
   TAttrType AttrType;
-  int status = Graph.GetSAttrIdE(TStr("TestInt"), AttrId, AttrType);
+  int64 status = Graph.GetSAttrIdE(TStr("TestInt"), AttrId, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_EQ(0, AttrId.Val);
@@ -971,13 +971,13 @@ TEST(TModeNet, GetSAttrIdE) {
 TEST(TModeNet, GetSAttrNameE) {
   TModeNet Graph;
   Graph = TModeNet();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph.AddSAttrE("TestInt", atInt, AttrId);
   Graph.AddSAttrE("TestFlt", atFlt, AttrId);
   Graph.AddSAttrE("TestStr", atStr, AttrId);
   TAttrType AttrType;
   TStr Name;
-  int status = Graph.GetSAttrNameE(0, Name, AttrType);
+  int64 status = Graph.GetSAttrNameE(0, Name, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_STREQ("TestInt", Name.CStr());
@@ -999,11 +999,11 @@ TEST(TModeNet, AddSAttrDatE_int) {
   Graph.AddNode(0);
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
-  TInt Val(5);
-  TInt Id(0);
-  int status = Graph.AddSAttrDatE(Id, 1, Val);
+  TInt64 Val(5);
+  TInt64 Id(0);
+  int64 status = Graph.AddSAttrDatE(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestInt");
   Graph.AddSAttrE(AttrName, atInt, AttrId);
   TFlt ErrorVal(1);
@@ -1016,7 +1016,7 @@ TEST(TModeNet, AddSAttrDatE_int) {
   TStr NewName("TestInt2");
   status = Graph.AddSAttrDatE(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.AddSAttrDatE(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -1028,13 +1028,13 @@ TEST(TModeNet, AddSAttrDatE_flt) {
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
   TFlt Val(5.0);
-  TInt Id(0);
-  int status = Graph.AddSAttrDatE(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Graph.AddSAttrDatE(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph.AddSAttrE(AttrName, atFlt, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph.AddSAttrDatE(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph.AddSAttrDatE(Id, AttrId, Val);
@@ -1044,7 +1044,7 @@ TEST(TModeNet, AddSAttrDatE_flt) {
   TStr NewName("TestFlt2");
   status = Graph.AddSAttrDatE(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.AddSAttrDatE(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -1056,13 +1056,13 @@ TEST(TModeNet, AddSAttrDatE_str) {
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
   TStr Val("5");
-  TInt Id(0);
-  int status = Graph.AddSAttrDatE(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Graph.AddSAttrDatE(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph.AddSAttrE(AttrName, atStr, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph.AddSAttrDatE(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph.AddSAttrDatE(Id, AttrId, Val);
@@ -1072,7 +1072,7 @@ TEST(TModeNet, AddSAttrDatE_str) {
   TStr NewName("TestStr2");
   status = Graph.AddSAttrDatE(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.AddSAttrDatE(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -1083,16 +1083,16 @@ TEST(TModeNet, GetSAttrDatE_int) {
   Graph.AddNode(0);
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
-  TInt Val;
-  TInt AttrId(0);
+  TInt64 Val;
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt EId(0);
-  int status = Graph.GetSAttrDatE(EId, AttrName, Val);
+  TInt64 EId(0);
+  int64 status = Graph.GetSAttrDatE(EId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph.GetSAttrDatE(EId, AttrId, Val);
   EXPECT_EQ(-1, status);
   Graph.AddSAttrE(AttrName, atInt, AttrId);
-  TInt TestVal(5);
+  TInt64 TestVal(5);
   Graph.AddSAttrDatE(EId, AttrId, TestVal);
   status = Graph.GetSAttrDatE(EId, AttrId, Val);
   EXPECT_EQ(0, status);
@@ -1100,7 +1100,7 @@ TEST(TModeNet, GetSAttrDatE_int) {
   status = Graph.GetSAttrDatE(EId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.GetSAttrDatE(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -1112,10 +1112,10 @@ TEST(TModeNet, GetSAttrDatE_flt) {
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
   TFlt Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt EId(0);
-  int status = Graph.GetSAttrDatE(EId, AttrName, Val);
+  TInt64 EId(0);
+  int64 status = Graph.GetSAttrDatE(EId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph.GetSAttrDatE(EId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -1128,7 +1128,7 @@ TEST(TModeNet, GetSAttrDatE_flt) {
   status = Graph.GetSAttrDatE(EId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.GetSAttrDatE(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -1140,10 +1140,10 @@ TEST(TModeNet, GetSAttrDatE_str) {
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
   TStr Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt EId(0);
-  int status = Graph.GetSAttrDatE(EId, AttrName, Val);
+  TInt64 EId(0);
+  int64 status = Graph.GetSAttrDatE(EId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph.GetSAttrDatE(EId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -1156,7 +1156,7 @@ TEST(TModeNet, GetSAttrDatE_str) {
   status = Graph.GetSAttrDatE(EId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_STREQ(TestVal.CStr(), Val.CStr());
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.GetSAttrDatE(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -1168,21 +1168,21 @@ TEST(TModeNet, DelSAttrDatE) {
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph.AddSAttrE(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph.AddSAttrE(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph.AddSAttrE(StrAttr, atStr, StrId);
-  TInt Id(0);
-  int status = Graph.DelSAttrDatE(Id, IntAttr);
+  TInt64 Id(0);
+  int64 status = Graph.DelSAttrDatE(Id, IntAttr);
   EXPECT_EQ(-1, status);
   status = Graph.DelSAttrDatE(Id, IntId);
   EXPECT_EQ(-1, status);
 
-  TInt IntVal(5);
+  TInt64 IntVal(5);
   Graph.AddSAttrDatE(Id, IntId, IntVal);
   status = Graph.DelSAttrDatE(Id, IntAttr);
   EXPECT_EQ(0, status);
@@ -1191,7 +1191,7 @@ TEST(TModeNet, DelSAttrDatE) {
   EXPECT_EQ(0, status);
   status = Graph.DelSAttrDatE(Id, IntId);
   EXPECT_EQ(-1, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph.DelSAttrDatE(ErrorId, IntId);
   EXPECT_EQ(-1, status);
 
@@ -1227,17 +1227,17 @@ TEST(TModeNet, GetSAttrVE) {
   Graph.AddNode(1);
   Graph.AddEdge(0, 1, 0);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph.AddSAttrE(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph.AddSAttrE(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph.AddSAttrE(StrAttr, atStr, StrId);
 
-  TInt Id(0);
-  TInt IntVal(5);
+  TInt64 Id(0);
+  TInt64 IntVal(5);
   Graph.AddSAttrDatE(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Graph.AddSAttrDatE(Id, FltId, FltVal);
@@ -1245,7 +1245,7 @@ TEST(TModeNet, GetSAttrVE) {
   Graph.AddSAttrDatE(Id, StrId, StrVal);
 
   TAttrPrV AttrV;
-  int status = Graph.GetSAttrVE(Id, atInt, AttrV);
+  int64 status = Graph.GetSAttrVE(Id, atInt, AttrV);
   EXPECT_EQ(0, status);
   EXPECT_EQ(1, AttrV.Len());
   status = Graph.GetSAttrVE(Id, atFlt, AttrV);
@@ -1269,23 +1269,23 @@ TEST(TModeNet, GetIdVSAttrE) {
   TModeNet Graph;
   Graph = TModeNet();
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph.AddSAttrE(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph.AddSAttrE(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph.AddSAttrE(StrAttr, atStr, StrId);
 
-  TInt IntVal(0);
+  TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
   Graph.AddNode(0);
-  for (int i = 0; i < 10; i++) {
+  for (int64 i = 0; i < 10; i++) {
     Graph.AddNode(i+1);
     Graph.AddEdge(i, i+1, i);
-    TInt Id(i);
+    TInt64 Id(i);
     Graph.AddSAttrDatE(Id, IntId, IntVal);
     if (i%2 == 0) {
       Graph.AddSAttrDatE(Id, FltId, FltVal);
@@ -1293,7 +1293,7 @@ TEST(TModeNet, GetIdVSAttrE) {
   }
   Graph.AddSAttrDatE(0, StrId, StrVal);
 
-  TIntV IdV;
+  TInt64V IdV;
   Graph.GetIdVSAttrE(IntAttr, IdV);
   EXPECT_EQ(10, IdV.Len());
   Graph.GetIdVSAttrE(IntId, IdV);
@@ -1357,19 +1357,19 @@ TEST(TModeNet, AddNodeAttributeError) {
   Graph.AddStrAttrN(StrAttr);
   Graph.AddFltAttrN(FltAttr);
   Graph.AddIntAttrN(IntAttr);
-  int NumNodes = 5;
-  for (int i = 0; i < NumNodes; i++) {
+  int64 NumNodes = 5;
+  for (int64 i = 0; i < NumNodes; i++) {
     Graph.AddNode(i);
-    Graph.AddIntAttrDatN(i, TInt(i), IntAttr);
+    Graph.AddIntAttrDatN(i, TInt64(i), IntAttr);
     Graph.AddFltAttrDatN(i, TFlt(i), FltAttr);
-    TInt Val(i);
+    TInt64 Val(i);
     Graph.AddStrAttrDatN(i, Val.GetStr(), StrAttr);
   }
   Graph.DelNode(0);
-  for (int j = 1; j < NumNodes; j++) {
+  for (int64 j = 1; j < NumNodes; j++) {
     ASSERT_EQ(Graph.GetIntAttrDatN(j, IntAttr), j);
     ASSERT_EQ(Graph.GetFltAttrDatN(j, FltAttr), TFlt(j));
-    TInt Val(j);
+    TInt64 Val(j);
     ASSERT_EQ(Graph.GetStrAttrDatN(j, StrAttr), Val.GetStr());
   }
 }
@@ -1385,22 +1385,22 @@ TEST(TModeNet, AddEdgeAttributeError) {
   Graph.AddStrAttrE(StrAttr);
   Graph.AddFltAttrE(FltAttr);
   Graph.AddIntAttrE(IntAttr);
-  int NumEdges = 5;
-  for (int i = 0; i < NumEdges + 1; i++) {
+  int64 NumEdges = 5;
+  for (int64 i = 0; i < NumEdges + 1; i++) {
     Graph.AddNode(i);
   }
-  for (int i = 0; i < NumEdges; i++) {
+  for (int64 i = 0; i < NumEdges; i++) {
     Graph.AddEdge(i, i+1, i);
-    Graph.AddIntAttrDatE(i, TInt(i), IntAttr);
+    Graph.AddIntAttrDatE(i, TInt64(i), IntAttr);
     Graph.AddFltAttrDatE(i, TFlt(i), FltAttr);
-    TInt Val(i);
+    TInt64 Val(i);
     Graph.AddStrAttrDatE(i, Val.GetStr(), StrAttr);
   }
   Graph.DelNode(0);
-  for (int j = 1; j < NumEdges; j++) {
-    ASSERT_EQ(Graph.GetIntAttrDatE(j, IntAttr), TInt(j));
+  for (int64 j = 1; j < NumEdges; j++) {
+    ASSERT_EQ(Graph.GetIntAttrDatE(j, IntAttr), TInt64(j));
     ASSERT_EQ(Graph.GetFltAttrDatE(j, FltAttr), TFlt(j));
-    TInt Val(j);
+    TInt64 Val(j);
     ASSERT_EQ(Graph.GetStrAttrDatE(j, StrAttr), Val.GetStr());
   }
 }

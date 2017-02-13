@@ -30,7 +30,7 @@
 #include "cncom.h"           // connected components
 #include "kcore.h"           // k-core decomposition
 #include "alg.h"             // misc graph algorithms
-//#include "triad.h"           // clustering coefficient and triads   TODO 64
+#include "triad.h"           // clustering coefficient and triads   TODO 64
 #include "gsvd.h"            // SVD and eigenvector computations
 //#include "gstat.h"           // graph statistics                      TODO 64
 //#include "centr.h"           // centrality measures                   TODO 64
@@ -40,7 +40,7 @@
 #include "randwalk.h"        // Personalized PageRank
 
 // graph generators
-//#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       TODO 64
+#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       TODO 64
 //#include "ff.h"              // forest fire graph generator            TODO 64
 
 #include "gio.h"

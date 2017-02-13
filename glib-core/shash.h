@@ -1380,6 +1380,7 @@ void THashSet<TKey, TSizeTy, THashFunc>::Defrag() {
 // Common Hash Set Types
 typedef THashSet<TUCh> TUChSet;
 typedef THashSet<TInt> TIntSet;
+typedef THashSet<TInt64, int64> TInt64Set;
 typedef THashSet<TUInt64> TUInt64Set;
 typedef THashSet<TFlt> TFltSet;
 typedef THashSet<TStr> TStrSet;

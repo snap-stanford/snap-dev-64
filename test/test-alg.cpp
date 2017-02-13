@@ -1,17 +1,17 @@
 #include <gtest/gtest.h>
 #include "Snap.h"
 
-void CheckVectors(const TIntPrV& Expected, const TIntPrV& Actual);
-void CheckVectors(const TFltPrV& Expected, const TFltPrV& Actual);
-void CheckVectors(const TIntSet& Expected, const TIntSet& Actual);
-void CheckVectors(const TIntV& Expected, const TIntV& Actual);
-void CheckGraphs(const TIntPrV& Expected, const PUNGraph& Actual);
-void CheckGraphs(const TIntPrV& Expected, const PNGraph& Actual);
-void CheckGraphs(const TIntPrV& Expected, const PNEGraph& Actual);
-void CheckNotInSet(int Key, const TIntSet& Keys);
-void AddValues(TIntV& Vector, int NumValues, int Value);
-void AddConsecutiveValues(TIntV& Vector, int Start, int End);
-void GetKeys(TIntV& Keys, const TIntPrV& Map);
+void CheckVectors(const TIntPr64V& Expected, const TIntPr64V& Actual);
+void CheckVectors(const TFltPr64V& Expected, const TFltPr64V& Actual);
+void CheckVectors(const TInt64Set& Expected, const TInt64Set& Actual);
+void CheckVectors(const TInt64V& Expected, const TInt64V& Actual);
+void CheckGraphs(const TIntPr64V& Expected, const PUNGraph& Actual);
+void CheckGraphs(const TIntPr64V& Expected, const PNGraph& Actual);
+void CheckGraphs(const TIntPr64V& Expected, const PNEGraph& Actual);
+void CheckNotInSet(int64 Key, const TInt64Set& Keys);
+void AddValues(TInt64V& Vector, int64 NumValues, int64 Value);
+void AddConsecutiveValues(TInt64V& Vector, int64 Start, int64 End);
+void GetKeys(TInt64V& Keys, const TIntPr64V& Map);
 
 /////////////////////////////////////////////////
 // Test Algorithms
@@ -52,8 +52,8 @@ class GraphTest : public ::testing::Test {
   }
 
   template<class PGraph>
-  void GenerateNodes(const PGraph& Graph, int NumNodes = 5) {
-    for (int i = 0; i < NumNodes; i++) {
+  void GenerateNodes(const PGraph& Graph, int64 NumNodes = 5) {
+    for (int64 i = 0; i < NumNodes; i++) {
       Graph->AddNode(i);
     }
   }
@@ -344,7 +344,7 @@ TEST_F(GraphTest, CntNonZNodesTest) {
 
 // Testing CntEdgesToSet
 TEST_F(GraphTest, CntEdgesToSetTest) {
-  TIntSet NodeKeysV;
+  TInt64Set NodeKeysV;
   NodeKeysV.AddKey(0);
   NodeKeysV.AddKey(1);
   NodeKeysV.AddKey(2);
@@ -364,9 +364,9 @@ TEST_F(GraphTest, CntEdgesToSetTest) {
 
 // Testing GetMxDegNId (check node IDs that do not have max degree)
 TEST_F(GraphTest, GetMxDegNIdTest) {
-  TIntSet IncorrectKeysLoopGraph;
-  TIntSet IncorrectKeysReverseTree;
-  TIntSet IncorrectKeysComplicatedGraph;
+  TInt64Set IncorrectKeysLoopGraph;
+  TInt64Set IncorrectKeysReverseTree;
+  TInt64Set IncorrectKeysComplicatedGraph;
 
   // LoopGraph
 
@@ -402,10 +402,10 @@ TEST_F(GraphTest, GetMxDegNIdTest) {
 
 // Testing GetMxInDegNId (check node IDs that do not have max degree)
 TEST_F(GraphTest, GetMxInDegNIdTest) {
-  TIntSet IncorrectKeysLoopGraph;
-  TIntSet TUNIncorrectKeysReverseTree;
-  TIntSet TNIncorrectKeysReverseTree;
-  TIntSet IncorrectKeysComplicatedGraph;
+  TInt64Set IncorrectKeysLoopGraph;
+  TInt64Set TUNIncorrectKeysReverseTree;
+  TInt64Set TNIncorrectKeysReverseTree;
+  TInt64Set IncorrectKeysComplicatedGraph;
 
   // OP RS 2014/06/12 commented out this test, needs more investigation
   return;
@@ -451,9 +451,9 @@ TEST_F(GraphTest, GetMxInDegNIdTest) {
 
 // Testing GetMxOutDegNId (check node IDs that do not have max degree)
 TEST_F(GraphTest, GetMxOutDegNIdTest) {
-  TIntSet IncorrectKeysLoopGraph;
-  TIntSet IncorrectKeysReverseTree;
-  TIntSet IncorrectKeysComplicatedGraph;
+  TInt64Set IncorrectKeysLoopGraph;
+  TInt64Set IncorrectKeysReverseTree;
+  TInt64Set IncorrectKeysComplicatedGraph;
 
   // LoopGraph
 
@@ -494,102 +494,102 @@ TEST_F(GraphTest, GetMxOutDegNIdTest) {
 
 // Testing GetInDegCnt for TIntPrV
 TEST_F(GraphTest, GetInDegCntIntTest) {
-  TIntPrV TUNExpectedLoopGraph;
-  TIntPrV TUNInDegCntLoopGraph;
-  TIntPrV TNExpectedLoopGraph;
-  TIntPrV TNInDegCntLoopGraph;
-  TIntPrV TNEExpectedLoopGraph;
-  TIntPrV TNEInDegCntLoopGraph;
+  TIntPr64V TUNExpectedLoopGraph;
+  TIntPr64V TUNInDegCntLoopGraph;
+  TIntPr64V TNExpectedLoopGraph;
+  TIntPr64V TNInDegCntLoopGraph;
+  TIntPr64V TNEExpectedLoopGraph;
+  TIntPr64V TNEInDegCntLoopGraph;
 
-  TIntPrV TUNExpectedReverseTree;
-  TIntPrV TUNInDegCntReverseTree;
-  TIntPrV TNExpectedReverseTree;
-  TIntPrV TNInDegCntReverseTree;
-  TIntPrV TNEExpectedReverseTree;
-  TIntPrV TNEInDegCntReverseTree;
+  TIntPr64V TUNExpectedReverseTree;
+  TIntPr64V TUNInDegCntReverseTree;
+  TIntPr64V TNExpectedReverseTree;
+  TIntPr64V TNInDegCntReverseTree;
+  TIntPr64V TNEExpectedReverseTree;
+  TIntPr64V TNEInDegCntReverseTree;
 
-  TIntPrV TUNExpectedComplicatedGraph;
-  TIntPrV TUNInDegCntComplicatedGraph;
-  TIntPrV TNExpectedComplicatedGraph;
-  TIntPrV TNInDegCntComplicatedGraph;
-  TIntPrV TNEExpectedComplicatedGraph;
-  TIntPrV TNEInDegCntComplicatedGraph;
+  TIntPr64V TUNExpectedComplicatedGraph;
+  TIntPr64V TUNInDegCntComplicatedGraph;
+  TIntPr64V TNExpectedComplicatedGraph;
+  TIntPr64V TNInDegCntComplicatedGraph;
+  TIntPr64V TNEExpectedComplicatedGraph;
+  TIntPr64V TNEInDegCntComplicatedGraph;
 
   // LoopGraph
 
-  TUNExpectedLoopGraph.Add(TIntPr(2, 5));
+  TUNExpectedLoopGraph.Add(TInt64Pr(2, 5));
   TSnap::GetInDegCnt(TUNLoopGraph, TUNInDegCntLoopGraph);
   CheckVectors(TUNExpectedLoopGraph, TUNInDegCntLoopGraph);
 
-  TNExpectedLoopGraph.Add(TIntPr(1, 4));
-  TNExpectedLoopGraph.Add(TIntPr(2, 1));
+  TNExpectedLoopGraph.Add(TInt64Pr(1, 4));
+  TNExpectedLoopGraph.Add(TInt64Pr(2, 1));
   TSnap::GetInDegCnt(TNLoopGraph, TNInDegCntLoopGraph);
   CheckVectors(TNExpectedLoopGraph, TNInDegCntLoopGraph);
 
-  TNEExpectedLoopGraph.Add(TIntPr(1, 3));
-  TNEExpectedLoopGraph.Add(TIntPr(2, 2));
+  TNEExpectedLoopGraph.Add(TInt64Pr(1, 3));
+  TNEExpectedLoopGraph.Add(TInt64Pr(2, 2));
   TSnap::GetInDegCnt(TNELoopGraph, TNEInDegCntLoopGraph);
   CheckVectors(TNEExpectedLoopGraph, TNEInDegCntLoopGraph);
 
   // ReverseTree
 
-  TUNExpectedReverseTree.Add(TIntPr(1, 2));
-  TUNExpectedReverseTree.Add(TIntPr(2, 3));
+  TUNExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TUNExpectedReverseTree.Add(TInt64Pr(2, 3));
   TSnap::GetInDegCnt(TUNReverseTree, TUNInDegCntReverseTree);
   CheckVectors(TUNExpectedReverseTree, TUNInDegCntReverseTree);
 
-  TNExpectedReverseTree.Add(TIntPr(0, 1));
-  TNExpectedReverseTree.Add(TIntPr(1, 4));
+  TNExpectedReverseTree.Add(TInt64Pr(0, 1));
+  TNExpectedReverseTree.Add(TInt64Pr(1, 4));
   TSnap::GetInDegCnt(TNReverseTree, TNInDegCntReverseTree);
   CheckVectors(TNExpectedReverseTree, TNInDegCntReverseTree);
 
-  TNEExpectedReverseTree.Add(TIntPr(0, 1));
-  TNEExpectedReverseTree.Add(TIntPr(1, 4));
+  TNEExpectedReverseTree.Add(TInt64Pr(0, 1));
+  TNEExpectedReverseTree.Add(TInt64Pr(1, 4));
   TSnap::GetInDegCnt(TNEReverseTree, TNEInDegCntReverseTree);
   CheckVectors(TNEExpectedReverseTree, TNEInDegCntReverseTree);
 
   // ComplicatedGraph
 
-  TUNExpectedComplicatedGraph.Add(TIntPr(0, 1));
-  TUNExpectedComplicatedGraph.Add(TIntPr(2, 2));
-  TUNExpectedComplicatedGraph.Add(TIntPr(3, 2));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(0, 1));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(2, 2));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(3, 2));
   TSnap::GetInDegCnt(TUNComplicatedGraph, TUNInDegCntComplicatedGraph);
   CheckVectors(TUNExpectedComplicatedGraph, TUNInDegCntComplicatedGraph);
 
-  TNExpectedComplicatedGraph.Add(TIntPr(0, 2));
-  TNExpectedComplicatedGraph.Add(TIntPr(2, 3));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(0, 2));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(2, 3));
   TSnap::GetInDegCnt(TNComplicatedGraph, TNInDegCntComplicatedGraph);
   CheckVectors(TNExpectedComplicatedGraph, TNInDegCntComplicatedGraph);
 
-  TNEExpectedComplicatedGraph.Add(TIntPr(0, 2));
-  TNEExpectedComplicatedGraph.Add(TIntPr(2, 2));
-  TNEExpectedComplicatedGraph.Add(TIntPr(3, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(0, 2));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(3, 1));
   TSnap::GetInDegCnt(TNEComplicatedGraph, TNEInDegCntComplicatedGraph);
   CheckVectors(TNEExpectedComplicatedGraph, TNEInDegCntComplicatedGraph);
 }
 
 // Testing GetInDegCnt for TFltPrV
 TEST_F(GraphTest, GetInDegCntFltTest) {
-  TFltPrV TUNExpectedLoopGraph;
-  TFltPrV TUNInDegCntLoopGraph;
-  TFltPrV TNExpectedLoopGraph;
-  TFltPrV TNInDegCntLoopGraph;
-  TFltPrV TNEExpectedLoopGraph;
-  TFltPrV TNEInDegCntLoopGraph;
+  TFltPr64V TUNExpectedLoopGraph;
+  TFltPr64V TUNInDegCntLoopGraph;
+  TFltPr64V TNExpectedLoopGraph;
+  TFltPr64V TNInDegCntLoopGraph;
+  TFltPr64V TNEExpectedLoopGraph;
+  TFltPr64V TNEInDegCntLoopGraph;
 
-  TFltPrV TUNExpectedReverseTree;
-  TFltPrV TUNInDegCntReverseTree;
-  TFltPrV TNExpectedReverseTree;
-  TFltPrV TNInDegCntReverseTree;
-  TFltPrV TNEExpectedReverseTree;
-  TFltPrV TNEInDegCntReverseTree;
+  TFltPr64V TUNExpectedReverseTree;
+  TFltPr64V TUNInDegCntReverseTree;
+  TFltPr64V TNExpectedReverseTree;
+  TFltPr64V TNInDegCntReverseTree;
+  TFltPr64V TNEExpectedReverseTree;
+  TFltPr64V TNEInDegCntReverseTree;
 
-  TFltPrV TUNExpectedComplicatedGraph;
-  TFltPrV TUNInDegCntComplicatedGraph;
-  TFltPrV TNExpectedComplicatedGraph;
-  TFltPrV TNInDegCntComplicatedGraph;
-  TFltPrV TNEExpectedComplicatedGraph;
-  TFltPrV TNEInDegCntComplicatedGraph;
+  TFltPr64V TUNExpectedComplicatedGraph;
+  TFltPr64V TUNInDegCntComplicatedGraph;
+  TFltPr64V TNExpectedComplicatedGraph;
+  TFltPr64V TNInDegCntComplicatedGraph;
+  TFltPr64V TNEExpectedComplicatedGraph;
+  TFltPr64V TNEInDegCntComplicatedGraph;
 
   // LoopGraph
 
@@ -646,104 +646,104 @@ TEST_F(GraphTest, GetInDegCntFltTest) {
 
 // Testing GetOutDegCnt for TIntPrV
 TEST_F(GraphTest, GetOutDegCntIntTest) {
-  TIntPrV TUNExpectedLoopGraph;
-  TIntPrV TUNOutDegCntLoopGraph;
-  TIntPrV TNExpectedLoopGraph;
-  TIntPrV TNOutDegCntLoopGraph;
-  TIntPrV TNEExpectedLoopGraph;
-  TIntPrV TNEOutDegCntLoopGraph;
+  TIntPr64V TUNExpectedLoopGraph;
+  TIntPr64V TUNOutDegCntLoopGraph;
+  TIntPr64V TNExpectedLoopGraph;
+  TIntPr64V TNOutDegCntLoopGraph;
+  TIntPr64V TNEExpectedLoopGraph;
+  TIntPr64V TNEOutDegCntLoopGraph;
 
-  TIntPrV TUNExpectedReverseTree;
-  TIntPrV TUNOutDegCntReverseTree;
-  TIntPrV TNExpectedReverseTree;
-  TIntPrV TNOutDegCntReverseTree;
-  TIntPrV TNEExpectedReverseTree;
-  TIntPrV TNEOutDegCntReverseTree;
+  TIntPr64V TUNExpectedReverseTree;
+  TIntPr64V TUNOutDegCntReverseTree;
+  TIntPr64V TNExpectedReverseTree;
+  TIntPr64V TNOutDegCntReverseTree;
+  TIntPr64V TNEExpectedReverseTree;
+  TIntPr64V TNEOutDegCntReverseTree;
 
-  TIntPrV TUNExpectedComplicatedGraph;
-  TIntPrV TUNOutDegCntComplicatedGraph;
-  TIntPrV TNExpectedComplicatedGraph;
-  TIntPrV TNOutDegCntComplicatedGraph;
-  TIntPrV TNEExpectedComplicatedGraph;
-  TIntPrV TNEOutDegCntComplicatedGraph;
+  TIntPr64V TUNExpectedComplicatedGraph;
+  TIntPr64V TUNOutDegCntComplicatedGraph;
+  TIntPr64V TNExpectedComplicatedGraph;
+  TIntPr64V TNOutDegCntComplicatedGraph;
+  TIntPr64V TNEExpectedComplicatedGraph;
+  TIntPr64V TNEOutDegCntComplicatedGraph;
 
   // LoopGraph
 
-  TUNExpectedLoopGraph.Add(TIntPr(2, 5));
+  TUNExpectedLoopGraph.Add(TInt64Pr(2, 5));
   TSnap::GetOutDegCnt(TUNLoopGraph, TUNOutDegCntLoopGraph);
   CheckVectors(TUNExpectedLoopGraph, TUNOutDegCntLoopGraph);
 
-  TNExpectedLoopGraph.Add(TIntPr(1, 4));
-  TNExpectedLoopGraph.Add(TIntPr(2, 1));
+  TNExpectedLoopGraph.Add(TInt64Pr(1, 4));
+  TNExpectedLoopGraph.Add(TInt64Pr(2, 1));
   TSnap::GetOutDegCnt(TNLoopGraph, TNOutDegCntLoopGraph);
   CheckVectors(TNExpectedLoopGraph, TNOutDegCntLoopGraph);
 
-  TNEExpectedLoopGraph.Add(TIntPr(1, 3));
-  TNEExpectedLoopGraph.Add(TIntPr(2, 2));
+  TNEExpectedLoopGraph.Add(TInt64Pr(1, 3));
+  TNEExpectedLoopGraph.Add(TInt64Pr(2, 2));
   TSnap::GetOutDegCnt(TNELoopGraph, TNEOutDegCntLoopGraph);
   CheckVectors(TNEExpectedLoopGraph, TNEOutDegCntLoopGraph);
 
   // ReverseTree
 
-  TUNExpectedReverseTree.Add(TIntPr(1, 2));
-  TUNExpectedReverseTree.Add(TIntPr(2, 3));
+  TUNExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TUNExpectedReverseTree.Add(TInt64Pr(2, 3));
   TSnap::GetOutDegCnt(TUNReverseTree, TUNOutDegCntReverseTree);
   CheckVectors(TUNExpectedReverseTree, TUNOutDegCntReverseTree);
 
-  TNExpectedReverseTree.Add(TIntPr(0, 2));
-  TNExpectedReverseTree.Add(TIntPr(1, 2));
-  TNExpectedReverseTree.Add(TIntPr(2, 1));
+  TNExpectedReverseTree.Add(TInt64Pr(0, 2));
+  TNExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TNExpectedReverseTree.Add(TInt64Pr(2, 1));
   TSnap::GetOutDegCnt(TNReverseTree, TNOutDegCntReverseTree);
   CheckVectors(TNExpectedReverseTree, TNOutDegCntReverseTree);
 
-  TNEExpectedReverseTree.Add(TIntPr(0, 2));
-  TNEExpectedReverseTree.Add(TIntPr(1, 2));
-  TNEExpectedReverseTree.Add(TIntPr(2, 1));
+  TNEExpectedReverseTree.Add(TInt64Pr(0, 2));
+  TNEExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TNEExpectedReverseTree.Add(TInt64Pr(2, 1));
   TSnap::GetOutDegCnt(TNEReverseTree, TNEOutDegCntReverseTree);
   CheckVectors(TNEExpectedReverseTree, TNEOutDegCntReverseTree);
 
   // ComplicatedGraph
 
-  TUNExpectedComplicatedGraph.Add(TIntPr(0, 1));
-  TUNExpectedComplicatedGraph.Add(TIntPr(2, 2));
-  TUNExpectedComplicatedGraph.Add(TIntPr(3, 2));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(0, 1));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(2, 2));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(3, 2));
   TSnap::GetOutDegCnt(TUNComplicatedGraph, TUNOutDegCntComplicatedGraph);
   CheckVectors(TUNExpectedComplicatedGraph, TUNOutDegCntComplicatedGraph);
 
-  TNExpectedComplicatedGraph.Add(TIntPr(0, 2));
-  TNExpectedComplicatedGraph.Add(TIntPr(2, 3));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(0, 2));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(2, 3));
   TSnap::GetOutDegCnt(TNComplicatedGraph, TNOutDegCntComplicatedGraph);
   CheckVectors(TNExpectedComplicatedGraph, TNOutDegCntComplicatedGraph);
 
-  TNEExpectedComplicatedGraph.Add(TIntPr(0, 2));
-  TNEExpectedComplicatedGraph.Add(TIntPr(2, 2));
-  TNEExpectedComplicatedGraph.Add(TIntPr(3, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(0, 2));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(3, 1));
   TSnap::GetOutDegCnt(TNEComplicatedGraph, TNEOutDegCntComplicatedGraph);
   CheckVectors(TNEExpectedComplicatedGraph, TNEOutDegCntComplicatedGraph);
 }
 
 // Testing GetOutDegCnt for TFltPrV
 TEST_F(GraphTest, GetOutDegCntFltTest) {
-  TFltPrV TUNExpectedLoopGraph;
-  TFltPrV TUNOutDegCntLoopGraph;
-  TFltPrV TNExpectedLoopGraph;
-  TFltPrV TNOutDegCntLoopGraph;
-  TFltPrV TNEExpectedLoopGraph;
-  TFltPrV TNEOutDegCntLoopGraph;
+  TFltPr64V TUNExpectedLoopGraph;
+  TFltPr64V TUNOutDegCntLoopGraph;
+  TFltPr64V TNExpectedLoopGraph;
+  TFltPr64V TNOutDegCntLoopGraph;
+  TFltPr64V TNEExpectedLoopGraph;
+  TFltPr64V TNEOutDegCntLoopGraph;
 
-  TFltPrV TUNExpectedReverseTree;
-  TFltPrV TUNOutDegCntReverseTree;
-  TFltPrV TNExpectedReverseTree;
-  TFltPrV TNOutDegCntReverseTree;
-  TFltPrV TNEExpectedReverseTree;
-  TFltPrV TNEOutDegCntReverseTree;
+  TFltPr64V TUNExpectedReverseTree;
+  TFltPr64V TUNOutDegCntReverseTree;
+  TFltPr64V TNExpectedReverseTree;
+  TFltPr64V TNOutDegCntReverseTree;
+  TFltPr64V TNEExpectedReverseTree;
+  TFltPr64V TNEOutDegCntReverseTree;
 
-  TFltPrV TUNExpectedComplicatedGraph;
-  TFltPrV TUNOutDegCntComplicatedGraph;
-  TFltPrV TNExpectedComplicatedGraph;
-  TFltPrV TNOutDegCntComplicatedGraph;
-  TFltPrV TNEExpectedComplicatedGraph;
-  TFltPrV TNEOutDegCntComplicatedGraph;
+  TFltPr64V TUNExpectedComplicatedGraph;
+  TFltPr64V TUNOutDegCntComplicatedGraph;
+  TFltPr64V TNExpectedComplicatedGraph;
+  TFltPr64V TNOutDegCntComplicatedGraph;
+  TFltPr64V TNEExpectedComplicatedGraph;
+  TFltPr64V TNEOutDegCntComplicatedGraph;
 
   // LoopGraph
 
@@ -802,105 +802,105 @@ TEST_F(GraphTest, GetOutDegCntFltTest) {
 
 // Testing GetDegCnt for TIntPrV
 TEST_F(GraphTest, GetDegCntIntTest) {
-  TIntPrV TUNExpectedLoopGraph;
-  TIntPrV TUNDegCntLoopGraph;
-  TIntPrV TNExpectedLoopGraph;
-  TIntPrV TNDegCntLoopGraph;
-  TIntPrV TNEExpectedLoopGraph;
-  TIntPrV TNEDegCntLoopGraph;
+  TIntPr64V TUNExpectedLoopGraph;
+  TIntPr64V TUNDegCntLoopGraph;
+  TIntPr64V TNExpectedLoopGraph;
+  TIntPr64V TNDegCntLoopGraph;
+  TIntPr64V TNEExpectedLoopGraph;
+  TIntPr64V TNEDegCntLoopGraph;
 
-  TIntPrV TUNExpectedReverseTree;
-  TIntPrV TUNDegCntReverseTree;
-  TIntPrV TNExpectedReverseTree;
-  TIntPrV TNDegCntReverseTree;
-  TIntPrV TNEExpectedReverseTree;
-  TIntPrV TNEDegCntReverseTree;
+  TIntPr64V TUNExpectedReverseTree;
+  TIntPr64V TUNDegCntReverseTree;
+  TIntPr64V TNExpectedReverseTree;
+  TIntPr64V TNDegCntReverseTree;
+  TIntPr64V TNEExpectedReverseTree;
+  TIntPr64V TNEDegCntReverseTree;
 
-  TIntPrV TUNExpectedComplicatedGraph;
-  TIntPrV TUNDegCntComplicatedGraph;
-  TIntPrV TNExpectedComplicatedGraph;
-  TIntPrV TNDegCntComplicatedGraph;
-  TIntPrV TNEExpectedComplicatedGraph;
-  TIntPrV TNEDegCntComplicatedGraph;
+  TIntPr64V TUNExpectedComplicatedGraph;
+  TIntPr64V TUNDegCntComplicatedGraph;
+  TIntPr64V TNExpectedComplicatedGraph;
+  TIntPr64V TNDegCntComplicatedGraph;
+  TIntPr64V TNEExpectedComplicatedGraph;
+  TIntPr64V TNEDegCntComplicatedGraph;
 
   // LoopGraph
 
-  TUNExpectedLoopGraph.Add(TIntPr(2, 5));
+  TUNExpectedLoopGraph.Add(TInt64Pr(2, 5));
   TSnap::GetDegCnt(TUNLoopGraph, TUNDegCntLoopGraph);
   CheckVectors(TUNExpectedLoopGraph, TUNDegCntLoopGraph);
 
-  TNExpectedLoopGraph.Add(TIntPr(2, 3));
-  TNExpectedLoopGraph.Add(TIntPr(3, 2));
+  TNExpectedLoopGraph.Add(TInt64Pr(2, 3));
+  TNExpectedLoopGraph.Add(TInt64Pr(3, 2));
   TSnap::GetDegCnt(TNLoopGraph, TNDegCntLoopGraph);
   CheckVectors(TNExpectedLoopGraph, TNDegCntLoopGraph);
 
-  TNEExpectedLoopGraph.Add(TIntPr(2, 3));
-  TNEExpectedLoopGraph.Add(TIntPr(4, 2));
+  TNEExpectedLoopGraph.Add(TInt64Pr(2, 3));
+  TNEExpectedLoopGraph.Add(TInt64Pr(4, 2));
   TSnap::GetDegCnt(TNELoopGraph, TNEDegCntLoopGraph);
   CheckVectors(TNEExpectedLoopGraph, TNEDegCntLoopGraph);
 
   // ReverseTree
 
-  TUNExpectedReverseTree.Add(TIntPr(1, 2));
-  TUNExpectedReverseTree.Add(TIntPr(2, 3));
+  TUNExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TUNExpectedReverseTree.Add(TInt64Pr(2, 3));
   TSnap::GetDegCnt(TUNReverseTree, TUNDegCntReverseTree);
   CheckVectors(TUNExpectedReverseTree, TUNDegCntReverseTree);
 
-  TNExpectedReverseTree.Add(TIntPr(1, 2));
-  TNExpectedReverseTree.Add(TIntPr(2, 3));
+  TNExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TNExpectedReverseTree.Add(TInt64Pr(2, 3));
   TSnap::GetDegCnt(TNReverseTree, TNDegCntReverseTree);
   CheckVectors(TNExpectedReverseTree, TNDegCntReverseTree);
 
-  TNEExpectedReverseTree.Add(TIntPr(1, 2));
-  TNEExpectedReverseTree.Add(TIntPr(2, 3));
+  TNEExpectedReverseTree.Add(TInt64Pr(1, 2));
+  TNEExpectedReverseTree.Add(TInt64Pr(2, 3));
   TSnap::GetDegCnt(TNEReverseTree, TNEDegCntReverseTree);
   CheckVectors(TNEExpectedReverseTree, TNEDegCntReverseTree);
 
   // ComplicatedGraph
 
-  TUNExpectedComplicatedGraph.Add(TIntPr(0, 1));
-  TUNExpectedComplicatedGraph.Add(TIntPr(2, 2));
-  TUNExpectedComplicatedGraph.Add(TIntPr(3, 2));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(0, 1));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(2, 2));
+  TUNExpectedComplicatedGraph.Add(TInt64Pr(3, 2));
   TSnap::GetDegCnt(TUNComplicatedGraph, TUNDegCntComplicatedGraph);
   CheckVectors(TUNExpectedComplicatedGraph, TUNDegCntComplicatedGraph);
 
-  TNExpectedComplicatedGraph.Add(TIntPr(0, 1));
-  TNExpectedComplicatedGraph.Add(TIntPr(2, 2));
-  TNExpectedComplicatedGraph.Add(TIntPr(4, 2));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(0, 1));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNExpectedComplicatedGraph.Add(TInt64Pr(4, 2));
   TSnap::GetDegCnt(TNComplicatedGraph, TNDegCntComplicatedGraph);
   CheckVectors(TNExpectedComplicatedGraph, TNDegCntComplicatedGraph);
 
-  TNEExpectedComplicatedGraph.Add(TIntPr(0, 1));
-  TNEExpectedComplicatedGraph.Add(TIntPr(2, 1));
-  TNEExpectedComplicatedGraph.Add(TIntPr(3, 1));
-  TNEExpectedComplicatedGraph.Add(TIntPr(4, 1));
-  TNEExpectedComplicatedGraph.Add(TIntPr(5, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(0, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(2, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(3, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(4, 1));
+  TNEExpectedComplicatedGraph.Add(TInt64Pr(5, 1));
   TSnap::GetDegCnt(TNEComplicatedGraph, TNEDegCntComplicatedGraph);
   CheckVectors(TNEExpectedComplicatedGraph, TNEDegCntComplicatedGraph);
 }
 
 // Testing GetDegCnt for TFltPrV
 TEST_F(GraphTest, GetDegCntFltTest) {
-  TFltPrV TUNExpectedLoopGraph;
-  TFltPrV TUNDegCntLoopGraph;
-  TFltPrV TNExpectedLoopGraph;
-  TFltPrV TNDegCntLoopGraph;
-  TFltPrV TNEExpectedLoopGraph;
-  TFltPrV TNEDegCntLoopGraph;
+  TFltPr64V TUNExpectedLoopGraph;
+  TFltPr64V TUNDegCntLoopGraph;
+  TFltPr64V TNExpectedLoopGraph;
+  TFltPr64V TNDegCntLoopGraph;
+  TFltPr64V TNEExpectedLoopGraph;
+  TFltPr64V TNEDegCntLoopGraph;
 
-  TFltPrV TUNExpectedReverseTree;
-  TFltPrV TUNDegCntReverseTree;
-  TFltPrV TNExpectedReverseTree;
-  TFltPrV TNDegCntReverseTree;
-  TFltPrV TNEExpectedReverseTree;
-  TFltPrV TNEDegCntReverseTree;
+  TFltPr64V TUNExpectedReverseTree;
+  TFltPr64V TUNDegCntReverseTree;
+  TFltPr64V TNExpectedReverseTree;
+  TFltPr64V TNDegCntReverseTree;
+  TFltPr64V TNEExpectedReverseTree;
+  TFltPr64V TNEDegCntReverseTree;
 
-  TFltPrV TUNExpectedComplicatedGraph;
-  TFltPrV TUNDegCntComplicatedGraph;
-  TFltPrV TNExpectedComplicatedGraph;
-  TFltPrV TNDegCntComplicatedGraph;
-  TFltPrV TNEExpectedComplicatedGraph;
-  TFltPrV TNEDegCntComplicatedGraph;
+  TFltPr64V TUNExpectedComplicatedGraph;
+  TFltPr64V TUNDegCntComplicatedGraph;
+  TFltPr64V TNExpectedComplicatedGraph;
+  TFltPr64V TNDegCntComplicatedGraph;
+  TFltPr64V TNEExpectedComplicatedGraph;
+  TFltPr64V TNEDegCntComplicatedGraph;
 
   // LoopGraph
 
@@ -960,26 +960,26 @@ TEST_F(GraphTest, GetDegCntFltTest) {
 
 // Testing GetDegSeqV
 TEST_F(GraphTest, GetDegSeqVTest) {
-  TIntV TUNExpectedLoopGraph;
-  TIntV TUNDegVLoopGraph;
-  TIntV TNExpectedLoopGraph;
-  TIntV TNDegVLoopGraph;
-  TIntV TNEExpectedLoopGraph;
-  TIntV TNEDegVLoopGraph;
+  TInt64V TUNExpectedLoopGraph;
+  TInt64V TUNDegVLoopGraph;
+  TInt64V TNExpectedLoopGraph;
+  TInt64V TNDegVLoopGraph;
+  TInt64V TNEExpectedLoopGraph;
+  TInt64V TNEDegVLoopGraph;
 
-  TIntV TUNExpectedReverseTree;
-  TIntV TUNDegVReverseTree;
-  TIntV TNExpectedReverseTree;
-  TIntV TNDegVReverseTree;
-  TIntV TNEExpectedReverseTree;
-  TIntV TNEDegVReverseTree;
+  TInt64V TUNExpectedReverseTree;
+  TInt64V TUNDegVReverseTree;
+  TInt64V TNExpectedReverseTree;
+  TInt64V TNDegVReverseTree;
+  TInt64V TNEExpectedReverseTree;
+  TInt64V TNEDegVReverseTree;
 
-  TIntV TUNExpectedComplicatedGraph;
-  TIntV TUNDegVComplicatedGraph;
-  TIntV TNExpectedComplicatedGraph;
-  TIntV TNDegVComplicatedGraph;
-  TIntV TNEExpectedComplicatedGraph;
-  TIntV TNEDegVComplicatedGraph;
+  TInt64V TUNExpectedComplicatedGraph;
+  TInt64V TUNDegVComplicatedGraph;
+  TInt64V TNExpectedComplicatedGraph;
+  TInt64V TNDegVComplicatedGraph;
+  TInt64V TNEExpectedComplicatedGraph;
+  TInt64V TNEDegVComplicatedGraph;
 
   // LoopGraph
 
@@ -1062,44 +1062,44 @@ TEST_F(GraphTest, GetDegSeqVTest) {
 
 // Testing GetDegSeqV with InDegV and OutDegV
 TEST_F(GraphTest, GetDegSeqVInOutDegVTest) {
-  TIntV TUNExpectedInDegVLoopGraph;
-  TIntV TUNExpectedOutDegVLoopGraph;
-  TIntV TUNInDegVLoopGraph;
-  TIntV TUNOutDegVLoopGraph;
-  TIntV TNExpectedInDegVLoopGraph;
-  TIntV TNExpectedOutDegVLoopGraph;
-  TIntV TNInDegVLoopGraph;
-  TIntV TNOutDegVLoopGraph;
-  TIntV TNEExpectedInDegVLoopGraph;
-  TIntV TNEExpectedOutDegVLoopGraph;
-  TIntV TNEInDegVLoopGraph;
-  TIntV TNEOutDegVLoopGraph;
+  TInt64V TUNExpectedInDegVLoopGraph;
+  TInt64V TUNExpectedOutDegVLoopGraph;
+  TInt64V TUNInDegVLoopGraph;
+  TInt64V TUNOutDegVLoopGraph;
+  TInt64V TNExpectedInDegVLoopGraph;
+  TInt64V TNExpectedOutDegVLoopGraph;
+  TInt64V TNInDegVLoopGraph;
+  TInt64V TNOutDegVLoopGraph;
+  TInt64V TNEExpectedInDegVLoopGraph;
+  TInt64V TNEExpectedOutDegVLoopGraph;
+  TInt64V TNEInDegVLoopGraph;
+  TInt64V TNEOutDegVLoopGraph;
 
-  TIntV TUNExpectedInDegVReverseTree;
-  TIntV TUNExpectedOutDegVReverseTree;
-  TIntV TUNInDegVReverseTree;
-  TIntV TUNOutDegVReverseTree;
-  TIntV TNExpectedInDegVReverseTree;
-  TIntV TNExpectedOutDegVReverseTree;
-  TIntV TNInDegVReverseTree;
-  TIntV TNOutDegVReverseTree;
-  TIntV TNEExpectedInDegVReverseTree;
-  TIntV TNEExpectedOutDegVReverseTree;
-  TIntV TNEInDegVReverseTree;
-  TIntV TNEOutDegVReverseTree;
+  TInt64V TUNExpectedInDegVReverseTree;
+  TInt64V TUNExpectedOutDegVReverseTree;
+  TInt64V TUNInDegVReverseTree;
+  TInt64V TUNOutDegVReverseTree;
+  TInt64V TNExpectedInDegVReverseTree;
+  TInt64V TNExpectedOutDegVReverseTree;
+  TInt64V TNInDegVReverseTree;
+  TInt64V TNOutDegVReverseTree;
+  TInt64V TNEExpectedInDegVReverseTree;
+  TInt64V TNEExpectedOutDegVReverseTree;
+  TInt64V TNEInDegVReverseTree;
+  TInt64V TNEOutDegVReverseTree;
 
-  TIntV TUNExpectedInDegVComplicatedGraph;
-  TIntV TUNExpectedOutDegVComplicatedGraph;
-  TIntV TUNInDegVComplicatedGraph;
-  TIntV TUNOutDegVComplicatedGraph;
-  TIntV TNExpectedInDegVComplicatedGraph;
-  TIntV TNExpectedOutDegVComplicatedGraph;
-  TIntV TNInDegVComplicatedGraph;
-  TIntV TNOutDegVComplicatedGraph;
-  TIntV TNEExpectedInDegVComplicatedGraph;
-  TIntV TNEExpectedOutDegVComplicatedGraph;
-  TIntV TNEInDegVComplicatedGraph;
-  TIntV TNEOutDegVComplicatedGraph;
+  TInt64V TUNExpectedInDegVComplicatedGraph;
+  TInt64V TUNExpectedOutDegVComplicatedGraph;
+  TInt64V TUNInDegVComplicatedGraph;
+  TInt64V TUNOutDegVComplicatedGraph;
+  TInt64V TNExpectedInDegVComplicatedGraph;
+  TInt64V TNExpectedOutDegVComplicatedGraph;
+  TInt64V TNInDegVComplicatedGraph;
+  TInt64V TNOutDegVComplicatedGraph;
+  TInt64V TNEExpectedInDegVComplicatedGraph;
+  TInt64V TNEExpectedOutDegVComplicatedGraph;
+  TInt64V TNEInDegVComplicatedGraph;
+  TInt64V TNEOutDegVComplicatedGraph;
 
   // LoopGraph
 
@@ -1251,204 +1251,204 @@ TEST_F(GraphTest, GetDegSeqVInOutDegVTest) {
 
 // Testing GetNodeInDegV
 TEST_F(GraphTest, GetNodeInDegVTest) {
-  TIntPrV TUNExpectedInDegVLoopGraph;
-  TIntPrV TUNInDegVLoopGraph;
-  TIntPrV TNExpectedInDegVLoopGraph;
-  TIntPrV TNInDegVLoopGraph;
-  TIntPrV TNEExpectedInDegVLoopGraph;
-  TIntPrV TNEInDegVLoopGraph;
+  TIntPr64V TUNExpectedInDegVLoopGraph;
+  TIntPr64V TUNInDegVLoopGraph;
+  TIntPr64V TNExpectedInDegVLoopGraph;
+  TIntPr64V TNInDegVLoopGraph;
+  TIntPr64V TNEExpectedInDegVLoopGraph;
+  TIntPr64V TNEInDegVLoopGraph;
 
-  TIntPrV TUNExpectedInDegVReverseTree;
-  TIntPrV TUNInDegVReverseTree;
-  TIntPrV TNExpectedInDegVReverseTree;
-  TIntPrV TNInDegVReverseTree;
-  TIntPrV TNEExpectedInDegVReverseTree;
-  TIntPrV TNEInDegVReverseTree;
+  TIntPr64V TUNExpectedInDegVReverseTree;
+  TIntPr64V TUNInDegVReverseTree;
+  TIntPr64V TNExpectedInDegVReverseTree;
+  TIntPr64V TNInDegVReverseTree;
+  TIntPr64V TNEExpectedInDegVReverseTree;
+  TIntPr64V TNEInDegVReverseTree;
 
-  TIntPrV TUNExpectedInDegVComplicatedGraph;
-  TIntPrV TUNInDegVComplicatedGraph;
-  TIntPrV TNExpectedInDegVComplicatedGraph;
-  TIntPrV TNInDegVComplicatedGraph;
-  TIntPrV TNEExpectedInDegVComplicatedGraph;
-  TIntPrV TNEInDegVComplicatedGraph;
+  TIntPr64V TUNExpectedInDegVComplicatedGraph;
+  TIntPr64V TUNInDegVComplicatedGraph;
+  TIntPr64V TNExpectedInDegVComplicatedGraph;
+  TIntPr64V TNInDegVComplicatedGraph;
+  TIntPr64V TNEExpectedInDegVComplicatedGraph;
+  TIntPr64V TNEInDegVComplicatedGraph;
 
   // LoopGraph
 
-  TUNExpectedInDegVLoopGraph.Add(TIntPr(0, 2));
-  TUNExpectedInDegVLoopGraph.Add(TIntPr(1, 2));
-  TUNExpectedInDegVLoopGraph.Add(TIntPr(2, 2));
-  TUNExpectedInDegVLoopGraph.Add(TIntPr(3, 2));
-  TUNExpectedInDegVLoopGraph.Add(TIntPr(4, 2));
+  TUNExpectedInDegVLoopGraph.Add(TInt64Pr(0, 2));
+  TUNExpectedInDegVLoopGraph.Add(TInt64Pr(1, 2));
+  TUNExpectedInDegVLoopGraph.Add(TInt64Pr(2, 2));
+  TUNExpectedInDegVLoopGraph.Add(TInt64Pr(3, 2));
+  TUNExpectedInDegVLoopGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeInDegV(TUNLoopGraph, TUNInDegVLoopGraph);
   CheckVectors(TUNExpectedInDegVLoopGraph, TUNInDegVLoopGraph);
 
-  TNExpectedInDegVLoopGraph.Add(TIntPr(0, 1));
-  TNExpectedInDegVLoopGraph.Add(TIntPr(1, 1));
-  TNExpectedInDegVLoopGraph.Add(TIntPr(2, 1));
-  TNExpectedInDegVLoopGraph.Add(TIntPr(3, 1));
-  TNExpectedInDegVLoopGraph.Add(TIntPr(4, 2));
+  TNExpectedInDegVLoopGraph.Add(TInt64Pr(0, 1));
+  TNExpectedInDegVLoopGraph.Add(TInt64Pr(1, 1));
+  TNExpectedInDegVLoopGraph.Add(TInt64Pr(2, 1));
+  TNExpectedInDegVLoopGraph.Add(TInt64Pr(3, 1));
+  TNExpectedInDegVLoopGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeInDegV(TNLoopGraph, TNInDegVLoopGraph);
   CheckVectors(TNExpectedInDegVLoopGraph, TNInDegVLoopGraph);
 
-  TNEExpectedInDegVLoopGraph.Add(TIntPr(0, 2));
-  TNEExpectedInDegVLoopGraph.Add(TIntPr(1, 1));
-  TNEExpectedInDegVLoopGraph.Add(TIntPr(2, 1));
-  TNEExpectedInDegVLoopGraph.Add(TIntPr(3, 1));
-  TNEExpectedInDegVLoopGraph.Add(TIntPr(4, 2));
+  TNEExpectedInDegVLoopGraph.Add(TInt64Pr(0, 2));
+  TNEExpectedInDegVLoopGraph.Add(TInt64Pr(1, 1));
+  TNEExpectedInDegVLoopGraph.Add(TInt64Pr(2, 1));
+  TNEExpectedInDegVLoopGraph.Add(TInt64Pr(3, 1));
+  TNEExpectedInDegVLoopGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeInDegV(TNELoopGraph, TNEInDegVLoopGraph);
   CheckVectors(TNEExpectedInDegVLoopGraph, TNEInDegVLoopGraph);
 
   // ReverseTree
 
-  TUNExpectedInDegVReverseTree.Add(TIntPr(0, 2));
-  TUNExpectedInDegVReverseTree.Add(TIntPr(1, 2));
-  TUNExpectedInDegVReverseTree.Add(TIntPr(2, 2));
-  TUNExpectedInDegVReverseTree.Add(TIntPr(3, 1));
-  TUNExpectedInDegVReverseTree.Add(TIntPr(4, 1));
+  TUNExpectedInDegVReverseTree.Add(TInt64Pr(0, 2));
+  TUNExpectedInDegVReverseTree.Add(TInt64Pr(1, 2));
+  TUNExpectedInDegVReverseTree.Add(TInt64Pr(2, 2));
+  TUNExpectedInDegVReverseTree.Add(TInt64Pr(3, 1));
+  TUNExpectedInDegVReverseTree.Add(TInt64Pr(4, 1));
   TSnap::GetNodeInDegV(TUNReverseTree, TUNInDegVReverseTree);
   CheckVectors(TUNExpectedInDegVReverseTree, TUNInDegVReverseTree);
 
-  TNExpectedInDegVReverseTree.Add(TIntPr(0, 0));
-  TNExpectedInDegVReverseTree.Add(TIntPr(1, 1));
-  TNExpectedInDegVReverseTree.Add(TIntPr(2, 1));
-  TNExpectedInDegVReverseTree.Add(TIntPr(3, 1));
-  TNExpectedInDegVReverseTree.Add(TIntPr(4, 1));
+  TNExpectedInDegVReverseTree.Add(TInt64Pr(0, 0));
+  TNExpectedInDegVReverseTree.Add(TInt64Pr(1, 1));
+  TNExpectedInDegVReverseTree.Add(TInt64Pr(2, 1));
+  TNExpectedInDegVReverseTree.Add(TInt64Pr(3, 1));
+  TNExpectedInDegVReverseTree.Add(TInt64Pr(4, 1));
   TSnap::GetNodeInDegV(TNReverseTree, TNInDegVReverseTree);
   CheckVectors(TNExpectedInDegVReverseTree, TNInDegVReverseTree);
 
-  TNEExpectedInDegVReverseTree.Add(TIntPr(0, 0));
-  TNEExpectedInDegVReverseTree.Add(TIntPr(1, 1));
-  TNEExpectedInDegVReverseTree.Add(TIntPr(2, 1));
-  TNEExpectedInDegVReverseTree.Add(TIntPr(3, 1));
-  TNEExpectedInDegVReverseTree.Add(TIntPr(4, 1));
+  TNEExpectedInDegVReverseTree.Add(TInt64Pr(0, 0));
+  TNEExpectedInDegVReverseTree.Add(TInt64Pr(1, 1));
+  TNEExpectedInDegVReverseTree.Add(TInt64Pr(2, 1));
+  TNEExpectedInDegVReverseTree.Add(TInt64Pr(3, 1));
+  TNEExpectedInDegVReverseTree.Add(TInt64Pr(4, 1));
   TSnap::GetNodeInDegV(TNEReverseTree, TNEInDegVReverseTree);
   CheckVectors(TNEExpectedInDegVReverseTree, TNEInDegVReverseTree);
 
   // ComplicatedGraph
 
-  TUNExpectedInDegVComplicatedGraph.Add(TIntPr(0, 2));
-  TUNExpectedInDegVComplicatedGraph.Add(TIntPr(1, 3));
-  TUNExpectedInDegVComplicatedGraph.Add(TIntPr(2, 3));
-  TUNExpectedInDegVComplicatedGraph.Add(TIntPr(3, 0));
-  TUNExpectedInDegVComplicatedGraph.Add(TIntPr(4, 2));
+  TUNExpectedInDegVComplicatedGraph.Add(TInt64Pr(0, 2));
+  TUNExpectedInDegVComplicatedGraph.Add(TInt64Pr(1, 3));
+  TUNExpectedInDegVComplicatedGraph.Add(TInt64Pr(2, 3));
+  TUNExpectedInDegVComplicatedGraph.Add(TInt64Pr(3, 0));
+  TUNExpectedInDegVComplicatedGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeInDegV(TUNComplicatedGraph, TUNInDegVComplicatedGraph);
   CheckVectors(TUNExpectedInDegVComplicatedGraph, TUNInDegVComplicatedGraph);
 
-  TNExpectedInDegVComplicatedGraph.Add(TIntPr(0, 0));
-  TNExpectedInDegVComplicatedGraph.Add(TIntPr(1, 2));
-  TNExpectedInDegVComplicatedGraph.Add(TIntPr(2, 2));
-  TNExpectedInDegVComplicatedGraph.Add(TIntPr(3, 0));
-  TNExpectedInDegVComplicatedGraph.Add(TIntPr(4, 2));
+  TNExpectedInDegVComplicatedGraph.Add(TInt64Pr(0, 0));
+  TNExpectedInDegVComplicatedGraph.Add(TInt64Pr(1, 2));
+  TNExpectedInDegVComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNExpectedInDegVComplicatedGraph.Add(TInt64Pr(3, 0));
+  TNExpectedInDegVComplicatedGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeInDegV(TNComplicatedGraph, TNInDegVComplicatedGraph);
   CheckVectors(TNExpectedInDegVComplicatedGraph, TNInDegVComplicatedGraph);
 
-  TNEExpectedInDegVComplicatedGraph.Add(TIntPr(0, 0));
-  TNEExpectedInDegVComplicatedGraph.Add(TIntPr(1, 2));
-  TNEExpectedInDegVComplicatedGraph.Add(TIntPr(2, 2));
-  TNEExpectedInDegVComplicatedGraph.Add(TIntPr(3, 0));
-  TNEExpectedInDegVComplicatedGraph.Add(TIntPr(4, 3));
+  TNEExpectedInDegVComplicatedGraph.Add(TInt64Pr(0, 0));
+  TNEExpectedInDegVComplicatedGraph.Add(TInt64Pr(1, 2));
+  TNEExpectedInDegVComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNEExpectedInDegVComplicatedGraph.Add(TInt64Pr(3, 0));
+  TNEExpectedInDegVComplicatedGraph.Add(TInt64Pr(4, 3));
   TSnap::GetNodeInDegV(TNEComplicatedGraph, TNEInDegVComplicatedGraph);
   CheckVectors(TNEExpectedInDegVComplicatedGraph, TNEInDegVComplicatedGraph);
 }
 
 // Testing GetNodeOutDegV
 TEST_F(GraphTest, GetNodeOutDegVTest) {
-  TIntPrV TUNExpectedOutDegVLoopGraph;
-  TIntPrV TUNOutDegVLoopGraph;
-  TIntPrV TNExpectedOutDegVLoopGraph;
-  TIntPrV TNOutDegVLoopGraph;
-  TIntPrV TNEExpectedOutDegVLoopGraph;
-  TIntPrV TNEOutDegVLoopGraph;
+  TIntPr64V TUNExpectedOutDegVLoopGraph;
+  TIntPr64V TUNOutDegVLoopGraph;
+  TIntPr64V TNExpectedOutDegVLoopGraph;
+  TIntPr64V TNOutDegVLoopGraph;
+  TIntPr64V TNEExpectedOutDegVLoopGraph;
+  TIntPr64V TNEOutDegVLoopGraph;
 
-  TIntPrV TUNExpectedOutDegVReverseTree;
-  TIntPrV TUNOutDegVReverseTree;
-  TIntPrV TNExpectedOutDegVReverseTree;
-  TIntPrV TNOutDegVReverseTree;
-  TIntPrV TNEExpectedOutDegVReverseTree;
-  TIntPrV TNEOutDegVReverseTree;
+  TIntPr64V TUNExpectedOutDegVReverseTree;
+  TIntPr64V TUNOutDegVReverseTree;
+  TIntPr64V TNExpectedOutDegVReverseTree;
+  TIntPr64V TNOutDegVReverseTree;
+  TIntPr64V TNEExpectedOutDegVReverseTree;
+  TIntPr64V TNEOutDegVReverseTree;
 
-  TIntPrV TUNExpectedOutDegVComplicatedGraph;
-  TIntPrV TUNOutDegVComplicatedGraph;
-  TIntPrV TNExpectedOutDegVComplicatedGraph;
-  TIntPrV TNOutDegVComplicatedGraph;
-  TIntPrV TNEExpectedOutDegVComplicatedGraph;
-  TIntPrV TNEOutDegVComplicatedGraph;
+  TIntPr64V TUNExpectedOutDegVComplicatedGraph;
+  TIntPr64V TUNOutDegVComplicatedGraph;
+  TIntPr64V TNExpectedOutDegVComplicatedGraph;
+  TIntPr64V TNOutDegVComplicatedGraph;
+  TIntPr64V TNEExpectedOutDegVComplicatedGraph;
+  TIntPr64V TNEOutDegVComplicatedGraph;
 
   // LoopGraph
 
-  TUNExpectedOutDegVLoopGraph.Add(TIntPr(0, 2));
-  TUNExpectedOutDegVLoopGraph.Add(TIntPr(1, 2));
-  TUNExpectedOutDegVLoopGraph.Add(TIntPr(2, 2));
-  TUNExpectedOutDegVLoopGraph.Add(TIntPr(3, 2));
-  TUNExpectedOutDegVLoopGraph.Add(TIntPr(4, 2));
+  TUNExpectedOutDegVLoopGraph.Add(TInt64Pr(0, 2));
+  TUNExpectedOutDegVLoopGraph.Add(TInt64Pr(1, 2));
+  TUNExpectedOutDegVLoopGraph.Add(TInt64Pr(2, 2));
+  TUNExpectedOutDegVLoopGraph.Add(TInt64Pr(3, 2));
+  TUNExpectedOutDegVLoopGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeOutDegV(TUNLoopGraph, TUNOutDegVLoopGraph);
   CheckVectors(TUNExpectedOutDegVLoopGraph, TUNOutDegVLoopGraph);
 
-  TNExpectedOutDegVLoopGraph.Add(TIntPr(0, 2));
-  TNExpectedOutDegVLoopGraph.Add(TIntPr(1, 1));
-  TNExpectedOutDegVLoopGraph.Add(TIntPr(2, 1));
-  TNExpectedOutDegVLoopGraph.Add(TIntPr(3, 1));
-  TNExpectedOutDegVLoopGraph.Add(TIntPr(4, 1));
+  TNExpectedOutDegVLoopGraph.Add(TInt64Pr(0, 2));
+  TNExpectedOutDegVLoopGraph.Add(TInt64Pr(1, 1));
+  TNExpectedOutDegVLoopGraph.Add(TInt64Pr(2, 1));
+  TNExpectedOutDegVLoopGraph.Add(TInt64Pr(3, 1));
+  TNExpectedOutDegVLoopGraph.Add(TInt64Pr(4, 1));
   TSnap::GetNodeOutDegV(TNLoopGraph, TNOutDegVLoopGraph);
   CheckVectors(TNExpectedOutDegVLoopGraph, TNOutDegVLoopGraph);
 
-  TNEExpectedOutDegVLoopGraph.Add(TIntPr(0, 2));
-  TNEExpectedOutDegVLoopGraph.Add(TIntPr(1, 1));
-  TNEExpectedOutDegVLoopGraph.Add(TIntPr(2, 1));
-  TNEExpectedOutDegVLoopGraph.Add(TIntPr(3, 1));
-  TNEExpectedOutDegVLoopGraph.Add(TIntPr(4, 2));
+  TNEExpectedOutDegVLoopGraph.Add(TInt64Pr(0, 2));
+  TNEExpectedOutDegVLoopGraph.Add(TInt64Pr(1, 1));
+  TNEExpectedOutDegVLoopGraph.Add(TInt64Pr(2, 1));
+  TNEExpectedOutDegVLoopGraph.Add(TInt64Pr(3, 1));
+  TNEExpectedOutDegVLoopGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeOutDegV(TNELoopGraph, TNEOutDegVLoopGraph);
   CheckVectors(TNEExpectedOutDegVLoopGraph, TNEOutDegVLoopGraph);
 
   // ReverseTree
 
-  TUNExpectedOutDegVReverseTree.Add(TIntPr(0, 2));
-  TUNExpectedOutDegVReverseTree.Add(TIntPr(1, 2));
-  TUNExpectedOutDegVReverseTree.Add(TIntPr(2, 2));
-  TUNExpectedOutDegVReverseTree.Add(TIntPr(3, 1));
-  TUNExpectedOutDegVReverseTree.Add(TIntPr(4, 1));
+  TUNExpectedOutDegVReverseTree.Add(TInt64Pr(0, 2));
+  TUNExpectedOutDegVReverseTree.Add(TInt64Pr(1, 2));
+  TUNExpectedOutDegVReverseTree.Add(TInt64Pr(2, 2));
+  TUNExpectedOutDegVReverseTree.Add(TInt64Pr(3, 1));
+  TUNExpectedOutDegVReverseTree.Add(TInt64Pr(4, 1));
   TSnap::GetNodeOutDegV(TUNReverseTree, TUNOutDegVReverseTree);
   CheckVectors(TUNExpectedOutDegVReverseTree, TUNOutDegVReverseTree);
 
-  TNExpectedOutDegVReverseTree.Add(TIntPr(0, 2));
-  TNExpectedOutDegVReverseTree.Add(TIntPr(1, 1));
-  TNExpectedOutDegVReverseTree.Add(TIntPr(2, 1));
-  TNExpectedOutDegVReverseTree.Add(TIntPr(3, 0));
-  TNExpectedOutDegVReverseTree.Add(TIntPr(4, 0));
+  TNExpectedOutDegVReverseTree.Add(TInt64Pr(0, 2));
+  TNExpectedOutDegVReverseTree.Add(TInt64Pr(1, 1));
+  TNExpectedOutDegVReverseTree.Add(TInt64Pr(2, 1));
+  TNExpectedOutDegVReverseTree.Add(TInt64Pr(3, 0));
+  TNExpectedOutDegVReverseTree.Add(TInt64Pr(4, 0));
   TSnap::GetNodeOutDegV(TNReverseTree, TNOutDegVReverseTree);
   CheckVectors(TNExpectedOutDegVReverseTree, TNOutDegVReverseTree);
 
-  TNEExpectedOutDegVReverseTree.Add(TIntPr(0, 2));
-  TNEExpectedOutDegVReverseTree.Add(TIntPr(1, 1));
-  TNEExpectedOutDegVReverseTree.Add(TIntPr(2, 1));
-  TNEExpectedOutDegVReverseTree.Add(TIntPr(3, 0));
-  TNEExpectedOutDegVReverseTree.Add(TIntPr(4, 0));
+  TNEExpectedOutDegVReverseTree.Add(TInt64Pr(0, 2));
+  TNEExpectedOutDegVReverseTree.Add(TInt64Pr(1, 1));
+  TNEExpectedOutDegVReverseTree.Add(TInt64Pr(2, 1));
+  TNEExpectedOutDegVReverseTree.Add(TInt64Pr(3, 0));
+  TNEExpectedOutDegVReverseTree.Add(TInt64Pr(4, 0));
   TSnap::GetNodeOutDegV(TNEReverseTree, TNEOutDegVReverseTree);
   CheckVectors(TNEExpectedOutDegVReverseTree, TNEOutDegVReverseTree);
 
   // ComplicatedGraph
 
-  TUNExpectedOutDegVComplicatedGraph.Add(TIntPr(0, 2));
-  TUNExpectedOutDegVComplicatedGraph.Add(TIntPr(1, 3));
-  TUNExpectedOutDegVComplicatedGraph.Add(TIntPr(2, 3));
-  TUNExpectedOutDegVComplicatedGraph.Add(TIntPr(3, 0));
-  TUNExpectedOutDegVComplicatedGraph.Add(TIntPr(4, 2));
+  TUNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(0, 2));
+  TUNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(1, 3));
+  TUNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(2, 3));
+  TUNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(3, 0));
+  TUNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(4, 2));
   TSnap::GetNodeOutDegV(TUNComplicatedGraph, TUNOutDegVComplicatedGraph);
   CheckVectors(TUNExpectedOutDegVComplicatedGraph, TUNOutDegVComplicatedGraph);
 
-  TNExpectedOutDegVComplicatedGraph.Add(TIntPr(0, 2));
-  TNExpectedOutDegVComplicatedGraph.Add(TIntPr(1, 2));
-  TNExpectedOutDegVComplicatedGraph.Add(TIntPr(2, 2));
-  TNExpectedOutDegVComplicatedGraph.Add(TIntPr(3, 0));
-  TNExpectedOutDegVComplicatedGraph.Add(TIntPr(4, 0));
+  TNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(0, 2));
+  TNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(1, 2));
+  TNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(3, 0));
+  TNExpectedOutDegVComplicatedGraph.Add(TInt64Pr(4, 0));
   TSnap::GetNodeOutDegV(TNComplicatedGraph, TNOutDegVComplicatedGraph);
   CheckVectors(TNExpectedOutDegVComplicatedGraph, TNOutDegVComplicatedGraph);
 
-  TNEExpectedOutDegVComplicatedGraph.Add(TIntPr(0, 2));
-  TNEExpectedOutDegVComplicatedGraph.Add(TIntPr(1, 3));
-  TNEExpectedOutDegVComplicatedGraph.Add(TIntPr(2, 2));
-  TNEExpectedOutDegVComplicatedGraph.Add(TIntPr(3, 0));
-  TNEExpectedOutDegVComplicatedGraph.Add(TIntPr(4, 0));
+  TNEExpectedOutDegVComplicatedGraph.Add(TInt64Pr(0, 2));
+  TNEExpectedOutDegVComplicatedGraph.Add(TInt64Pr(1, 3));
+  TNEExpectedOutDegVComplicatedGraph.Add(TInt64Pr(2, 2));
+  TNEExpectedOutDegVComplicatedGraph.Add(TInt64Pr(3, 0));
+  TNEExpectedOutDegVComplicatedGraph.Add(TInt64Pr(4, 0));
   TSnap::GetNodeOutDegV(TNEComplicatedGraph, TNEOutDegVComplicatedGraph);
   CheckVectors(TNEExpectedOutDegVComplicatedGraph, TNEOutDegVComplicatedGraph);
 }
@@ -1519,22 +1519,22 @@ TEST_F(GraphTest, CntSelfEdgesTest) {
 
 // Testing GetUnDir
 TEST_F(GraphTest, GetUnDirTest) {
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
   PUNGraph TUNGraphUnDir;
   PNGraph TNGraphUnDir;
   PNEGraph TNEGraphUnDir;
 
   // ComplicatedGraph
 
-  TNExpectedDegCnt.Add(TIntPr(0, 1));
-  TNExpectedDegCnt.Add(TIntPr(4, 2));
-  TNExpectedDegCnt.Add(TIntPr(6, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(4, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(6, 2));
 
-  TNEExpectedDegCnt.Add(TIntPr(0, 1));
-  TNEExpectedDegCnt.Add(TIntPr(4, 1));
-  TNEExpectedDegCnt.Add(TIntPr(6, 2));
-  TNEExpectedDegCnt.Add(TIntPr(8, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(4, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(6, 2));
+  TNEExpectedDegCnt.Add(TInt64Pr(8, 1));
 
   TNGraphUnDir = TSnap::GetUnDir(TNComplicatedGraph);
   TNEGraphUnDir = TSnap::GetUnDir(TNEComplicatedGraph);
@@ -1545,19 +1545,19 @@ TEST_F(GraphTest, GetUnDirTest) {
 
 // Testing MakeUnDir
 TEST_F(GraphTest, MakeUnDirTest) {
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
 
   // ComplicatedGraph
 
-  TNExpectedDegCnt.Add(TIntPr(0, 1));
-  TNExpectedDegCnt.Add(TIntPr(4, 2));
-  TNExpectedDegCnt.Add(TIntPr(6, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(4, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(6, 2));
 
-  TNEExpectedDegCnt.Add(TIntPr(0, 1));
-  TNEExpectedDegCnt.Add(TIntPr(4, 1));
-  TNEExpectedDegCnt.Add(TIntPr(6, 2));
-  TNEExpectedDegCnt.Add(TIntPr(8, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(4, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(6, 2));
+  TNEExpectedDegCnt.Add(TInt64Pr(8, 1));
 
   TSnap::MakeUnDir(TNComplicatedGraph);
   TSnap::MakeUnDir(TNEComplicatedGraph);
@@ -1568,25 +1568,25 @@ TEST_F(GraphTest, MakeUnDirTest) {
 
 // Testing AddSelfEdges
 TEST_F(GraphTest, AddSelfEdgesTest) {
-  TIntPrV TUNExpectedDegCnt;
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TIntPr64V TUNExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
 
   // ComplicatedGraph
 
-  TUNExpectedDegCnt.Add(TIntPr(1, 1));
-  TUNExpectedDegCnt.Add(TIntPr(3, 2));
-  TUNExpectedDegCnt.Add(TIntPr(4, 2));
+  TUNExpectedDegCnt.Add(TInt64Pr(1, 1));
+  TUNExpectedDegCnt.Add(TInt64Pr(3, 2));
+  TUNExpectedDegCnt.Add(TInt64Pr(4, 2));
 
-  TNExpectedDegCnt.Add(TIntPr(2, 1));
-  TNExpectedDegCnt.Add(TIntPr(4, 2));
-  TNExpectedDegCnt.Add(TIntPr(6, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(2, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(4, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(6, 2));
 
-  TNEExpectedDegCnt.Add(TIntPr(2, 1));
-  TNEExpectedDegCnt.Add(TIntPr(4, 1));
-  TNEExpectedDegCnt.Add(TIntPr(5, 1));
-  TNEExpectedDegCnt.Add(TIntPr(6, 1));
-  TNEExpectedDegCnt.Add(TIntPr(7, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(2, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(4, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(5, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(6, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(7, 1));
 
   TSnap::AddSelfEdges(TUNComplicatedGraph);
   TSnap::AddSelfEdges(TNComplicatedGraph);
@@ -1599,25 +1599,25 @@ TEST_F(GraphTest, AddSelfEdgesTest) {
 
 // Testing DelSelfEdges
 TEST_F(GraphTest, DelSelfEdgesTest) {
-  TIntPrV TUNExpectedDegCnt;
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TIntPr64V TUNExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
 
   // ComplicatedGraphWithLoop
 
-  TUNExpectedDegCnt.Add(TIntPr(0, 1));
-  TUNExpectedDegCnt.Add(TIntPr(2, 2));
-  TUNExpectedDegCnt.Add(TIntPr(3, 2));
+  TUNExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TUNExpectedDegCnt.Add(TInt64Pr(2, 2));
+  TUNExpectedDegCnt.Add(TInt64Pr(3, 2));
 
-  TNExpectedDegCnt.Add(TIntPr(0, 1));
-  TNExpectedDegCnt.Add(TIntPr(2, 2));
-  TNExpectedDegCnt.Add(TIntPr(4, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(2, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(4, 2));
 
-  TNEExpectedDegCnt.Add(TIntPr(0, 1));
-  TNEExpectedDegCnt.Add(TIntPr(2, 1));
-  TNEExpectedDegCnt.Add(TIntPr(3, 1));
-  TNEExpectedDegCnt.Add(TIntPr(4, 1));
-  TNEExpectedDegCnt.Add(TIntPr(5, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(2, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(3, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(4, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(5, 1));
 
   TSnap::DelSelfEdges(TUNComplicatedGraphWithLoop);
   TSnap::DelSelfEdges(TNComplicatedGraphWithLoop);
@@ -1630,12 +1630,12 @@ TEST_F(GraphTest, DelSelfEdgesTest) {
 
 // Testing DelNodes
 TEST_F(GraphTest, DelNodesTest) {
-  TIntV TUNDelNodes;
-  TIntV TNDelNodes;
-  TIntV TNEDelNodes;
-  TIntPrV TUNExpectedDegCnt;
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TInt64V TUNDelNodes;
+  TInt64V TNDelNodes;
+  TInt64V TNEDelNodes;
+  TIntPr64V TUNExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
 
   // ComplicatedGraph
 
@@ -1643,16 +1643,16 @@ TEST_F(GraphTest, DelNodesTest) {
   TNDelNodes.Add(0);
   TNEDelNodes.Add(0);
 
-  TUNExpectedDegCnt.Add(TIntPr(0, 1));
-  TUNExpectedDegCnt.Add(TIntPr(2, 3));
+  TUNExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TUNExpectedDegCnt.Add(TInt64Pr(2, 3));
 
-  TNExpectedDegCnt.Add(TIntPr(0, 1));
-  TNExpectedDegCnt.Add(TIntPr(2, 1));
-  TNExpectedDegCnt.Add(TIntPr(3, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(2, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(3, 2));
 
-  TNEExpectedDegCnt.Add(TIntPr(0, 1));
-  TNEExpectedDegCnt.Add(TIntPr(3, 2));
-  TNEExpectedDegCnt.Add(TIntPr(4, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(0, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(3, 2));
+  TNEExpectedDegCnt.Add(TInt64Pr(4, 1));
 
   TSnap::DelNodes(TUNComplicatedGraph, TUNDelNodes);
   TSnap::DelNodes(TNComplicatedGraph, TNDelNodes);
@@ -1666,22 +1666,22 @@ TEST_F(GraphTest, DelNodesTest) {
 
 // Testing DelZeroDegNodes
 TEST_F(GraphTest, DelZeroDegNodesTest) {
-  TIntPrV TUNExpectedDegCnt;
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TIntPr64V TUNExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
 
   // ComplicatedGraph
 
-  TUNExpectedDegCnt.Add(TIntPr(2, 2));
-  TUNExpectedDegCnt.Add(TIntPr(3, 2));
+  TUNExpectedDegCnt.Add(TInt64Pr(2, 2));
+  TUNExpectedDegCnt.Add(TInt64Pr(3, 2));
 
-  TNExpectedDegCnt.Add(TIntPr(2, 2));
-  TNExpectedDegCnt.Add(TIntPr(4, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(2, 2));
+  TNExpectedDegCnt.Add(TInt64Pr(4, 2));
 
-  TNEExpectedDegCnt.Add(TIntPr(2, 1));
-  TNEExpectedDegCnt.Add(TIntPr(3, 1));
-  TNEExpectedDegCnt.Add(TIntPr(4, 1));
-  TNEExpectedDegCnt.Add(TIntPr(5, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(2, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(3, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(4, 1));
+  TNEExpectedDegCnt.Add(TInt64Pr(5, 1));
 
   TSnap::DelZeroDegNodes(TUNComplicatedGraph);
   TSnap::DelZeroDegNodes(TNComplicatedGraph);
@@ -1694,17 +1694,17 @@ TEST_F(GraphTest, DelZeroDegNodesTest) {
 
 // Testing DelDegKNodes
 TEST_F(GraphTest, DelDegKNodesTest) {
-  TIntPrV TUNExpectedDegCnt;
-  TIntPrV TNExpectedDegCnt;
-  TIntPrV TNEExpectedDegCnt;
+  TIntPr64V TUNExpectedDegCnt;
+  TIntPr64V TNExpectedDegCnt;
+  TIntPr64V TNEExpectedDegCnt;
 
   // ComplicatedGraph
 
-  TUNExpectedDegCnt.Add(TIntPr(0, 3));
+  TUNExpectedDegCnt.Add(TInt64Pr(0, 3));
 
-  TNExpectedDegCnt.Add(TIntPr(0, 1));
+  TNExpectedDegCnt.Add(TInt64Pr(0, 1));
 
-  TNEExpectedDegCnt.Add(TIntPr(2, 2));
+  TNEExpectedDegCnt.Add(TInt64Pr(2, 2));
 
   TSnap::DelDegKNodes(TUNComplicatedGraph, 3, 3);
   TSnap::DelDegKNodes(TNComplicatedGraph, 2, 0);
@@ -1721,7 +1721,7 @@ TEST_F(GraphTest, DelDegKNodesTest) {
 
 // Testing IsTree
 TEST_F(TreeTest, IsTreeTest) {
-  int RootNId;
+  int64 RootNId;
 
   EXPECT_TRUE(TSnap::IsTree(SingleNode, RootNId));
   EXPECT_EQ(1, RootNId);
@@ -1735,7 +1735,7 @@ TEST_F(TreeTest, IsTreeTest) {
 
 // Testing GetTreeRootNId
 TEST_F(TreeTest, GetTreeRootNIdTest) {
-  int RootNId = 1;
+  int64 RootNId = 1;
 
   EXPECT_EQ(RootNId, TSnap::GetTreeRootNId(SingleNode));
   EXPECT_EQ(RootNId, TSnap::GetTreeRootNId(Tree));
@@ -1745,13 +1745,13 @@ TEST_F(TreeTest, GetTreeRootNIdTest) {
 
 // Testing GetTreeSig
 TEST_F(TreeTest, GetTreeSigTest) {
-  int RootNId = 1;
-  TIntV SingleNodeSig;
-  TIntV TreeSig;
-  TIntV ForestSig;
-  TIntV CircleSig;
-  TIntV ExpectedSingleNodeSig;
-  TIntV ExpectedTreeSig;
+  int64 RootNId = 1;
+  TInt64V SingleNodeSig;
+  TInt64V TreeSig;
+  TInt64V ForestSig;
+  TInt64V CircleSig;
+  TInt64V ExpectedSingleNodeSig;
+  TInt64V ExpectedTreeSig;
 
   // SingleNode
 
@@ -1761,9 +1761,9 @@ TEST_F(TreeTest, GetTreeSigTest) {
 
   // Tree
 
-  int NumNodesWithChildren = 6;
-  int NumNodesWithChild = 1;
-  int NumNodesWithNoChildren = 7;
+  int64 NumNodesWithChildren = 6;
+  int64 NumNodesWithChild = 1;
+  int64 NumNodesWithNoChildren = 7;
   AddValues(ExpectedTreeSig, NumNodesWithChildren, 2);
   AddValues(ExpectedTreeSig, NumNodesWithChild, 1);
   AddValues(ExpectedTreeSig, NumNodesWithNoChildren, 0);
@@ -1783,25 +1783,25 @@ TEST_F(TreeTest, GetTreeSigTest) {
 
 // Testing GetTreeSig with node map
 TEST_F(TreeTest, GetTreeSigWithNodeMapTest) {
-  int RootNId = 1;
-  TIntV SingleNodeSig;
-  TIntV TreeSig;
-  TIntV ForestSig;
-  TIntV CircleSig;
-  TIntV ExpectedSingleNodeSig;
-  TIntV ExpectedTreeSig;
-  TIntPrV SingleNodeNodeMap;
-  TIntPrV TreeNodeMap;
-  TIntPrV ForestNodeMap;
-  TIntPrV CircleNodeMap;
-  TIntV TreeNodeMapKeys;
-  TIntPrV ExpectedSingleNodeNodeMap;
-  TIntV ExpectedTreeNodeMapKeys;
+  int64 RootNId = 1;
+  TInt64V SingleNodeSig;
+  TInt64V TreeSig;
+  TInt64V ForestSig;
+  TInt64V CircleSig;
+  TInt64V ExpectedSingleNodeSig;
+  TInt64V ExpectedTreeSig;
+  TIntPr64V SingleNodeNodeMap;
+  TIntPr64V TreeNodeMap;
+  TIntPr64V ForestNodeMap;
+  TIntPr64V CircleNodeMap;
+  TInt64V TreeNodeMapKeys;
+  TIntPr64V ExpectedSingleNodeNodeMap;
+  TInt64V ExpectedTreeNodeMapKeys;
 
   // SingleNode
 
   ExpectedSingleNodeSig.Add(0);
-  ExpectedSingleNodeNodeMap.Add(TIntPr(1, 0));
+  ExpectedSingleNodeNodeMap.Add(TInt64Pr(1, 0));
   TSnap::GetTreeSig(SingleNode, RootNId, SingleNodeSig, SingleNodeNodeMap);
   // OP RS 2014/06/12, the code below commented out, needs more investigation
   //CheckVectors(ExpectedSingleNodeSig, SingleNodeSig);
@@ -1809,9 +1809,9 @@ TEST_F(TreeTest, GetTreeSigWithNodeMapTest) {
 
   // Tree
 
-  int NumNodesWithChildren = 6;
-  int NumNodesWithChild = 1;
-  int NumNodesWithNoChildren = 7;
+  int64 NumNodesWithChildren = 6;
+  int64 NumNodesWithChild = 1;
+  int64 NumNodesWithNoChildren = 7;
   AddValues(ExpectedTreeSig, NumNodesWithChildren, 2);
   AddValues(ExpectedTreeSig, NumNodesWithChild, 1);
   AddValues(ExpectedTreeSig, NumNodesWithNoChildren, 0);
@@ -1840,7 +1840,7 @@ TEST_F(TreeTest, GetTreeSigWithNodeMapTest) {
 // HELPER METHODS
 ///
 
-void CheckVectors(const TIntPrV& Expected, const TIntPrV& Actual) {
+void CheckVectors(const TIntPr64V& Expected, const TIntPr64V& Actual) {
   ASSERT_EQ(Expected.Len(), Actual.Len());
   for (int i = 0; i < Actual.Len(); i++) {
     EXPECT_EQ(Expected[i].Val1.Val, Actual[i].Val1.Val);
@@ -1848,7 +1848,7 @@ void CheckVectors(const TIntPrV& Expected, const TIntPrV& Actual) {
   }
 }
 
-void CheckVectors(const TFltPrV& Expected, const TFltPrV& Actual) {
+void CheckVectors(const TFltPr64V& Expected, const TFltPr64V& Actual) {
   ASSERT_EQ(Expected.Len(), Actual.Len());
   for (int i = 0; i < Actual.Len(); i++) {
     EXPECT_EQ(Expected[i].Val1.Val, Actual[i].Val1.Val);
@@ -1856,61 +1856,61 @@ void CheckVectors(const TFltPrV& Expected, const TFltPrV& Actual) {
   }
 }
 
-void CheckVectors(const TIntV& Expected, const TIntV& Actual) {
+void CheckVectors(const TInt64V& Expected, const TInt64V& Actual) {
   ASSERT_EQ(Expected.Len(), Actual.Len());
   for (int i = 0; i < Actual.Len(); i++) {
     EXPECT_EQ(Expected[i].Val, Actual[i].Val);
   }
 }
 
-void CheckVectors(const TIntSet& Expected, const TIntSet& Actual) {
+void CheckVectors(const TInt64Set& Expected, const TInt64Set& Actual) {
   ASSERT_EQ(Expected.Len(), Actual.Len());
-  for (int i = 0; i < Actual.Len(); i++) {
+  for (int64 i = 0; i < Actual.Len(); i++) {
     EXPECT_EQ(Expected[i].Val, Actual[i].Val);
   }
 }
 
-void CheckGraphs(const TIntPrV& ExpectedDegCnt, const PUNGraph& ActualGraph) {
-  TIntPrV ActualDegCnt;
+void CheckGraphs(const TIntPr64V& ExpectedDegCnt, const PUNGraph& ActualGraph) {
+  TIntPr64V ActualDegCnt;
   TSnap::GetDegCnt(ActualGraph, ActualDegCnt);
 
   CheckVectors(ExpectedDegCnt, ActualDegCnt);
 }
 
-void CheckGraphs(const TIntPrV& ExpectedDegCnt, const PNGraph& ActualGraph) {
-  TIntPrV ActualDegCnt;
+void CheckGraphs(const TIntPr64V& ExpectedDegCnt, const PNGraph& ActualGraph) {
+  TIntPr64V ActualDegCnt;
   TSnap::GetDegCnt(ActualGraph, ActualDegCnt);
 
   CheckVectors(ExpectedDegCnt, ActualDegCnt);
 }
 
-void CheckGraphs(const TIntPrV& ExpectedDegCnt, const PNEGraph& ActualGraph) {
-  TIntPrV ActualDegCnt;
+void CheckGraphs(const TIntPr64V& ExpectedDegCnt, const PNEGraph& ActualGraph) {
+  TIntPr64V ActualDegCnt;
   TSnap::GetDegCnt(ActualGraph, ActualDegCnt);
 
   CheckVectors(ExpectedDegCnt, ActualDegCnt);
 }
 
-void CheckNotInSet(int Key, const TIntSet& Keys) {
-  for (int i = 0; i < Keys.Len(); i++) {
+void CheckNotInSet(int64 Key, const TInt64Set& Keys) {
+  for (int64 i = 0; i < Keys.Len(); i++) {
     EXPECT_NE(Keys[i], Key);
   }
 }
 
-void AddValues(TIntV& Vector, int NumValues, int Value) {
-  for (int i = 0; i < NumValues; i++) {
+void AddValues(TInt64V& Vector, int64 NumValues, int64 Value) {
+  for (int64 i = 0; i < NumValues; i++) {
     Vector.Add(Value);
   }
 }
 
-void AddConsecutiveValues(TIntV& Vector, int Start, int End) {
-  for (int Id = Start; Id <= End; Id++) {
+void AddConsecutiveValues(TInt64V& Vector, int64 Start, int64 End) {
+  for (int64 Id = Start; Id <= End; Id++) {
     Vector.Add(Id);
   }
 }
 
-void GetKeys(TIntV& Keys, const TIntPrV& Map) {
-  for (int Id = 0; Id < Map.Len(); Id++) {
+void GetKeys(TInt64V& Keys, const TIntPr64V& Map) {
+  for (int64 Id = 0; Id < Map.Len(); Id++) {
     Keys.Add(Map[Id].Val1.Val);
   }
 }

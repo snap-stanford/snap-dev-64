@@ -14,11 +14,11 @@ using namespace TSnap;
 template <class PGraph>
 void TestFullBfsDfs() {
   
-  const int NNodes = 500;
+  const int64 NNodes = 500;
   
   PGraph G = GenFull<PGraph>(NNodes);
   PNGraph GOut;
-  int TreeSz, TreeDepth;
+  int64 TreeSz, TreeDepth;
   
   GOut = GetBfsTree(G, 1, false, false);
   GetSubTreeSz(G, 1, false, false, TreeSz, TreeDepth);
@@ -48,24 +48,24 @@ void TestFullBfsDfs() {
   EXPECT_TRUE(TreeSz == NNodes);
   EXPECT_TRUE(TreeDepth == 1);
   
-  TIntV NIdV;
-  int StartNId, Hop, Nodes;
+  TInt64V NIdV;
+  int64 StartNId, Hop, Nodes;
 
   StartNId = 1;
   Hop = 1;
   Nodes = GetNodesAtHop(G, StartNId, Hop, NIdV, HasGraphFlag(typename PGraph::TObj, gfDirected));
   
-  TIntPrV HopCntV;
+  TIntPr64V HopCntV;
   Nodes = GetNodesAtHops(G, StartNId, HopCntV, HasGraphFlag(typename PGraph::TObj, gfDirected));
 
-  int Length, SrcNId, DstNId;
+  int64 Length, SrcNId, DstNId;
   SrcNId = 1;
   DstNId = NNodes-1;
   
   Length = GetShortPath(G, SrcNId, DstNId, HasGraphFlag(typename PGraph::TObj, gfDirected));
   
-  TIntH NIdToDistH;
-  int MaxDist = 9;
+  TInt64H NIdToDistH;
+  int64 MaxDist = 9;
   Length = GetShortPath(G, SrcNId, NIdToDistH, HasGraphFlag(typename PGraph::TObj, gfDirected), MaxDist);
   EXPECT_TRUE(NIdToDistH[0] == 0);
   EXPECT_TRUE(NIdToDistH[1] == 1);
@@ -73,11 +73,11 @@ void TestFullBfsDfs() {
   EXPECT_TRUE(NIdToDistH[3] == 1);
   EXPECT_TRUE(NIdToDistH[4] == 1);
   
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam, AvgDiam;
-  int NTestNodes = 10;
+  int64 NTestNodes = 10;
   
-  for (int IsDir = 0; IsDir < 2; IsDir++) {
+  for (int64 IsDir = 0; IsDir < 2; IsDir++) {
     
     FullDiam = GetBfsFullDiam(G, NTestNodes, IsDir);
     EXPECT_TRUE(FullDiam == 1);
@@ -94,8 +94,8 @@ void TestFullBfsDfs() {
     EXPECT_TRUE(FullDiam == 1);
     EXPECT_TRUE(AvgDiam > 0.9980 - EPSILON && AvgDiam < 0.9980 + EPSILON);
     
-    TIntV SubGraphNIdV;
-    for (int i = 0; i < NTestNodes; i++) {
+    TInt64V SubGraphNIdV;
+    for (int64 i = 0; i < NTestNodes; i++) {
       SubGraphNIdV.Add(G->GetRndNId());
     }
 
@@ -115,20 +115,20 @@ TEST(BfsDfsTest, UndirectedRandom) {
   TStr FName = TStr::Fmt("%s/sample_bfsdfs_unpower.txt", DIRNAME);
   
   // For a benchmark, this is done once and compared visually to confirm values are correct
-//  const int NNodes = 50;
+//  const int64 NNodes = 50;
 //  G = GenRndPowerLaw(NNodes, 2.5);
 //  SaveEdgeList(G, FName);
   
   G = LoadEdgeList<PUNGraph>(FName);
   TIntStrH NodeLabelH;
-  for (int i = 0; i < G->GetNodes(); i++) {
+  for (int64 i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
   DrawGViz(G, gvlNeato, TStr::Fmt("%s/sample_bfsdfs_unpower.png", DIRNAME), "Sample bfsdfs Graph", NodeLabelH);
   
-  TIntV NIdV;
-  int StartNId, Hop, Nodes; 
-  int IsDir = 0;
+  TInt64V NIdV;
+  int64 StartNId, Hop, Nodes;
+  int64 IsDir = 0;
     
   StartNId = 1;
   Hop = 1;
@@ -137,12 +137,12 @@ TEST(BfsDfsTest, UndirectedRandom) {
   EXPECT_TRUE(NIdV.Len() == 1);
   EXPECT_TRUE(NIdV[0] = 46);
   
-  TIntPrV HopCntV;
+  TIntPr64V HopCntV;
   Nodes = GetNodesAtHops(G, StartNId, HopCntV, IsDir);
     EXPECT_TRUE(Nodes == 8);
   EXPECT_TRUE(HopCntV.Len() == 8);
   
-  int Length, SrcNId, DstNId;
+  int64 Length, SrcNId, DstNId;
   SrcNId = 1;
   DstNId = G->GetNodes() - 1;
   
@@ -154,8 +154,8 @@ TEST(BfsDfsTest, UndirectedRandom) {
   Length = GetShortPath(G, SrcNId, DstNId, IsDir);
   EXPECT_TRUE(Length == 7);
 
-  TIntH NIdToDistH;
-  int MaxDist = 9;
+  TInt64H NIdToDistH;
+  int64 MaxDist = 9;
   Length = GetShortPath(G, SrcNId, NIdToDistH, IsDir, MaxDist);
   EXPECT_TRUE(NIdToDistH[0] == 0);
   EXPECT_TRUE(NIdToDistH[1] == 1);
@@ -165,9 +165,9 @@ TEST(BfsDfsTest, UndirectedRandom) {
 
   TInt::Rnd.PutSeed(0);
 
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam, AvgSPL;
-  int NTestNodes = G->GetNodes() / 3 * 2;
+  int64 NTestNodes = G->GetNodes() / 3 * 2;
   
   FullDiam = GetBfsFullDiam(G, NTestNodes, IsDir);
   EXPECT_TRUE(FullDiam <= 8 && FullDiam >= 5);
@@ -184,7 +184,7 @@ TEST(BfsDfsTest, UndirectedRandom) {
   EXPECT_TRUE(FullDiam > 5 && FullDiam < 8);
   EXPECT_TRUE(AvgSPL > 1.5 && AvgSPL < 5.0);
 
-  TIntV SubGraphNIdV;
+  TInt64V SubGraphNIdV;
   SubGraphNIdV.Add(0);
   SubGraphNIdV.Add(4);
   SubGraphNIdV.Add(31);
@@ -235,16 +235,16 @@ TEST(BfsDfsTest, DirectedRandom) {
   
   G = LoadEdgeList<PNGraph>(FName);
   TIntStrH NodeLabelH;
-  for (int i = 0; i < G->GetNodes(); i++) {
+  for (int64 i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
   DrawGViz(G, gvlDot, TStr::Fmt("%s/sample_bfsdfs_ngraph.png", DIRNAME), "Sample BFS Graph", NodeLabelH);
   
-  TIntV NIdV;
-  int StartNId, Hop, Nodes;
+  TInt64V NIdV;
+  int64 StartNId, Hop, Nodes;
   
-  //  for (int IsDir = 0; IsDir < 2; IsDir++) {
-  int IsDir = 1;
+  //  for (int64 IsDir = 0; IsDir < 2; IsDir++) {
+  int64 IsDir = 1;
   StartNId = 11;
   Hop = 1;
   Nodes = GetNodesAtHop(G, StartNId, Hop, NIdV, IsDir);
@@ -253,22 +253,22 @@ TEST(BfsDfsTest, DirectedRandom) {
   EXPECT_TRUE(NIdV[0] = 20);
   EXPECT_TRUE(NIdV[1] = 25);
   
-  TIntPrV HopCntV;
+  TIntPr64V HopCntV;
   Nodes = GetNodesAtHops(G, StartNId, HopCntV, IsDir);
   EXPECT_TRUE(Nodes == 10);
   EXPECT_TRUE(HopCntV.Len() == 10);
-  EXPECT_TRUE(HopCntV[0] == TIntPr(0, 1));
-  EXPECT_TRUE(HopCntV[1] == TIntPr(1, 2));
-  EXPECT_TRUE(HopCntV[2] == TIntPr(2, 3));
-  EXPECT_TRUE(HopCntV[3] == TIntPr(3, 4));
-  EXPECT_TRUE(HopCntV[4] == TIntPr(4, 5));
-  EXPECT_TRUE(HopCntV[5] == TIntPr(5, 4));
-  EXPECT_TRUE(HopCntV[6] == TIntPr(6, 1));
-  EXPECT_TRUE(HopCntV[7] == TIntPr(7, 1));
-  EXPECT_TRUE(HopCntV[8] == TIntPr(8, 3));
-  EXPECT_TRUE(HopCntV[9] == TIntPr(9, 1));
+  EXPECT_TRUE(HopCntV[0] == TInt64Pr(0, 1));
+  EXPECT_TRUE(HopCntV[1] == TInt64Pr(1, 2));
+  EXPECT_TRUE(HopCntV[2] == TInt64Pr(2, 3));
+  EXPECT_TRUE(HopCntV[3] == TInt64Pr(3, 4));
+  EXPECT_TRUE(HopCntV[4] == TInt64Pr(4, 5));
+  EXPECT_TRUE(HopCntV[5] == TInt64Pr(5, 4));
+  EXPECT_TRUE(HopCntV[6] == TInt64Pr(6, 1));
+  EXPECT_TRUE(HopCntV[7] == TInt64Pr(7, 1));
+  EXPECT_TRUE(HopCntV[8] == TInt64Pr(8, 3));
+  EXPECT_TRUE(HopCntV[9] == TInt64Pr(9, 1));
   
-  int Length, SrcNId, DstNId;
+  int64 Length, SrcNId, DstNId;
   SrcNId = 11;
   DstNId = G->GetNodes() - 1;
   
@@ -280,8 +280,8 @@ TEST(BfsDfsTest, DirectedRandom) {
   Length = GetShortPath(G, SrcNId, DstNId, IsDir);
   EXPECT_TRUE(Length == 9);
   
-  TIntH NIdToDistH;
-  int MaxDist = 9;
+  TInt64H NIdToDistH;
+  int64 MaxDist = 9;
   Length = GetShortPath(G, SrcNId, NIdToDistH, IsDir, MaxDist);
   EXPECT_TRUE(NIdToDistH[0] == 0);
   EXPECT_TRUE(NIdToDistH[1] == 1);
@@ -291,9 +291,9 @@ TEST(BfsDfsTest, DirectedRandom) {
   
   TInt::Rnd.PutSeed(0);
   
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam, AvgSPL;
-  int NTestNodes = G->GetNodes() / 2;
+  int64 NTestNodes = G->GetNodes() / 2;
   
   FullDiam = GetBfsFullDiam(G, NTestNodes, IsDir);
   EXPECT_TRUE(FullDiam >= 7 && FullDiam <= 9);
@@ -310,7 +310,7 @@ TEST(BfsDfsTest, DirectedRandom) {
   EXPECT_TRUE(FullDiam >= 7 && FullDiam <= 9);
   EXPECT_TRUE(AvgSPL > 2.75 && AvgSPL < 4.0);
   
-  TIntV SubGraphNIdV;
+  TInt64V SubGraphNIdV;
   SubGraphNIdV.Add(8);
   SubGraphNIdV.Add(29);
   SubGraphNIdV.Add(16);

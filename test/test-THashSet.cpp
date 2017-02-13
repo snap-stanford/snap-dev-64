@@ -4,7 +4,7 @@
 
 // Simple test for Defrag()
 TEST(THashSet, Defrag) {
-  TIntSet* TestSet = new TIntSet();
+  TInt64Set* TestSet = new TInt64Set();
 
   // fragment the set (IsKeyIdEqKeyN() will be false)
   TestSet->AddKey(6);

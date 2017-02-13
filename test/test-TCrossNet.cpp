@@ -16,9 +16,9 @@ TEST(TCrossNet, DefaultConstructor) {
 // Test the default constructor
 TEST(TCrossNet, DefaultDirectednessConstructors) {
   TCrossNet Graph;
-  TInt MId1(0);
-  TInt MId2(1);
-  TInt CId(0);
+  TInt64 MId1(0);
+  TInt64 MId2(1);
+  TInt64 CId(0);
 
   Graph = TCrossNet(MId1, MId2, CId);
   EXPECT_EQ(0,Graph.GetEdges());
@@ -31,16 +31,16 @@ TEST(TCrossNet, DefaultDirectednessConstructors) {
 
 // Test node, edge creation
 TEST(TCrossNet, ManipulateNodesEdges) {
-  int NNodes = 1000;
-  int NEdges = 100000;
+  int64 NNodes = 1000;
+  int64 NEdges = 100000;
   const char *FName = "test.graph.dat";
 
   TCrossNet Graph;
   TCrossNet Graph1;
   TCrossNet Graph2;
-  int n;
-  int NCount;
-  int x,y;
+  int64 n;
+  int64 NCount;
+  int64 x,y;
 
   Graph = TCrossNet();
   EXPECT_EQ(0,Graph.GetEdges());
@@ -110,14 +110,14 @@ TEST(TModeNet, GetSmallGraph) {
 
 // Test node, edge attribute functionality
 TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
-  int NNodes = 1000;
-  int NEdges = 1000;
+  int64 NNodes = 1000;
+  int64 NEdges = 1000;
 //  const char *FName = "demo.graph.dat";
 
   TCrossNet Graph;
   TCrossNet Graph1;
-  int i;
-  int x, y;
+  int64 i;
+  int64 x, y;
   bool t;
 
   Graph = TCrossNet();
@@ -145,12 +145,12 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
   EXPECT_EQ(3*2, Graph.GetEAIntI(attr2, 3).GetDat());
   EXPECT_EQ(55*2, Graph.GetEAIntI(attr2, 55).GetDat());
 
-  int EdgeId = 0;
-  int DefEdges = 0;
-  TVec<TInt> TAIntIV = TVec<TInt>();
+  int64 EdgeId = 0;
+  int64 DefEdges = 0;
+  TVec<TInt64, int64> TAIntIV = TVec<TInt64, int64>();
   for (TCrossNet::TAIntI EI = Graph.BegEAIntI(attr2);
     EI < Graph.EndEAIntI(attr2); EI++) {
-    if (EI.GetDat() != TInt::Mn) {
+    if (EI.GetDat() != TInt64::Mn) {
       TAIntIV.Add(EI.GetDat());
       EdgeId++;
     } else {
@@ -178,7 +178,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
 
   EdgeId = 0;
   DefEdges = 0;
-  TVec<TFlt> TAFltIV = TVec<TFlt>();
+  TVec<TFlt, int64> TAFltIV = TVec<TFlt, int64>();
 
   for (TCrossNet::TAFltI EI = Graph.BegEAFltI(attr3);
     EI < Graph.EndEAFltI(attr3); EI++) {
@@ -211,7 +211,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
 
   EdgeId = 0;
   DefEdges = 0;
-  TVec<TStr> TAStrIV = TVec<TStr>();
+  TVec<TStr, int64> TAStrIV = TVec<TStr, int64>();
 
   for (TCrossNet::TAStrI EI = Graph.BegEAStrI(attr1);
     EI < Graph.EndEAStrI(attr1); EI++) {
@@ -232,15 +232,15 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
   EXPECT_EQ('i', TAStrIV[2].LastCh());
 
   // Test vertical iterator over many types (must skip default/deleted attr) 
-  int EId = 55;
+  int64 EId = 55;
   Graph.AddStrAttrDatE(EId, "aaa", attr1);
   Graph.AddIntAttrDatE(EId, 3*2, attr2);
   Graph.AddFltAttrDatE(EId, 3.41, attr3);
   Graph.AddStrAttrDatE(80, "dont appear", attr4); // should not show up  
 
-  TStrV EIdAttrName;
+  TStr64V EIdAttrName;
   Graph.AttrNameEI(EId, EIdAttrName);
-  TInt AttrLen = EIdAttrName.Len();
+  TInt64 AttrLen = EIdAttrName.Len();
   EXPECT_EQ(3, AttrLen);
   
   Graph.DelAttrDatE(EId, attr2);
@@ -264,7 +264,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
     }
   }
 
-  TStrV EIdAttrValue;
+  TStr64V EIdAttrValue;
   Graph.AttrValueEI(EId, EIdAttrValue);
   AttrLen = EIdAttrValue.Len();
   for (i = 0; i < AttrLen; i++) {
@@ -274,7 +274,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
     }
   }
 
-  int expectedTotal = 0;
+  int64 expectedTotal = 0;
   for (i = 0; i <NEdges; i++) {
     Graph.AddIntAttrDatE(i, NEdges+i, attr2);
     EXPECT_EQ(NEdges+i, Graph.GetIntAttrDatE(i, attr2));
@@ -308,7 +308,7 @@ TEST(TCrossNet, AddEdgeAfterAttrAdded) {
   }
 
   for (TCrossNet::TCrossEdgeI EI = Graph.BegEdgeI(); EI < Graph.EndEdgeI(); EI++) {
-    TInt AttrVal = Graph.GetIntAttrDatE(EI.GetId(), EIntAttr);
+    TInt64 AttrVal = Graph.GetIntAttrDatE(EI.GetId(), EIntAttr);
     ASSERT_EQ(EI.GetId()*3+1, AttrVal);
   }
 }

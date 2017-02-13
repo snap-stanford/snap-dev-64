@@ -6,7 +6,7 @@
 class PriorityQueueTest { };  // For gtest highlighting
 
 TEST(PriorityQueueTest, IsCorrect) {
-  TMaxPriorityQueue<TInt> q;
+  TMaxPriorityQueue<TInt64, int64> q;
   
   // Test queue can sort elements
   q.Insert(2, 2.1f);

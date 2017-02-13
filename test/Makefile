@@ -15,8 +15,8 @@ LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
+TEST_SRCS = test-TNodeNet.cpp
 
-TEST_SRCS = test-TTable.cpp
 
 #TODO 64
 #	test-helper.cpp \	

@@ -22,13 +22,13 @@ TEST(RandWalkTest, CorrectOnSmallGraph) {
 
 TEST(RandWalkTest, CorrectOnLineGraph) {
   PNGraph Graph = TNGraph::New();
-  for (int i = 0; i < 100; i++) {
+  for (int64 i = 0; i < 100; i++) {
     Graph->AddNode(i);
   }
-  for (int i = 0; i < 99; i++) {
+  for (int64 i = 0; i < 99; i++) {
     Graph->AddEdge(i, i + 1);
   }
-  for (int i = 0; i < 10; i++) {
+  for (int64 i = 0; i < 10; i++) {
     double truePPR = 0.2 * pow(0.8, i);
     double estimate = TSnap::GetRndWalkRestartBidirectional(Graph, 0.2, 0, i, 0.01, 0.1, true);
     //printf("pi(0,%d): %f ~= %f\n", i, truePPR, estimate);

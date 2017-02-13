@@ -421,7 +421,7 @@ double GetBfsEffDiam(const PGraph& Graph, const int64& NTestNodes, const bool& I
     for (int64 i = 0; i < BFS.NIdDistH.Len(); i++) {
       DistToCntH.AddDat(BFS.NIdDistH[i]) += 1; }
   }
-  TIntFlt64KdV DistNbrsPdfV;
+  TIntFltKd64V DistNbrsPdfV;
   double SumPathL=0, PathCnt=0;
   for (int64 i = 0; i < DistToCntH.Len(); i++) {
     DistNbrsPdfV.Add(TIntFlt64Kd(DistToCntH.GetKey(i), DistToCntH[i]));
@@ -454,7 +454,7 @@ double GetBfsEffDiam(const PGraph& Graph, const int64& NTestNodes, const TInt64V
       }
     }
   }
-  TIntFlt64KdV DistNbrsPdfV;
+  TIntFltKd64V DistNbrsPdfV;
   for (int64 i = 0; i < DistToCntH.Len(); i++) {
     DistNbrsPdfV.Add(TIntFlt64Kd(DistToCntH.GetKey(i), DistToCntH[i]));
   }

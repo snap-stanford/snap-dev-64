@@ -15,7 +15,7 @@
 // A max priority queue which supports changing the priority of items.
 // Uses a binary heap, so operations run in O(log(n)) time, where n is
 // the number of items in the priority queue.
-template <class TVal>
+template <class TVal, class TSizeTy = int>
 class TMaxPriorityQueue {
 public:
   TMaxPriorityQueue() {}
@@ -32,7 +32,7 @@ public:
     if (!ValToIndex.IsKey(X)) {
       Insert(X, NewPriority);
     } else {
-      int i = ValToIndex.GetDat(X);
+      int64 i = ValToIndex.GetDat(X);
       if (NewPriority >= GetPriority(X)) {
         Priorities[i] = NewPriority;
         while (i > 0 && Priorities[i] > Priorities[Parent(i)]) {
@@ -75,27 +75,27 @@ public:
     return Size() == 0;
   }
   
-  int Size() {
+  TSizeTy Size() {
     return Priorities.Len();
   }
   
   // Copies the current priorities into the given hash table
-  void GetPriorities(THash<TVal, TFlt>& Result ) {
-    for (int i = 0; i < Priorities.Len(); i++) {
+  void GetPriorities(THash<TVal, TFlt, TSizeTy>& Result ) {
+    for (int64 i = 0; i < Priorities.Len(); i++) {
       Result.AddDat(IndexToVal[i], Priorities[i]);
     }
   }
   
 private:
-  TFltV Priorities;
-  THash<TVal, int> ValToIndex;
-  TVec<TVal> IndexToVal;
+  TFlt64V Priorities;
+  THash<TVal, TSizeTy, TSizeTy> ValToIndex;
+  TVec<TVal, TSizeTy> IndexToVal;
   
-  int Parent(int i) { return (i + 1) / 2 - 1; }
-  int Left(int i) { return i * 2 + 1; }
-  int Right(int i) { return i * 2 + 2; }
+  TSizeTy Parent(TSizeTy i) { return (i + 1) / 2 - 1; }
+  TSizeTy Left(TSizeTy i) { return i * 2 + 1; }
+  TSizeTy Right(TSizeTy i) { return i * 2 + 2; }
   
-  void Swap(int i, int j) {
+  void Swap(TSizeTy i, TSizeTy j) {
     Priorities.Swap(i, j);
     IndexToVal.Swap(i, j);
     ValToIndex.GetDat(IndexToVal[i]) = i;
@@ -103,8 +103,8 @@ private:
   }
   
   // If the max-heap invariant is satisfied except for index i possibly being smaller than a child, restore the invariant.
-  void MaxHeapify(int i) {
-    int largest = i;
+  void MaxHeapify(TSizeTy i) {
+    TSizeTy largest = i;
     if (Left(i) < Priorities.Len() && Priorities[Left(i)] > Priorities[largest]) {
       largest = Left(i);
     }

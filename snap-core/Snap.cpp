@@ -31,11 +31,11 @@
 //#include "cmty.cpp"          // community detection algorithms   TODO 64
 #include "flow.cpp"          // network flow algorithms
 //#include "coreper.cpp"       // core-periphery algorithms        TODO 64
-//#include "triad.cpp"         // clustering coefficient and triads TODO 64
+#include "triad.cpp"         // clustering coefficient and triads TODO 64
 //#include "casc.cpp"          // cascade detection^M
 
 // graph generators
-//#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       TODO 64
+#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       TODO 64
 //#include "ff.cpp"            // forest fire graph generator           TODO 64
 
 #include "gviz.cpp"

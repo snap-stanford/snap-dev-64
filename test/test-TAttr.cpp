@@ -4,8 +4,8 @@
 
 TEST(TAttr, AddSAttr) {
   TAttr Attrs;
-  TInt AttrId;
-  int status = Attrs.AddSAttr("TestInt", atInt, AttrId);
+  TInt64 AttrId;
+  int64 status = Attrs.AddSAttr("TestInt", atInt, AttrId);
   EXPECT_EQ(0, status);
   EXPECT_EQ(0, AttrId.Val);
   status = Attrs.AddSAttr("TestFlt", atFlt, AttrId);
@@ -20,12 +20,12 @@ TEST(TAttr, AddSAttr) {
 
 TEST(TAttr, GetSAttrId) {
   TAttr Attrs;
-  TInt AttrId;
+  TInt64 AttrId;
   Attrs.AddSAttr("TestInt", atInt, AttrId);
   Attrs.AddSAttr("TestFlt", atFlt, AttrId);
   Attrs.AddSAttr("TestStr", atStr, AttrId);
   TAttrType AttrType;
-  int status = Attrs.GetSAttrId(TStr("TestInt"), AttrId, AttrType);
+  int64 status = Attrs.GetSAttrId(TStr("TestInt"), AttrId, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_EQ(0, AttrId.Val);
@@ -43,13 +43,13 @@ TEST(TAttr, GetSAttrId) {
 
 TEST(TAttr, GetSAttrName) {
   TAttr Attrs;
-  TInt AttrId;
+  TInt64 AttrId;
   Attrs.AddSAttr("TestInt", atInt, AttrId);
   Attrs.AddSAttr("TestFlt", atFlt, AttrId);
   Attrs.AddSAttr("TestStr", atStr, AttrId);
   TAttrType AttrType;
   TStr Name;
-  int status = Attrs.GetSAttrName(0, Name, AttrType);
+  int64 status = Attrs.GetSAttrName(0, Name, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_STREQ("TestInt", Name.CStr());
@@ -67,11 +67,11 @@ TEST(TAttr, GetSAttrName) {
 
 TEST(TAttr, AddSAttrDat_int) {
   TAttr Attrs;
-  TInt Val(5);
-  TInt Id(0);
-  int status = Attrs.AddSAttrDat(Id, 1, Val);
+  TInt64 Val(5);
+  TInt64 Id(0);
+  int64 status = Attrs.AddSAttrDat(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestInt");
   Attrs.AddSAttr(AttrName, atInt, AttrId);
   TFlt ErrorVal(1);
@@ -89,13 +89,13 @@ TEST(TAttr, AddSAttrDat_int) {
 TEST(TAttr, AddSAttrDat_flt) {
   TAttr Attrs;
   TFlt Val(5.0);
-  TInt Id(0);
-  int status = Attrs.AddSAttrDat(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Attrs.AddSAttrDat(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Attrs.AddSAttr(AttrName, atFlt, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Attrs.AddSAttrDat(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Attrs.AddSAttrDat(Id, AttrId, Val);
@@ -110,13 +110,13 @@ TEST(TAttr, AddSAttrDat_flt) {
 TEST(TAttr, AddSAttrDat_str) {
   TAttr Attrs;
   TStr Val("5");
-  TInt Id(0);
-  int status = Attrs.AddSAttrDat(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Attrs.AddSAttrDat(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Attrs.AddSAttr(AttrName, atStr, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Attrs.AddSAttrDat(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Attrs.AddSAttrDat(Id, AttrId, Val);
@@ -130,16 +130,16 @@ TEST(TAttr, AddSAttrDat_str) {
 
 TEST(TAttr, GetSAttrDat_int) {
   TAttr Attrs;
-  TInt Val;
-  TInt AttrId(0);
+  TInt64 Val;
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Attrs.GetSAttrDat(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Attrs.GetSAttrDat(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Attrs.GetSAttrDat(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
   Attrs.AddSAttr(AttrName, atInt, AttrId);
-  TInt TestVal(5);
+  TInt64 TestVal(5);
   Attrs.AddSAttrDat(NId, AttrId, TestVal);
   status = Attrs.GetSAttrDat(NId, AttrId, Val);
   EXPECT_EQ(0, status);
@@ -152,10 +152,10 @@ TEST(TAttr, GetSAttrDat_int) {
 TEST(TAttr, GetSAttrDat_flt) {
   TAttr Attrs;
   TFlt Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Attrs.GetSAttrDat(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Attrs.GetSAttrDat(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Attrs.GetSAttrDat(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -173,10 +173,10 @@ TEST(TAttr, GetSAttrDat_flt) {
 TEST(TAttr, GetSAttrDat_str) {
   TAttr Attrs;
   TStr Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Attrs.GetSAttrDat(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Attrs.GetSAttrDat(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Attrs.GetSAttrDat(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -194,21 +194,21 @@ TEST(TAttr, GetSAttrDat_str) {
 TEST(TAttr, DelSAttrDat) {
   TAttr Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
-  TInt Id(0);
-  int status = Attrs.DelSAttrDat(Id, IntAttr);
+  TInt64 Id(0);
+  int64 status = Attrs.DelSAttrDat(Id, IntAttr);
   EXPECT_EQ(-1, status);
   status = Attrs.DelSAttrDat(Id, IntId);
   EXPECT_EQ(-1, status);
 
-  TInt IntVal(5);
+  TInt64 IntVal(5);
   Attrs.AddSAttrDat(Id, IntId, IntVal);
   status = Attrs.DelSAttrDat(Id, IntAttr);
   EXPECT_EQ(0, status);
@@ -242,17 +242,17 @@ TEST(TAttr, DelSAttrDat) {
 TEST(TAttr, GetSAttrV) {
   TAttr Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
 
-  TInt Id(0);
-  TInt IntVal(5);
+  TInt64 Id(0);
+  TInt64 IntVal(5);
   Attrs.AddSAttrDat(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Attrs.AddSAttrDat(Id, FltId, FltVal);
@@ -274,20 +274,20 @@ TEST(TAttr, GetSAttrV) {
 TEST(TAttr, GetIdVSAttr) {
   TAttr Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
 
-  TInt IntVal(0);
+  TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
-  for (int i = 0; i < 10; i++) {
-    TInt Id(i);
+  for (int64 i = 0; i < 10; i++) {
+    TInt64 Id(i);
     Attrs.AddSAttrDat(Id, IntId, IntVal);
     if (i%2 == 0) {
       Attrs.AddSAttrDat(Id, FltId, FltVal);
@@ -295,7 +295,7 @@ TEST(TAttr, GetIdVSAttr) {
   }
   Attrs.AddSAttrDat(0, StrId, StrVal);
 
-  TIntV IdV;
+  TInt64V IdV;
   Attrs.GetIdVSAttr(IntAttr, IdV);
   EXPECT_EQ(10, IdV.Len());
   Attrs.GetIdVSAttr(IntId, IdV);
@@ -315,17 +315,17 @@ TEST(TAttr, GetIdVSAttr) {
 TEST(TAttr, DelSAttrId) {
   TAttr Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
 
-  TInt Id(0);
-  TInt IntVal(5);
+  TInt64 Id(0);
+  TInt64 IntVal(5);
   Attrs.AddSAttrDat(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Attrs.AddSAttrDat(Id, FltId, FltVal);
@@ -343,8 +343,8 @@ TEST(TAttr, DelSAttrId) {
 
 TEST(TAttrPair, AddSAttr) {
   TAttrPair Attrs;
-  TInt AttrId;
-  int status = Attrs.AddSAttr("TestInt", atInt, AttrId);
+  TInt64 AttrId;
+  int64 status = Attrs.AddSAttr("TestInt", atInt, AttrId);
   EXPECT_EQ(0, status);
   EXPECT_EQ(0, AttrId.Val);
   status = Attrs.AddSAttr("TestFlt", atFlt, AttrId);
@@ -359,12 +359,12 @@ TEST(TAttrPair, AddSAttr) {
 
 TEST(TAttrPair, GetSAttrId) {
   TAttrPair Attrs;
-  TInt AttrId;
+  TInt64 AttrId;
   Attrs.AddSAttr("TestInt", atInt, AttrId);
   Attrs.AddSAttr("TestFlt", atFlt, AttrId);
   Attrs.AddSAttr("TestStr", atStr, AttrId);
   TAttrType AttrType;
-  int status = Attrs.GetSAttrId(TStr("TestInt"), AttrId, AttrType);
+  int64 status = Attrs.GetSAttrId(TStr("TestInt"), AttrId, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_EQ(0, AttrId.Val);
@@ -382,13 +382,13 @@ TEST(TAttrPair, GetSAttrId) {
 
 TEST(TAttrPair, GetSAttrName) {
   TAttrPair Attrs;
-  TInt AttrId;
+  TInt64 AttrId;
   Attrs.AddSAttr("TestInt", atInt, AttrId);
   Attrs.AddSAttr("TestFlt", atFlt, AttrId);
   Attrs.AddSAttr("TestStr", atStr, AttrId);
   TAttrType AttrType;
   TStr Name;
-  int status = Attrs.GetSAttrName(0, Name, AttrType);
+  int64 status = Attrs.GetSAttrName(0, Name, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_STREQ("TestInt", Name.CStr());
@@ -406,11 +406,11 @@ TEST(TAttrPair, GetSAttrName) {
 
 TEST(TAttrPair, AddSAttrDat_int) {
   TAttrPair Attrs;
-  TInt Val(5);
-  TIntPr Id(0, 1);
-  int status = Attrs.AddSAttrDat(Id, 1, Val);
+  TInt64 Val(5);
+  TInt64Pr Id(0, 1);
+  int64 status = Attrs.AddSAttrDat(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestInt");
   Attrs.AddSAttr(AttrName, atInt, AttrId);
   TFlt ErrorVal(1);
@@ -428,13 +428,13 @@ TEST(TAttrPair, AddSAttrDat_int) {
 TEST(TAttrPair, AddSAttrDat_flt) {
   TAttrPair Attrs;
   TFlt Val(5.0);
-  TIntPr Id(0, 1);
+  TInt64Pr Id(0, 1);
   int status = Attrs.AddSAttrDat(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Attrs.AddSAttr(AttrName, atFlt, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Attrs.AddSAttrDat(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Attrs.AddSAttrDat(Id, AttrId, Val);
@@ -449,13 +449,13 @@ TEST(TAttrPair, AddSAttrDat_flt) {
 TEST(TAttrPair, AddSAttrDat_str) {
   TAttrPair Attrs;
   TStr Val("5");
-  TIntPr Id(0, 1);
-  int status = Attrs.AddSAttrDat(Id, 1, Val);
+  TInt64Pr Id(0, 1);
+  int64 status = Attrs.AddSAttrDat(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Attrs.AddSAttr(AttrName, atStr, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Attrs.AddSAttrDat(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Attrs.AddSAttrDat(Id, AttrId, Val);
@@ -469,16 +469,16 @@ TEST(TAttrPair, AddSAttrDat_str) {
 
 TEST(TAttrPair, GetSAttrDat_int) {
   TAttrPair Attrs;
-  TInt Val;
-  TInt AttrId(0);
+  TInt64 Val;
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TIntPr Id(0, 1);
-  int status = Attrs.GetSAttrDat(Id, AttrName, Val);
+  TInt64Pr Id(0, 1);
+  int64 status = Attrs.GetSAttrDat(Id, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Attrs.GetSAttrDat(Id, AttrId, Val);
   EXPECT_EQ(-1, status);
   Attrs.AddSAttr(AttrName, atInt, AttrId);
-  TInt TestVal(5);
+  TInt64 TestVal(5);
   Attrs.AddSAttrDat(Id, AttrId, TestVal);
   status = Attrs.GetSAttrDat(Id, AttrId, Val);
   EXPECT_EQ(0, status);
@@ -491,10 +491,10 @@ TEST(TAttrPair, GetSAttrDat_int) {
 TEST(TAttrPair, GetSAttrDat_flt) {
   TAttrPair Attrs;
   TFlt Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TIntPr Id(0, 1);
-  int status = Attrs.GetSAttrDat(Id, AttrName, Val);
+  TInt64Pr Id(0, 1);
+  int64 status = Attrs.GetSAttrDat(Id, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Attrs.GetSAttrDat(Id, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -512,10 +512,10 @@ TEST(TAttrPair, GetSAttrDat_flt) {
 TEST(TAttrPair, GetSAttrDat_str) {
   TAttrPair Attrs;
   TStr Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TIntPr Id(0, 1);
-  int status = Attrs.GetSAttrDat(Id, AttrName, Val);
+  TInt64Pr Id(0, 1);
+  int64 status = Attrs.GetSAttrDat(Id, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Attrs.GetSAttrDat(Id, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -533,21 +533,21 @@ TEST(TAttrPair, GetSAttrDat_str) {
 TEST(TAttrPair, DelSAttrDat) {
   TAttrPair Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
-  TIntPr Id(0, 1);
-  int status = Attrs.DelSAttrDat(Id, IntAttr);
+  TInt64Pr Id(0, 1);
+  int64 status = Attrs.DelSAttrDat(Id, IntAttr);
   EXPECT_EQ(-1, status);
   status = Attrs.DelSAttrDat(Id, IntId);
   EXPECT_EQ(-1, status);
 
-  TInt IntVal(5);
+  TInt64 IntVal(5);
   Attrs.AddSAttrDat(Id, IntId, IntVal);
   status = Attrs.DelSAttrDat(Id, IntAttr);
   EXPECT_EQ(0, status);
@@ -581,17 +581,17 @@ TEST(TAttrPair, DelSAttrDat) {
 TEST(TAttrPair, GetSAttrV) {
   TAttrPair Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
 
-  TIntPr Id(0, 1);
-  TInt IntVal(5);
+  TInt64Pr Id(0, 1);
+  TInt64 IntVal(5);
   Attrs.AddSAttrDat(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Attrs.AddSAttrDat(Id, FltId, FltVal);
@@ -613,29 +613,29 @@ TEST(TAttrPair, GetSAttrV) {
 TEST(TAttrPair, GetIdVSAttr) {
   TAttrPair Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
 
-  TInt IntVal(0);
+  TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
   for (int i = 0; i < 10; i++) {
-    TIntPr Id(i, i+1);
+    TInt64Pr Id(i, i+1);
     Attrs.AddSAttrDat(Id, IntId, IntVal);
     if (i%2 == 0) {
       Attrs.AddSAttrDat(Id, FltId, FltVal);
     }
   }
-  TIntPr Id(0, 1);
+  TInt64Pr Id(0, 1);
   Attrs.AddSAttrDat(Id, StrId, StrVal);
 
-  TIntPrV IdV;
+  TIntPr64V IdV;
   Attrs.GetIdVSAttr(IntAttr, IdV);
   EXPECT_EQ(10, IdV.Len());
   Attrs.GetIdVSAttr(IntId, IdV);
@@ -655,17 +655,17 @@ TEST(TAttrPair, GetIdVSAttr) {
 TEST(TAttrPair, DelSAttrId) {
   TAttrPair Attrs;
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Attrs.AddSAttr(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Attrs.AddSAttr(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Attrs.AddSAttr(StrAttr, atStr, StrId);
 
-  TIntPr Id(0, 1);
-  TInt IntVal(5);
+  TInt64Pr Id(0, 1);
+  TInt64 IntVal(5);
   Attrs.AddSAttrDat(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Attrs.AddSAttrDat(Id, FltId, FltVal);

@@ -11,8 +11,8 @@ using namespace TSnap;
 template <class PGraph>
 void TestEdgeList() {
   
-  const int NNodes = 10000;
-  const int NEdges = 100000;
+  const int64 NNodes = 10000;
+  const int64 NEdges = 100000;
 
   const char *FName = "test.graph.dat";
   const char *Desc = "Randomly generated graph for input/output.";
@@ -30,7 +30,7 @@ void TestEdgeList() {
   GIn = LoadEdgeList<PGraph>(FName);
 
   // Verify all nodes exist in input and output graphs (and no more)
-  THashSet<TInt> OutNIdH, InNIdH;
+  THashSet<TInt64> OutNIdH, InNIdH;
   
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     // Nodes that do not have edges are left off during input
@@ -45,14 +45,14 @@ void TestEdgeList() {
   
   // Verify all edges in both input and output graphs
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GIn->IsEdge(Src, Dst));
 //    printf("gout edge %d -> %d\n", Src.Val, Dst.Val);
   }
   for (typename PGraph::TObj::TEdgeI EI = GIn->BegEI(); EI < GIn->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GOut->IsEdge(Src, Dst));
 //    printf("gin edge %d -> %d\n", Src.Val, Dst.Val);
   }
@@ -78,8 +78,8 @@ TEST(GIOTest, SaveLoadEdgeList) {
 template <class PGraph>
 void TestEdgeListStr() {
 
-  const int NNodes = 1000;
-  const int NEdges = 10000;
+  const int64 NNodes = 1000;
+  const int64 NEdges = 10000;
   
   const char *FName = "test.graph.dat";
   
@@ -87,16 +87,16 @@ void TestEdgeListStr() {
   GOut = GenRndGnm<PGraph>(NNodes, NEdges);
   
   // Output nodes as random strings
-  TIntStrH OutNIdStrH;
-  TStrHash<TInt> OutStrNIdH;
+  TIntStr64H OutNIdStrH;
+  TStrHash<TInt64, TStrPool, int64> OutStrNIdH;
   
   // Generate unique random strings for graph
   TStr RandStr;
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     do {
       RandStr.Clr();
-      TInt RandLen = TInt::Rnd.GetUniDevInt(5, 30);
-      for (int i = 0; i < RandLen; i++) {
+      TInt64 RandLen = TInt::Rnd.GetUniDevInt(5, 30);
+      for (int64 i = 0; i < RandLen; i++) {
         TStr RandChar(TInt::Rnd.GetUniDevInt(33, 126));
         RandStr += RandChar;
       }
@@ -110,8 +110,8 @@ void TestEdgeListStr() {
   FILE *F = fopen(FName, "w");
   //  printf("GOut->GetNodes() = %d\n", GOut->GetNodes());
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     fprintf(F, "%s %s\n", OutNIdStrH[Src].CStr(), OutNIdStrH[Dst].CStr());
   }
   fclose(F);
@@ -120,7 +120,7 @@ void TestEdgeListStr() {
   ASSERT_TRUE(fileExists(FName));
   EXPECT_FALSE(GOut->Empty());
   
-  TStrHash<TInt> InStrToNIdH;
+  TStrHash<TInt64, TStrPool, int64> InStrToNIdH;
   GIn = LoadEdgeListStr<PGraph>(FName, 0, 1, InStrToNIdH);
 //  printf("InStrToNIdH.Len() = %d, GIn->Edges=%d, GOut->GetEdges()=%d\n", InStrToNIdH.Len(), GIn->GetEdges(), GOut->GetEdges());
   ASSERT_TRUE(InStrToNIdH.Len() == GOut->GetNodes());
@@ -129,8 +129,8 @@ void TestEdgeListStr() {
   for (typename PGraph::TObj::TEdgeI EI = GIn->BegEI(); EI < GIn->EndEI(); EI++) {
     TStr SrcStr = InStrToNIdH.GetKey(EI.GetSrcNId());
     TStr DstStr = InStrToNIdH.GetKey(EI.GetDstNId());
-    TInt OutSrc = OutStrNIdH.GetKeyId(SrcStr);
-    TInt OutDst = OutStrNIdH.GetKeyId(DstStr);
+    TInt64 OutSrc = OutStrNIdH.GetKeyId(SrcStr);
+    TInt64 OutDst = OutStrNIdH.GetKeyId(DstStr);
     ASSERT_TRUE(GOut->IsEdge(OutSrc, OutDst));
   }
   
@@ -138,8 +138,8 @@ void TestEdgeListStr() {
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
     TStr SrcStr = OutStrNIdH.GetKey(EI.GetSrcNId());
     TStr DstStr = OutStrNIdH.GetKey(EI.GetDstNId());
-    TInt InSrc = InStrToNIdH.GetKeyId(SrcStr);
-    TInt InDst = InStrToNIdH.GetKeyId(DstStr);
+    TInt64 InSrc = InStrToNIdH.GetKeyId(SrcStr);
+    TInt64 InDst = InStrToNIdH.GetKeyId(DstStr);
     ASSERT_TRUE(GIn->IsEdge(InSrc, InDst));
   }
   
@@ -166,8 +166,8 @@ TEST(GIOTest, SaveLoadEdgeListStr) {
 template <class PGraph>
 void TestConnList() {
 
-  const int NNodes = 10000;
-  const int NEdges = 100000;
+  const int64 NNodes = 10000;
+  const int64 NEdges = 100000;
   
   const char *FName = "test.graph.dat";
   
@@ -178,7 +178,7 @@ void TestConnList() {
   FILE *F = fopen(FName, "w");
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     fprintf(F, "%d", NI.GetId());
-    for (int i = 0; i < NI.GetOutDeg(); i++) {
+    for (int64 i = 0; i < NI.GetOutDeg(); i++) {
       fprintf(F, " %d", NI.GetOutNId(i));
     }
     fprintf(F, "\n");
@@ -189,11 +189,11 @@ void TestConnList() {
   ASSERT_TRUE(fileExists(FName));
   EXPECT_FALSE(GOut->Empty());
   
-  TStrHash<TInt> InStrToNIdH;
+  TStrHash<TInt64, TStrPool, int64> InStrToNIdH;
   GIn = LoadConnList<PGraph>(FName);
   
   // Verify all nodes exist in input and output graphs (and no more)
-  THashSet<TInt> OutNIdH, InNIdH;
+  THashSet<TInt64> OutNIdH, InNIdH;
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     // Nodes that do not have edges are left off during input
     if (NI.GetDeg() > 0) {
@@ -209,14 +209,14 @@ void TestConnList() {
   // Verify all edges in both input and output graphs
   
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GIn->IsEdge(Src, Dst));
   }
   
   for (typename PGraph::TObj::TEdgeI EI = GIn->BegEI(); EI < GIn->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GOut->IsEdge(Src, Dst));
   }
   
@@ -241,8 +241,8 @@ TEST(GIOTest, LoadConnList) {
 template <class PGraph>
 void TestConnListStr() {
 
-  const int NNodes = 10000;
-  const int NEdges = 100000;
+  const int64 NNodes = 10000;
+  const int64 NEdges = 100000;
   
   const char *FName = "test.graph.dat";
   
@@ -250,15 +250,15 @@ void TestConnListStr() {
   GOut = GenRndGnm<PGraph>(NNodes, NEdges);
   
   // Output nodes as random strings
-  TIntStrH OutNIdStrH;
-  TStrHash<TInt> OutStrNIdH;
+  TIntStr64H OutNIdStrH;
+  TStrHash<TInt64, TStrPool, int64> OutStrNIdH;
   
   // Generate unique random strings for graph
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     TStr RandStr = "";
     do {
-      TInt RandLen = TInt::Rnd.GetUniDevInt(5, 10);
-      for (int i = 0; i < RandLen; i++) {
+      TInt64 RandLen = TInt::Rnd.GetUniDevInt(5, 10);
+      for (int64 i = 0; i < RandLen; i++) {
 //        TStr RandChar(TInt::Rnd.GetUniDevInt(33, 126));
         TStr RandChar(TInt::Rnd.GetUniDevInt(97, 122));
         RandStr += RandChar;
@@ -273,7 +273,7 @@ void TestConnListStr() {
   FILE *F = fopen(FName, "w");
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     fprintf(F, "%s", OutNIdStrH[NI.GetId()].CStr());
-    for (int e = 0; e < NI.GetOutDeg(); e++) {
+    for (int64 e = 0; e < NI.GetOutDeg(); e++) {
       fprintf(F, " %s", OutNIdStrH[NI.GetOutNId(e)].CStr());
     }
     fprintf(F, "\n");
@@ -284,17 +284,17 @@ void TestConnListStr() {
   ASSERT_TRUE(fileExists(FName));
   EXPECT_FALSE(GOut->Empty());
   
-  TStrHash<TInt> InStrToNIdH;
+  TStrHash<TInt64, TStrPool, int64> InStrToNIdH;
   GIn = LoadConnListStr<PGraph>(FName, InStrToNIdH);
-//  printf("InStrToNIdH.Len() = %d, GIn->Edges=%d, GOut->GetEdges()=%d\n", InStrToNIdH.Len(), GIn->GetEdges(), GOut->GetEdges());
+//  print64f("InStrToNIdH.Len() = %d, GIn->Edges=%d, GOut->GetEdges()=%d\n", InStrToNIdH.Len(), GIn->GetEdges(), GOut->GetEdges());
   ASSERT_TRUE(InStrToNIdH.Len() == GOut->GetNodes());
   
   // Verify all the edges read-in are in the original graph
   for (typename PGraph::TObj::TEdgeI EI = GIn->BegEI(); EI < GIn->EndEI(); EI++) {
     TStr SrcStr = InStrToNIdH.GetKey(EI.GetSrcNId());
     TStr DstStr = InStrToNIdH.GetKey(EI.GetDstNId());
-    TInt OutSrc = OutStrNIdH.GetKeyId(SrcStr);
-    TInt OutDst = OutStrNIdH.GetKeyId(DstStr);
+    TInt64 OutSrc = OutStrNIdH.GetKeyId(SrcStr);
+    TInt64 OutDst = OutStrNIdH.GetKeyId(DstStr);
 //    printf("gin: %s (%d) -> %s (%d) \n", SrcStr.CStr(), OutSrc.Val, DstStr.CStr(), OutDst.Val);
     EXPECT_TRUE(GOut->IsEdge(OutSrc, OutDst));
   }
@@ -303,8 +303,8 @@ void TestConnListStr() {
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
     TStr SrcStr = OutStrNIdH.GetKey(EI.GetSrcNId());
     TStr DstStr = OutStrNIdH.GetKey(EI.GetDstNId());
-    TInt InSrc = InStrToNIdH.GetKeyId(SrcStr);
-    TInt InDst = InStrToNIdH.GetKeyId(DstStr);
+    TInt64 InSrc = InStrToNIdH.GetKeyId(SrcStr);
+    TInt64 InDst = InStrToNIdH.GetKeyId(DstStr);
 //    printf("gout: %s (%d) -> %s (%d)\n", SrcStr.CStr(), InSrc.Val, DstStr.CStr(), InDst.Val);
     EXPECT_TRUE(GIn->IsEdge(InSrc, InDst));
   }
@@ -331,8 +331,8 @@ TEST(GIOTest, LoadConnListStr) {
 template <class PGraph>
 void TestPajek() {
   
-  const int NNodes = 10000;
-  const int NEdges = 100000;
+  const int64 NNodes = 10000;
+  const int64 NEdges = 100000;
   
   const char *FName = "test.paj.dat";
   
@@ -349,11 +349,11 @@ void TestPajek() {
   GIn = LoadPajek<PGraph>(FName);
   
   // Verify all nodes exist in input and output graphs (and no more)
-  TIntV OutNIdV, InNIdV;
+  TInt64V OutNIdV, InNIdV;
   GOut->GetNIdV(OutNIdV);
   
   // Pajek graphs start with node IDs of 1, so add 1 to SNAP graph
-  for (int i = 0; i < OutNIdV.Len(); i++) {
+  for (int64 i = 0; i < OutNIdV.Len(); i++) {
     OutNIdV[i]++;
   }
   GIn->GetNIdV(InNIdV);
@@ -361,15 +361,15 @@ void TestPajek() {
 
   // Verify all edges are the same in both input and output graphs
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GIn->IsEdge(Src+1, Dst+1));
 //    printf("gout edge %d -> %d\n", Src.Val+1, Dst.Val+1);
   }
   
   for (typename PGraph::TObj::TEdgeI EI = GIn->BegEI(); EI < GIn->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GOut->IsEdge(Src-1, Dst-1));
 //    printf("gin edge %d -> %d\n", Src.Val, Dst.Val);
   }
@@ -397,8 +397,8 @@ TEST(GIOTest, SaveLoadPajek) {
 template <class PGraph>
 void TestMatlabSparseMtx() {
 
-  const int NNodes = 10000;
-  const int NEdges = 100000;
+  const int64 NNodes = 10000;
+  const int64 NEdges = 100000;
   
   const char *FName = "test.graph.dat";
   
@@ -413,7 +413,7 @@ void TestMatlabSparseMtx() {
   // Read-in Matlab-file
   FILE *F = fopen(FName, "r");
   while (! feof(F)) {
-    int Src, Dst, Edge;
+    int64 Src, Dst, Edge;
     EXPECT_TRUE(fscanf(F, "%d %d %d\n", &Src, &Dst, &Edge) == 3);
     Src--; Dst--;             // SNAP graphs start at Node Ids of 0
     if (not GIn->IsNode(Src)) {
@@ -428,7 +428,7 @@ void TestMatlabSparseMtx() {
   fclose(F);
   
   // Verify all nodes exist in input and output graphs (and no more)
-  THashSet<TInt> OutNIdH, InNIdH;
+  THashSet<TInt64> OutNIdH, InNIdH;
   
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
     // Nodes that do not have edges are left off during input
@@ -444,14 +444,14 @@ void TestMatlabSparseMtx() {
   
   // Verify all edges in both input and output graphs
   for (typename PGraph::TObj::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GIn->IsEdge(Src, Dst));
     //    printf("gout edge %d -> %d\n", Src.Val, Dst.Val);
   }
   for (typename PGraph::TObj::TEdgeI EI = GIn->BegEI(); EI < GIn->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     EXPECT_TRUE(GOut->IsEdge(Src, Dst));
     //    printf("gin edge %d -> %d\n", Src.Val, Dst.Val);
   }
@@ -478,8 +478,8 @@ TEST(GIOTest, SaveMatlabSparseMtx) {
 template <class PGraph>
 void TestSaveGViz() {
 
-  const int NNodes = 5;
-  const int NEdges = 8;
+  const int64 NNodes = 5;
+  const int64 NEdges = 8;
 
 //  const int NNodes = 10000;
 //  const int NEdges = 100000;
@@ -494,7 +494,7 @@ void TestSaveGViz() {
   EXPECT_TRUE(fileExists(FName1));
 
   // Output node IDs as numbers
-  TIntStrH NIdLabelH;
+  TIntStr64H NIdLabelH;
 
   // Generate labels for random graph
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
@@ -529,8 +529,8 @@ TEST(GIOTest, SaveGViz) {
 // Tests loading directed networks in the DyNetML format. Loads all the networks in the file FNm.
 TEST(GIOTest, LoadDyNet) {
   
-  const int NNodes = 10000;
-  const int NEdges = 100000;
+  const int64 NNodes = 10000;
+  const int64 NEdges = 100000;
   
   const char *FName = "test.xml.dat";
   
@@ -542,8 +542,8 @@ TEST(GIOTest, LoadDyNet) {
   
   fprintf(F, "<network>\n");
   for (TNGraph::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
-    TInt Src = EI.GetSrcNId();
-    TInt Dst = EI.GetDstNId();
+    TInt64 Src = EI.GetSrcNId();
+    TInt64 Dst = EI.GetDstNId();
     fprintf(F, "\t<link source=\"%d\" target=\"%d\"/>\n", Src.Val, Dst.Val);
   }
   fprintf(F, "</network>\n");
@@ -555,7 +555,7 @@ TEST(GIOTest, LoadDyNet) {
   EXPECT_TRUE(GIn->GetNodes() == GOut->GetNodes());
   
   // Verify all degree counts are the same in both input and output graphs
-  TIntV GOutInDegV, GOutOutDegV, GInInDegV, GInOutDegV;
+  TInt64V GOutInDegV, GOutOutDegV, GInInDegV, GInOutDegV;
   GetDegSeqV(GOut, GOutInDegV, GOutOutDegV);
   GetDegSeqV(GOut, GInInDegV, GInOutDegV);
   

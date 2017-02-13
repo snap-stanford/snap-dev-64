@@ -32,8 +32,8 @@ TEST(TMMNet, GetModeId) {
   Net->AddModeNet(ModeName1);
   TStr ModeName2("TestMode2");
   Net->AddModeNet(ModeName2);
-  TInt ModeId1(0);
-  TInt ModeId2(1);
+  TInt64 ModeId1(0);
+  TInt64 ModeId2(1);
   EXPECT_EQ(ModeId1, Net->GetModeId(ModeName1));
   EXPECT_EQ(ModeId2, Net->GetModeId(ModeName2));
 }
@@ -45,8 +45,8 @@ TEST(TMMNet, GetModeName) {
   Net->AddModeNet(ModeName1);
   TStr ModeName2("TestMode2");
   Net->AddModeNet(ModeName2);
-  TInt ModeId1(0);
-  TInt ModeId2(1);
+  TInt64 ModeId1(0);
+  TInt64 ModeId2(1);
   EXPECT_EQ(ModeName1, Net->GetModeName(ModeId1));
   EXPECT_EQ(ModeName2, Net->GetModeName(ModeId2));
 }
@@ -58,8 +58,8 @@ TEST(TMMNet, GetCrossId) {
   Net->AddModeNet(ModeName1);
   TStr ModeName2("TestMode2");
   Net->AddModeNet(ModeName2);
-  TInt LinkId1(0);
-  TInt LinkId2(1);
+  TInt64 LinkId1(0);
+  TInt64 LinkId2(1);
   TStr LinkName1("TestLink1");
   Net->AddCrossNet(ModeName1, ModeName2, LinkName1);
   TStr LinkName2("TestLink2");
@@ -75,8 +75,8 @@ TEST(TMMNet, GetCrossName) {
   Net->AddModeNet(ModeName1);
   TStr ModeName2("TestMode2");
   Net->AddModeNet(ModeName2);
-  TInt LinkId1(0);
-  TInt LinkId2(1);
+  TInt64 LinkId1(0);
+  TInt64 LinkId2(1);
   TStr LinkName1("TestLink1");
   Net->AddCrossNet(ModeName1, ModeName2, LinkName1);
   TStr LinkName2("TestLink2");
@@ -89,7 +89,7 @@ TEST(TMMNet, GetModeNet) {
   PMMNet Net;
   Net = TMMNet::New();
   TStr ModeName1("TestMode1");
-  TInt ModeId1(0);
+  TInt64 ModeId1(0);
   Net->AddModeNet(ModeName1);
   TModeNet& M1 = Net->GetModeNetByName(ModeName1);
   TModeNet& M2 = Net->GetModeNetById(ModeId1);
@@ -105,8 +105,8 @@ TEST(TMMNet, GetCrossNet) {
   Net->AddModeNet(ModeName1);
   TStr ModeName2("TestMode2");
   Net->AddModeNet(ModeName2);
-  TInt LinkId1(0);
-  TInt LinkId2(1);
+  TInt64 LinkId1(0);
+  TInt64 LinkId2(1);
   TStr LinkName1("TestLink1");
   Net->AddCrossNet(ModeName1, ModeName2, LinkName1);
   TCrossNet& C1 = Net->GetCrossNetByName(LinkName1);
@@ -121,8 +121,8 @@ TEST(TMMNet, GetBipartiteGraph) {
   Net->AddModeNet(ModeName1);
   TStr ModeName2("TestMode2");
   Net->AddModeNet(ModeName2);
-  TInt LinkId1(0);
-  TInt LinkId2(1);
+  TInt64 LinkId1(0);
+  TInt64 LinkId2(1);
   TStr LinkName1("TestLink1");
   Net->AddCrossNet(ModeName1, ModeName2, LinkName1);
   TModeNet& M1 = Net->GetModeNetByName(ModeName1);
@@ -144,7 +144,7 @@ TEST(TMMNet, GetBipartiteGraph) {
 //	G->AddEdge(1,3);
 //	G->AddEdge(1,4);
 //	G->AddEdge(2,4);
-  int s = 0;
+  int64 s = 0;
   TBPGraph::TNodeI NI = G->BegNI();
   for(; NI < G->EndNI(); NI++){
   	//printf("%d %d \n",NI.GetId(), NI.GetDeg());
@@ -164,8 +164,8 @@ TEST(TMMNet, GetBipartiteGraph) {
 TEST(TMMNet, BegModeNetI) {
   PMMNet Net;
     Net = TMMNet::New();
-    for(int i = 0; i < 10; i++) {
-      TInt Id(i);
+    for(int64 i = 0; i < 10; i++) {
+      TInt64 Id(i);
       Net->AddModeNet(Id.GetStr());
     }
     TMMNet::TModeNetI MI = Net->BegModeNetI();
@@ -178,11 +178,11 @@ TEST(TMMNet, BegModeNetI) {
 TEST(TMMNet, GetModeNetI) {
   PMMNet Net;
     Net = TMMNet::New();
-    for(int i = 0; i < 10; i++) {
-      TInt Id(i);
+    for(int64 i = 0; i < 10; i++) {
+      TInt64 Id(i);
       Net->AddModeNet(Id.GetStr());
     }
-    for(int i = 0; i < 10; i++) {
+    for(int64 i = 0; i < 10; i++) {
       TMMNet::TModeNetI MI = Net->GetModeNetI(i);
       EXPECT_EQ(i, MI.GetModeId());
     }
@@ -191,12 +191,12 @@ TEST(TMMNet, GetModeNetI) {
 TEST(TMMNet, EndModeNetI) {
   PMMNet Net;
     Net = TMMNet::New();
-    for(int i = 0; i < 10; i++) {
-      TInt Id(i);
+    for(int64 i = 0; i < 10; i++) {
+      TInt64 Id(i);
       Net->AddModeNet(Id.GetStr());
     }
     TMMNet::TModeNetI MI = Net->EndModeNetI();
-    for(int i = 0; i < 10; i++) {
+    for(int64 i = 0; i < 10; i++) {
       TMMNet::TModeNetI MOther = Net->GetModeNetI(i);
       EXPECT_NE(MI, MOther);
     }
@@ -205,11 +205,11 @@ TEST(TMMNet, EndModeNetI) {
 TEST(TMMNet, ModeNetI) {
   PMMNet Net;
     Net = TMMNet::New();
-    for(int i = 0; i < 10; i++) {
-      TInt Id(i);
+    for(int64 i = 0; i < 10; i++) {
+      TInt64 Id(i);
       Net->AddModeNet(Id.GetStr());
     }
-    int i = 0;
+    int64 i = 0;
     TMMNet::TModeNetI MI;
     for(i = 0, MI = Net->BegModeNetI(); i < 10 && MI < Net->EndModeNetI(); i++, MI++) {
       EXPECT_EQ(i, MI.GetModeId());
@@ -221,10 +221,10 @@ TEST(TMMNet, BegCrossNetI) {
   PMMNet Net;
     Net = TMMNet::New();
     Net->AddModeNet("0");
-    for(int i = 1; i < 11; i++) {
-      TInt MPrev(i-1);
-      TInt MId(i);
-      TInt LId(i-1);
+    for(int64 i = 1; i < 11; i++) {
+      TInt64 MPrev(i-1);
+      TInt64 MId(i);
+      TInt64 LId(i-1);
       Net->AddModeNet(MId.GetStr());
       Net->AddModeNet(MPrev.GetStr());
       Net->AddCrossNet(MPrev, MId, LId.GetStr());
@@ -240,15 +240,15 @@ TEST(TMMNet, GetCrossNetI) {
   PMMNet Net;
     Net = TMMNet::New();
     Net->AddModeNet("0");
-    for(int i = 1; i < 11; i++) {
-      TInt MPrev(i-1);
-      TInt MId(i);
-      TInt LId(i-1);
+    for(int64 i = 1; i < 11; i++) {
+      TInt64 MPrev(i-1);
+      TInt64 MId(i);
+      TInt64 LId(i-1);
       Net->AddModeNet(MId.GetStr());
       Net->AddModeNet(MPrev.GetStr());
       Net->AddCrossNet(MPrev, MId, LId.GetStr());
     }
-    for(int i = 0; i < 10; i++) {
+    for(int64 i = 0; i < 10; i++) {
       TMMNet::TCrossNetI CI = Net->GetCrossNetI(i);
       EXPECT_EQ(i, CI.GetCrossId());
     }
@@ -258,16 +258,16 @@ TEST(TMMNet, EndCrossNetI) {
   PMMNet Net;
     Net = TMMNet::New();
     Net->AddModeNet("0");
-    for(int i = 1; i < 11; i++) {
-      TInt MPrev(i-1);
-      TInt MId(i);
-      TInt LId(i-1);
+    for(int64 i = 1; i < 11; i++) {
+      TInt64 MPrev(i-1);
+      TInt64 MId(i);
+      TInt64 LId(i-1);
       Net->AddModeNet(MId.GetStr());
       Net->AddModeNet(MPrev.GetStr());
       Net->AddCrossNet(MPrev, MId, LId.GetStr());
     }
     TMMNet::TCrossNetI CI = Net->EndCrossNetI();
-    for(int i = 0; i < 10; i++) {
+    for(int64 i = 0; i < 10; i++) {
       TMMNet::TCrossNetI COther = Net->GetCrossNetI(i);
       EXPECT_NE(CI, COther);
     }
@@ -277,10 +277,10 @@ TEST(TMMNet, CrossNetI) {
   PMMNet Net;
     Net = TMMNet::New();
     Net->AddModeNet("0");
-    for(int i = 1; i < 11; i++) {
-      TInt MPrev(i-1);
-      TInt MId(i);
-      TInt LId(i-1);
+    for(int64 i = 1; i < 11; i++) {
+      TInt64 MPrev(i-1);
+      TInt64 MId(i);
+      TInt64 LId(i-1);
       Net->AddModeNet(MId.GetStr());
       Net->AddModeNet(MPrev.GetStr());
       Net->AddCrossNet(MPrev, MId, LId.GetStr());
