@@ -7,20 +7,20 @@ namespace TSnap {
 // Triads and clustering coefficient
 
 /// Computes the average clustering coefficient as defined in Watts and Strogatz, Collective dynamics of 'small-world' networks. ##TSnap::GetClustCf
-template <class PGraph> double GetClustCf(const PGraph& Graph, int SampleNodes=-1);
+template <class PGraph> double GetClustCf(const PGraph& Graph, int64 SampleNodes=-1);
 /// Computes the distribution of average clustering coefficient. ##TSnap::GetClustCf1
-template <class PGraph> double GetClustCf(const PGraph& Graph, TFltPrV& DegToCCfV, int SampleNodes=-1);
+template <class PGraph> double GetClustCf(const PGraph& Graph, TFltPrV& DegToCCfV, int64 SampleNodes=-1);
 /// Computes the distribution of average clustering coefficient as well as the number of open and closed triads in the graph. ##TSnap::GetClustCf2
-template <class PGraph> double GetClustCf(const PGraph& Graph, TFltPrV& DegToCCfV, int64& ClosedTriadsX, int64& OpenTriadsX, int SampleNodes=-1);
+template <class PGraph> double GetClustCf(const PGraph& Graph, TFltPrV& DegToCCfV, int64& ClosedTriadsX, int64& OpenTriadsX, int64 SampleNodes=-1);
 /// Returns clustering coefficient of a particular node. ##TSnap::GetNodeClustCf
-template <class PGraph> double GetNodeClustCf(const PGraph& Graph, const int& NId);
+template <class PGraph> double GetNodeClustCf(const PGraph& Graph, const int64& NId);
 /// Computes clustering coefficient of each node of the Graph. ##TSnap::GetClustCf1
-template <class PGraph> void GetNodeClustCf(const PGraph& Graph, TIntFltH& NIdCCfH);
+template <class PGraph> void GetNodeClustCf(const PGraph& Graph, TIntFlt64H& NIdCCfH);
 
 /// Returns the number of triangles in a graph. ##TSnap::GetTriads
-template <class PGraph> int64 GetTriads(const PGraph& Graph, int SampleNodes=-1);
+template <class PGraph> int64 GetTriads(const PGraph& Graph, int64 SampleNodes=-1);
 /// Computes the number of Closed and Open triads. ##TSnap::GetTriads1
-template <class PGraph> int64 GetTriads(const PGraph& Graph, int64& ClosedTriadsX, int64& OpenTriadsX, int SampleNodes);
+template <class PGraph> int64 GetTriads(const PGraph& Graph, int64& ClosedTriadsX, int64& OpenTriadsX, int64 SampleNodes);
 /// Computes the number of open and close triads for every node of the network. ##TSnap::GetTriads2
 template <class PGraph> void GetTriads(const PGraph& Graph, TIntTrV& NIdCOTriadV, int SampleNodes=-1);
 /// Counts the number of edges that participate in at least one triad. ##TSnap::GetTriadEdges

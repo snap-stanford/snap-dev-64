@@ -748,7 +748,7 @@ TEST(TIntInt64H, ManipulateTableWithInt64KeysAndValues) {
 // Table manipulations and inserting with >int32 elements
 // Table manipulations
 TEST(TIntInt64H, ManipulateTablewithInt64) {
-  const int64 NElems = 5000000000;
+  const int64 NElems = 50000000;
   int64 DDist = 10000;
   const char *FName = "test.hashint.dat";
   TIntInt64H TableInt;

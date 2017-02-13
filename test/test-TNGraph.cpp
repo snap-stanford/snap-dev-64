@@ -420,7 +420,7 @@ TEST(TNGraph, ManipulateEdgesWith64BitNodeValues) {
 
 // Test node, edge creation
 TEST(TNGraph, ManipulateNodesEdges64Bit) {
-  int64 NNodes = 100000000;
+  int64 NNodes = 10000000;
   int64 NOutDeg = 50; // should be < NNodes
   int64 NEdges = NOutDeg*NNodes + NNodes;
   const int64 OFFSET = 0;

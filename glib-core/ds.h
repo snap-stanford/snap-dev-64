@@ -385,6 +385,7 @@ void GetSwitchedKdV(const TVec<TKeyDat<TKey, TDat>, int>& SrcKdV, TVec<TKeyDat<T
 typedef TKeyDat<TInt, TInt> TIntKd;
 typedef TKeyDat<TInt, TUInt64> TIntUInt64Kd;
 typedef TKeyDat<TInt, TFlt> TIntFltKd;
+typedef TKeyDat<TInt64, TFlt> TIntFlt64Kd;
 typedef TKeyDat<TIntPr, TFlt> TIntPrFltKd;
 typedef TKeyDat<TInt, TFltPr> TIntFltPrKd;
 typedef TKeyDat<TInt, TSFlt> TIntSFltKd;
@@ -1541,6 +1542,7 @@ typedef TVec<TInt64StrStrTr, int64> TIntStrStrTr64V;
 typedef TVec<TIntKd> TIntKdV;
 typedef TVec<TUIntIntKd> TUIntIntKdV;
 typedef TVec<TIntFltKd> TIntFltKdV;
+typedef TVec<TIntFlt64Kd> TIntFlt64KdV;
 typedef TVec<TIntPrFltKd> TIntPrFltKdV;
 typedef TVec<TIntStrKd> TIntStrKdV;
 typedef TVec<TIntStrPrPr> TIntStrPrPrV;

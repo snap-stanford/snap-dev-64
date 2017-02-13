@@ -4,15 +4,15 @@ namespace TSnap {
 // OP RS 2016/09/12 commented out, fails to compile for Snap.py on Windows.
 // This function is obsolete, since it is TNGraph specific.
 // Use MergeNbrs() instead.
-void GetMergeSortedV(TIntV& NeighbourV, TNGraph::TNodeI NI) {
-  int j = 0;
-  int k = 0;
-  int prev = -1;
-  int indeg = NI.GetInDeg();
-  int outdeg = NI.GetOutDeg();
+void GetMergeSortedV(TInt64V& NeighbourV, TNGraph::TNodeI NI) {
+  int64 j = 0;
+  int64 k = 0;
+  int64 prev = -1;
+  int64 indeg = NI.GetInDeg();
+  int64 outdeg = NI.GetOutDeg();
   if (indeg > 0  &&  outdeg > 0) {
-    int v1 = NI.GetInNId(j);
-    int v2 = NI.GetOutNId(k);
+    int64 v1 = NI.GetInNId(j);
+    int64 v2 = NI.GetOutNId(k);
     while (1) {
       if (v1 <= v2) {
         if (prev != v1) {
@@ -38,7 +38,7 @@ void GetMergeSortedV(TIntV& NeighbourV, TNGraph::TNodeI NI) {
     }
   }
   while (j < indeg) {
-    int v = NI.GetInNId(j);
+    int64 v = NI.GetInNId(j);
     if (prev != v) {
       NeighbourV.Add(v);
       prev = v;
@@ -46,7 +46,7 @@ void GetMergeSortedV(TIntV& NeighbourV, TNGraph::TNodeI NI) {
     j += 1;
   }
   while (k < outdeg) {
-    int v = NI.GetOutNId(k);
+    int64 v = NI.GetOutNId(k);
     if (prev != v) {
       NeighbourV.Add(v);
       prev = v;
@@ -56,12 +56,12 @@ void GetMergeSortedV(TIntV& NeighbourV, TNGraph::TNodeI NI) {
 }
 #endif
 
-int GetCommon(TIntV& A, TIntV& B) {
-  int i, j;
-  int ret = 0;
-  int alen, blen;
-  int d;
-  TInt ai;
+int64 GetCommon(TInt64V& A, TInt64V& B) {
+  int64 i, j;
+  int64 ret = 0;
+  int64 alen, blen;
+  int64 d;
+  TInt64 ai;
 
   alen = A.Len();
   blen = B.Len();
