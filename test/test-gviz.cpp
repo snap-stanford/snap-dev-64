@@ -80,7 +80,7 @@ TEST(GVizTest, DrawGVizColor) {
   UNGraph1 = LoadEdgeList<PUNGraph>(TStr::Fmt("%s/sample_ungraph1.txt",
                                               DIRNAME));
     
-  TIntStrH NIdColorH;
+  TIntStr64H NIdColorH;
   TStr CName = TStr::Fmt("%s/node_colors.txt", DIRNAME);
   ASSERT_TRUE(fileExists(CName.CStr()));
   
@@ -89,7 +89,7 @@ TEST(GVizTest, DrawGVizColor) {
   CFile = fopen(CName.CStr(), "rt");
   char line[80];
   while(fgets(line, 80, CFile) != NULL) {
-    int NId;
+    int64 NId;
     char Color[20];
     sscanf(line, "%d %s\n", &NId, Color);
     NIdColorH.AddDat(NId, Color);

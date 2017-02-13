@@ -210,11 +210,13 @@ void SaveEdgeList(const PGraph& Graph, const TStr& OutFNm, const TStr& Desc) {
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) { fprintf(F, "# Directed graph: %s \n", OutFNm.CStr()); } 
   else { fprintf(F, "# Undirected graph (each unordered pair of nodes is saved once): %s\n", OutFNm.CStr()); }
   if (! Desc.Empty()) { fprintf(F, "# %s\n", Desc.CStr()); }
-  fprintf(F, "# Nodes: %s Edges: %s\n", TInt64::GetStr(Graph->GetNodes()).CStr(), TInt64::GetStr(Graph->GetEdges()).CStr());
+  //fprintf(F, "# Nodes: %s Edges: %s\n", TInt64::GetStr(Graph->GetNodes()), TInt64::GetStr(Graph->GetEdges()));
+  fprintf(F, "# Nodes: %ll Edges: %ll\n", Graph->GetNodes(), Graph->GetEdges());
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) { fprintf(F, "# FromNodeId\tToNodeId\n"); }
   else { fprintf(F, "# NodeId\tNodeId\n"); }
   for (typename PGraph::TObj::TEdgeI ei = Graph->BegEI(); ei < Graph->EndEI(); ei++) {
-    fprintf(F, "%s\t%s\n", TInt64::GetStr(ei.GetSrcNId()).CStr(), TInt64::GetStr(ei.GetDstNId()).CStr());
+    //fprintf(F, "%s\t%s\n", TInt64::GetStr(ei.GetSrcNId()).CStr(), TInt64::GetStr(ei.GetDstNId()).CStr());
+  	fprintf(F, "%ll\t%ll\n", ei.GetSrcNId(), ei.GetDstNId());
   }
   fclose(F);
 }

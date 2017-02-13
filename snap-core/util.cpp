@@ -1,98 +1,98 @@
 /////////////////////////////////////////////////
 // Graph Utilities
-void TGUtil::GetCdf(const TIntPrV& PdfV, TIntPrV& CdfV) {
+void TGUtil::GetCdf(const TIntPr64V& PdfV, TIntPr64V& CdfV) {
   CdfV = PdfV;
-  for (int i = 1; i < CdfV.Len(); i++) {
+  for (int64 i = 1; i < CdfV.Len(); i++) {
     CdfV[i].Val2 = CdfV[i-1].Val2 + CdfV[i].Val2; }
 }
 
-void TGUtil::GetCdf(const TFltPrV& PdfV, TFltPrV& CdfV) {
+void TGUtil::GetCdf(const TFltPr64V& PdfV, TFltPr64V& CdfV) {
   CdfV = PdfV;
-  for (int i = 1; i < CdfV.Len(); i++) {
+  for (int64 i = 1; i < CdfV.Len(); i++) {
     CdfV[i].Val2 = CdfV[i-1].Val2 + CdfV[i].Val2; }
 }
 
-void TGUtil::GetCdf(const TIntFltKdV& PdfV, TIntFltKdV& CdfV) {
+void TGUtil::GetCdf(const TIntFltKd64V& PdfV, TIntFltKd64V& CdfV) {
   CdfV = PdfV;
-  for (int i = 1; i < CdfV.Len(); i++) {
+  for (int64 i = 1; i < CdfV.Len(); i++) {
     CdfV[i].Dat = CdfV[i-1].Dat + CdfV[i].Dat; }
 }
 
-TIntPrV TGUtil::GetCdf(const TIntPrV& PdfV) {
-  TIntPrV CdfV;
+TIntPr64V TGUtil::GetCdf(const TIntPr64V& PdfV) {
+  TIntPr64V CdfV;
   GetCdf(PdfV, CdfV);
   return CdfV;
 }
 
-TFltPrV TGUtil::GetCdf(const TFltPrV& PdfV) {
-  TFltPrV CdfV;
+TFltPr64V TGUtil::GetCdf(const TFltPr64V& PdfV) {
+  TFltPr64V CdfV;
   GetCdf(PdfV, CdfV);
   return CdfV;
 }
 
-void TGUtil::GetCCdf(const TIntPrV& PdfV, TIntPrV& CCdfV) {
+void TGUtil::GetCCdf(const TIntPr64V& PdfV, TIntPr64V& CCdfV) {
   CCdfV = PdfV;
-  for (int i = CCdfV.Len()-2; i >= 0; i--) {
+  for (int64 i = CCdfV.Len()-2; i >= 0; i--) {
     CCdfV[i].Val2 = CCdfV[i+1].Val2 + CCdfV[i].Val2; }
 }
 
-void TGUtil::GetCCdf(const TFltPrV& PdfV, TFltPrV& CCdfV) {
+void TGUtil::GetCCdf(const TFltPr64V& PdfV, TFltPr64V& CCdfV) {
   CCdfV = PdfV;
-  for (int i = CCdfV.Len()-2; i >= 0; i--) {
+  for (int64 i = CCdfV.Len()-2; i >= 0; i--) {
     CCdfV[i].Val2 = CCdfV[i+1].Val2 + CCdfV[i].Val2; }
 }
 
-void TGUtil::GetCCdf(const TIntFltKdV& PdfV, TIntFltKdV& CCdfV) {
+void TGUtil::GetCCdf(const TIntFltKd64V& PdfV, TIntFltKd64V& CCdfV) {
   CCdfV = PdfV;
-  for (int i = CCdfV.Len()-2; i >= 0; i--) {
+  for (int64 i = CCdfV.Len()-2; i >= 0; i--) {
     CCdfV[i].Dat = CCdfV[i+1].Dat + CCdfV[i].Dat; }
 }
 
-TIntPrV TGUtil::GetCCdf(const TIntPrV& PdfV) {
-  TIntPrV CCdfV;
+TIntPr64V TGUtil::GetCCdf(const TIntPr64V& PdfV) {
+  TIntPr64V CCdfV;
   GetCCdf(PdfV, CCdfV);
   return CCdfV;
 }
 
-TFltPrV TGUtil::GetCCdf(const TFltPrV& PdfV) {
-  TFltPrV CCdfV;
+TFltPr64V TGUtil::GetCCdf(const TFltPr64V& PdfV) {
+  TFltPr64V CCdfV;
   GetCCdf(PdfV, CCdfV);
   return CCdfV;
 }
 
-void TGUtil::GetPdf(const TIntPrV& CdfV, TIntPrV& PdfV) {
+void TGUtil::GetPdf(const TIntPr64V& CdfV, TIntPr64V& PdfV) {
   PdfV = CdfV;
-  for (int i = PdfV.Len()-1; i > 0; i--) {
+  for (int64 i = PdfV.Len()-1; i > 0; i--) {
     PdfV[i].Val2 = PdfV[i].Val2 - PdfV[i-1].Val2; }
 }
 
-void TGUtil::GetPdf(const TFltPrV& CdfV, TFltPrV& PdfV) {
+void TGUtil::GetPdf(const TFltPr64V& CdfV, TFltPr64V& PdfV) {
   PdfV = CdfV;
-  for (int i = PdfV.Len()-1; i > 0; i--) {
+  for (int64 i = PdfV.Len()-1; i > 0; i--) {
     PdfV[i].Val2 = PdfV[i].Val2 - PdfV[i-1].Val2; }
 }
 
-void TGUtil::GetPdf(const TIntFltKdV& CdfV, TIntFltKdV& PdfV) {
+void TGUtil::GetPdf(const TIntFltKd64V& CdfV, TIntFltKd64V& PdfV) {
   PdfV = CdfV;
-  for (int i = PdfV.Len()-1; i > 0; i--) {
+  for (int64 i = PdfV.Len()-1; i > 0; i--) {
     PdfV[i].Dat = PdfV[i].Dat - PdfV[i-1].Dat; }
 }
 
-void TGUtil::Normalize(TFltPrV& PdfV) {
+void TGUtil::Normalize(TFltPr64V& PdfV) {
   double Sum = 0.0;
-  for (int i = 0; i < PdfV.Len(); i++) {
+  for (int64 i = 0; i < PdfV.Len(); i++) {
     Sum += PdfV[i].Val2; }
   if (Sum <= 0.0) { return; }
-  for (int i = 0; i < PdfV.Len(); i++) {
+  for (int64 i = 0; i < PdfV.Len(); i++) {
     PdfV[i].Val2 /= Sum; }
 }
 
-void TGUtil::Normalize(TIntFltKdV& PdfV) {
+void TGUtil::Normalize(TIntFltKd64V& PdfV) {
   double Sum = 0.0;
-  for (int i = 0; i < PdfV.Len(); i++) {
+  for (int64 i = 0; i < PdfV.Len(); i++) {
     Sum += PdfV[i].Dat; }
   if (Sum <= 0.0) { return; }
-  for (int i = 0; i < PdfV.Len(); i++) {
+  for (int64 i = 0; i < PdfV.Len(); i++) {
     PdfV[i].Dat /= Sum; }
 }
 

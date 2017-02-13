@@ -120,7 +120,7 @@ TEST(BfsDfsTest, UndirectedRandom) {
 //  SaveEdgeList(G, FName);
   
   G = LoadEdgeList<PUNGraph>(FName);
-  TIntStrH NodeLabelH;
+  TIntStr64H NodeLabelH;
   for (int64 i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
@@ -234,7 +234,7 @@ TEST(BfsDfsTest, DirectedRandom) {
 //  SaveEdgeList(G, FName);
   
   G = LoadEdgeList<PNGraph>(FName);
-  TIntStrH NodeLabelH;
+  TIntStr64H NodeLabelH;
   for (int64 i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }

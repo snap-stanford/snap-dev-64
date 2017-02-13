@@ -6,9 +6,9 @@ typedef enum TGVizLayout_ { gvlDot, gvlNeato, gvlTwopi, gvlCirco, gvlSfdp } TGVi
 // GraphViz
 namespace TSnap {
 /// Draws a given Graph using a selected GraphViz Layout engine with nodes colored. ##DrawGViz1
-template<class PGraph> void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc=TStr(), const bool& NodeLabels=false, const TIntStrH& NIdColorH=TIntStrH());
+template<class PGraph> void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc=TStr(), const bool& NodeLabels=false, const TIntStr64H& NIdColorH=TIntStr64H());
 /// Draws a given Graph using a selected GraphViz Layout engine with nodes labeled. ##DrawGViz2
-template<class PGraph> void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc, const TIntStrH& NodeLabelH);
+template<class PGraph> void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc, const TIntStr64H& NodeLabelH);
   
 namespace TSnapDetail {
 /// Runs GraphViz layout engine over a graph saved in the file GraphInFNm with output saved to OutFNm.
@@ -21,7 +21,7 @@ TStr GVizGetLayoutStr(const TGVizLayout& Layout);
 // GraphViz implementation
 
 template<class PGraph>
-void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc, const bool& NodeLabels, const TIntStrH& NIdColorH) {
+void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc, const bool& NodeLabels, const TIntStr64H& NIdColorH) {
   const TStr Ext = PltFNm.GetFExt();
   const TStr GraphFNm = PltFNm.GetSubStr(0, PltFNm.Len()-Ext.Len()) + "dot";
   SaveGViz(Graph, GraphFNm, Desc, NodeLabels, NIdColorH);
@@ -29,7 +29,7 @@ void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm
 }
 
 template<class PGraph>
-void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc, const TIntStrH& NodeLabelH) {
+void DrawGViz(const PGraph& Graph, const TGVizLayout& Layout, const TStr& PltFNm, const TStr& Desc, const TIntStr64H& NodeLabelH) {
   const TStr Ext = PltFNm.GetFExt();
   const TStr GraphFNm = PltFNm.GetSubStr(0, PltFNm.Len()-Ext.Len()) + "dot";
   SaveGViz(Graph, GraphFNm, Desc, NodeLabelH);

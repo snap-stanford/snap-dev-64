@@ -2,24 +2,24 @@
 /// Graph Utilities
 class TGUtil {
 public:
-  static void GetCdf(const TIntPrV& PdfV, TIntPrV& CdfV);
-  static void GetCdf(const TFltPrV& PdfV, TFltPrV& CdfV);
-  static void GetCdf(const TIntFltKdV& PdfV, TIntFltKdV& CdfV);
-  static TIntPrV GetCdf(const TIntPrV& PdfV);
-  static TFltPrV GetCdf(const TFltPrV& PdfV);
+  static void GetCdf(const TIntPr64V& PdfV, TIntPr64V& CdfV);
+  static void GetCdf(const TFltPr64V& PdfV, TFltPr64V& CdfV);
+  static void GetCdf(const TIntFltKd64V& PdfV, TIntFltKd64V& CdfV);
+  static TIntPr64V GetCdf(const TIntPr64V& PdfV);
+  static TFltPr64V GetCdf(const TFltPr64V& PdfV);
 
-  static void GetCCdf(const TIntPrV& PdfV, TIntPrV& CCdfV);
-  static void GetCCdf(const TFltPrV& PdfV, TFltPrV& CCdfV);
-  static void GetCCdf(const TIntFltKdV& PdfV, TIntFltKdV& CCdfV);
-  static TIntPrV GetCCdf(const TIntPrV& PdfV);
-  static TFltPrV GetCCdf(const TFltPrV& PdfV);
+  static void GetCCdf(const TIntPr64V& PdfV, TIntPr64V& CCdfV);
+  static void GetCCdf(const TFltPr64V& PdfV, TFltPr64V& CCdfV);
+  static void GetCCdf(const TIntFltKd64V& PdfV, TIntFltKd64V& CCdfV);
+  static TIntPr64V GetCCdf(const TIntPr64V& PdfV);
+  static TFltPr64V GetCCdf(const TFltPr64V& PdfV);
 
-  static void GetPdf(const TIntPrV& CdfV, TIntPrV& PdfV);
-  static void GetPdf(const TFltPrV& CdfV, TFltPrV& PdfV);
-  static void GetPdf(const TIntFltKdV& CdfV, TIntFltKdV& PdfV);
+  static void GetPdf(const TIntPr64V& CdfV, TIntPr64V& PdfV);
+  static void GetPdf(const TFltPr64V& CdfV, TFltPr64V& PdfV);
+  static void GetPdf(const TIntFltKd64V& CdfV, TIntFltKd64V& PdfV);
 
-  static void Normalize(TFltPrV& PdfV);
-  static void Normalize(TIntFltKdV& PdfV);
+  static void Normalize(TFltPr64V& PdfV);
+  static void Normalize(TIntFltKd64V& PdfV);
 
   static void MakeExpBins(const TFltPrV& XYValV, TFltPrV& ExpXYValV,
     const double& BinFactor = 2, const double& MinYVal = 1);

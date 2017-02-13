@@ -26,7 +26,7 @@
 // algorithms
 #include "subgraph.h"        // subgraph manipulations
 #include "anf.h"             // approximate diameter calculation
-//#include "bfsdfs.h"          // breadth and depth first search      TODO 64
+#include "bfsdfs.h"          // breadth and depth first search      TODO 64
 #include "cncom.h"           // connected components
 #include "kcore.h"           // k-core decomposition
 #include "alg.h"             // misc graph algorithms

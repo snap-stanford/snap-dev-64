@@ -7,14 +7,14 @@ namespace TSnap {
 /// @param MxDist Maximum number of hops the algorithm spreads from SrcNId.
 /// @param IsDir false: consider links as undirected (drop link directions).
 /// @param NApprox Quality of approximation. See the ANF paper.
-template <class PGraph> void GetAnf(const PGraph& Graph, const int64& SrcNId, TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox=32);
+template <class PGraph> void GetAnf(const PGraph& Graph, const int64& SrcNId, TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox=32);
 /// Approximate Neighborhood Function of a Graph: Returns the number of pairs of nodes reachable in less than H hops.
 /// For example, DistNbrsV.GetDat(0) is the number of nodes in the graph, DistNbrsV.GetDat(1) is the number of nodes+edges and so on.
 /// @param DistNbrsV Maps between the distance H (in hops) and the number of nodes reachable in <=H hops.
 /// @param MxDist Maximum number of hops the algorithm spreads from SrcNId.
 /// @param IsDir false: consider links as undirected (drop link directions).
 /// @param NApprox Quality of approximation. See the ANF paper.
-template <class PGraph> void GetAnf(const PGraph& Graph, TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox=32);
+template <class PGraph> void GetAnf(const PGraph& Graph, TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox=32);
 /// Returns a given Percentile of the shortest path length distribution of a Graph (based on a single run of ANF of approximation quality NApprox).
 /// @param IsDir false: consider links as undirected (drop link directions).
 template <class PGraph> double GetAnfEffDiam(const PGraph& Graph, const bool& IsDir, const double& Percentile, const int64& NApprox);
@@ -54,13 +54,13 @@ public:
   /// @param DistNbrsV Maps between the distance H (in hops) and the number of nodes reachable in <=H hops.
   /// @param MxDist Maximum number of hops the algorithm spreads from SrcNId.
   /// @param IsDir false: consider links as undirected (drop link directions).
-  void GetNodeAnf(const int64& SrcNId, TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir);
+  void GetNodeAnf(const int64& SrcNId, TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir);
   /// Returns the number of pairs of nodes reachable in less than H hops.
   /// For example, DistNbrsV.GetDat(0) is the number of nodes in the graph, DistNbrsV.GetDat(1) is the number of nodes+edges and so on.
   /// @param DistNbrsV Maps between the distance H (in hops) and the number of nodes reachable in <=H hops.
   /// @param MxDist Maximum number of hops the algorithm spreads from SrcNId.
   /// @param IsDir false: consider links as undirected (drop link directions).
-  void GetGraphAnf(TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir);
+  void GetGraphAnf(TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir);
 };
 
 template <class PGraph>
@@ -117,13 +117,13 @@ double TGraphAnf<PGraph>::AvgLstZero(const TAnfBitV& BitV, const uint64& NIdOffs
 }
 
 template <class PGraph>
-void TGraphAnf<PGraph>::GetNodeAnf(const int64& SrcNId, TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir) {
+void TGraphAnf<PGraph>::GetNodeAnf(const int64& SrcNId, TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir) {
   //const int NNodes = Graph->GetNodes();
   TAnfBitV CurBitsV, LastBitsV;
   InitAnfBits(CurBitsV);          IAssert(CurBitsV.BegI() != NULL);
   LastBitsV.Gen(CurBitsV.Len());  IAssert(LastBitsV.BegI() != NULL);
   DistNbrsV.Clr();
-  DistNbrsV.Add(TIntFltKd(1, Graph->GetNI(SrcNId).GetOutDeg()));
+  DistNbrsV.Add(TIntFltKd64(1, Graph->GetNI(SrcNId).GetOutDeg()));
   for (int64 dist = 1; dist < (MxDist==-1 ? TInt64::Mx : MxDist); dist++) {
     memcpy(LastBitsV.BegI(), CurBitsV.BegI(), sizeof(uint64)*CurBitsV.Len()); //LastBitsV = CurBitsV;
     for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
@@ -139,20 +139,20 @@ void TGraphAnf<PGraph>::GetNodeAnf(const int64& SrcNId, TIntFltKdV& DistNbrsV, c
         }
       }
     }
-    DistNbrsV.Add(TIntFltKd(dist, GetCount(CurBitsV, GetNIdOffset(SrcNId))));
+    DistNbrsV.Add(TIntFlt64Kd(dist, GetCount(CurBitsV, GetNIdOffset(SrcNId))));
     if (DistNbrsV.Len() > 1 && DistNbrsV.Last().Dat < 1.001*DistNbrsV[DistNbrsV.Len()-2].Dat) break; // 0.1%  change
   }
 }
 
 template <class PGraph>
-void TGraphAnf<PGraph>::GetGraphAnf(TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir) {
+void TGraphAnf<PGraph>::GetGraphAnf(TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir) {
   TAnfBitV CurBitsV, LastBitsV;
   InitAnfBits(CurBitsV);          IAssert(CurBitsV.BegI() != NULL);
   LastBitsV.Gen(CurBitsV.Len());  IAssert(LastBitsV.BegI() != NULL);
   int64 v, e;
   double NPairs = 0.0;
   DistNbrsV.Clr();
-  DistNbrsV.Add(TIntFltKd(0, Graph->GetNodes()));
+  DistNbrsV.Add(TIntFltKd64(0, Graph->GetNodes()));
   //TExeTm ExeTm;
   for (int64 dist = 1; dist < (MxDist==-1 ? TInt64::Mx : MxDist); dist++) {
     //printf("ANF dist %d...", dist);  ExeTm.Tick();
@@ -174,7 +174,7 @@ void TGraphAnf<PGraph>::GetGraphAnf(TIntFltKdV& DistNbrsV, const int64& MxDist, 
     for (v = NIdToBitPosH.FFirstKeyId(); NIdToBitPosH.FNextKeyId(v); ) {
       NPairs += GetCount(CurBitsV, NIdToBitPosH[v]);
     }
-    DistNbrsV.Add(TIntFltKd(dist, NPairs));
+    DistNbrsV.Add(TIntFlt64Kd(dist, NPairs));
     //printf("pairs: %g  %s\n", NPairs, ExeTm.GetTmStr());
     if (NPairs == 0) { break; }
     if (DistNbrsV.Len() > 1 && NPairs < 1.001*DistNbrsV.LastLast().Dat) { break; } // 0.1%  change
@@ -187,34 +187,34 @@ namespace TSnap {
 
 namespace TSnapDetail {
 /// Helper function for computing a given Percentile of a (unnormalized) cumulative distribution function.
-double CalcEffDiam(const TIntFltKdV& DistNbrsCdfV, const double& Percentile=0.9);
+double CalcEffDiam(const TIntFltKd64V& DistNbrsCdfV, const double& Percentile=0.9);
 /// Helper function for computing a given Percentile of a (unnormalized) cumulative distribution function.
-double CalcEffDiam(const TFltPrV& DistNbrsCdfV, const double& Percentile=0.9);
+double CalcEffDiam(const TFltPr64V& DistNbrsCdfV, const double& Percentile=0.9);
 /// Helper function for computing a given Percentile of a (unnormalized) probability distribution function.
-double CalcEffDiamPdf(const TIntFltKdV& DistNbrsPdfV, const double& Percentile=0.9);
+double CalcEffDiamPdf(const TIntFltKd64V& DistNbrsPdfV, const double& Percentile=0.9);
 /// Helper function for computing a given Percentile of a (unnormalized) probability distribution function.
-double CalcEffDiamPdf(const TFltPrV& DistNbrsPdfV, const double& Percentile=0.9);
+double CalcEffDiamPdf(const TFltPr64V& DistNbrsPdfV, const double& Percentile=0.9);
 /// Helper function for computing the mean of a (unnormalized) probability distribution function.
-double CalcAvgDiamPdf(const TIntFltKdV& DistNbrsPdfV);
+double CalcAvgDiamPdf(const TIntFltKd64V& DistNbrsPdfV);
 /// Helper function for computing the mean of a (unnormalized) probability distribution function.
-double CalcAvgDiamPdf(const TFltPrV& DistNbrsPdfV);
+double CalcAvgDiamPdf(const TFltPr64V& DistNbrsPdfV);
 } // TSnapDetail
 
 template <class PGraph>
-void GetAnf(const PGraph& Graph, const int64& SrcNId, TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox) {
+void GetAnf(const PGraph& Graph, const int64& SrcNId, TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox) {
   TGraphAnf<PGraph> Anf(Graph, NApprox, 5, 0);
   Anf.GetNodeAnf(SrcNId, DistNbrsV, MxDist, IsDir);
 }
 
 template <class PGraph>
-void GetAnf(const PGraph& Graph, TIntFltKdV& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox) {
+void GetAnf(const PGraph& Graph, TIntFltKd64V& DistNbrsV, const int64& MxDist, const bool& IsDir, const int64& NApprox) {
   TGraphAnf<PGraph> Anf(Graph, NApprox, 5, 0);
   Anf.GetGraphAnf(DistNbrsV, MxDist, IsDir);
 }
 
 template <class PGraph>
 double GetAnfEffDiam(const PGraph& Graph, const bool& IsDir, const double& Percentile, const int64& NApprox) {
-  TIntFltKdV DistNbrsV;
+  TIntFltKd64V DistNbrsV;
   TGraphAnf<PGraph> Anf(Graph, NApprox, 5, 0);
   Anf.GetGraphAnf(DistNbrsV, -1, IsDir);
   return TSnap::TSnapDetail::CalcEffDiam(DistNbrsV, Percentile);
@@ -253,7 +253,7 @@ template <class PGraph> void TestAnf() {
   TFltV AnfV;
   for (int64 t = 0; t < 10; t++) {
     TGraphAnf<PGraph> Anf(Graph, 128, 5, t+1);
-    TIntFltKdV DistToNbrsV;
+    TIntFltKd64V DistToNbrsV;
     Anf.GetGraphAnf(DistToNbrsV, 5, true);
     printf("\n--seed: %d---------------------\n", t+1);
     for (int64 i = 0; i < DistToNbrsV.Len(); i++) {
@@ -282,7 +282,7 @@ template <class PGraph> void TestAnf() {
   printf("\nEpinions graph:\n");
   { typedef PNGraph PGraph;
   PGraph G = TGGen<PGraph>::GenEpinions();
-  TIntFltKdV DistToPairsV;
+  TIntFltKd64V DistToPairsV;
   GetAnf(G, DistToPairsV, 50, true);
   for(int i = 0; i < DistToPairsV.Len(); i++) {
     printf("\t%d\t%f\n", DistToPairsV[i].Key, DistToPairsV[i].Dat); }
