@@ -119,7 +119,7 @@ PGraph LoadEdgeListStr(const TStr& InFNm, const int64& SrcColId, const int64& Ds
 
 /// Loads the format saved by TSnap::SaveEdgeList(), where node IDs are strings and mapping of strings to node ids are stored ##LoadEdgeListStr_StrToNIdH
 template <class PGraph>
-PGraph LoadEdgeListStr(const TStr& InFNm, const int64& SrcColId, const int64& DstColId, TStrHash<TInt, TStrPool, int64>& StrToNIdH) {
+PGraph LoadEdgeListStr(const TStr& InFNm, const int64& SrcColId, const int64& DstColId, TStrHash<TInt64, TStrPool, int64>& StrToNIdH) {
   TSsParser Ss(InFNm, ssfWhiteSep);
   PGraph Graph = PGraph::TObj::New();
   while (Ss.Next()) {
