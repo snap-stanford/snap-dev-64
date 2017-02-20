@@ -182,7 +182,7 @@ TEST(TNEANet, IntVAttr) {
   for (i = 0; i < numNodes; i++) {
     testVB.Add(i);
   }
-  const TIntV testV = testVB;
+  const TInt64V testV = testVB;
   Graph->AddIntVAttrDatN(0, testV, TestAttr);
   test = Graph->GetIntVAttrDatN(0, TestAttr);
   EXPECT_EQ(numNodes, test.Len());
@@ -916,7 +916,7 @@ TEST(TNEANet, GetIdVSAttrN) {
   Graph->AddSAttrN(StrAttr, atStr, StrId);
 
   TInt64 IntVal(0);
-  TFlt64 FltVal(0);
+  TFlt FltVal(0);
   TStr StrVal("test");
   for (int64 i = 0; i < 10; i++) {
     Graph->AddNode(i);

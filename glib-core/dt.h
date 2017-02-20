@@ -1055,12 +1055,12 @@ public:
 		IAssert(Mn<=Mx); return Val<Mn?Mn:(Val>Mx?Mx:Val);}
 
 #ifdef GLib_WIN
-  TStr GetStr() const { return TStr::Fmt("%I64", Val); }
-  static TStr GetStr(const TNum& Int){ return TStr::Fmt("%I64", Int.Val); }
+  TStr GetStr() const { return TStr::Fmt("%I64d", Val); }
+  static TStr GetStr(const TNum& Int){ return TStr::Fmt("%I64d", Int.Val); }
   static TStr GetHexStr(const TNum& Int){ return TStr::Fmt("%I64X", Int.Val); }
 #else
-  TStr GetStr() const { return TStr::Fmt("%ll", Val); }
-  static TStr GetStr(const TNum& Int){ return TStr::Fmt("%ll", Int.Val); }
+  TStr GetStr() const { return TStr::Fmt("%lld", Val); }
+  static TStr GetStr(const TNum& Int){ return TStr::Fmt("%lld", Int.Val); }
   static TStr GetHexStr(const TNum& Int){ return TStr::Fmt("%ll", Int.Val); }
 #endif
 

@@ -1341,7 +1341,7 @@ TEST(TModeNet, AddEdgeNodeAfterAttrAdded) {
   }
 
   for (TNEANet::TEdgeI EI = Graph.BegEI(); EI < Graph.EndEI(); EI++) {
-    TInt AttrVal = Graph.GetIntAttrDatE(EI.GetId(), EIntAttr);
+    TInt64 AttrVal = Graph.GetIntAttrDatE(EI.GetId(), EIntAttr);
     ASSERT_EQ(EI.GetId()*3+1, AttrVal);
   }
 }
