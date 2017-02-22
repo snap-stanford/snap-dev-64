@@ -526,7 +526,8 @@ TEST(TUndirNet, DelSAttrDatN) {
   TStr StrAttr("TestStr");
   TInt64 StrId;
   Graph->AddSAttrN(StrAttr, atStr, StrId);
-  TInt Id(0);
+
+  TInt64 Id(0);
   int64 status = Graph->DelSAttrDatN(Id, IntAttr);
   EXPECT_EQ(-1, status);
   status = Graph->DelSAttrDatN(Id, IntId);
@@ -629,7 +630,7 @@ TEST(TUndirNet, GetIdVSAttrN) {
   TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
-  for (int i = 0; i < 10; i++) {
+  for (int64 i = 0; i < 10; i++) {
     Graph->AddNode(i);
     TInt64 Id(i);
     Graph->AddSAttrDatN(Id, IntId, IntVal);
