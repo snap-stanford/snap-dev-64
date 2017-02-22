@@ -1059,9 +1059,9 @@ public:
   static TStr GetStr(const TNum& Int){ return TStr::Fmt("%I64", Int.Val); }
   static TStr GetHexStr(const TNum& Int){ return TStr::Fmt("%I64X", Int.Val); }
 #else
-  TStr GetStr() const { return TStr::Fmt("%ll", Val); }
-  static TStr GetStr(const TNum& Int){ return TStr::Fmt("%ll", Int.Val); }
-  static TStr GetHexStr(const TNum& Int){ return TStr::Fmt("%ll", Int.Val); }
+  TStr GetStr() const { return TStr::Fmt("%lld", Val); }
+  static TStr GetStr(const TNum& Int){ return TStr::Fmt("%lld", Int.Val); }
+  static TStr GetHexStr(const TNum& Int){ return TStr::Fmt("%lld", Int.Val); }
 #endif
 
   static TStr GetKiloStr(const int64& Val){
