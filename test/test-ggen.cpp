@@ -498,7 +498,12 @@ TEST(GGenTest, GenRndBipart) {
         
         int64 NodeCount = 0;
         int64 EdgeCount = 0;
-        // Iterate through nodes, verify it matches
+        // Iterate through left nodes, verify it matches
+        for (TBPGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
+          NodeCount++;
+        }
+        Graph->SetIteratorSideLeft(false);
+        // Iterate through right nodes, verify it matches
         for (TBPGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
           NodeCount++;
         }

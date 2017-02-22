@@ -18,19 +18,19 @@ TEST(TUndirNet, DefaultConstructor) {
 
 // Test node, edge creation
 TEST(TUndirNet, ManipulateNodesEdges) {
-  int NNodes = 10000;
-  int NEdges = 100000;
+  int64 NNodes = 10000;
+  int64 NEdges = 100000;
   const char *FName = "test.graph.dat";
 
   PUndirNet Graph;
   PUndirNet Graph1;
   PUndirNet Graph2;
-  int i;
-  int n;
-  int NCount;
-  int LCount;
-  int x,y;
-  int Deg, InDeg, OutDeg;
+  int64 i;
+  int64 n;
+  int64 NCount;
+  int64 LCount;
+  int64 x,y;
+  int64 Deg, InDeg, OutDeg;
 
   Graph = TUndirNet::New();
   EXPECT_EQ(1,Graph->Empty());
@@ -80,7 +80,7 @@ TEST(TUndirNet, ManipulateNodesEdges) {
   // edges per node iterator, each non-loop is visited twice, each loop once
   NCount = 0;
   for (TUndirNet::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    for (int e = 0; e < NI.GetOutDeg(); e++) {
+    for (int64 e = 0; e < NI.GetOutDeg(); e++) {
       NCount++;
     }
   }
@@ -152,26 +152,26 @@ TEST(TUndirNet, ManipulateNodesEdges) {
 
 // Test edge iterator, manipulate edges
 TEST(TUndirNet, ManipulateEdges) {
-  int Iterations = 100;
+  int64 Iterations = 100;
   
-  int NNodes;
-  int NNodesStart = 8;
-  int NNodesEnd = 25;
+  int64 NNodes;
+  int64 NNodesStart = 8;
+  int64 NNodesEnd = 25;
   
-  int NEdges;
-  int NEdgesStart = 0;
-  int NEdgesEnd = 50;
+  int64 NEdges;
+  int64 NEdgesStart = 0;
+  int64 NEdgesEnd = 50;
   
   PUndirNet Graph;
   PUndirNet Graph1;
   PUndirNet Graph2;
-  int NCount, ECount;
-  int x,y;
-  TIntV NodeIds;
-  THashSet<TIntPr> EdgeSet;
+  int64 NCount, ECount;
+  int64 x,y;
+  TInt64V NodeIds;
+  THashSet<TInt64Pr, int64> EdgeSet;
   TInt::Rnd.PutSeed(0);
   
-  for (int i = 0; i < Iterations; i++) {
+  for (int64 i = 0; i < Iterations; i++) {
     
     for (NEdges = NEdgesStart; NEdges <= NEdgesEnd; NEdges++) {
       
@@ -187,12 +187,12 @@ TEST(TUndirNet, ManipulateEdges) {
         
         // Generate NNodes
         NodeIds.Gen(NNodes);
-        for (int n = 0; n < NNodes; n++) {
+        for (int64 n = 0; n < NNodes; n++) {
           NodeIds[n] = n;
         }
         // Add the nodes in random order
         NodeIds.Shuffle(TInt::Rnd);
-        for (int n = 0; n < NodeIds.Len(); n++) {
+        for (int64 n = 0; n < NodeIds.Len(); n++) {
           Graph->AddNode(NodeIds[n]);
         }
         EXPECT_FALSE(Graph->Empty());
@@ -206,18 +206,18 @@ TEST(TUndirNet, ManipulateEdges) {
           
           if (!Graph->IsEdge(x,y)) {
             Graph->AddEdge(x, y);
-            EdgeSet.AddKey(TIntPr(x, y));
-            EdgeSet.AddKey(TIntPr(y, x));
+            EdgeSet.AddKey(TInt64Pr(x, y));
+            EdgeSet.AddKey(TInt64Pr(y, x));
             NCount--;
           }
         }
         
         // Check edge iterator to make sure all edges are valid and no more (in hash set)
-        TIntPrV DelEdgeV;
+        TIntPr64V DelEdgeV;
         for (TUndirNet::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
           
-          TIntPr Edge(EI.GetSrcNId(), EI.GetDstNId());
-          TIntPr EdgeR(EI.GetDstNId(), EI.GetSrcNId());
+          TInt64Pr Edge(EI.GetSrcNId(), EI.GetDstNId());
+          TInt64Pr EdgeR(EI.GetDstNId(), EI.GetSrcNId());
           
           EXPECT_TRUE(EdgeSet.IsKey(Edge) || EdgeSet.IsKey(EdgeR));
           if (EdgeSet.IsKey(Edge)) {
@@ -234,17 +234,17 @@ TEST(TUndirNet, ManipulateEdges) {
         
         // Randomly delete node, check to make sure edges were deleted
         NodeIds.Shuffle(TInt::Rnd);
-        for (int n = 0; n < NNodes; n++) {
+        for (int64 n = 0; n < NNodes; n++) {
 
-          TIntPrV DelEdgeNodeV;
-          int DelNodeId = NodeIds[n];
+          TIntPr64V DelEdgeNodeV;
+          int64 DelNodeId = NodeIds[n];
           
           // Get edges for node to be deleted (to verify all deleted)
-          int EdgesBeforeDel;
+          int64 EdgesBeforeDel;
           EdgesBeforeDel = Graph->GetEdges();
           for (TUndirNet::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
             if (EI.GetSrcNId() == DelNodeId || EI.GetDstNId() == DelNodeId) {
-              DelEdgeNodeV.Add(TIntPr(EI.GetSrcNId(), EI.GetDstNId()));
+              DelEdgeNodeV.Add(TInt64Pr(EI.GetSrcNId(), EI.GetDstNId()));
             }
           }
           
@@ -254,7 +254,7 @@ TEST(TUndirNet, ManipulateEdges) {
           EXPECT_TRUE(Graph->IsOk());
           
           // Make sure all the edges to deleted node are gone
-          for (int e = 0; e < DelEdgeNodeV.Len(); e++) {
+          for (int64 e = 0; e < DelEdgeNodeV.Len(); e++) {
             EXPECT_FALSE(Graph->IsEdge(DelEdgeNodeV[e].Val1, DelEdgeNodeV[e].Val2));
           }
           
@@ -294,8 +294,8 @@ TEST(TUndirNet, GetSmallGraph) {
 TEST(TUndirNet, AddSAttrN) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
-  TInt AttrId;
-  int status = Graph->AddSAttrN("TestInt", atInt, AttrId);
+  TInt64 AttrId;
+  int64 status = Graph->AddSAttrN("TestInt", atInt, AttrId);
   EXPECT_EQ(0, status);
   EXPECT_EQ(0, AttrId.Val);
   status = Graph->AddSAttrN("TestFlt", atFlt, AttrId);
@@ -311,12 +311,12 @@ TEST(TUndirNet, AddSAttrN) {
 TEST(TUndirNet, GetSAttrIdN) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph->AddSAttrN("TestInt", atInt, AttrId);
   Graph->AddSAttrN("TestFlt", atFlt, AttrId);
   Graph->AddSAttrN("TestStr", atStr, AttrId);
   TAttrType AttrType;
-  int status = Graph->GetSAttrIdN(TStr("TestInt"), AttrId, AttrType);
+  int64 status = Graph->GetSAttrIdN(TStr("TestInt"), AttrId, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_EQ(0, AttrId.Val);
@@ -335,13 +335,13 @@ TEST(TUndirNet, GetSAttrIdN) {
 TEST(TUndirNet, GetSAttrNameN) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph->AddSAttrN("TestInt", atInt, AttrId);
   Graph->AddSAttrN("TestFlt", atFlt, AttrId);
   Graph->AddSAttrN("TestStr", atStr, AttrId);
   TAttrType AttrType;
   TStr Name;
-  int status = Graph->GetSAttrNameN(0, Name, AttrType);
+  int64 status = Graph->GetSAttrNameN(0, Name, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_STREQ("TestInt", Name.CStr());
@@ -361,11 +361,11 @@ TEST(TUndirNet, AddSAttrDatN_int) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
   Graph->AddNode(0);
-  TInt Val(5);
-  TInt Id(0);
-  int status = Graph->AddSAttrDatN(Id, 1, Val);
+  TInt64 Val(5);
+  TInt64 Id(0);
+  int64 status = Graph->AddSAttrDatN(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestInt");
   Graph->AddSAttrN(AttrName, atInt, AttrId);
   TFlt ErrorVal(1);
@@ -378,7 +378,7 @@ TEST(TUndirNet, AddSAttrDatN_int) {
   TStr NewName("TestInt2");
   status = Graph->AddSAttrDatN(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->AddSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -388,13 +388,13 @@ TEST(TUndirNet, AddSAttrDatN_flt) {
   Graph = TUndirNet::New();
   Graph->AddNode(0);
   TFlt Val(5.0);
-  TInt Id(0);
-  int status = Graph->AddSAttrDatN(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Graph->AddSAttrDatN(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph->AddSAttrN(AttrName, atFlt, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph->AddSAttrDatN(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph->AddSAttrDatN(Id, AttrId, Val);
@@ -404,7 +404,7 @@ TEST(TUndirNet, AddSAttrDatN_flt) {
   TStr NewName("TestFlt2");
   status = Graph->AddSAttrDatN(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->AddSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -414,13 +414,13 @@ TEST(TUndirNet, AddSAttrDatN_str) {
   Graph = TUndirNet::New();
   Graph->AddNode(0);
   TStr Val("5");
-  TInt Id(0);
-  int status = Graph->AddSAttrDatN(Id, 1, Val);
+  TInt64 Id(0);
+  int64 status = Graph->AddSAttrDatN(Id, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph->AddSAttrN(AttrName, atStr, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph->AddSAttrDatN(Id, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph->AddSAttrDatN(Id, AttrId, Val);
@@ -430,7 +430,7 @@ TEST(TUndirNet, AddSAttrDatN_str) {
   TStr NewName("TestStr2");
   status = Graph->AddSAttrDatN(Id, NewName, Val);
   EXPECT_EQ(0, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->AddSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -439,16 +439,16 @@ TEST(TUndirNet, GetSAttrDatN_int) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
   Graph->AddNode(0);
-  TInt Val;
-  TInt AttrId(0);
+  TInt64 Val;
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Graph->GetSAttrDatN(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Graph->GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph->GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
   Graph->AddSAttrN(AttrName, atInt, AttrId);
-  TInt TestVal(5);
+  TInt64 TestVal(5);
   Graph->AddSAttrDatN(NId, AttrId, TestVal);
   status = Graph->GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(0, status);
@@ -456,7 +456,7 @@ TEST(TUndirNet, GetSAttrDatN_int) {
   status = Graph->GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->GetSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -466,10 +466,10 @@ TEST(TUndirNet, GetSAttrDatN_flt) {
   Graph = TUndirNet::New();
   Graph->AddNode(0);
   TFlt Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Graph->GetSAttrDatN(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Graph->GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph->GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -482,7 +482,7 @@ TEST(TUndirNet, GetSAttrDatN_flt) {
   status = Graph->GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->GetSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -492,10 +492,10 @@ TEST(TUndirNet, GetSAttrDatN_str) {
   Graph = TUndirNet::New();
   Graph->AddNode(0);
   TStr Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  TInt NId(0);
-  int status = Graph->GetSAttrDatN(NId, AttrName, Val);
+  TInt64 NId(0);
+  int64 status = Graph->GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph->GetSAttrDatN(NId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -508,7 +508,7 @@ TEST(TUndirNet, GetSAttrDatN_str) {
   status = Graph->GetSAttrDatN(NId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_STREQ(TestVal.CStr(), Val.CStr());
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->GetSAttrDatN(ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -518,21 +518,21 @@ TEST(TUndirNet, DelSAttrDatN) {
   Graph = TUndirNet::New();
   Graph->AddNode(0);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrN(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrN(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrN(StrAttr, atStr, StrId);
   TInt Id(0);
-  int status = Graph->DelSAttrDatN(Id, IntAttr);
+  int64 status = Graph->DelSAttrDatN(Id, IntAttr);
   EXPECT_EQ(-1, status);
   status = Graph->DelSAttrDatN(Id, IntId);
   EXPECT_EQ(-1, status);
 
-  TInt IntVal(5);
+  TInt64 IntVal(5);
   Graph->AddSAttrDatN(Id, IntId, IntVal);
   status = Graph->DelSAttrDatN(Id, IntAttr);
   EXPECT_EQ(0, status);
@@ -541,7 +541,7 @@ TEST(TUndirNet, DelSAttrDatN) {
   EXPECT_EQ(0, status);
   status = Graph->DelSAttrDatN(Id, IntId);
   EXPECT_EQ(-1, status);
-  TInt ErrorId(1);
+  TInt64 ErrorId(1);
   status = Graph->DelSAttrDatN(ErrorId, IntId);
   EXPECT_EQ(-1, status);
 
@@ -575,17 +575,17 @@ TEST(TUndirNet, GetSAttrVN) {
   Graph = TUndirNet::New();
   Graph->AddNode(0);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrN(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrN(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrN(StrAttr, atStr, StrId);
 
-  TInt Id(0);
-  TInt IntVal(5);
+  TInt64 Id(0);
+  TInt64 IntVal(5);
   Graph->AddSAttrDatN(Id, IntId, IntVal);
   TFlt FltVal(5.0);
   Graph->AddSAttrDatN(Id, FltId, FltVal);
@@ -593,7 +593,7 @@ TEST(TUndirNet, GetSAttrVN) {
   Graph->AddSAttrDatN(Id, StrId, StrVal);
 
   TAttrPrV AttrV;
-  int status = Graph->GetSAttrVN(Id, atInt, AttrV);
+  int64 status = Graph->GetSAttrVN(Id, atInt, AttrV);
   EXPECT_EQ(0, status);
   EXPECT_EQ(1, AttrV.Len());
   status = Graph->GetSAttrVN(Id, atFlt, AttrV);
@@ -617,21 +617,21 @@ TEST(TUndirNet, GetIdVSAttrN) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrN(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrN(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrN(StrAttr, atStr, StrId);
 
-  TInt IntVal(0);
+  TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
   for (int i = 0; i < 10; i++) {
     Graph->AddNode(i);
-    TInt Id(i);
+    TInt64 Id(i);
     Graph->AddSAttrDatN(Id, IntId, IntVal);
     if (i%2 == 0) {
       Graph->AddSAttrDatN(Id, FltId, FltVal);
@@ -639,7 +639,7 @@ TEST(TUndirNet, GetIdVSAttrN) {
   }
   Graph->AddSAttrDatN(0, StrId, StrVal);
 
-  TIntV IdV;
+  TInt64V IdV;
   Graph->GetIdVSAttrN(IntAttr, IdV);
   EXPECT_EQ(10, IdV.Len());
   Graph->GetIdVSAttrN(IntId, IdV);
@@ -659,8 +659,8 @@ TEST(TUndirNet, GetIdVSAttrN) {
 TEST(TUndirNet, AddSAttrE) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
-  TInt AttrId;
-  int status = Graph->AddSAttrE("TestInt", atInt, AttrId);
+  TInt64 AttrId;
+  int64 status = Graph->AddSAttrE("TestInt", atInt, AttrId);
   EXPECT_EQ(0, status);
   EXPECT_EQ(0, AttrId.Val);
   status = Graph->AddSAttrE("TestFlt", atFlt, AttrId);
@@ -676,12 +676,12 @@ TEST(TUndirNet, AddSAttrE) {
 TEST(TUndirNet, GetSAttrIdE) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph->AddSAttrE("TestInt", atInt, AttrId);
   Graph->AddSAttrE("TestFlt", atFlt, AttrId);
   Graph->AddSAttrE("TestStr", atStr, AttrId);
   TAttrType AttrType;
-  int status = Graph->GetSAttrIdE(TStr("TestInt"), AttrId, AttrType);
+  int64 status = Graph->GetSAttrIdE(TStr("TestInt"), AttrId, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_EQ(0, AttrId.Val);
@@ -700,13 +700,13 @@ TEST(TUndirNet, GetSAttrIdE) {
 TEST(TUndirNet, GetSAttrNameE) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
-  TInt AttrId;
+  TInt64 AttrId;
   Graph->AddSAttrE("TestInt", atInt, AttrId);
   Graph->AddSAttrE("TestFlt", atFlt, AttrId);
   Graph->AddSAttrE("TestStr", atStr, AttrId);
   TAttrType AttrType;
   TStr Name;
-  int status = Graph->GetSAttrNameE(0, Name, AttrType);
+  int64 status = Graph->GetSAttrNameE(0, Name, AttrType);
   EXPECT_EQ(0, status);
   EXPECT_EQ(atInt, AttrType);
   EXPECT_STREQ("TestInt", Name.CStr());
@@ -728,12 +728,12 @@ TEST(TUndirNet, AddSAttrDatE_int) {
   Graph->AddNode(0);
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
-  TInt Val(5);
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->AddSAttrDatE(SrcId, DstId, 1, Val);
+  TInt64 Val(5);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->AddSAttrDatE(SrcId, DstId, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestInt");
   Graph->AddSAttrE(AttrName, atInt, AttrId);
   TFlt ErrorVal(1);
@@ -746,7 +746,7 @@ TEST(TUndirNet, AddSAttrDatE_int) {
   TStr NewName("TestInt2");
   status = Graph->AddSAttrDatE(SrcId, DstId, NewName, Val);
   EXPECT_EQ(0, status);
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->AddSAttrDatE(SrcId, ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -758,14 +758,14 @@ TEST(TUndirNet, AddSAttrDatE_flt) {
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
   TFlt Val(5.0);
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->AddSAttrDatE(SrcId, DstId, 1, Val);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->AddSAttrDatE(SrcId, DstId, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph->AddSAttrE(AttrName, atFlt, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph->AddSAttrDatE(SrcId, DstId, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph->AddSAttrDatE(SrcId, DstId, AttrId, Val);
@@ -775,7 +775,7 @@ TEST(TUndirNet, AddSAttrDatE_flt) {
   TStr NewName("TestFlt2");
   status = Graph->AddSAttrDatE(SrcId, DstId, NewName, Val);
   EXPECT_EQ(0, status);
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->AddSAttrDatE(SrcId, ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -787,14 +787,14 @@ TEST(TUndirNet, AddSAttrDatE_str) {
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
   TStr Val("5");
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->AddSAttrDatE(SrcId, DstId, 1, Val);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->AddSAttrDatE(SrcId, DstId, 1, Val);
   EXPECT_EQ(-1, status);
-  TInt AttrId;
+  TInt64 AttrId;
   TStr AttrName("TestFlt");
   Graph->AddSAttrE(AttrName, atStr, AttrId);
-  TInt ErrorVal(1);
+  TInt64 ErrorVal(1);
   status = Graph->AddSAttrDatE(SrcId, DstId, AttrId, ErrorVal);
   EXPECT_EQ(-2, status);
   status = Graph->AddSAttrDatE(SrcId, DstId, AttrId, Val);
@@ -804,7 +804,7 @@ TEST(TUndirNet, AddSAttrDatE_str) {
   TStr NewName("TestStr2");
   status = Graph->AddSAttrDatE(SrcId, DstId, NewName, Val);
   EXPECT_EQ(0, status);
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->AddSAttrDatE(SrcId, ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -815,17 +815,17 @@ TEST(TUndirNet, GetSAttrDatE_int) {
   Graph->AddNode(0);
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
-  TInt Val;
-  TInt AttrId(0);
+  TInt64 Val;
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrId, Val);
   EXPECT_EQ(-1, status);
   Graph->AddSAttrE(AttrName, atInt, AttrId);
-  TInt TestVal(5);
+  TInt64 TestVal(5);
   Graph->AddSAttrDatE(SrcId, DstId, AttrId, TestVal);
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrId, Val);
   EXPECT_EQ(0, status);
@@ -833,7 +833,7 @@ TEST(TUndirNet, GetSAttrDatE_int) {
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->GetSAttrDatE(SrcId, ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -845,11 +845,11 @@ TEST(TUndirNet, GetSAttrDatE_flt) {
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
   TFlt Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -862,7 +862,7 @@ TEST(TUndirNet, GetSAttrDatE_flt) {
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_EQ(TestVal.Val, Val.Val);
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->GetSAttrDatE(SrcId, ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -874,11 +874,11 @@ TEST(TUndirNet, GetSAttrDatE_str) {
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
   TStr Val;
-  TInt AttrId(0);
+  TInt64 AttrId(0);
   TStr AttrName("TestInt");
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
   EXPECT_EQ(-1, status);
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrId, Val);
   EXPECT_EQ(-1, status);
@@ -891,7 +891,7 @@ TEST(TUndirNet, GetSAttrDatE_str) {
   status = Graph->GetSAttrDatE(SrcId, DstId, AttrName, Val);
   EXPECT_EQ(0, status);
   EXPECT_STREQ(TestVal.CStr(), Val.CStr());
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->GetSAttrDatE(SrcId, ErrorId, AttrId, Val);
   EXPECT_EQ(-1, status);
 }
@@ -903,22 +903,22 @@ TEST(TUndirNet, DelSAttrDatE) {
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrE(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrE(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrE(StrAttr, atStr, StrId);
-  int SrcId = 0;
-  int DstId = 1;
-  int status = Graph->DelSAttrDatE(SrcId, DstId, IntAttr);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  int64 status = Graph->DelSAttrDatE(SrcId, DstId, IntAttr);
   EXPECT_EQ(-1, status);
   status = Graph->DelSAttrDatE(SrcId, DstId, IntId);
   EXPECT_EQ(-1, status);
 
-  TInt IntVal(5);
+  TInt64 IntVal(5);
   Graph->AddSAttrDatE(SrcId, DstId, IntId, IntVal);
   status = Graph->DelSAttrDatE(SrcId, DstId, IntAttr);
   EXPECT_EQ(0, status);
@@ -927,7 +927,7 @@ TEST(TUndirNet, DelSAttrDatE) {
   EXPECT_EQ(0, status);
   status = Graph->DelSAttrDatE(SrcId, DstId, IntId);
   EXPECT_EQ(-1, status);
-  int ErrorId = 5;
+  int64 ErrorId = 5;
   status = Graph->DelSAttrDatE(SrcId, ErrorId, IntId);
   EXPECT_EQ(-1, status);
 
@@ -963,18 +963,18 @@ TEST(TUndirNet, GetSAttrVE) {
   Graph->AddNode(1);
   Graph->AddEdge(0, 1);
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrE(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrE(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrE(StrAttr, atStr, StrId);
 
-  int SrcId = 0;
-  int DstId = 1;
-  TInt IntVal(5);
+  int64 SrcId = 0;
+  int64 DstId = 1;
+  TInt64 IntVal(5);
   Graph->AddSAttrDatE(SrcId, DstId, IntId, IntVal);
   TFlt FltVal(5.0);
   Graph->AddSAttrDatE(SrcId, DstId, FltId, FltVal);
@@ -982,7 +982,7 @@ TEST(TUndirNet, GetSAttrVE) {
   Graph->AddSAttrDatE(SrcId, DstId, StrId, StrVal);
 
   TAttrPrV AttrV;
-  int status = Graph->GetSAttrVE(SrcId, DstId, atInt, AttrV);
+  int64 status = Graph->GetSAttrVE(SrcId, DstId, atInt, AttrV);
   EXPECT_EQ(0, status);
   EXPECT_EQ(1, AttrV.Len());
   status = Graph->GetSAttrVE(SrcId, DstId, atFlt, AttrV);
@@ -1006,20 +1006,20 @@ TEST(TUndirNet, GetIdVSAttrE) {
   PUndirNet Graph;
   Graph = TUndirNet::New();
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrE(IntAttr, atInt, IntId);
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrE(FltAttr, atFlt, FltId);
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrE(StrAttr, atStr, StrId);
 
-  TInt IntVal(0);
+  TInt64 IntVal(0);
   TFlt FltVal(0);
   TStr StrVal("test");
   Graph->AddNode(0);
-  for (int i = 0; i < 10; i++) {
+  for (int64 i = 0; i < 10; i++) {
     Graph->AddNode(i+1);
     Graph->AddEdge(i, i+1);
     Graph->AddSAttrDatE(i, i+1, IntId, IntVal);
@@ -1029,7 +1029,7 @@ TEST(TUndirNet, GetIdVSAttrE) {
   }
   Graph->AddSAttrDatE(0, 1, StrId, StrVal);
 
-  TIntPrV IdV;
+  TIntPr64V IdV;
   Graph->GetIdVSAttrE(IntAttr, IdV);
   EXPECT_EQ(10, IdV.Len());
   Graph->GetIdVSAttrE(IntId, IdV);
