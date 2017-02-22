@@ -1206,7 +1206,7 @@ void THashSet<TKey, TSizeTy, THashFunc>::Resize() {
   for (int64 KeyId=0; KeyId<KeyV.Len(); KeyId++) {
     TSetKey& SetKey=KeyV[KeyId];
     if (SetKey.HashCd!=-1) {
-      int64 PortN=abs(THashFunc::GetPrimHashCd(SetKey.Key)%PortV.Len());
+      int64 PortN=absolute(THashFunc::GetPrimHashCd(SetKey.Key)%PortV.Len());
       SetKey.Next=PortV[PortN];
       PortV[PortN]=KeyId;
     }
@@ -1253,8 +1253,8 @@ void THashSet<TKey, TSizeTy, THashFunc>::Clr(const bool& DoDel, const TSizeTy& N
 template <class TKey, class TSizeTy, class THashFunc>
 TSizeTy THashSet<TKey, TSizeTy, THashFunc>::AddKey(const TKey& Key) {
   if ((KeyV.Len()>2*PortV.Len())||PortV.Empty()) {Resize(); }
-  TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId=-1;
   TSizeTy KeyId=PortV[PortN];
 
@@ -1288,8 +1288,8 @@ void THashSet<TKey, TSizeTy, THashFunc>::AddKeyV(const TVec<TKey, TSizeTy>& KeyV
 template <class TKey, class TSizeTy, class THashFunc>
 void THashSet<TKey, TSizeTy, THashFunc>::DelKey(const TKey& Key) {
   IAssert(!PortV.Empty());
-  TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId=-1;
   TSizeTy KeyId=PortV[PortN];
 
@@ -1308,8 +1308,8 @@ void THashSet<TKey, TSizeTy, THashFunc>::DelKey(const TKey& Key) {
 template <class TKey, class TSizeTy, class THashFunc>
 void THashSet<TKey, TSizeTy, THashFunc>::MarkDelKey(const TKey& Key) {
   IAssert(!PortV.Empty());
-  TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy PrevKeyId=-1;
   TSizeTy KeyId=PortV[PortN];
 
@@ -1327,8 +1327,8 @@ void THashSet<TKey, TSizeTy, THashFunc>::MarkDelKey(const TKey& Key) {
 template <class TKey, class TSizeTy, class THashFunc>
 TSizeTy THashSet<TKey, TSizeTy, THashFunc>::GetKeyId(const TKey& Key) const {
   if (PortV.Empty()) {return -1; }
-  TSizeTy PortN=abs(THashFunc::GetPrimHashCd(Key)%PortV.Len());
-  TSizeTy HashCd=abs(THashFunc::GetSecHashCd(Key));
+  TSizeTy PortN=absolute(THashFunc::GetPrimHashCd(Key)%PortV.Len());
+  TSizeTy HashCd=absolute(THashFunc::GetSecHashCd(Key));
   TSizeTy KeyId=PortV[PortN];
 
   while ((KeyId!=-1) &&
