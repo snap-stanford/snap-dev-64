@@ -210,13 +210,13 @@ void SaveEdgeList(const PGraph& Graph, const TStr& OutFNm, const TStr& Desc) {
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) { fprintf(F, "# Directed graph: %s \n", OutFNm.CStr()); } 
   else { fprintf(F, "# Undirected graph (each unordered pair of nodes is saved once): %s\n", OutFNm.CStr()); }
   if (! Desc.Empty()) { fprintf(F, "# %s\n", Desc.CStr()); }
-  //fprintf(F, "# Nodes: %s Edges: %s\n", TInt64::GetStr(Graph->GetNodes()), TInt64::GetStr(Graph->GetEdges()));
-  fprintf(F, "# Nodes: %ll Edges: %ll\n", Graph->GetNodes(), Graph->GetEdges());
+  fprintf(F, "# Nodes: %s Edges: %s\n", TInt64::GetStr(Graph->GetNodes()).CStr(), TInt64::GetStr(Graph->GetEdges()).CStr());
+  //fprintf(F, "# Nodes: %ll Edges: %ll\n", Graph->GetNodes(), Graph->GetEdges());
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) { fprintf(F, "# FromNodeId\tToNodeId\n"); }
   else { fprintf(F, "# NodeId\tNodeId\n"); }
   for (typename PGraph::TObj::TEdgeI ei = Graph->BegEI(); ei < Graph->EndEI(); ei++) {
-    //fprintf(F, "%s\t%s\n", TInt64::GetStr(ei.GetSrcNId()).CStr(), TInt64::GetStr(ei.GetDstNId()).CStr());
-  	fprintf(F, "%ll\t%ll\n", ei.GetSrcNId(), ei.GetDstNId());
+    fprintf(F, "%s\t%s\n", TInt64::GetStr(ei.GetSrcNId()).CStr(), TInt64::GetStr(ei.GetDstNId()).CStr());
+  	//fprintf(F, "%ll\t%ll\n", ei.GetSrcNId(), ei.GetDstNId());
   }
   fclose(F);
 }
@@ -225,21 +225,21 @@ template <class PGraph>
 void SavePajek(const PGraph& Graph, const TStr& OutFNm) {
   TInt64H NIdToIdH(Graph->GetNodes(), true);
   FILE *F = fopen(OutFNm.CStr(), "wt");
-  fprintf(F, "*Vertices %lld\n", Graph->GetNodes());
+  fprintf(F, "*Vertices %s\n", TInt64::GetStr(Graph->GetNodes()).CStr());
   int64 i = 0;
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++, i++) {
-    fprintf(F, "%lld  \"%lld\" ic Red fos 10\n", i+1, NI.GetId()); // ic: internal color, fos: font size
+    fprintf(F, "%s  \"%s\" ic Red fos 10\n", TInt64::GetStr(i+1).CStr(), TInt64::GetStr(NI.GetId()).CStr()); // ic: internal color, fos: font size
     NIdToIdH.AddDat(NI.GetId(), i+1);
   }
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) {
-    fprintf(F, "*Arcs %lld\n", Graph->GetEdges()); } // arcs are directed, edges are undirected
+    fprintf(F, "*Arcs %s\n", TInt64::GetStr(Graph->GetEdges()).CStr()); } // arcs are directed, edges are undirected
   else {
-    fprintf(F, "*Edges %lld\n", Graph->GetEdges());
+    fprintf(F, "*Edges %s\n", TInt64::GetStr(Graph->GetEdges()).CStr());
   }
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     const int64 SrcNId = NIdToIdH.GetDat(EI.GetSrcNId());
     const int64 DstNId = NIdToIdH.GetDat(EI.GetDstNId());
-    fprintf(F, "%lld %lld %lld c Black\n", SrcNId, DstNId, 1); // width=1
+    fprintf(F, "%s %s %s c Black\n", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr(), TInt64::GetStr(1).CStr()); // width=1
   }
   fclose(F);
 }
@@ -250,22 +250,22 @@ template <class PGraph>
 void SavePajek(const PGraph& Graph, const TStr& OutFNm, const TIntStr64H& NIdColorH) {
   TInt64H NIdToIdH(Graph->GetNodes(), true);
   FILE *F = fopen(OutFNm.CStr(), "wt");
-  fprintf(F, "*Vertices %lld\n", Graph->GetNodes());
+  fprintf(F, "*Vertices %s\n", TInt64::GetStr(Graph->GetNodes()).CStr());
   int64 i = 0;
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++, i++) {
-    fprintf(F, "%lld  \"%lld\" ic %s fos 10\n", i+1, NI.GetId(),
+    fprintf(F, "%s  \"%s\" ic %s fos 10\n", TInt64::GetStr(i+1).CStr(), TInt64::GetStr(NI.GetId()).CStr(),
       NIdColorH.IsKey(NI.GetId()) ? NIdColorH.GetDat(NI.GetId()).CStr() : "Red");
     NIdToIdH.AddDat(NI.GetId(), i+1);
   }
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) {
-    fprintf(F, "*Arcs %lld\n", Graph->GetEdges()); } // arcs are directed, edges are undirected
+    fprintf(F, "*Arcs %s\n", TInt64::GetStr(Graph->GetEdges()).CStr()); } // arcs are directed, edges are undirected
   else {
-    fprintf(F, "*Edges %lld\n", Graph->GetEdges());
+    fprintf(F, "*Edges %s\n", TInt64::GetStr(Graph->GetEdges()).CStr());
   }
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     const int64 SrcNId = NIdToIdH.GetDat(EI.GetSrcNId());
     const int64 DstNId = NIdToIdH.GetDat(EI.GetDstNId());
-    fprintf(F, "%lld %lld %lld c Black\n", SrcNId, DstNId, 1);
+    fprintf(F, "%s %s %s c Black\n", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr(), TInt64::GetStr(1).CStr());
   }
   fclose(F);
 }
@@ -277,23 +277,23 @@ template <class PGraph>
 void SavePajek(const PGraph& Graph, const TStr& OutFNm, const TIntStr64H& NIdColorH, const TIntStr64H& NIdLabelH) {
   TInt64H NIdToIdH(Graph->GetNodes(), true);
   FILE *F = fopen(OutFNm.CStr(), "wt");
-  fprintf(F, "*Vertices %lld\n", Graph->GetNodes());
+  fprintf(F, "*Vertices %s\n", TInt64::GetStr(Graph->GetNodes()).CStr());
   int64 i = 0;
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++, i++) {
-    fprintf(F, "%lld  \"%s\" ic %s fos 10\n", i+1,
-      NIdLabelH.IsKey(NI.GetId()) ? NIdLabelH.GetDat(NI.GetId()).CStr() : TStr::Fmt("%lld", NI.GetId()).CStr(),
+    fprintf(F, "%s  \"%s\" ic %s fos 10\n", TInt64::GetStr(i+1).CStr(),
+      NIdLabelH.IsKey(NI.GetId()) ? NIdLabelH.GetDat(NI.GetId()).CStr() : TInt64::GetStr(NI.GetId()).CStr(),
       NIdColorH.IsKey(NI.GetId()) ? NIdColorH.GetDat(NI.GetId()).CStr() : "Red");
     NIdToIdH.AddDat(NI.GetId(), i+1);
   }
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) {
-    fprintf(F, "*Arcs %lld\n", Graph->GetEdges()); } // arcs are directed, edges are undirected
+    fprintf(F, "*Arcs %s\n", TInt64::GetStr(Graph->GetEdges()).CStr()); } // arcs are directed, edges are undirected
   else {
-    fprintf(F, "*Edges %lld\n", Graph->GetEdges());
+    fprintf(F, "*Edges %s\n", TInt64::GetStr(Graph->GetEdges()).CStr());
   }
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     const int64 SrcNId = NIdToIdH.GetDat(EI.GetSrcNId());
     const int64 DstNId = NIdToIdH.GetDat(EI.GetDstNId());
-    fprintf(F, "%lld %lld %lld c Black\n", SrcNId, DstNId, 1);
+    fprintf(F, "%s %s %s c Black\n", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr(), TInt64::GetStr(1).CStr());
   }
   fclose(F);
 }
@@ -307,23 +307,23 @@ void SavePajek(const PGraph& Graph, const TStr& OutFNm, const TIntStr64H& NIdCol
   CAssert(HasGraphFlag(typename PGraph::TObj, gfMultiGraph)); // network needs to have edge ids
   TInt64H NIdToIdH(Graph->GetNodes(), true);
   FILE *F = fopen(OutFNm.CStr(), "wt");
-  fprintf(F, "*Vertices %lld\n", Graph->GetNodes());
+  fprintf(F, "*Vertices %s\n", TInt64::GetStr(Graph->GetNodes()).CStr());
   int64 i = 0;
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++, i++) {
-    fprintf(F, "%lld  \"%s\" ic %s fos 10\n", i+1,
-      NIdLabelH.IsKey(NI.GetId()) ? NIdLabelH.GetDat(NI.GetId()).CStr() : TStr::Fmt("%lld", NI.GetId()).CStr(),
+    fprintf(F, "%s  \"%s\" ic %s fos 10\n", TInt64::GetStr(i+1).CStr(),
+      NIdLabelH.IsKey(NI.GetId()) ? NIdLabelH.GetDat(NI.GetId()).CStr() : TInt64::GetStr(NI.GetId()).CStr(),
       NIdColorH.IsKey(NI.GetId()) ? NIdColorH.GetDat(NI.GetId()).CStr() : "Red");
     NIdToIdH.AddDat(NI.GetId(), i+1);
   }
   if (HasGraphFlag(typename PGraph::TObj, gfDirected)) {
-    fprintf(F, "*Arcs %lld\n", Graph->GetEdges()); } // arcs are directed, edges are undirected
+    fprintf(F, "*Arcs %s\n", TInt64::GetStr(Graph->GetEdges()).CStr()); } // arcs are directed, edges are undirected
   else {
-    fprintf(F, "*Edges %lld\n", Graph->GetEdges());
+    fprintf(F, "*Edges %s\n", TInt64::GetStr(Graph->GetEdges()).CStr());
   }
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     const int64 SrcNId = NIdToIdH.GetDat(EI.GetSrcNId());
     const int64 DstNId = NIdToIdH.GetDat(EI.GetDstNId());
-    fprintf(F, "%lld %lld 1 c %s\n", SrcNId, DstNId,
+    fprintf(F, "%s %s 1 c %s\n", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr(),
       EIdColorH.IsKey(EI.GetId()) ? EIdColorH.GetDat(EI.GetId()).CStr() : "Black");
   }
   fclose(F);
@@ -340,9 +340,9 @@ void SaveMatlabSparseMtx(const PGraph& Graph, const TStr& OutFNm) {
   for (typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     const int64 Src = NIdSet.GetKeyId(EI.GetSrcNId())+1;
     const int64 Dst = NIdSet.GetKeyId(EI.GetDstNId())+1;
-    fprintf(F, "%lld\t%lld\t1\n", Src, Dst);
+    fprintf(F, "%s\t%s\t1\n", TInt64::GetStr(Src).CStr(), TInt64::GetStr(Dst).CStr());
     if (! HasGraphFlag(typename PGraph::TObj, gfDirected) && Src!=Dst) {
-      fprintf(F, "%lld\t%lld\t1\n", Dst, Src);
+      fprintf(F, "%s\t%s\t1\n", TInt64::GetStr(Dst).CStr(), TInt64::GetStr(Src).CStr());
     }
   }
   fclose(F);
@@ -362,19 +362,19 @@ void SaveGViz(const PGraph& Graph, const TStr& OutFNm, const TStr& Desc, const b
   //for (int i = 0; i < NIdColorH.Len(); i++) {
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     if (NIdColorH.IsKey(NI.GetId())) {
-      fprintf(F, "  %lld [style=filled, fillcolor=\"%s\"];\n", NI.GetId(), NIdColorH.GetDat(NI.GetId()).CStr()); }
+      fprintf(F, "  %s [style=filled, fillcolor=\"%s\"];\n", TInt64::GetStr(NI.GetId()).CStr(), NIdColorH.GetDat(NI.GetId()).CStr()); }
     else {
-      fprintf(F, "  %lld ;\n", NI.GetId());
+      fprintf(F, "  %s ;\n", TInt64::GetStr(NI.GetId()).CStr());
     }
   }
   // edges
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     if (NI.GetOutDeg()==0 && NI.GetInDeg()==0 && !NIdColorH.IsKey(NI.GetId())) {
-      fprintf(F, "%lld;\n", NI.GetId()); }
+      fprintf(F, "%s;\n", TInt64::GetStr(NI.GetId()).CStr()); }
     else {
       for (int64 e = 0; e < NI.GetOutDeg(); e++) {
         if (! IsDir && NI.GetId() > NI.GetOutNId(e)) { continue; }
-        fprintf(F, "  %lld %s %lld;\n", NI.GetId(), IsDir?"->":"--", NI.GetOutNId(e));
+        fprintf(F, "  %s %s %s;\n", TInt64::GetStr(NI.GetId()).CStr(), IsDir?"->":"--", TInt64::GetStr(NI.GetOutNId(e)).CStr());
       }
     }
   }
@@ -397,16 +397,16 @@ void SaveGViz(const PGraph& Graph, const TStr& OutFNm, const TStr& Desc, const T
   // node colors
   //for (int i = 0; i < NodeLabelH.Len(); i++) {
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    fprintf(F, "  %lld [label=\"%s\"];\n", NI.GetId(), NIdLabelH.GetDat(NI.GetId()).CStr());
+    fprintf(F, "  %s [label=\"%s\"];\n",TInt64::GetStr(NI.GetId()).CStr(), NIdLabelH.GetDat(NI.GetId()).CStr());
 }
   // edges
   for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     if (NI.GetOutDeg()==0 && NI.GetInDeg()==0 && ! NIdLabelH.IsKey(NI.GetId())) {
-      fprintf(F, "%lld;\n", NI.GetId()); }
+      fprintf(F, "%s;\n", TInt64::GetStr(NI.GetId()).CStr()); }
     else {
       for (int64 e = 0; e < NI.GetOutDeg(); e++) {
         if (! IsDir && NI.GetId() > NI.GetOutNId(e)) { continue; }
-        fprintf(F, "  %lld %s %lld;\n", NI.GetId(), IsDir?"->":"--", NI.GetOutNId(e));
+        fprintf(F, "  %s %s %s;\n", TInt64::GetStr(NI.GetId()).CStr(), IsDir?"->":"--", TInt64::GetStr(NI.GetOutNId(e)).CStr());
       }
     }
   }

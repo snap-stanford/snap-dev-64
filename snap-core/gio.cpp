@@ -3,9 +3,9 @@ namespace TSnap {
 // Reads the schema from the file (that is being parsed), and fills the SrcColId, DstColId, and the vectors with the index,
 // within a given line, at which the source/destination nodes and edge attributes can be found in the file.
 // The schema must have the format specified in WriteEdgeSchemaToFile.
-int ReadEdgeSchemaFromFile(TSsParser& Ss, const char& Separator, int& SrcColId, int& DstColId, TStrIntH& IntAttrEVals, TStrIntH& FltAttrEVals, TStrIntH& StrAttrEVals) {
+int64 ReadEdgeSchemaFromFile(TSsParser& Ss, const char& Separator, int64& SrcColId, int64& DstColId, TStrInt64H& IntAttrEVals, TStrInt64H& FltAttrEVals, TStrInt64H& StrAttrEVals) {
   if (EDGES_START != Ss.GetFld(0)) return -1;
-  for (int i = 1; i < Ss.GetFlds(); i++) {
+  for (int64 i = 1; i < Ss.GetFlds(); i++) {
     if (SRC_ID_NAME == Ss.GetFld(i)) {
       SrcColId = i-1;
       continue;
@@ -35,32 +35,32 @@ int ReadEdgeSchemaFromFile(TSsParser& Ss, const char& Separator, int& SrcColId, 
 // at the positions specified by SrcColId, DstColId, IntAttrEVal, etc. to the Graph.
 // Continues going through the file until it hits the sentinel line END_SENTINEL, the end of the file,
 // or a schema line. Returns a bool indicating whether the current line in the TSsParser is a schema line.
-bool ReadEdgesFromFile(TSsParser& Ss, const char& Separator, PNEANet& Graph, int& SrcColId, int& DstColId, TStrIntH& IntAttrEVals, TStrIntH& FltAttrEVals, TStrIntH& StrAttrEVals) {
-  int SrcNId, DstNId;
+bool ReadEdgesFromFile(TSsParser& Ss, const char& Separator, PNEANet& Graph, int64& SrcColId, int64& DstColId, TStrInt64H& IntAttrEVals, TStrInt64H& FltAttrEVals, TStrInt64H& StrAttrEVals) {
+  int64 SrcNId, DstNId;
   while (Ss.Next()) {
     if (Ss.GetFlds() == 0) continue;
     if (END_SENTINEL == Ss.GetFld(0)) { return false; }
     if (EDGES_START == Ss.GetFld(0)) { return true; }
     if (NODES_START == Ss.GetFld(0)) { return true; }
     if (Ss.GetFld(0)[0] == '#') { continue; }
-    if (! Ss.GetInt(SrcColId, SrcNId) || ! Ss.GetInt(DstColId, DstNId)) { continue; }
+    if (! Ss.GetInt64(SrcColId, SrcNId) || ! Ss.GetInt64(DstColId, DstNId)) { continue; }
     if (! Graph->IsNode(SrcNId)) { Graph->AddNode(SrcNId); }
     if (! Graph->IsNode(DstNId)) { Graph->AddNode(DstNId); }
-    int EId = Graph->AddEdge(SrcNId, DstNId);
+    int64 EId = Graph->AddEdge(SrcNId, DstNId);
     double FltAttrVal;
-    for (TStrIntH::TIter it = FltAttrEVals.BegI(); it < FltAttrEVals.EndI(); it++) {
+    for (TStrInt64H::TIter it = FltAttrEVals.BegI(); it < FltAttrEVals.EndI(); it++) {
       if (Ss.GetFlt(it.GetDat(), FltAttrVal)) {
         Graph->AddFltAttrDatE(EId, FltAttrVal, it.GetKey());
       }
     }
-    int IntAttrVal;
-    for (TStrIntH::TIter it = IntAttrEVals.BegI(); it < IntAttrEVals.EndI(); it++) {
-      if (Ss.GetInt(it.GetDat(), IntAttrVal)) {
+    int64 IntAttrVal;
+    for (TStrInt64H::TIter it = IntAttrEVals.BegI(); it < IntAttrEVals.EndI(); it++) {
+      if (Ss.GetInt64(it.GetDat(), IntAttrVal)) {
         Graph->AddIntAttrDatE(EId, IntAttrVal, it.GetKey());
       }
     }
     char* StrAttrVal;
-    for (TStrIntH::TIter it = StrAttrEVals.BegI(); it < StrAttrEVals.EndI(); it++) {
+    for (TStrInt64H::TIter it = StrAttrEVals.BegI(); it < StrAttrEVals.EndI(); it++) {
       StrAttrVal = Ss.GetFld(it.GetDat());
       if (NULL_VAL != StrAttrVal) {
         Graph->AddStrAttrDatE(EId, TStr(StrAttrVal), it.GetKey());
@@ -74,9 +74,9 @@ bool ReadEdgesFromFile(TSsParser& Ss, const char& Separator, PNEANet& Graph, int
 // Reads the node schema from the file, and fills the NId and the vectors with the index,
 // within a given line, at which the node id and attributes can be found in the file.
 // The schema must have the format specified in WriteNodeSchemaToFile.
-int ReadNodeSchemaFromFile(TSsParser& Ss, const char& Separator, int& NId, TStrIntH& IntAttrNVals, TStrIntH& FltAttrNVals, TStrIntH& StrAttrNVals) {
+int64 ReadNodeSchemaFromFile(TSsParser& Ss, const char& Separator, int64& NId, TStrInt64H& IntAttrNVals, TStrInt64H& FltAttrNVals, TStrInt64H& StrAttrNVals) {
   if (NODES_START != Ss.GetFld(0)) return -1;
-  for (int i = 1; i < Ss.GetFlds(); i++) {
+  for (int64 i = 1; i < Ss.GetFlds(); i++) {
     if (NID_NAME == Ss.GetFld(i)) {
       NId = i-1;
       continue;
@@ -102,30 +102,30 @@ int ReadNodeSchemaFromFile(TSsParser& Ss, const char& Separator, int& NId, TStrI
 // at the positions specified by NColId, IntAttrEVal, etc. to the Graph.
 // Continues going through the file until it hits the sentinel line END_SENTINEL, the end of the file,
 // or a schema line. Returns a bool indicating whether the current line in the TSsParser is a schema line.
-bool ReadNodesFromFile(TSsParser& Ss, const char& Separator, PNEANet& Graph, int& NColId, TStrIntH& IntAttrNVals, TStrIntH& FltAttrNVals, TStrIntH& StrAttrNVals) {
-  int NId;
+bool ReadNodesFromFile(TSsParser& Ss, const char& Separator, PNEANet& Graph, int64& NColId, TStrInt64H& IntAttrNVals, TStrInt64H& FltAttrNVals, TStrInt64H& StrAttrNVals) {
+  int64 NId;
   while (Ss.Next()) {
     if (Ss.GetFlds() == 0) continue;
     if (END_SENTINEL == Ss.GetFld(0)) { return false; }
     if (EDGES_START == Ss.GetFld(0)) { return true; }
     if (NODES_START == Ss.GetFld(0)) { return true; }
     if (Ss.GetFld(0)[0] == '#') { continue; }
-    if (! Ss.GetInt(NColId, NId)) { continue; }
+    if (! Ss.GetInt64(NColId, NId)) { continue; }
     if (! Graph->IsNode(NId)) { Graph->AddNode(NId); }
     double FltAttrVal;
-    for (TStrIntH::TIter it = FltAttrNVals.BegI(); it < FltAttrNVals.EndI(); it++) {
+    for (TStrInt64H::TIter it = FltAttrNVals.BegI(); it < FltAttrNVals.EndI(); it++) {
       if (Ss.GetFlt(it.GetDat(), FltAttrVal)) {
         Graph->AddFltAttrDatN(NId, FltAttrVal, it.GetKey());
       }
     }
-    int IntAttrVal;
-    for (TStrIntH::TIter it = IntAttrNVals.BegI(); it < IntAttrNVals.EndI(); it++) {
-      if (Ss.GetInt(it.GetDat(), IntAttrVal)) {
+    int64 IntAttrVal;
+    for (TStrInt64H::TIter it = IntAttrNVals.BegI(); it < IntAttrNVals.EndI(); it++) {
+      if (Ss.GetInt64(it.GetDat(), IntAttrVal)) {
         Graph->AddIntAttrDatN(NId, IntAttrVal, it.GetKey());
       }
     }
     char* StrAttrVal;
-    for (TStrIntH::TIter it = StrAttrNVals.BegI(); it < StrAttrNVals.EndI(); it++) {
+    for (TStrInt64H::TIter it = StrAttrNVals.BegI(); it < StrAttrNVals.EndI(); it++) {
       StrAttrVal = Ss.GetFld(it.GetDat());
       if (NULL_VAL != StrAttrVal) {
         Graph->AddStrAttrDatN(NId, TStr(StrAttrVal), it.GetKey());
@@ -145,19 +145,19 @@ PNEANet LoadEdgeListNet(const TStr& InFNm, const char& Separator) {
     if (Ss.GetFlds() == 0) continue;
     if (NODES_START == Ss.GetFld(0)) {
       // Map node attribute names to column number in the file.
-      TStrIntH IntAttrNVals;
-      TStrIntH FltAttrNVals;
-      TStrIntH StrAttrNVals;
-      int NColId = -1;
+      TStrInt64H IntAttrNVals;
+      TStrInt64H FltAttrNVals;
+      TStrInt64H StrAttrNVals;
+      int64 NColId = -1;
       ReadNodeSchemaFromFile(Ss, Separator, NColId, IntAttrNVals, FltAttrNVals, StrAttrNVals);
       isSchemaLine = ReadNodesFromFile(Ss, Separator, Graph, NColId, IntAttrNVals, FltAttrNVals, StrAttrNVals);
     } else if (EDGES_START == Ss.GetFld(0)) {
       // Map edge attribute names to column number in the file.
-      TStrIntH IntAttrEVals;
-      TStrIntH FltAttrEVals;
-      TStrIntH StrAttrEVals;
-      int SrcColId = -1;
-      int DstColId = -1;
+      TStrInt64H IntAttrEVals;
+      TStrInt64H FltAttrEVals;
+      TStrInt64H StrAttrEVals;
+      int64 SrcColId = -1;
+      int64 DstColId = -1;
       ReadEdgeSchemaFromFile(Ss, Separator, SrcColId, DstColId, IntAttrEVals, FltAttrEVals, StrAttrEVals);
       isSchemaLine = ReadEdgesFromFile(Ss, Separator, Graph, SrcColId, DstColId, IntAttrEVals, FltAttrEVals, StrAttrEVals);
     }
@@ -194,9 +194,9 @@ void WriteNodesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrNNames, TSt
         continue;
       }
       int AttrIntVal = Graph->GetIntAttrDatN(NI.GetId(), IntAttrNNames[i]);
-      fprintf(F, "\t%d", AttrIntVal);
+      fprintf(F, "\t%s", TInt64::GetStr(AttrIntVal).CStr());
     }
-    for(int i = 0; i < FltAttrNNames.Len(); i++) {
+    for(int64 i = 0; i < FltAttrNNames.Len(); i++) {
       if (Graph->IsFltAttrDeletedN(NI.GetId(), FltAttrNNames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
@@ -204,7 +204,7 @@ void WriteNodesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrNNames, TSt
       double AttrFltVal = Graph->GetFltAttrDatN(NI.GetId(), FltAttrNNames[i]);
       fprintf(F, "\t%f", AttrFltVal);
     }
-    for(int i = 0; i < StrAttrNNames.Len(); i++) {
+    for(int64 i = 0; i < StrAttrNNames.Len(); i++) {
       if (Graph->IsStrAttrDeletedN(NI.GetId(), StrAttrNNames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
@@ -220,13 +220,13 @@ void WriteNodesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrNNames, TSt
 // Edge attributes are written in the format <Type>:<Name>, where Type is either Int, Flt, or Str.
 void WriteEdgeSchemaToFile(FILE *F, TStr64V &IntAttrENames, TStr64V &FltAttrENames, TStr64V &StrAttrENames) {
   fprintf(F, "%s\t%s\t%s", EDGES_START.CStr(), SRC_ID_NAME.CStr(), DST_ID_NAME.CStr());
-  for(int i = 0; i < IntAttrENames.Len(); i++) {
+  for(int64 i = 0; i < IntAttrENames.Len(); i++) {
     fprintf(F, "\t%s:%s", INT_TYPE_PREFIX.CStr(), IntAttrENames[i].CStr());
   }
-  for(int i = 0; i < FltAttrENames.Len(); i++) {
+  for(int64 i = 0; i < FltAttrENames.Len(); i++) {
     fprintf(F, "\t%s:%s", FLT_TYPE_PREFIX.CStr(), FltAttrENames[i].CStr());
   }
-  for(int i = 0; i < StrAttrENames.Len(); i++) {
+  for(int64 i = 0; i < StrAttrENames.Len(); i++) {
     fprintf(F, "\t%s:%s", STR_TYPE_PREFIX.CStr(), StrAttrENames[i].CStr());
   }
   fprintf(F, "\n");
@@ -238,15 +238,15 @@ void WriteEdgeSchemaToFile(FILE *F, TStr64V &IntAttrENames, TStr64V &FltAttrENam
 void WriteEdgesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrENames, TStr64V &FltAttrENames, TStr64V &StrAttrENames) {
   for (TNEANet::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     fprintf(F, "%s\t%s", TInt64::GetStr(EI.GetSrcNId()).CStr(), TInt64::GetStr(EI.GetDstNId()).CStr());
-    for(int i = 0; i < IntAttrENames.Len(); i++) {
+    for(int64 i = 0; i < IntAttrENames.Len(); i++) {
       if (Graph->IsIntAttrDeletedE(EI.GetId(), IntAttrENames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
       }
-      int AttrIntVal = Graph->GetIntAttrDatE(EI.GetId(), IntAttrENames[i]);
-      fprintf(F, "\t%d", AttrIntVal);
+      int64 AttrIntVal = Graph->GetIntAttrDatE(EI.GetId(), IntAttrENames[i]);
+      fprintf(F, "\t%s", TInt64::GetStr(AttrIntVal).CStr());
     }
-    for(int i = 0; i < FltAttrENames.Len(); i++) {
+    for(int64 i = 0; i < FltAttrENames.Len(); i++) {
       if (Graph->IsFltAttrDeletedE(EI.GetId(), FltAttrENames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
@@ -254,7 +254,7 @@ void WriteEdgesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrENames, TSt
       double AttrFltVal = Graph->GetFltAttrDatE(EI.GetId(), FltAttrENames[i]);
       fprintf(F, "\t%f", AttrFltVal);
     }
-    for(int i = 0; i < StrAttrENames.Len(); i++) {
+    for(int64 i = 0; i < StrAttrENames.Len(); i++) {
       if (Graph->IsStrAttrDeletedE(EI.GetId(), StrAttrENames[i])) {
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
@@ -305,8 +305,8 @@ PNGraph LoadDyNet(const TStr& FNm) {
         XmlLx.GetArg(0, Str1, Val1);  XmlLx.GetArg(1, Str2, Val2);
         IAssert(Str1=="source" && Str2=="target");
         NIdStr.AddKey(Val1); NIdStr.AddKey(Val2);
-        const int src=NIdStr.GetKeyId(Val1);
-        const int dst=NIdStr.GetKeyId(Val2);
+        const int64 src=NIdStr.GetKeyId(Val1);
+        const int64 dst=NIdStr.GetKeyId(Val2);
         if (! G->IsNode(src)) { G->AddNode(src); }
         if (! G->IsNode(dst)) { G->AddNode(dst); }
         G->AddEdge(src, dst);
@@ -333,8 +333,8 @@ TVec<PNGraph> LoadDyNetGraphV(const TStr& FNm) {
         XmlLx.GetArg(0, Str1, Val1);  XmlLx.GetArg(1, Str2, Val2);
         IAssert(Str1=="source" && Str2=="target");
         NIdStr.AddKey(Val1); NIdStr.AddKey(Val2);
-        const int src=NIdStr.GetKeyId(Val1);
-        const int dst=NIdStr.GetKeyId(Val2);
+        const int64 src=NIdStr.GetKeyId(Val1);
+        const int64 dst=NIdStr.GetKeyId(Val2);
         if (! G->IsNode(src)) { G->AddNode(src); }
         if (! G->IsNode(dst)) { G->AddNode(dst); }
         G->AddEdge(src, dst);
