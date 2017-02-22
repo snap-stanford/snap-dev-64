@@ -40,7 +40,7 @@ PUNGraph GenRndPowerLaw(const int64& Nodes, const double& PowerExp, const bool& 
     DegSeqV.Add(Val);
     DegSum += Val;
   }
-  printf("%s nodes, %u edges\n", TInt64::GetStr(Nodes).CStr(), DegSum);
+  printf("%s nodes, %s edges\n", TInt64::GetStr(Nodes).CStr(), TUInt64::GetStr(DegSum).CStr());
   if (DegSum % 2 == 1) { DegSeqV[0] += 1; }
   if (ConfModel) {
     // use configuration model -- fast but does not exactly obey the degree sequence
@@ -197,11 +197,11 @@ PUNGraph GenRewire(const PUNGraph& OrigGraph, const int64& NSwitch, TRnd& Rnd) {
       EdgeSet.AddKey(TInt64Pr(NewE2));
     } else { skip++; }
     if (swps % Edges == 0) {
-      printf("\r  %uk/%uk: %uk skip [%s]", swps/1000u, 2*uint64(Edges)*uint64(NSwitch)/1000u, skip/1000u, ExeTm.GetStr());
+      printf("\r  %sk/%sk: %sk skip [%s]", TUInt64::GetStr(swps/1000u).CStr(), TUInt64::GetStr(2*uint64(Edges)*uint64(NSwitch)/1000u).CStr(), TUInt64::GetStr(skip/1000u).CStr(), ExeTm.GetStr());
       if (ExeTm.GetSecs() > 2*3600) { printf(" *** Time limit!\n"); break; } // time limit 2 hours
     }
   }
-  printf("\r  total %uk switchings attempted, %uk skiped  [%s]\n", 2*uint64(Edges)*uint64(NSwitch)/1000u, skip/1000u, ExeTm.GetStr());
+  printf("\r  total %sk switchings attempted, %sk skiped  [%s]\n", TUInt64::GetStr(2*uint64(Edges)*uint64(NSwitch)/1000u).CStr(), TUInt64::GetStr(skip/1000u).CStr(), ExeTm.GetStr());
   for (int64 e = 0; e < EdgeSet.Len(); e++) {
     Graph.AddEdge(EdgeSet[e].Val1, EdgeSet[e].Val2); }
   return GraphPt;
@@ -244,11 +244,11 @@ PNGraph GenRewire(const PNGraph& OrigGraph, const int64& NSwitch, TRnd& Rnd) {
       EdgeSet.AddKey(TInt64Pr(NewE2));
     } else { skip++; }
     if (swps % Edges == 0) {
-      printf("\r  %uk/%uk: %uk skip [%s]", swps/1000u, 2*uint64(Edges)*uint64(NSwitch)/1000u, skip/1000u, ExeTm.GetStr());
+      printf("\r  %sk/%sk: %sk skip [%s]", TUInt64::GetStr(swps/1000u).CStr(), TUInt64::GetStr(2*uint64(Edges)*uint64(NSwitch)/1000u).CStr(), TUInt64::GetStr(skip/1000u).CStr(), ExeTm.GetStr());
       if (ExeTm.GetSecs() > 2*3600) { printf(" *** Time limit!\n"); break; } // time limit 2 hours
     }
   }
-  printf("\r  total %uk switchings attempted, %uk skiped  [%s]\n", 2*uint64(Edges)*uint64(NSwitch)/1000u, skip/1000u, ExeTm.GetStr());
+  printf("\r  total %sk switchings attempted, %sk skiped  [%s]\n", TUInt64::GetStr(2*uint64(Edges)*uint64(NSwitch)/1000u).CStr(), TUInt64::GetStr(skip/1000u).CStr(), ExeTm.GetStr());
   for (int64 e = 0; e < EdgeSet.Len(); e++) {
     Graph.AddEdge(EdgeSet[e].Val1, EdgeSet[e].Val2); }
   return GraphPt;
@@ -293,11 +293,11 @@ PBPGraph GenRewire(const PBPGraph& OrigGraph, const int& NSwitch, TRnd& Rnd) {
       EdgeSet.AddKey(TInt64Pr(NewE2));
     } else { skip++; }
     if (swps % Edges == 0) {
-      printf("\r  %uk/%uk: %uk skip [%s]", swps/1000u, 2*uint64(Edges)*uint64(NSwitch)/1000u, skip/1000u, ExeTm.GetStr());
+      printf("\r  %sk/%sk: %sk skip [%s]", TUInt64::GetStr(swps/1000u).CStr(), TUInt64::GetStr(2*uint64(Edges)*uint64(NSwitch)/1000u).CStr(), TUInt64::GetStr(skip/1000u).CStr(), ExeTm.GetStr());
       if (ExeTm.GetSecs() > 2*3600) { printf(" *** Time limit!\n"); break; } // time limit 2 hours
     }
   }
-  printf("\r  total %uk switchings attempted, %uk skiped  [%s]\n", 2*uint64(Edges)*uint64(NSwitch)/1000u, skip/1000u, ExeTm.GetStr());
+  printf("\r  total %sk switchings attempted, %sk skiped  [%s]\n", TUInt64::GetStr(2*uint64(Edges)*uint64(NSwitch)/1000u).CStr(), TUInt64::GetStr(skip/1000u).CStr(), ExeTm.GetStr());
   for (int64 e = 0; e < EdgeSet.Len(); e++) {
     Graph.AddEdge(EdgeSet[e].Val1, EdgeSet[e].Val2); }
   return GraphPt;
