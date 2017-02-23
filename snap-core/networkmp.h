@@ -248,7 +248,7 @@ private:
   THashMP<TInt64, TNode, int64> NodeH;
   THashMP<TInt64, TEdge, int64> EdgeH;
   /// KeyToIndexType[N|E]: Key->(Type,Index).
-  TStrIntPrH KeyToIndexTypeN, KeyToIndexTypeE;
+  TStrIntPr64H KeyToIndexTypeN, KeyToIndexTypeE;
 
   THashMP<TStr, TInt64, int64> IntDefaultsN, IntDefaultsE;
   THashMP<TStr, TStr, int64> StrDefaultsN, StrDefaultsE;
@@ -618,27 +618,27 @@ public:
 //  int DelAttrE(const TStr& attr);
 
   // Returns true if NId deleted for current node attr iterator.
-  bool NodeAttrIsDeleted(const int64& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   // Returns true if NId deleted for current node int attr iterator.
-  bool NodeAttrIsIntDeleted(const int64& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsIntDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   // Returns true if NId deleted for current node str attr iterator.
-  bool NodeAttrIsStrDeleted(const int64& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsStrDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   // Returns true if NId deleted for current node flt attr iterator.
-  bool NodeAttrIsFltDeleted(const int64& NId, const TStrIntPrH::TIter& NodeHI) const;
+  bool NodeAttrIsFltDeleted(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
 
   // Returns true if EId deleted for current edge attr iterator.
-  bool EdgeAttrIsDeleted(const int64& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   // Returns true if EId deleted for current edge int attr iterator.
-  bool EdgeAttrIsIntDeleted(const int64& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsIntDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   // Returns true if EId deleted for current edge str attr iterator.
-  bool EdgeAttrIsStrDeleted(const int64& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsStrDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
   // Returns true if EId deleted for current edge flt attr iterator.
-  bool EdgeAttrIsFltDeleted(const int64& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  bool EdgeAttrIsFltDeleted(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
 
   // Returns node attribute value, converted to Str type.
-  TStr GetNodeAttrValue(const int64& NId, const TStrIntPrH::TIter& NodeHI) const;
+  TStr GetNodeAttrValue(const int64& NId, const TStrIntPr64H::TIter& NodeHI) const;
   // Returns edge attribute value, converted to Str type.
-  TStr GetEdgeAttrValue(const int64& EId, const TStrIntPrH::TIter& EdgeHI) const;
+  TStr GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& EdgeHI) const;
 
   // Get the sum of the weights of all the outgoing edges of the node.
   TFlt GetWeightOutEdges(const TNodeI& NI, const TStr& attr);
