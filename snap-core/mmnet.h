@@ -656,7 +656,7 @@ public:
   PNEANet ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, THash<TInt64, TVec<TPair<TStr, TStr>, int64>,int64 >& EdgeAttrMap);
   //TODO64
   #ifdef GCC_ATOMIC
-  //PNEANetMP ToNetworkMP(TStr64V& CrossNetNames);
+  PNEANetMP ToNetworkMP(TStr64V& CrossNetNames);
   #endif // GCC_ATOMIC
 
 private:
