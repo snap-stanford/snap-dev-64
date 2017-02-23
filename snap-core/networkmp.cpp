@@ -290,7 +290,7 @@ int64 TNEANetMP::AddNode(int64 NId) {
     IntVec[NodeH.GetKeyId(NId)] = GetIntAttrDefaultN(attr);
   }
   for (i = 0; i < VecOfStrVecsN.Len(); i++) {
-    TVec<TStr>& StrVec = VecOfStrVecsN[i];
+    TVec<TStr, int64>& StrVec = VecOfStrVecsN[i];
     StrVec.Ins(NodeH.GetKeyId(NId), TStr::GetNullStr());
   }
   TVec<TStr, int64> DefStrVec = TVec<TStr, int64>();
@@ -304,7 +304,7 @@ int64 TNEANetMP::AddNode(int64 NId) {
     TVec<TFlt, int64>& FltVec = VecOfFltVecsN[i];
     FltVec.Ins(NodeH.GetKeyId(NId), TFlt::Mn);
   }
-  TVec<TStr, int64> DefFltVec = TVec<TStr>();
+  TVec<TStr, int64> DefFltVec = TVec<TStr, int64>();
   FltDefaultsN.GetKeyV(DefFltVec);
   for (i = 0; i < DefFltVec.Len(); i++) {
     TStr attr = DefFltVec[i];
