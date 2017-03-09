@@ -16,7 +16,7 @@ TEST(TIntInt64H, DefaultConstructor) {
 // Table manipulations and inserting keys and data >32bits
 TEST(TIntInt64H, ManipulateTableWithInt64KeysAndValues) {
   const int64 OFFSET = 100000000000000;
-  const int64 NElems = 1000;
+  const int64 NElems = 1000000;
   int64 DDist = 10;
   const char *FName = "test.hashint64.dat";
   TIntInt64H TableInt;
@@ -248,7 +248,7 @@ TEST(TIntInt64H, ManipulateTableWithInt64KeysAndValues) {
 // Table manipulations and inserting with >int32 elements
 // Table manipulations
 TEST(TIntInt64H, ManipulateTablewithInt64) {
-  const int64 NElems = 50000;
+  const int64 NElems = 5000000000;
   int64 DDist = 10000;
   const char *FName = "test.hashint.dat";
   TIntInt64H TableInt;
@@ -428,7 +428,7 @@ TEST(TIntInt64H, ManipulateTablewithInt64) {
 
 
 TEST(TIntInt64H, ManipulateTablewithInt64GetRndId) {
-  const int64 NElems = 50000;
+  const int64 NElems = 5000000000;
   int64 DDist = 10000;
   const char *FName = "test.hashint.dat";
   TIntInt64H TableInt;
