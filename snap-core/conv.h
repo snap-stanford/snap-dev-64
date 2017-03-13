@@ -183,7 +183,7 @@ PGraph ToNetwork(PTable Table,
   const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy)
 {
   TStr64V V;
-  return ToNetwork<PGraph>(Table, SrcCol, DstCol, V, AggrPolicy);
+  return TSnap::ToNetwork<PGraph>(Table, SrcCol, DstCol, V, AggrPolicy);
 }
 
 #ifdef GCC_ATOMIC

@@ -445,6 +445,10 @@ public:
 
 /// The name of the friend is not found by simple name lookup until a matching declaration is provided in that namespace scope (either before or after the class declaration granting friendship).
 namespace TSnap {
+  template<class PGraph> PGraph ToNetwork(PTable Table,
+  const TStr& SrcCol, const TStr& DstCol,
+  TStr64V& EdgeAttrV,
+  TAttrAggr AggrPolicy);
 	/// Converts table to a directed/undirected graph. Suitable for PUNGraph and PNGraph, but not for PNEANet where attributes are expected.
 	template<class PGraph> PGraph ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
@@ -456,10 +460,6 @@ namespace TSnap {
 	/// Converts table to a network. Suitable for PNEANet - Assumes no node and edge attributes.
   template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
-  template<class PGraph> PGraph ToNetwork(PTable Table,
-    const TStr& SrcCol, const TStr& DstCol,
-    TStr64V& EdgeAttrV,
-    TAttrAggr AggrPolicy);
   template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV,
@@ -502,6 +502,10 @@ protected:
 
   static TInt64 UseMP; ///< Global switch for choosing multi-threaded versions of TTable functions.
 public:
+  template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
+  const TStr& SrcCol, const TStr& DstCol,
+  TStr64V& EdgeAttrV,
+  TAttrAggr AggrPolicy);
   template<class PGraph> friend PGraph TSnap::ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
   template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
@@ -510,10 +514,6 @@ public:
     TAttrAggr AggrPolicy);
   template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
-    TAttrAggr AggrPolicy);
-  template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
-    const TStr& SrcCol, const TStr& DstCol,
-    TStrV& EdgeAttrV,
     TAttrAggr AggrPolicy);
   template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
