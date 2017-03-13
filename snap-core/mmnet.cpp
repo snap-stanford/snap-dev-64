@@ -1103,7 +1103,9 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
   THashSet<TInt64, int64> ModeSet;
   int64 offset = 0;
   int64 NumEdges = 0;
+  TVec<TCrossNet> CrossNets;
   for (int64 i=0; i < CrossNetNames.Len(); i++) {
+  	CrossNets.Add(GetCrossNetByName(CrossNetNames[i]));
     CrossNetStart.AddDat(CrossNetNames[i], offset);
     TCrossNet& CrossNet = GetCrossNetByName(CrossNetNames[i]);
     int64 factor = CrossNet.IsDirected() ? 1 : 2;
@@ -1154,14 +1156,15 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
                 TInt64V Neighbors;
                 ModeNet.GetNeighborsByCrossNet(n_i, CrossNetNames[j], Neighbors);
                 int64 edge_offset = CrossNetStart.GetDat(CrossNetNames[j]);
-                TCrossNet CrossNet = GetCrossNetByName(CrossNetNames[j]);
-                bool isDir = CrossNet.IsDirected();
-                bool isOutNbr = CrossNet.GetMode1() == ModeId;
+                //TCrossNet CrossNet = GetCrossNetByName(CrossNetNames[j]);
+                TCrossNet* CrossNet = &CrossNets[j];
+                bool isDir = CrossNet->IsDirected();
+                bool isOutNbr = CrossNet->GetMode1() == ModeId;
                 int64 factor = isDir ? 1 : 2;
 
                 int64 id_offset = isDir || isOutNbr ? 0 : 1;
-                if (!isDir && CrossNet.GetMode1() == CrossNet.GetMode2()) {
-                  id_offset = n_i == CrossNet.GetEdge(n_i).GetSrcNId() ? 0 : 1;
+                if (!isDir && CrossNet->GetMode1() == CrossNet->GetMode2()) {
+                  id_offset = n_i == CrossNet->GetEdge(n_i).GetSrcNId() ? 0 : 1;
                 }
 
                 for (int64 k = 0; k < Neighbors.Len(); k++) {
