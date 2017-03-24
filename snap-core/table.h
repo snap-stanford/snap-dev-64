@@ -1032,7 +1032,7 @@ public:
 /***** Value Getters - getValue(col idx, row Idx) *****/
   // No type and bound checking
   /// Get the integer value at column \c ColIdx and row \c RowIdx
-  TInt64 GetIntValAtRowIdx(const TInt64& ColIdx, const TInt& RowIdx) {
+  TInt64 GetIntValAtRowIdx(const TInt64& ColIdx, const TInt64& RowIdx) {
     return IntCols[ColIdx][RowIdx];
   }
   /// Get the float value at column \c ColIdx and row \c RowIdx

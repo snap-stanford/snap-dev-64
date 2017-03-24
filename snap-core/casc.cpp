@@ -1,16 +1,16 @@
 namespace TSnap {
 
-PNGraph CascGraphSource(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,const TInt W) {
+PNGraph CascGraphSource(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,const TInt64 W) {
   // Attribute to Int mapping
-  TInt SIdx = P->GetColIdx(C1); //Source
-  TInt DIdx = P->GetColIdx(C2); //Dest
-  TInt StIdx = P->GetColIdx(C3); //Start
-  TInt DuIdx = P->GetColIdx(C4); //Duration
-  TIntV MapV;
-  TStrV SortBy;
+  TInt64 SIdx = P->GetColIdx(C1); //Source
+  TInt64 DIdx = P->GetColIdx(C2); //Dest
+  TInt64 StIdx = P->GetColIdx(C3); //Start
+  TInt64 DuIdx = P->GetColIdx(C4); //Duration
+  TInt64V MapV;
+  TStr64V SortBy;
   SortBy.Add(C1);
   P->Order(SortBy);
-  TIntV Source; 
+  TInt64V Source;
   P->ReadIntCol(C1,Source);
   PNGraph Graph = TNGraph::New();
   //Add Nodes
@@ -20,28 +20,28 @@ PNGraph CascGraphSource(PTable P,const TStr C1,const TStr C2,const TStr C3,const
   }
   //Add Edges
   for (TRowIterator OI = P->BegRI(); OI < P->EndRI(); OI++) {
-    int OIdx = OI.GetRowIdx().Val;
-    int ODest = P->GetIntValAtRowIdx(DIdx,OIdx).Val;
-    int OStart = P->GetIntValAtRowIdx(StIdx,OIdx).Val;
-    int ODur = P->GetIntValAtRowIdx(DuIdx,OIdx).Val;
+    int64 OIdx = OI.GetRowIdx().Val;
+    int64 ODest = P->GetIntValAtRowIdx(DIdx,OIdx).Val;
+    int64 OStart = P->GetIntValAtRowIdx(StIdx,OIdx).Val;
+    int64 ODur = P->GetIntValAtRowIdx(DuIdx,OIdx).Val;
     // Inline binary Search
-    int val = ODest;
-    int lo = 0;
-    int hi = Source.Len() - 1;
-    int index = -1;
+    int64 val = ODest;
+    int64 lo = 0;
+    int64 hi = Source.Len() - 1;
+    int64 index = -1;
     while (hi >= lo) {
-      int mid = lo + (hi - lo)/2;
+      int64 mid = lo + (hi - lo)/2;
       if (Source.GetVal(mid) > val) { hi = mid - 1;}
       else if (Source.GetVal(mid) < val) { lo = mid + 1;}
       else { index = mid; hi = mid - 1;}
     }
     // End of binary Search
-    int BIdx = index;
-    for(int i = BIdx; i < Source.Len(); i++) {
-      int InIdx = MapV.GetVal(i).Val;
+    int64 BIdx = index;
+    for(int64 i = BIdx; i < Source.Len(); i++) {
+      int64 InIdx = MapV.GetVal(i).Val;
       if (InIdx == OIdx) {continue;}
-      int InSource = P->GetIntValAtRowIdx(SIdx,InIdx).Val;
-      int InStart = P->GetIntValAtRowIdx(StIdx,InIdx).Val;
+      int64 InSource = P->GetIntValAtRowIdx(SIdx,InIdx).Val;
+      int64 InStart = P->GetIntValAtRowIdx(StIdx,InIdx).Val;
       if (InSource != ODest) { break;}
       if (InStart >= (ODur + OStart) && InStart - (ODur + OStart) <= W.Val) {
         if (!Graph->IsEdge(OIdx,InIdx)) {
@@ -53,17 +53,17 @@ PNGraph CascGraphSource(PTable P,const TStr C1,const TStr C2,const TStr C3,const
   return Graph;
 }
 
-PNGraph CascGraphTime(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,const TInt W) {
+PNGraph CascGraphTime(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,const TInt64 W) {
   // Attribute to Int mapping
-  TInt SIdx = P->GetColIdx(C1); //Source
-  TInt DIdx = P->GetColIdx(C2); //Dest
-  TInt StIdx = P->GetColIdx(C3); //Start
-  TInt DuIdx = P->GetColIdx(C4); //Duration
-  TIntV MapV;
-  TStrV SortBy;
+  TInt64 SIdx = P->GetColIdx(C1); //Source
+  TInt64 DIdx = P->GetColIdx(C2); //Dest
+  TInt64 StIdx = P->GetColIdx(C3); //Start
+  TInt64 DuIdx = P->GetColIdx(C4); //Duration
+  TInt64V MapV;
+  TStr64V SortBy;
   SortBy.Add(C3);
   P->Order(SortBy);
-  TIntV Start; 
+  TInt64V Start;
   P->ReadIntCol(C3,Start);
   PNGraph Graph = TNGraph::New();
   //Add Nodes
@@ -73,18 +73,18 @@ PNGraph CascGraphTime(PTable P,const TStr C1,const TStr C2,const TStr C3,const T
   }
   //Add Edges
   for (TRowIterator OI = P->BegRI(); OI < P->EndRI(); OI++) {
-    int OIdx = OI.GetRowIdx().Val;
-    int ODest = P->GetIntValAtRowIdx(DIdx,OIdx).Val;
-    int OStart = P->GetIntValAtRowIdx(StIdx,OIdx).Val;
-    int ODur = P->GetIntValAtRowIdx(DuIdx,OIdx).Val;
+    int64 OIdx = OI.GetRowIdx().Val;
+    int64 ODest = P->GetIntValAtRowIdx(DIdx,OIdx).Val;
+    int64 OStart = P->GetIntValAtRowIdx(StIdx,OIdx).Val;
+    int64 ODur = P->GetIntValAtRowIdx(DuIdx,OIdx).Val;
     // Inline binary Search
-    int val = OStart + ODur;
-    int lo = 0;
-    int hi = Start.Len() - 1;
-    int index = -1;
+    int64 val = OStart + ODur;
+    int64 lo = 0;
+    int64 hi = Start.Len() - 1;
+    int64 index = -1;
     if (val >= Start.GetVal(hi)) { val = Start.GetVal(hi);}
     while (hi >= lo) {
-      int mid = lo + (hi - lo)/2;
+      int64 mid = lo + (hi - lo)/2;
       if (Start.GetVal(mid) > val) {
         if ((mid-1) >= lo  &&  Start.GetVal(mid - 1) < val) {
           index = mid - 1;break;
@@ -100,12 +100,12 @@ PNGraph CascGraphTime(PTable P,const TStr C1,const TStr C2,const TStr C3,const T
       else { index = mid; hi = mid - 1;}
     }
     // End of binary Search
-    int BIdx = index;
-    for(int i = BIdx; i < Start.Len(); i++) {
-      int InIdx = MapV.GetVal(i).Val;
+    int64 BIdx = index;
+    for(int64 i = BIdx; i < Start.Len(); i++) {
+      int64 InIdx = MapV.GetVal(i).Val;
       if (InIdx == OIdx) {continue;}
-      int InSource = P->GetIntValAtRowIdx(SIdx,InIdx).Val;
-      int InStart = P->GetIntValAtRowIdx(StIdx,InIdx).Val;
+      int64 InSource = P->GetIntValAtRowIdx(SIdx,InIdx).Val;
+      int64 InStart = P->GetIntValAtRowIdx(StIdx,InIdx).Val;
       if (InStart - (ODur + OStart) > W.Val) { break;}
       if (InSource == ODest && InStart >= (ODur + OStart)) {
         if (!Graph->IsEdge(OIdx,InIdx)) {
@@ -117,7 +117,7 @@ PNGraph CascGraphTime(PTable P,const TStr C1,const TStr C2,const TStr C3,const T
   return Graph;
 }
 
-PNGraph CascGraph(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,const TInt W,bool SortParam) {
+PNGraph CascGraph(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,const TInt64 W,bool SortParam) {
   if (SortParam) {
     return CascGraphSource(P, C1, C2, C3, C4, W);
   }
@@ -126,31 +126,31 @@ PNGraph CascGraph(PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr 
   }
 }
 
-void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,TVec<TIntV> &TopCascVV,bool Print) {
+void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,TVec<TInt64V, int64> &TopCascVV,bool Print) {
   // Attribute to Int mapping
-  TInt SIdx = P->GetColIdx(C1);
-  TInt DIdx = P->GetColIdx(C2);
-  TInt StIdx = P->GetColIdx(C3);
-  TInt DuIdx = P->GetColIdx(C4);
-  TIntV MapV, PhyV;
-  TStrV SortBy;
+  TInt64 SIdx = P->GetColIdx(C1);
+  TInt64 DIdx = P->GetColIdx(C2);
+  TInt64 StIdx = P->GetColIdx(C3);
+  TInt64 DuIdx = P->GetColIdx(C4);
+  TInt64V MapV, PhyV;
+  TStr64V SortBy;
   SortBy.Add(C3);
   P->Order(SortBy);
-  int count = 0;
+  int64 count = 0;
   for (TRowIterator RI = P->BegRI(); RI < P-> EndRI(); RI++) {
     MapV.Add(RI.GetRowIdx());
     PhyV.Add(count++);
   }
   // After sort attach with each row a rank helpful for sorting
   P->StoreIntCol("Physical",PhyV);
-  TInt PIdx = P->GetColIdx("Physical");
+  TInt64 PIdx = P->GetColIdx("Physical");
   for (TNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     // Check for top cascades
     if (NI.GetInDeg() != 0) { continue;}
-    TIntV CurCasc;
-    TSnapQueue<TInt> EventQ;
-    THashSet<TInt> VisitedH;
-    TInt NId = NI.GetId();
+    TInt64V CurCasc;
+    TSnapQueue<TInt64> EventQ;
+    THashSet<TInt64> VisitedH;
+    TInt64 NId = NI.GetId();
     EventQ.Push(NId);
     VisitedH.AddKey(NId);
     CurCasc.Add(P->GetIntValAtRowIdx(PIdx,NId));
@@ -158,8 +158,8 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
       TNGraph::TNodeI CNI = Graph->GetNI(EventQ.Top().Val); //Get Current Node
       EventQ.Pop();
       // Go over the outdegree nodes of the currernt node
-      for (int e = 0; e < CNI.GetOutDeg(); e++) {
-        TInt CId = CNI.GetOutNId(e);
+      for (int64 e = 0; e < CNI.GetOutDeg(); e++) {
+        TInt64 CId = CNI.GetOutNId(e);
         if ( !VisitedH.IsKey(CId)) {
           EventQ.Push(CId);
           VisitedH.AddKey(CId);
@@ -168,18 +168,18 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
       }
     }
     CurCasc.Sort();
-    TIntV ToAddV;
+    TInt64V ToAddV;
     if (Print && VisitedH.Len() > 1) {
       printf("__casacade__\t%d\n",VisitedH.Len());
     }
-    for (TIntV::TIter VI = CurCasc.BegI(); VI < CurCasc.EndI(); VI++) {
+    for (TInt64V::TIter VI = CurCasc.BegI(); VI < CurCasc.EndI(); VI++) {
       ToAddV.Add(MapV.GetVal(VI->Val));
       if (Print && VisitedH.Len() > 1) {
-        int PIdx = MapV.GetVal(VI->Val).Val;
-        int PSource = P->GetIntValAtRowIdx(SIdx,PIdx).Val;
-        int PDest = P->GetIntValAtRowIdx(DIdx,PIdx).Val;
-        int PStart = P->GetIntValAtRowIdx(StIdx,PIdx).Val;    
-        int PDur = P->GetIntValAtRowIdx(DuIdx,PIdx).Val;
+        int64 PIdx = MapV.GetVal(VI->Val).Val;
+        int64 PSource = P->GetIntValAtRowIdx(SIdx,PIdx).Val;
+        int64 PDest = P->GetIntValAtRowIdx(DIdx,PIdx).Val;
+        int64 PStart = P->GetIntValAtRowIdx(StIdx,PIdx).Val;
+        int64 PDur = P->GetIntValAtRowIdx(DuIdx,PIdx).Val;
         printf("%d\t%d\t%d\t%d\t%d\n",PIdx,PSource,PDest,PStart,PDur);
       }   
     }
@@ -191,36 +191,36 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
 }
 
 #ifdef USE_OPENMP
-void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,TVec<TIntV> &TopCascVV) {
+void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,TVec<TInt64V, int64> &TopCascVV) {
   // Attribute to Int mapping
-  TInt SIdx = P->GetColIdx(C1);
-  TInt DIdx = P->GetColIdx(C2);
-  TInt StIdx = P->GetColIdx(C3);
-  TInt DuIdx = P->GetColIdx(C4);
-  TIntV MapV, PhyV;
-  TStrV SortBy;
+  TInt64 SIdx = P->GetColIdx(C1);
+  TInt64 DIdx = P->GetColIdx(C2);
+  TInt64 StIdx = P->GetColIdx(C3);
+  TInt64 DuIdx = P->GetColIdx(C4);
+  TInt64V MapV, PhyV;
+  TStr64V SortBy;
   SortBy.Add(C3);
   P->Order(SortBy);
-  int count = 0;
+  int64 count = 0;
   for (TRowIterator RI = P->BegRI(); RI < P-> EndRI(); RI++) {
     MapV.Add(RI.GetRowIdx());
     PhyV.Add(count++);
   }
   P->StoreIntCol("Physical",PhyV);
-  TInt PIdx = P->GetColIdx("Physical");
-  TIntV GNodeV;
+  TInt64 PIdx = P->GetColIdx("Physical");
+  TInt64V GNodeV;
   for (TNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     if (NI.GetInDeg() == 0) { GNodeV.Add(NI.GetId()); }
   }
-  TVec<TIntV> ThTopCascVV; // for each thread
+  TVec<TInt64V, int64> ThTopCascVV; // for each thread
   #pragma omp parallel private(ThTopCascVV) num_threads(10)
   {
     #pragma omp for schedule(dynamic,1000)
-    for (int i = 0; i < GNodeV.Len(); i++) {
-      TIntV CurCasc;
-      TSnapQueue<TInt> EventQ;
-      THashSet<TInt> VisitedH;
-      TInt NId = GNodeV[i];
+    for (int64 i = 0; i < GNodeV.Len(); i++) {
+      TInt64V CurCasc;
+      TSnapQueue<TInt64> EventQ;
+      THashSet<TInt64> VisitedH;
+      TInt64 NId = GNodeV[i];
       EventQ.Push(NId);
       VisitedH.AddKey(NId);
       CurCasc.Add(P->GetIntValAtRowIdx(PIdx,NId));
@@ -228,8 +228,8 @@ void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3
         TNGraph::TNodeI CNI = Graph->GetNI(EventQ.Top().Val); //Get Current Node
         EventQ.Pop();
         // Go over the outdegree nodes of the currernt node
-        for (int e = 0; e < CNI.GetOutDeg(); e++) {
-          TInt CId = CNI.GetOutNId(e);
+        for (int64 e = 0; e < CNI.GetOutDeg(); e++) {
+          TInt64 CId = CNI.GetOutNId(e);
           if ( !VisitedH.IsKey(CId)) {
             EventQ.Push(CId);
             VisitedH.AddKey(CId);
@@ -238,15 +238,15 @@ void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3
         }
       }
       CurCasc.Sort();
-      TIntV ToAddV;
-      for (TIntV::TIter VI = CurCasc.BegI(); VI < CurCasc.EndI(); VI++) {
+      TInt64V ToAddV;
+      for (TInt64V::TIter VI = CurCasc.BegI(); VI < CurCasc.EndI(); VI++) {
         ToAddV.Add(MapV.GetVal(VI->Val));
       }
       if (ToAddV.Len() > 1) { ThTopCascVV.Add(ToAddV);}  
     }
     #pragma omp critical
     {
-      for (int j = 0; j < ThTopCascVV.Len(); j++) {
+      for (int64 j = 0; j < ThTopCascVV.Len(); j++) {
         TopCascVV.Add(ThTopCascVV[j]);
       }
     }

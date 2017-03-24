@@ -20,8 +20,8 @@ TStr GetFlagStr(const TGraphFlag& GraphFlag) {
 
 /////////////////////////////////////////////////
 // Union Find
-int TUnionFind::Find(const int& Key) {
-  int SetId = Key, parent = Parent(Key);
+int64 TUnionFind::Find(const int64& Key) {
+  int64 SetId = Key, parent = Parent(Key);
   // find set id
   while (parent != -1) {
     SetId = parent;
@@ -30,18 +30,18 @@ int TUnionFind::Find(const int& Key) {
   // flatten
   parent = Key;
   while (parent != -1) {
-    const int tmp = Parent(parent);
+    const int64 tmp = Parent(parent);
     if (tmp != -1) { Parent(parent) = SetId; }
     parent = tmp;
   }
   return SetId;
 }
 
-void TUnionFind::Union(const int& Key1, const int& Key2) {
-  const int root1 = Find(Key1);
-  const int root2 = Find(Key2);
-  TInt& rank1 = Rank(root1);
-  TInt& rank2 = Rank(root2);
+void TUnionFind::Union(const int64& Key1, const int64& Key2) {
+  const int64 root1 = Find(Key1);
+  const int64 root2 = Find(Key2);
+  TInt64& rank1 = Rank(root1);
+  TInt64& rank2 = Rank(root2);
   if (rank1 > rank2) { Parent(root2) = root1; }
   else if (rank1 < rank2) { Parent(root1) = root2; }
   else if (root1 != root2) {
@@ -52,8 +52,8 @@ void TUnionFind::Union(const int& Key1, const int& Key2) {
 
 void TUnionFind::Dump() {
   printf("  key\tset\n");
-  for (int i = 0; i < KIdSetH.Len(); i++) {
-    printf("  %d\t%d\n", int(KIdSetH.GetKey(i)), Find(KIdSetH.GetKey(i)));
+  for (int64 i = 0; i < KIdSetH.Len(); i++) {
+    printf("  %d\t%d\n", int64(KIdSetH.GetKey(i)), Find(KIdSetH.GetKey(i)));
   }
   printf("\n");
 }

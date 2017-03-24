@@ -73,21 +73,21 @@ template <class PGraph> void PrintInfo(const PGraph& Graph, const TStr& Desc="",
 
 // Forward declaration, definition in triad.h
 template <class PGraph> int64 GetTriads(const PGraph& Graph, int64& ClosedTriads, int64& OpenTriads, int64 SampleNodes=-1);
-template <class PGraph> double GetBfsEffDiam(const PGraph& Graph, const int& NTestNodes, const bool& IsDir, double& EffDiam, int& FullDiam);
+template <class PGraph> double GetBfsEffDiam(const PGraph& Graph, const int64& NTestNodes, const bool& IsDir, double& EffDiam, int64& FullDiam);
 template <class PGraph> double GetMxWccSz(const PGraph& Graph);
 template <class PGraph> double GetMxSccSz(const PGraph& Graph);
-template<class PGraph> int GetKCoreNodes(const PGraph& Graph, TIntPrV& CoreIdSzV);
-template<class PGraph> int GetKCoreEdges(const PGraph& Graph, TIntPrV& CoreIdSzV);
+template<class PGraph> int64 GetKCoreNodes(const PGraph& Graph, TIntPr64V& CoreIdSzV);
+template<class PGraph> int64 GetKCoreEdges(const PGraph& Graph, TIntPr64V& CoreIdSzV);
 
 template <class PGraph>
 void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const bool& Fast) {
-  int BiDirEdges=0, ZeroNodes=0, ZeroInNodes=0, ZeroOutNodes=0, SelfEdges=0, NonZIODegNodes=0;
-  THash<TIntPr, TInt> UniqDirE, UniqUnDirE;
+  int64 BiDirEdges=0, ZeroNodes=0, ZeroInNodes=0, ZeroOutNodes=0, SelfEdges=0, NonZIODegNodes=0;
+  THash<TInt64Pr, TInt64, int64> UniqDirE, UniqUnDirE;
   FILE *F = stdout;
   if (! OutFNm.Empty()) F = fopen(OutFNm.CStr(), "wt");
   if (! Desc.Empty()) { fprintf(F, "%s:", Desc.CStr()); }
   else { fprintf(F, "Graph:"); }
-  for (int f = gfUndef; f < gfMx; f++) {
+  for (int64 f = gfUndef; f < gfMx; f++) {
     if (HasGraphFlag(typename PGraph::TObj, TGraphFlag(f))) {
       fprintf(F, " %s", TSnap::GetFlagStr(TGraphFlag(f)).CStr()); }
   }
@@ -98,20 +98,20 @@ void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const 
     if (NI.GetOutDeg()==0) ZeroOutNodes++;
     if (NI.GetInDeg()!=0 && NI.GetOutDeg()!=0) NonZIODegNodes++;
     if (! Fast || Graph->GetNodes() < 1000) {
-      const int NId = NI.GetId();
-      for (int edge = 0; edge < NI.GetOutDeg(); edge++) {
-        const int DstNId = NI.GetOutNId(edge);
+      const int64 NId = NI.GetId();
+      for (int64 edge = 0; edge < NI.GetOutDeg(); edge++) {
+        const int64 DstNId = NI.GetOutNId(edge);
         if (Graph->IsEdge(DstNId, NId)) BiDirEdges++;
         if (NId == DstNId) SelfEdges++;
-        UniqDirE.AddKey(TIntPr(NId, DstNId));
-        UniqUnDirE.AddKey(TIntPr(TInt::GetMn(NId, DstNId), TInt::GetMx(NId, DstNId)));
+        UniqDirE.AddKey(TInt64Pr(NId, DstNId));
+        UniqUnDirE.AddKey(TInt64Pr(TInt64::GetMn(NId, DstNId), TInt64::GetMx(NId, DstNId)));
       }
     }
   }
   int64 Closed=0, Open=0;
   double WccSz=0, SccSz=0;
   double EffDiam=0;
-  int FullDiam=0;
+  int64 FullDiam=0;
   if (! Fast) {
     TSnap::GetTriads(Graph, Closed, Open);
     WccSz = TSnap::GetMxWccSz(Graph);
@@ -210,33 +210,33 @@ public:
 /// Union Find class (Disjoint-set data structure). ##TUnionFind
 class TUnionFind {
 private:
-  THash<TInt, TIntPr> KIdSetH; // key id to (parent, rank)
+  THash<TInt64, TInt64Pr, int64> KIdSetH; // key id to (parent, rank)
 public:
   /// Returns the parent of element Key.
-  TInt& Parent(const int& Key) { return KIdSetH.GetDat(Key).Val1; }
+  TInt64& Parent(const int64& Key) { return KIdSetH.GetDat(Key).Val1; }
   /// Returns the rank of element Key.
-  TInt& Rank(const int& Key) { return KIdSetH.GetDat(Key).Val2; }
+  TInt64& Rank(const int64& Key) { return KIdSetH.GetDat(Key).Val2; }
 public:
   TUnionFind() : KIdSetH() { }
   /// Constructor that reserves enough memory for ExpectKeys elements.
-  TUnionFind(const int& ExpectKeys) : KIdSetH(ExpectKeys, true) { }
+  TUnionFind(const int64& ExpectKeys) : KIdSetH(ExpectKeys, true) { }
   TUnionFind(const TUnionFind& UnionFind) : KIdSetH(UnionFind.KIdSetH) { }
   TUnionFind& operator = (const TUnionFind& UF) { KIdSetH=UF.KIdSetH; return *this; }
 
   /// Returns the number of elements in the structure.
-  int Len() const { return KIdSetH.Len(); }
+  int64 Len() const { return KIdSetH.Len(); }
   /// Returns true if the structure contains element Key.
-  bool IsKey(const int& Key) const { return KIdSetH.IsKey(Key); }
+  bool IsKey(const int64& Key) const { return KIdSetH.IsKey(Key); }
   /// Returns the element KeyN.
-  int GetKeyI(const int& KeyN) const { return KIdSetH.GetKey(KeyN); }
+  int64 GetKeyI(const int64& KeyN) const { return KIdSetH.GetKey(KeyN); }
   /// Returns the set that contains element Key.
-  int Find(const int& Key);
+  int64 Find(const int64& Key);
   /// Adds an element Key to the structure.
-  int Add(const int& Key) { KIdSetH.AddDat(Key, TIntPr(-1, 0));  return Key; }
+  int64 Add(const int64& Key) { KIdSetH.AddDat(Key, TInt64Pr(-1, 0));  return Key; }
   /// Merges sets with elements Key1 and Key2.
-  void Union(const int& Key1, const int& Key2);
+  void Union(const int64& Key1, const int64& Key2);
   /// Returns true if elements Key1 and Key2 are in the same set.
-  bool IsSameSet(const int& Key1, const int& Key2) {
+  bool IsSameSet(const int64& Key1, const int64& Key2) {
     return Find(Key1) == Find(Key2); }
   /// Prints out the structure to standard output.
   void Dump();
@@ -248,14 +248,14 @@ template <class TVal, class TCmp = TLss<TVal> >
 class THeap {
 private:
   TCmp Cmp;
-  TVec<TVal> HeapV;
+  TVec<TVal, int64> HeapV;
 private:
-  void PushHeap(const int& First, int HoleIdx, const int& Top, TVal Val);
-  void AdjustHeap(const int& First, int HoleIdx, const int& Len, TVal Val);
-  void MakeHeap(const int& First, const int& Len);
+  void PushHeap(const int64& First, int64 HoleIdx, const int64& Top, TVal Val);
+  void AdjustHeap(const int64& First, int64 HoleIdx, const int64& Len, TVal Val);
+  void MakeHeap(const int64& First, const int64& Len);
 public:
   THeap() : HeapV() { }
-  THeap(const int& MxVals) : Cmp(), HeapV(MxVals, 0) { }
+  THeap(const int64& MxVals) : Cmp(), HeapV(MxVals, 0) { }
   THeap(const TCmp& _Cmp) : Cmp(_Cmp), HeapV() { }
   THeap(const TVec<TVal>& Vec) : Cmp(), HeapV(Vec) { MakeHeap(); }
   THeap(const TVec<TVal>& Vec, const TCmp& _Cmp) : Cmp(_Cmp), HeapV(Vec) { MakeHeap(); }
@@ -269,7 +269,7 @@ public:
   /// Removes the top element from the heap.
   TVal PopHeap();
   /// Returns the number of elements in the heap.
-  int Len() const { return HeapV.Len(); }
+  int64 Len() const { return HeapV.Len(); }
   /// Tests whether the heap is empty.
   bool Empty() const { return HeapV.Empty(); }
   /// Returns a reference to the vector containing the elements of the heap.
@@ -301,8 +301,8 @@ TVal THeap<TVal, TCmp>::PopHeap() {
 }
 
 template <class TVal, class TCmp>
-void THeap<TVal, TCmp>::PushHeap(const int& First, int HoleIdx, const int& Top, TVal Val) {
-  int Parent = (HoleIdx-1)/2;
+void THeap<TVal, TCmp>::PushHeap(const int64& First, int64 HoleIdx, const int64& Top, TVal Val) {
+  int64 Parent = (HoleIdx-1)/2;
   while (HoleIdx > Top && Cmp(HeapV[First+Parent], Val)) {
     HeapV[First+HoleIdx] = HeapV[First+Parent];
     HoleIdx = Parent;  Parent = (HoleIdx-1)/2;
@@ -311,9 +311,9 @@ void THeap<TVal, TCmp>::PushHeap(const int& First, int HoleIdx, const int& Top, 
 }
 
 template <class TVal, class TCmp>
-void THeap<TVal, TCmp>::AdjustHeap(const int& First, int HoleIdx, const int& Len, TVal Val) {
-  const int Top = HoleIdx;
-  int Right = 2*HoleIdx+2;
+void THeap<TVal, TCmp>::AdjustHeap(const int64& First, int64 HoleIdx, const int64& Len, TVal Val) {
+  const int64 Top = HoleIdx;
+  int64 Right = 2*HoleIdx+2;
   while (Right < Len) {
     if (Cmp(HeapV[First+Right], HeapV[First+Right-1])) { Right--; }
     HeapV[First+HoleIdx] = HeapV[First+Right];
@@ -325,9 +325,9 @@ void THeap<TVal, TCmp>::AdjustHeap(const int& First, int HoleIdx, const int& Len
 }
 
 template <class TVal, class TCmp>
-void THeap<TVal, TCmp>::MakeHeap(const int& First, const int& Len) {
+void THeap<TVal, TCmp>::MakeHeap(const int64& First, const int64& Len) {
   if (Len < 2) { return; }
-  int Parent = (Len-2)/2;
+  int64 Parent = (Len-2)/2;
   while (true) {
     AdjustHeap(First, Parent, Len, HeapV[First+Parent]);
     if (Parent == 0) { return; }
