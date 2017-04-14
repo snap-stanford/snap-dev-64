@@ -7,7 +7,7 @@ namespace TSnap {
 template<class PGraph>
 PGraph ToGraph(PTable Table, const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy)
 {
-	PGraph Graph = PGraph::TObj::New();
+  PGraph Graph = PGraph::TObj::New();
 
   const TAttrType NodeType = Table->GetColType(SrcCol);
   Assert(NodeType == Table->GetColType(DstCol));
@@ -583,7 +583,7 @@ PGraphMP ToGraphMP3(PTable Table, const TStr& SrcCol, const TStr& DstCol) {
   NumNodesEst = sz * log ((double)sz / cnt);
   free (buckets);
 
-  //Until we correctly estimate the number of nodes 
+  //Until we correctly estimate the number of nodes
   while (1)
   {
     Graph = TNGraphMP::New(NumNodesEst, 100);
@@ -595,7 +595,7 @@ PGraphMP ToGraphMP3(PTable Table, const TStr& SrcCol, const TStr& DstCol) {
     OutVec.Gen(Length);
     InVec.Gen(Length);
 
-    //build the node hash table, count the size of edge lists 
+    //build the node hash table, count the size of edge lists
     Last = NumRows;
     Nodes = 0;
     omp_set_num_threads(Threads);
@@ -659,7 +659,7 @@ PGraphMP ToGraphMP3(PTable Table, const TStr& SrcCol, const TStr& DstCol) {
     }
   }
 
-  // assign edges 
+  // assign edges
   Length = Graph->Reserved();
   Threads = MaxThreads;
   Delta = (Length + Threads - 1) / Threads;
@@ -2535,4 +2535,3 @@ inline PGraphMP ToNetworkMP(PTable Table,
 }; // TSnap namespace
 
 #endif // CONV_H
-
