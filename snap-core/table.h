@@ -2,9 +2,9 @@
 #define TABLE_H
 
 /// Boolean operators for selection predicates
-typedef enum {NOT, AND, OR, NOP} TPredOp; 
+typedef enum {NOT, AND, OR, NOP} TPredOp;
 /// Comparison operators for selection predicates
-typedef enum {LT = 0, LTE, EQ, NEQ, GTE, GT, SUBSTR, SUPERSTR} TPredComp; 
+typedef enum {LT = 0, LTE, EQ, NEQ, GTE, GT, SUBSTR, SUPERSTR} TPredComp;
 
 class TAtomicPredicate;
 class TPredicateNode;
@@ -23,116 +23,116 @@ class TAtomicPredicate {
     TFlt FltConst; ///< Flt const value if this object is a float constant
     TStr StrConst; ///< Str const value if this object is a string constant
   // OP RS: 2014/03/25, NonAtom does not work with Snap.py
-	//protected:
-		//static const TAtomicPredicate NonAtom;
+  //protected:
+    //static const TAtomicPredicate NonAtom;
   public:
     /// Default constructor
-    TAtomicPredicate() : Type(atInt), IsConst(true), 
-      Compare(EQ), Lvar(""), Rvar(""), 
+    TAtomicPredicate() : Type(atInt), IsConst(true),
+      Compare(EQ), Lvar(""), Rvar(""),
       IntConst(0), FltConst(0), StrConst("") {}
-    //TAtomicPredicate() : Type(NonAtom.Type), IsConst(NonAtom.IsConst), 
-    //  Compare(NonAtom.Compare), Lvar(NonAtom.Lvar), Rvar(NonAtom.Rvar), 
+    //TAtomicPredicate() : Type(NonAtom.Type), IsConst(NonAtom.IsConst),
+    //  Compare(NonAtom.Compare), Lvar(NonAtom.Lvar), Rvar(NonAtom.Rvar),
     //  IntConst(NonAtom.IntConst), FltConst(NonAtom.FltConst), StrConst(NonAtom.StrConst) {}
     /// Construct predicate from given comparison op, variables and constants
-    TAtomicPredicate(TAttrType Typ, TBool IsCnst, TPredComp Cmp, TStr L, TStr R, 
-    TInt64 ICnst, TFlt FCnst, TStr SCnst) : Type(Typ), IsConst(IsCnst), 
+    TAtomicPredicate(TAttrType Typ, TBool IsCnst, TPredComp Cmp, TStr L, TStr R,
+    TInt64 ICnst, TFlt FCnst, TStr SCnst) : Type(Typ), IsConst(IsCnst),
       Compare(Cmp), Lvar(L), Rvar(R), IntConst(ICnst), FltConst(FCnst),
       StrConst(SCnst) {}
     /// Compact prototype for constructing non-const atomic predicate
     TAtomicPredicate(TAttrType Typ, TBool IsCnst, TPredComp Cmp, TStr L, TStr R) :
-      Type(Typ), IsConst(IsCnst), Compare(Cmp), Lvar(L), Rvar(R), IntConst(0), 
+      Type(Typ), IsConst(IsCnst), Compare(Cmp), Lvar(L), Rvar(R), IntConst(0),
       FltConst(0), StrConst("") {}
     friend class TPredicate;
-		friend class TPredicateNode;
+    friend class TPredicateNode;
 };
 
 //#//////////////////////////////////////////////
 /// Predicate node - represents a binary predicate operation on two predicate nodes
 class TPredicateNode {
-	public:
-		TPredOp Op; ///< Logical op represented by this node
-		TBool Result; ///< Result of evaulating the predicate rooted at this node
-		TAtomicPredicate Atom; ///< Atomic predicate at this node
-		TPredicateNode* Parent; ///< Parent node of this node
-		TPredicateNode* Left; ///< Left child of this node
-		TPredicateNode* Right; ///< Right child of this node
-		/// Default constructor
-		TPredicateNode(): Op(NOP), Result(false), Atom(), Parent(NULL), Left(NULL), 
-			Right(NULL) {}
-		/// Constructor for atomic predicate node (leaf)
-		TPredicateNode(const TAtomicPredicate& A): Op(NOP), Result(false), Atom(A), 
-			Parent(NULL), Left(NULL), Right(NULL) {}
-		/// Constructor for logical operation predicate node (internal node)
-		TPredicateNode(TPredOp Opr): Op(Opr), Result(false), Atom(), Parent(NULL), 
-			Left(NULL), Right(NULL) {}
-		/// Copy constructor
-		TPredicateNode(const TPredicateNode& P): Op(P.Op), Result(P.Result), Atom(P.Atom), 
-			Parent(P.Parent), Left(P.Left), Right(P.Right) {}
-		/// Add left child to this node
-		void AddLeftChild(TPredicateNode* Child) { Left = Child; Child->Parent = this; }
-		/// Add right child to this node
-		void AddRightChild(TPredicateNode* Child) { Right = Child; Child->Parent = this; }
-		/// Get variables in the predicate tree rooted at this node
-		void GetVariables(TStr64V& Variables);
-		friend class TPredicate;
+  public:
+    TPredOp Op; ///< Logical op represented by this node
+    TBool Result; ///< Result of evaulating the predicate rooted at this node
+    TAtomicPredicate Atom; ///< Atomic predicate at this node
+    TPredicateNode* Parent; ///< Parent node of this node
+    TPredicateNode* Left; ///< Left child of this node
+    TPredicateNode* Right; ///< Right child of this node
+    /// Default constructor
+    TPredicateNode(): Op(NOP), Result(false), Atom(), Parent(NULL), Left(NULL),
+      Right(NULL) {}
+    /// Constructor for atomic predicate node (leaf)
+    TPredicateNode(const TAtomicPredicate& A): Op(NOP), Result(false), Atom(A),
+      Parent(NULL), Left(NULL), Right(NULL) {}
+    /// Constructor for logical operation predicate node (internal node)
+    TPredicateNode(TPredOp Opr): Op(Opr), Result(false), Atom(), Parent(NULL),
+      Left(NULL), Right(NULL) {}
+    /// Copy constructor
+    TPredicateNode(const TPredicateNode& P): Op(P.Op), Result(P.Result), Atom(P.Atom),
+      Parent(P.Parent), Left(P.Left), Right(P.Right) {}
+    /// Add left child to this node
+    void AddLeftChild(TPredicateNode* Child) { Left = Child; Child->Parent = this; }
+    /// Add right child to this node
+    void AddRightChild(TPredicateNode* Child) { Right = Child; Child->Parent = this; }
+    /// Get variables in the predicate tree rooted at this node
+    void GetVariables(TStr64V& Variables);
+    friend class TPredicate;
 };
 
 //#//////////////////////////////////////////////
 /// Predicate - encapsulates comparison operations
 class TPredicate {
-	protected:
-		THash<TStr, TInt64, int64> IntVars; ///< Int variables in the current predicate tree
-		THash<TStr, TFlt, int64> FltVars; ///< Float variables in the current predicate tree
-		THash<TStr, TStr, int64> StrVars; ///< String variables in the current predicate tree
-		TPredicateNode* Root; ///< Rood node of the current predicate tree
-	public:
-		/// Default constructor
-		TPredicate() : IntVars(), FltVars(), StrVars() {}
-		/// Construct predicate with given root node \c R
-		TPredicate(TPredicateNode* R) : IntVars(), FltVars(), StrVars(), Root(R) {}
-		/// Copy constructor
-		TPredicate(const TPredicate& Pred) : IntVars(Pred.IntVars), FltVars(Pred.FltVars), StrVars(Pred.StrVars), Root(Pred.Root) {}
-		/// Get variables in current predicate
-		void GetVariables(TStr64V& Variables);
-		/// Set int variable value in the predicate or all the children that use it
-		void SetIntVal(TStr VarName, TInt64 VarVal) { IntVars.AddDat(VarName, VarVal); }
-		/// Set flt variable value in the predicate or all the children that use it
-		void SetFltVal(TStr VarName, TFlt VarVal) { FltVars.AddDat(VarName, VarVal); }
-		/// Set str variable value in the predicate or all the children that use it
-		void SetStrVal(TStr VarName, TStr VarVal) { StrVars.AddDat(VarName, VarVal); }
-		/// Return the result of evaluating current predicate
-		TBool Eval();
-		/// Evaluate the give atomic predicate
-		TBool EvalAtomicPredicate(const TAtomicPredicate& Atom);
+  protected:
+    THash<TStr, TInt64, int64> IntVars; ///< Int variables in the current predicate tree
+    THash<TStr, TFlt, int64> FltVars; ///< Float variables in the current predicate tree
+    THash<TStr, TStr, int64> StrVars; ///< String variables in the current predicate tree
+    TPredicateNode* Root; ///< Rood node of the current predicate tree
+  public:
+    /// Default constructor
+    TPredicate() : IntVars(), FltVars(), StrVars() {}
+    /// Construct predicate with given root node \c R
+    TPredicate(TPredicateNode* R) : IntVars(), FltVars(), StrVars(), Root(R) {}
+    /// Copy constructor
+    TPredicate(const TPredicate& Pred) : IntVars(Pred.IntVars), FltVars(Pred.FltVars), StrVars(Pred.StrVars), Root(Pred.Root) {}
+    /// Get variables in current predicate
+    void GetVariables(TStr64V& Variables);
+    /// Set int variable value in the predicate or all the children that use it
+    void SetIntVal(TStr VarName, TInt64 VarVal) { IntVars.AddDat(VarName, VarVal); }
+    /// Set flt variable value in the predicate or all the children that use it
+    void SetFltVal(TStr VarName, TFlt VarVal) { FltVars.AddDat(VarName, VarVal); }
+    /// Set str variable value in the predicate or all the children that use it
+    void SetStrVal(TStr VarName, TStr VarVal) { StrVars.AddDat(VarName, VarVal); }
+    /// Return the result of evaluating current predicate
+    TBool Eval();
+    /// Evaluate the give atomic predicate
+    TBool EvalAtomicPredicate(const TAtomicPredicate& Atom);
 
-		/// Compare atomic values Val1 and Val2 using predicate Cmp
-		template <class T>
-		static TBool EvalAtom(T Val1, T Val2, TPredComp Cmp) {
-			switch (Cmp) {
-				case LT: return Val1 < Val2;
-				case LTE: return Val1 <= Val2;
-				case EQ: return Val1 == Val2;
-				case NEQ: return Val1 != Val2;
-				case GTE: return Val1 >= Val2;
-				case GT: return Val1 > Val2;
-				default: return false;
-			}
-		};
+    /// Compare atomic values Val1 and Val2 using predicate Cmp
+    template <class T>
+    static TBool EvalAtom(T Val1, T Val2, TPredComp Cmp) {
+      switch (Cmp) {
+        case LT: return Val1 < Val2;
+        case LTE: return Val1 <= Val2;
+        case EQ: return Val1 == Val2;
+        case NEQ: return Val1 != Val2;
+        case GTE: return Val1 >= Val2;
+        case GT: return Val1 > Val2;
+        default: return false;
+      }
+    };
 
-		/// Compare atomic string values Val1 and Val2 using predicate Cmp
-		static TBool EvalStrAtom(const TStr& Val1, const TStr& Val2, TPredComp Cmp) {
-			switch (Cmp) {
-				case LT: return Val1 < Val2;
-				case LTE: return Val1 <= Val2;
-				case EQ: return Val1 == Val2;
-				case NEQ: return Val1 != Val2;
-				case GTE: return Val1 >= Val2;
-				case GT: return Val1 > Val2;
-				case SUBSTR: return Val2.IsStrIn(Val1);
-				case SUPERSTR: return Val1.IsStrIn(Val2);
-				default: return false;
-			}
-		}
+    /// Compare atomic string values Val1 and Val2 using predicate Cmp
+    static TBool EvalStrAtom(const TStr& Val1, const TStr& Val2, TPredComp Cmp) {
+      switch (Cmp) {
+        case LT: return Val1 < Val2;
+        case LTE: return Val1 <= Val2;
+        case EQ: return Val1 == Val2;
+        case NEQ: return Val1 != Val2;
+        case GTE: return Val1 >= Val2;
+        case GT: return Val1 > Val2;
+        case SUBSTR: return Val2.IsStrIn(Val1);
+        case SUPERSTR: return Val1.IsStrIn(Val2);
+        default: return false;
+      }
+    }
 };
 
 //#//////////////////////////////////////////////
@@ -208,7 +208,7 @@ public:
     StringVals.LoadShM(ShMin, true);
   }
   /// Saves TTableContext in binary to \c SOut.
-  void Save(TSOut& SOut) { StringVals.Save(SOut); }
+  void Save(TSOut& SOut) const { StringVals.Save(SOut); }
   /// Adds string \c Key to the context, returns its KeyId.
   TInt64 AddStr(const TStr& Key) {
     TInt64 KeyId = TInt64(StringVals.AddKey(Key));
@@ -279,61 +279,61 @@ typedef TVec<TPair<TStr, TAttrType>, int64 > Schema;
 /// A class representing a cached grouping statement identifier
 class GroupStmt{
 protected:
-	TStr64V GroupByAttrs;
-	TBool Ordered;
-	TBool UsePhysicalRowIds;
-	TBool Valid;
+  TStr64V GroupByAttrs;
+  TBool Ordered;
+  TBool UsePhysicalRowIds;
+  TBool Valid;
 public:
-	GroupStmt(): GroupByAttrs(TStr64V()), Ordered(true), UsePhysicalRowIds(true), Valid(true){}
-	GroupStmt(const TStr64V& Attrs): GroupByAttrs(Attrs), Ordered(true), UsePhysicalRowIds(true), Valid(true){}
-	GroupStmt(const TStr64V& Attrs, TBool ordered, TBool physical): GroupByAttrs(Attrs), Ordered(ordered), UsePhysicalRowIds(physical), Valid(true){}
-	GroupStmt(const GroupStmt& stmt): GroupByAttrs(stmt.GroupByAttrs), Ordered(stmt.Ordered), UsePhysicalRowIds(stmt.UsePhysicalRowIds), Valid(stmt.Valid){}
-	TBool UsePhysicalIds(){return UsePhysicalRowIds;}
-	TBool operator ==(const GroupStmt& stmt) const{
-		if(stmt.Ordered != Ordered || stmt.UsePhysicalRowIds != UsePhysicalRowIds){ return false;}
-		if(stmt.GroupByAttrs.Len() != GroupByAttrs.Len()){ return false;}
-		for(int64 i = 0; i < GroupByAttrs.Len(); i++){
-			if(stmt.GroupByAttrs[i] != GroupByAttrs[i]){ return false;}
-		}
-		return true;
-	}
-	TBool IsValid(){ return Valid;}
-	void Invalidate(){ Valid = false;}
-	TBool IncludesAttr(const TStr& Attr){
-		for(int64 i = 0; i < GroupByAttrs.Len(); i++){
-			if(GroupByAttrs[i] == Attr){ return true;}
-		}
-		return false;
-	}
-	TSize GetMemUsed() const{
-		TSize sz = 3 * sizeof(TBool);
-		sz += GroupByAttrs.GetMemUsed();
-		for(int64 i = 0; i < GroupByAttrs.Len(); i++){
-			sz += GroupByAttrs[i].GetMemUsed();
-		}
-		return sz;
-	}
-	
-	int64 GetPrimHashCd() const{
-		int64 hc1 = GroupByAttrs.GetPrimHashCd();
-		TTriple<TBool,TBool,TBool> flags;
-		int64 hc2 = flags.GetPrimHashCd();
-		return TPairHashImpl::GetHashCd(hc1, hc2);
-	}
-	
-	int64 GetSecHashCd() const{
-		int64 hc1 = GroupByAttrs.GetSecHashCd();
-		TTriple<TBool,TBool,TBool> flags;
-		int64 hc2 = flags.GetSecHashCd();
-		return TPairHashImpl::GetHashCd(hc1, hc2);
-	}
-	
-	void Print(){
-		for(int64 i = 0; i < GroupByAttrs.Len(); i++){
-			printf("%s ", GroupByAttrs[i].CStr());
-		}
-		printf("Ordered: %d, UsePhysicalRows: %d, Valid: %d\n", Ordered.Val, UsePhysicalRowIds.Val, Valid.Val);
-	}
+  GroupStmt(): GroupByAttrs(TStr64V()), Ordered(true), UsePhysicalRowIds(true), Valid(true){}
+  GroupStmt(const TStr64V& Attrs): GroupByAttrs(Attrs), Ordered(true), UsePhysicalRowIds(true), Valid(true){}
+  GroupStmt(const TStr64V& Attrs, TBool ordered, TBool physical): GroupByAttrs(Attrs), Ordered(ordered), UsePhysicalRowIds(physical), Valid(true){}
+  GroupStmt(const GroupStmt& stmt): GroupByAttrs(stmt.GroupByAttrs), Ordered(stmt.Ordered), UsePhysicalRowIds(stmt.UsePhysicalRowIds), Valid(stmt.Valid){}
+  TBool UsePhysicalIds(){return UsePhysicalRowIds;}
+  TBool operator ==(const GroupStmt& stmt) const{
+    if(stmt.Ordered != Ordered || stmt.UsePhysicalRowIds != UsePhysicalRowIds){ return false;}
+    if(stmt.GroupByAttrs.Len() != GroupByAttrs.Len()){ return false;}
+    for(int64 i = 0; i < GroupByAttrs.Len(); i++){
+      if(stmt.GroupByAttrs[i] != GroupByAttrs[i]){ return false;}
+    }
+    return true;
+  }
+  TBool IsValid(){ return Valid;}
+  void Invalidate(){ Valid = false;}
+  TBool IncludesAttr(const TStr& Attr){
+    for(int64 i = 0; i < GroupByAttrs.Len(); i++){
+      if(GroupByAttrs[i] == Attr){ return true;}
+    }
+    return false;
+  }
+  TSize GetMemUsed() const{
+    TSize sz = 3 * sizeof(TBool);
+    sz += GroupByAttrs.GetMemUsed();
+    for(int64 i = 0; i < GroupByAttrs.Len(); i++){
+      sz += GroupByAttrs[i].GetMemUsed();
+    }
+    return sz;
+  }
+
+  int64 GetPrimHashCd() const{
+    int64 hc1 = GroupByAttrs.GetPrimHashCd();
+    TTriple<TBool,TBool,TBool> flags;
+    int64 hc2 = flags.GetPrimHashCd();
+    return TPairHashImpl::GetHashCd(hc1, hc2);
+  }
+
+  int64 GetSecHashCd() const{
+    int64 hc1 = GroupByAttrs.GetSecHashCd();
+    TTriple<TBool,TBool,TBool> flags;
+    int64 hc2 = flags.GetSecHashCd();
+    return TPairHashImpl::GetHashCd(hc1, hc2);
+  }
+
+  void Print(){
+    for(int64 i = 0; i < GroupByAttrs.Len(); i++){
+      printf("%s ", GroupByAttrs[i].CStr());
+    }
+    printf("Ordered: %d, UsePhysicalRows: %d, Valid: %d\n", Ordered.Val, UsePhysicalRowIds.Val, Valid.Val);
+  }
 };
 
 //#//////////////////////////////////////////////
@@ -385,7 +385,7 @@ public:
 class TRowIteratorWithRemove {
   TInt64 CurrRowIdx; ///< Physical row index of current row pointer by iterator.
   TTable* Table; ///< Reference to table containing this row.
-  TBool Start;	///< A flag indicating whether the current row in the first valid row of the table.
+  TBool Start;  ///< A flag indicating whether the current row in the first valid row of the table.
 public:
   /// Default constructor.
   TRowIteratorWithRemove(): CurrRowIdx(0), Table(NULL), Start(true) {}
@@ -449,15 +449,15 @@ namespace TSnap {
   const TStr& SrcCol, const TStr& DstCol,
   TStr64V& EdgeAttrV,
   TAttrAggr AggrPolicy);
-	/// Converts table to a directed/undirected graph. Suitable for PUNGraph and PNGraph, but not for PNEANet where attributes are expected.
-	template<class PGraph> PGraph ToGraph(PTable Table,
+  /// Converts table to a directed/undirected graph. Suitable for PUNGraph and PNGraph, but not for PNEANet where attributes are expected.
+  template<class PGraph> PGraph ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
-	/// Converts table to a network. Suitable for PNEANet - Requires node and edge attribute column names as vectors.
+  /// Converts table to a network. Suitable for PNEANet - Requires node and edge attribute column names as vectors.
   template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol,
     TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs,
     TAttrAggr AggrPolicy);
-	/// Converts table to a network. Suitable for PNEANet - Assumes no node and edge attributes.
+  /// Converts table to a network. Suitable for PNEANet - Assumes no node and edge attributes.
   template<class PGraph> PGraph ToNetwork(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
   template<class PGraph> PGraph ToNetwork(PTable Table,
@@ -479,16 +479,16 @@ namespace TSnap {
   template<class PGraphMP> PGraphMP ToGraphMP3(PTable Table,
     const TStr& SrcCol, const TStr& DstCol);
   template<class PGraphMP> PGraphMP ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
-		  TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs, TAttrAggr AggrPolicy);
+      TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs, TAttrAggr AggrPolicy);
   template<class PGraphMP> PGraphMP ToNetworkMP2(PTable Table, const TStr& SrcCol, const TStr& DstCol,
-		  TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs, TAttrAggr AggrPolicy);
+      TStr64V& SrcAttrs, TStr64V& DstAttrs, TStr64V& EdgeAttrs, TAttrAggr AggrPolicy);
   template<class PGraphMP> PGraphMP ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
-		  TStr64V& EdgeAttrV, TAttrAggr AggrPolicy);
+      TStr64V& EdgeAttrV, TAttrAggr AggrPolicy);
   template<class PGraphMP> PGraphMP ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
-		  TAttrAggr AggrPolicy);
+      TAttrAggr AggrPolicy);
   template<class PGraphMP> PGraphMP ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
-		  TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
- 
+      TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
+
 */
 #endif // GCC_ATOMIC
 }
@@ -503,9 +503,7 @@ protected:
   static TInt64 UseMP; ///< Global switch for choosing multi-threaded versions of TTable functions.
 public:
   template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
-  const TStr& SrcCol, const TStr& DstCol,
-  TStr64V& EdgeAttrV,
-  TAttrAggr AggrPolicy);
+  const TStr& SrcCol, const TStr& DstCol, TStr64V& EdgeAttrV, TAttrAggr AggrPolicy);
   template<class PGraph> friend PGraph TSnap::ToGraph(PTable Table,
     const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
   template<class PGraph> friend PGraph TSnap::ToNetwork(PTable Table,
@@ -522,7 +520,7 @@ public:
   friend int64 TSnap::LoadCrossNet(TCrossNet& Graph, PTable Table,
             const TStr& SrcCol, const TStr& DstCol, TStr64V& EdgeAttrV);
   friend int64 TSnap::LoadMode(TModeNet& Graph, PTable Table,
-            const TStr& NCol, TStr64V& NodeAttrV); 
+            const TStr& NCol, TStr64V& NodeAttrV);
 
 #ifdef GCC_ATOMIC
 // TODO64
@@ -534,8 +532,8 @@ public:
   template<class PGraphMP> friend PGraphMP TSnap::ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol, TStr64V& EdgeAttrV, TAttrAggr AggrPolicy);
   template<class PGraphMP> friend PGraphMP TSnap::ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy);
   template<class PGraphMP> friend PGraphMP TSnap::ToNetworkMP(PTable Table, const TStr& SrcCol, const TStr& DstCol,
-		  TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
-*/ 
+      TStr64V& EdgeAttrV, PTable NodeTable, const TStr& NodeCol, TStr64V& NodeAttrV, TAttrAggr AggrPolicy);
+*/
 #endif // GCC_ATOMIC
 
   static void SetMP(TInt64 Value) { UseMP = Value; }
@@ -553,7 +551,9 @@ public:
   /// Adds suffix to column name if it doesn't exist
   static TStr64V NormalizeColNameV(const TStr64V& Cols) {
     TStr64V NCols;
-    for (TInt64 i = 0; i < Cols.Len(); i++) { NCols.Add(NormalizeColName(Cols[i])); }
+    for (TInt64 i = 0; i < Cols.Len(); i++) {
+        NCols.Add(NormalizeColName(Cols[i]));
+    }
     return NCols;
   }
 protected:
@@ -607,14 +607,14 @@ public:
 protected:
   /// Increments the next vector and set last, NumRows and NumValidRows.
   void IncrementNext();
- /// Adds a label attribute with positive labels on selected rows and negative labels on the rest.
+  /// Adds a label attribute with positive labels on selected rows and negative labels on the rest.
   void ClassifyAux(const TInt64V& SelectedRows, const TStr& LabelName,
    const TInt64& PositiveLabel = 1, const TInt64& NegativeLabel=  0);
 
 /***** Utility functions for handling string values *****/
   /// Gets the Key of the Context StringVals pool. Used by ToGraph method in conv.cpp.
   const char* GetContextKey(TInt64 Val) const {
-	  return Context->StringVals.GetKey(Val);
+    return Context->StringVals.GetKey(Val);
   }
   /// Gets the value in column with id \c ColIdx at row \c RowIdx.
   TStr GetStrVal(TInt64 ColIdx, TInt64 RowIdx) const {
@@ -654,11 +654,13 @@ protected:
   /// Adds column with name \c ColName and type \c ColType to the ColTypeMap.
   void DelColType(const TStr& ColName) {
     TStr NColName = NormalizeColName(ColName);
+    AssertR(ColTypeMap.IsKey(NColName), "Unknown column " + NColName);
     ColTypeMap.DelKey(NColName);
   }
   /// Gets column type and index of \c ColName.
   TPair<TAttrType, TInt64> GetColTypeMap(const TStr& ColName) const {
     TStr NColName = NormalizeColName(ColName);
+    AssertR(ColTypeMap.IsKey(NColName), "Unknown column " + NColName);
     return ColTypeMap.GetDat(NColName);
   }
   /// Returns a re-numbered column name based on number of existing columns with conflicting names.
@@ -718,19 +720,19 @@ protected:
   /// Checks if grouping key exists and matches given attr type.
   void GroupingSanityCheck(const TStr& GroupBy, const TAttrType& AttrType) const;
   /// Groups/hashes by a single column with integer values. ##TTable::GroupByIntCol
-  template <class T> void GroupByIntCol(const TStr& GroupBy, T& Grouping, 
+  template <class T> void GroupByIntCol(const TStr& GroupBy, T& Grouping,
     const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds = true) const;
 #ifdef GCC_ATOMIC
-  public:	//Should be protected - this is for debug only
+  public:  //Should be protected - this is for debug only
   /// Groups/hashes by a single column with integer values, using OpenMP multi-threading
   void GroupByIntColMP(const TStr& GroupBy, THashMP<TInt64, TInt64V, int64>& Grouping, TBool UsePhysicalIds = true) const;
 #endif // GCC_ATOMIC
   protected:
   /// Groups/hashes by a single column with float values. Returns hash table with grouping.
-  template <class T> void GroupByFltCol(const TStr& GroupBy, T& Grouping, 
+  template <class T> void GroupByFltCol(const TStr& GroupBy, T& Grouping,
     const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds = true) const;
   /// Groups/hashes by a single column with string values. Returns hash table with grouping.
-  template <class T> void GroupByStrCol(const TStr& GroupBy, T& Grouping, 
+  template <class T> void GroupByStrCol(const TStr& GroupBy, T& Grouping,
     const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds = true) const;
   /// Template for utility function to update a grouping hash map.
   template <class T> void UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val) const;
@@ -793,14 +795,14 @@ protected:
   /// Adds joint row T1[RowIdx1]<=>T2[RowIdx2].
   void AddJointRow(const TTable& T1, const TTable& T2, TInt64 RowIdx1, TInt64 RowIdx2);
 /***** Utility functions for Threshold Join *****/
-  void ThresholdJoinInputCorrectness(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table, 
+  void ThresholdJoinInputCorrectness(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table,
     const TStr& KeyCol2, const TStr& JoinCol2);
-  void ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS, 
-    const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS, 
+  void ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS,
+    const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS,
     THash<TInt64Pr,TInt64Tr, int64>& Counters, TBool ThisIsSmaller, TAttrType JoinColType, TAttrType KeyType);
   PTable ThresholdJoinOutputTable(const THash<TInt64Pr,TInt64Tr, int64>& Counters, TInt64 Threshold, const TTable& Table);
-  void ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTable& TS, 
-    const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS, 
+  void ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTable& TS,
+    const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS,
     THash<TInt64Tr,TInt64Tr, int64>& Counters, TBool ThisIsSmaller, TAttrType JoinColType, TAttrType KeyType);
   PTable ThresholdJoinPerJoinKeyOutputTable(const THash<TInt64Tr,TInt64Tr, int64>& Counters, TInt64 Threshold, const TTable& Table);
 
@@ -829,11 +831,11 @@ protected:
 
 /***** Utility functions for Group *****/
   /// Helper function for grouping. ##TTable::GroupAux
-  void GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >& Grouping, 
+  void GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >& Grouping,
    TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TInt64V& UniqueVec, TBool UsePhysicalIds = true);
 #ifdef USE_OPENMP
   /// Parallel helper function for grouping. - we currently don't support such parallel grouping by complex keys
-  //void GroupAuxMP(const TStr64V& GroupBy, THashGenericMP<TGroupKey, TPair<TInt64, TInt64V>, int64>& Grouping, 
+  //void GroupAuxMP(const TStr64V& GroupBy, THashGenericMP<TGroupKey, TPair<TInt64, TInt64V>, int64>& Grouping,
   // TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TInt64V& UniqueVec, TBool UsePhysicalIds = false);
 #endif // USE_OPENMP
   /// Stores column for a group. Physical row ids have to be passed.
@@ -1065,14 +1067,14 @@ public:
   TBool IsLastGraphOfSequence();
 
   /// Gets the name of the column to be used as src nodes in the graph.
-	TStr GetSrcCol() const { return SrcCol; }
+  TStr GetSrcCol() const { return SrcCol; }
   /// Sets the name of the column to be used as src nodes in the graph.
   void SetSrcCol(const TStr& Src) {
     if (!IsColName(Src)) { TExcept::Throw(Src + ": no such column"); }
     SrcCol = NormalizeColName(Src);
   }
   /// Gets the name of the column to be used as dst nodes in the graph.
-	TStr GetDstCol() const { return DstCol; }
+  TStr GetDstCol() const { return DstCol; }
   /// Sets the name of the column to be used as dst nodes in the graph.
   void SetDstCol(const TStr& Dst) {
     if (!IsColName(Dst)) { TExcept::Throw(Dst + ": no such column"); }
@@ -1105,17 +1107,17 @@ public:
   /// Gets edge int attribute name vector.
   TStr64V GetEdgeIntAttrV() const;
   /// Gets src node float attribute name vector.
-	TStr64V GetSrcNodeFltAttrV() const;
+  TStr64V GetSrcNodeFltAttrV() const;
   /// Gets dst node float attribute name vector.
   TStr64V GetDstNodeFltAttrV() const;
   /// Gets edge float attribute name vector.
-	TStr64V GetEdgeFltAttrV() const;
+  TStr64V GetEdgeFltAttrV() const;
   /// Gets src node str attribute name vector.
-	TStr64V GetSrcNodeStrAttrV() const;
+  TStr64V GetSrcNodeStrAttrV() const;
   /// Gets dst node str attribute name vector.
   TStr64V GetDstNodeStrAttrV() const;
   /// Gets edge str attribute name vector.
-	TStr64V GetEdgeStrAttrV() const;
+  TStr64V GetEdgeStrAttrV() const;
 
   /// Extracts node TTable from PNEANet.
   static PTable GetNodeTable(const PNEANet& Network, TTableContext* Context);
@@ -1133,7 +1135,7 @@ public:
    TTableContext* Context);
 /***** Basic Getters *****/
   /// Gets type of column \c ColName.
-	TAttrType GetColType(const TStr& ColName) const {
+  TAttrType GetColType(const TStr& ColName) const {
     TStr NColName = NormalizeColName(ColName);
     return ColTypeMap.GetDat(NColName).Val1;
   }
@@ -1161,19 +1163,19 @@ public:
   /// Renames a column.
   void Rename(const TStr& Column, const TStr& NewLabel);
 
-	/// Removes rows with duplicate values in given column.
+  /// Removes rows with duplicate values in given column.
   void Unique(const TStr& Col);
   /// Removes rows with duplicate values in given columns.
-	void Unique(const TStr64V& Cols, TBool Ordered = true);
+  void Unique(const TStr64V& Cols, TBool Ordered = true);
 
-	/// Selects rows that satisfy given \c Predicate. ##TTable::Select
-	void Select(TPredicate& Predicate, TInt64V& SelectedRows, TBool Remove = true);
+  /// Selects rows that satisfy given \c Predicate. ##TTable::Select
+  void Select(TPredicate& Predicate, TInt64V& SelectedRows, TBool Remove = true);
   void Select(TPredicate& Predicate) {
     TInt64V SelectedRows;
     Select(Predicate, SelectedRows, true);
   }
   void Classify(TPredicate& Predicate, const TStr& LabelName, const TInt64& PositiveLabel = 1,
-   const TInt64& NegativeLabel = 0);
+    const TInt64& NegativeLabel = 0);
 
   /// Selects rows using atomic compare operation. ##TTable::SelectAtomic
   void SelectAtomic(const TStr& Col1, const TStr& Col2, TPredComp Cmp,
@@ -1232,7 +1234,7 @@ public:
 
   /// Groups rows depending on values of \c GroupBy columns. ##TTable::Group
   void Group(const TStr64V& GroupBy, const TStr& GroupColName, TBool Ordered = true, TBool UsePhysicalIds = true);
-  
+
   /// Counts number of unique elements. ##TTable::Count
   void Count(const TStr& CountColName, const TStr& Col);
 
@@ -1255,25 +1257,25 @@ public:
     return Join(Col1, *Table, Col2);
   }
   PTable ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table, const TStr& KeyCol2, const TStr& JoinCol2, TInt64 Threshold, TBool PerJoinKey = false);
-  
+
   /// Joins table with itself, on values of \c Col.
   PTable SelfJoin(const TStr& Col) { return Join(Col, *this, Col); }
   PTable SelfSimJoin(const TStr64V& Cols, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold) { return SimJoin(Cols, *this, Cols, DistanceColName, SimType, Threshold); }
-	/// Performs join if the distance between two rows is less than the specified threshold. ##TTable::SimJoinPerGroup
-	PTable SelfSimJoinPerGroup(const TStr& GroupAttr, const TStr& SimCol, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold);
+  /// Performs join if the distance between two rows is less than the specified threshold. ##TTable::SimJoinPerGroup
+  PTable SelfSimJoinPerGroup(const TStr& GroupAttr, const TStr& SimCol, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold);
 
-	/// Performs join if the distance between two rows is less than the specified threshold.
-	PTable SelfSimJoinPerGroup(const TStr64V& GroupBy, const TStr& SimCol, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold);
+  /// Performs join if the distance between two rows is less than the specified threshold.
+  PTable SelfSimJoinPerGroup(const TStr64V& GroupBy, const TStr& SimCol, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold);
 
-	/// Performs join if the distance between two rows is less than the specified threshold.
-	PTable SimJoin(const TStr64V& Cols1, const TTable& Table, const TStr64V& Cols2, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold);
+  /// Performs join if the distance between two rows is less than the specified threshold.
+  PTable SimJoin(const TStr64V& Cols1, const TTable& Table, const TStr64V& Cols2, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold);
   /// Selects first N rows from the table.
   void SelectFirstNRows(const TInt64& N);
 
-	// Computes distances between elements in this->Col1 and Table->Col2 according
-	// to given metric. Store the distances in DistCol, but keep only rows where
-	// distance <= threshold
-	// void Dist(const TStr& Col1, const TTable& Table, const TStr Col2, const TStr& DistColName,
+  // Computes distances between elements in this->Col1 and Table->Col2 according
+  // to given metric. Store the distances in DistCol, but keep only rows where
+  // distance <= threshold
+  // void Dist(const TStr& Col1, const TTable& Table, const TStr Col2, const TStr& DistColName,
   //  const TMetric& Metric, TFlt threshold);
 
   /// Releases memory of deleted rows, and defrags. ##TTable::Defrag
@@ -1285,14 +1287,14 @@ public:
   void StoreFltCol(const TStr& ColName, const TFlt64V& ColVals);
   /// Adds entire str column to table.
   void StoreStrCol(const TStr& ColName, const TStr64V& ColVals);
-  
-  // Assumption: KeyAttr is a primary key in this table, and FKeyAttr is a primary key in 
+
+  // Assumption: KeyAttr is a primary key in this table, and FKeyAttr is a primary key in
   // the argument table. Equivalent to SQL's: UPDATE this SET UpdateAttr = ReadAttr WHERE KeyAttr = FKeyAttr
-  void UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
-  	const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
+  void UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table,
+    const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
 #ifdef GCC_ATOMIC
-  void UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
-  	const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
+  void UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table,
+    const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal = 0.0);
   // TODO: this should be a generic vector operation (parallel equivalent to TVec::PutAll)
   void SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal);
 #endif // GCC_ATOMIC
@@ -1492,11 +1494,11 @@ T TTable::AggregateVector(TVec<T, int64>& V, TAttrAggr Policy) {
 }
 
 template <class T>
-void TTable::GroupByIntCol(const TStr& GroupBy, T& Grouping, 
+void TTable::GroupByIntCol(const TStr& GroupBy, T& Grouping,
  const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds) const {
   TInt64 IdColIdx = GetColIdx(IdColName);
   if(!UsePhysicalIds && IdColIdx < 0){
-  	TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
+    TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
   }
  // TO do: add a check if grouping already exists and is valid
   GroupingSanityCheck(GroupBy, atInt);
@@ -1512,7 +1514,7 @@ void TTable::GroupByIntCol(const TStr& GroupBy, T& Grouping,
       if (IsRowValid(IndexSet[i])) {
         TInt64 RowIdx = IndexSet[i];
         const TInt64V& Col = IntCols[GetColIdx(GroupBy)];
-        TInt64 idx = UsePhysicalIds ? RowIdx : IntCols[IdColIdx][RowIdx];       
+        TInt64 idx = UsePhysicalIds ? RowIdx : IntCols[IdColIdx][RowIdx];
         UpdateGrouping<TInt64>(Grouping, Col[RowIdx], idx);
       }
     }
@@ -1520,11 +1522,11 @@ void TTable::GroupByIntCol(const TStr& GroupBy, T& Grouping,
 }
 
 template <class T>
-void TTable::GroupByFltCol(const TStr& GroupBy, T& Grouping, 
+void TTable::GroupByFltCol(const TStr& GroupBy, T& Grouping,
  const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds) const {
   TInt64 IdColIdx = GetColIdx(IdColName);
   if(!UsePhysicalIds && IdColIdx < 0){
-  	TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
+    TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
   }
   GroupingSanityCheck(GroupBy, atFlt);
   if (All) {
@@ -1538,8 +1540,8 @@ void TTable::GroupByFltCol(const TStr& GroupBy, T& Grouping,
     for (TInt64 i = 0; i < IndexSet.Len(); i++) {
       if (IsRowValid(IndexSet[i])) {
         TInt64 RowIdx = IndexSet[i];
-        const TFlt64V& Col = FltCols[GetColIdx(GroupBy)];   
-        TInt64 idx = UsePhysicalIds ? RowIdx : IntCols[IdColIdx][RowIdx];     
+        const TFlt64V& Col = FltCols[GetColIdx(GroupBy)];
+        TInt64 idx = UsePhysicalIds ? RowIdx : IntCols[IdColIdx][RowIdx];
         UpdateGrouping<TFlt>(Grouping, Col[RowIdx], idx);
       }
     }
@@ -1547,11 +1549,11 @@ void TTable::GroupByFltCol(const TStr& GroupBy, T& Grouping,
 }
 
 template <class T>
-void TTable::GroupByStrCol(const TStr& GroupBy, T& Grouping, 
+void TTable::GroupByStrCol(const TStr& GroupBy, T& Grouping,
  const TInt64V& IndexSet, TBool All, TBool UsePhysicalIds) const {
   TInt64 IdColIdx = GetColIdx(IdColName);
   if(!UsePhysicalIds && IdColIdx < 0){
-  	TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
+    TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
   }
   GroupingSanityCheck(GroupBy, atStr);
   if (All) {
@@ -1566,7 +1568,7 @@ void TTable::GroupByStrCol(const TStr& GroupBy, T& Grouping,
       if (IsRowValid(IndexSet[i])) {
         TInt64 RowIdx = IndexSet[i];
         TInt64 ColIdx = GetColIdx(GroupBy);
-        TInt64 idx = UsePhysicalIds ? RowIdx : IntCols[IdColIdx][RowIdx];  
+        TInt64 idx = UsePhysicalIds ? RowIdx : IntCols[IdColIdx][RowIdx];
         UpdateGrouping<TInt64>(Grouping, StrColMaps[ColIdx][RowIdx], idx);
       }
     }
@@ -1588,10 +1590,10 @@ void TTable::UpdateGrouping(THash<T,TInt64V, int64>& Grouping, T Key, TInt64 Val
 template <class T>
 void TTable::UpdateGrouping(THashMP<T,TInt64V, int64>& Grouping, T Key, TInt64 Val) const{
   if (Grouping.IsKey(Key)) {
-  	//printf("y\n");
+    //printf("y\n");
     Grouping.GetDat(Key).Add(Val);
   } else {
-  	//printf("n\n");
+    //printf("n\n");
     TInt64V NewGroup;
     NewGroup.Add(Val);
     Grouping.AddDat(Key, NewGroup);
@@ -1600,15 +1602,15 @@ void TTable::UpdateGrouping(THashMP<T,TInt64V, int64>& Grouping, T Key, TInt64 V
 #endif // GCC_ATOMIC
 
 /*
-template<class T> 
+template<class T>
 void TTable::RegisterGrouping(const T& Grouping, const TStr& GroupByCol, TBool UsePhysicalIds){
-	TStrV GroupByVec;
-	GroupByVec.Add(GroupByCol);
-	GroupStmt Stmt(NormalizeColNameV(GroupByVec), true, UsePhysicalIds);
-	GroupMapping.AddKey(Stmt);
-	for(T::TIter it = Grouping.BegI(); it < Grouping.EndI(); it++){
-		GroupMapping.GetDat(Stmt).AddDat(it.GetKey(), TIntV(it.GetDat()));
-	}
+  TStrV GroupByVec;
+  GroupByVec.Add(GroupByCol);
+  GroupStmt Stmt(NormalizeColNameV(GroupByVec), true, UsePhysicalIds);
+  GroupMapping.AddKey(Stmt);
+  for(T::TIter it = Grouping.BegI(); it < Grouping.EndI(); it++){
+    GroupMapping.GetDat(Stmt).AddDat(it.GetKey(), TIntV(it.GetDat()));
+  }
 }
 */
 
@@ -1658,4 +1660,3 @@ namespace TSnap {
 }
 */
 #endif //TABLE_H
-
