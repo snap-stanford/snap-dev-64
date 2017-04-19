@@ -680,7 +680,7 @@ int64 TBPGraph::AddNode(int64 NId, const bool& LeftNode) {
 
 // Delete node of ID NId from the bipartite graph.
 void TBPGraph::DelNode(const int64& NId) {
-  AssertR(IsNode(NId), TStr::Fmt("NodeId %s does not exist", TInt64::GetStr(NId)).CStr());
+  AssertR(IsNode(NId), TStr::Fmt("NodeId %s does not exist", TInt64::GetStr(NId).CStr()));
   THash<TInt64, TNode, int64>& SrcH = IsLNode(NId) ? LeftH : RightH;
   THash<TInt64, TNode, int64>& DstH = IsLNode(NId) ? RightH : LeftH;
   { TNode& Node = SrcH.GetDat(NId);
@@ -690,7 +690,7 @@ void TBPGraph::DelNode(const int64& NId) {
 
     TNode& N = DstH.GetDat(nbr);
     const int64 n = N.NIdV.SearchBin(NId);
-    IAssert(n!= -1); 
+    IAssert(n!= -1);
     N.NIdV.Del(n);
   } }
   SrcH.DelKey(NId);
@@ -707,7 +707,7 @@ int64 TBPGraph::AddEdge(const int64& LeftNId, const int64& RightNId) {
   const bool IsLL = IsLNode(LeftNId), IsLR = IsRNode(LeftNId);
   const bool IsRL = IsLNode(RightNId), IsRR = IsRNode(RightNId);
   IAssertR((IsLL||IsLR)&&(IsRL||IsRR), TStr::Fmt("%s or %s is not a node.", TInt64::GetStr(LeftNId).CStr(), TInt64::GetStr(RightNId).CStr()).CStr());
-  IAssertR(LeftNId!=RightNId, "No self-edges are allowed."); 
+  IAssertR(LeftNId!=RightNId, "No self-edges are allowed.");
   IAssertR((IsLL&&!IsLR&&!IsRL&&IsRR)||(!IsLL&&IsLR&&IsRL&&!IsRR), "One node should be on the 'left' and the other on the 'right'.");
   const int64 LNId = IsLL ? LeftNId : RightNId; // the real left node
   const int64 RNId = IsLL ? RightNId : LeftNId; // the real right node
@@ -721,7 +721,7 @@ void TBPGraph::DelEdge(const int64& LeftNId, const int64& RightNId) {
   const bool IsLL = IsLNode(LeftNId), IsLR = IsRNode(LeftNId);
   const bool IsRL = IsLNode(RightNId), IsRR = IsRNode(RightNId);
   IAssertR((IsLL||IsLR)&&(IsRL||IsRR), TStr::Fmt("%s or %s is not a node.", TInt64::GetStr(LeftNId).CStr(), TInt64::GetStr(RightNId).CStr()).CStr());
-  IAssertR(LeftNId!=RightNId, "No self-edges are allowed."); 
+  IAssertR(LeftNId!=RightNId, "No self-edges are allowed.");
   IAssertR((IsLL&&!IsLR&&!IsRL&&IsRR)||(!IsLL&&IsLR&&IsRL&&!IsRR), "One node should be on the 'left' and the other on the 'right'.");
   const int64 LNId = IsLL ? LeftNId : RightNId; // the real left node
   const int64 RNId = IsLL ? RightNId : LeftNId; // the real right node
@@ -742,7 +742,7 @@ TBPGraph::TEdgeI TBPGraph::GetEI(const int64& LeftNId, const int64& RightNId) co
   const bool IsLL = IsLNode(LeftNId), IsLR = IsRNode(LeftNId);
   const bool IsRL = IsLNode(RightNId), IsRR = IsRNode(RightNId);
   IAssertR((IsLL||IsLR)&&(IsRL||IsRR), TStr::Fmt("%d or %d is not a node.", LeftNId, RightNId).CStr());
-  IAssertR(LeftNId!=RightNId, "No self-edges are allowed."); 
+  IAssertR(LeftNId!=RightNId, "No self-edges are allowed.");
   IAssertR((IsLL&&!IsLR&&!IsRL&&IsRR)||(!IsLL&&IsLR&&IsRL&&!IsRR), "One node should be on the 'left' and the other on the 'right'.");
   const int64 LNId = IsLL ? LeftNId : RightNId; // the real left node
   const int64 RNId = IsLL ? RightNId : LeftNId; // the real right node
@@ -752,7 +752,7 @@ TBPGraph::TEdgeI TBPGraph::GetEI(const int64& LeftNId, const int64& RightNId) co
   return TEdgeI(SrcNI, EndNI(), NodeN);
 }
 
-int64 TBPGraph::GetRndNId(TRnd& Rnd) { 
+int64 TBPGraph::GetRndNId(TRnd& Rnd) {
   const int64 NNodes = GetNodes();
   if (Rnd.GetUniDevInt(NNodes) < GetLNodes()) {
     return GetRndLNId(Rnd); }
@@ -760,12 +760,12 @@ int64 TBPGraph::GetRndNId(TRnd& Rnd) {
     return GetRndRNId(Rnd); }
 }
 
-int64 TBPGraph::GetRndLNId(TRnd& Rnd) { 
-  return LeftH.GetKey(LeftH.GetRndKeyId(Rnd, 0.8)); 
+int64 TBPGraph::GetRndLNId(TRnd& Rnd) {
+  return LeftH.GetKey(LeftH.GetRndKeyId(Rnd, 0.8));
 }
 
-int64 TBPGraph::GetRndRNId(TRnd& Rnd) { 
-  return RightH.GetKey(RightH.GetRndKeyId(Rnd, 0.8)); 
+int64 TBPGraph::GetRndRNId(TRnd& Rnd) {
+  return RightH.GetKey(RightH.GetRndKeyId(Rnd, 0.8));
 }
 
 void TBPGraph::GetNIdV(TInt64V& NIdV) const {
@@ -788,8 +788,8 @@ void TBPGraph::GetRNIdV(TInt64V& NIdV) const {
     NIdV.Add(RightH.GetKey(N)); }
 }
 
-void TBPGraph::Reserve(const int64& Nodes, const int64& Edges) { 
-  if (Nodes>0) { LeftH.Gen(Nodes/2); RightH.Gen(Nodes/2); } 
+void TBPGraph::Reserve(const int64& Nodes, const int64& Edges) {
+  if (Nodes>0) { LeftH.Gen(Nodes/2); RightH.Gen(Nodes/2); }
 }
 
 void TBPGraph::Defrag(const bool& OnlyNodeLinks) {
@@ -819,7 +819,7 @@ bool TBPGraph::IsOk(const bool& ThrowExcept) const {
     if (RightH.IsKey(LeftH[n].GetId())) {
       const TStr Msg = TStr::Fmt("'Left' node %s also appears on the 'right'.", TInt64::GetStr(LeftH[n].GetId()).CStr());
       if (ThrowExcept) { EAssertR(false, Msg); } else { ErrNotify(Msg.CStr()); } RetVal=false; }
-  } 
+  }
   for (int64 n = RightH.FFirstKeyId(); RightH.FNextKeyId(n); ) {
     if (LeftH.IsKey(RightH[n].GetId())) {
       const TStr Msg = TStr::Fmt("'Right' node %s also appears on the 'left'.", TInt64::GetStr(RightH[n].GetId()).CStr());
@@ -880,4 +880,3 @@ PBPGraph TBPGraph::GetSmallGraph() {
   BP->AddEdge(1, 4);
   return BP;
 }
-
