@@ -35,8 +35,8 @@ typedef enum TGStatDistr_ {
 /// Statistics of a Graph Snapshot
 class TGStat {
 public:
-  static int NDiamRuns;
-  static int TakeSngVals;
+  static int64 NDiamRuns;
+  static int64 TakeSngVals;
   typedef TQuad<TStr, TStr, TStr, TGpScaleTy> TPlotInfo; // file prefix, x label, y label, scale
 public:
   class TCmpByVal {
@@ -49,13 +49,13 @@ public:
     bool operator () (const PGStat& GS1, const PGStat& GS2) const;
   };
 private:
-  static const TFltPrV EmptyV;
+  static const TFltPr64V EmptyV;
   TCRef CRef;
 public:
   TSecTm Time;
   TStr GraphNm;
-  TIntFltH ValStatH; // scalar statistics
-  THash<TInt, TFltPrV> DistrStatH; // distribution statistics
+  TIntFlt64H ValStatH; // scalar statistics
+  THash<TInt64, TFltPr64V, int64> DistrStatH; // distribution statistics
 public:
   TGStat(const TSecTm& GraphTm = TSecTm(), const TStr& GraphName=TStr());
   TGStat(const PNGraph& Graph, const TSecTm& Time, TFSet StatFSet=TFSet(), const TStr& GraphName=TStr());
@@ -94,18 +94,18 @@ public:
   void SetNm(const TStr& GraphName) { GraphNm=GraphName; }
   int GetTime(const TTmUnit& TimeUnit) const { return Time.GetInUnits(TimeUnit); }
   
-  int GetVals() const { return ValStatH.Len(); }
+  int64 GetVals() const { return ValStatH.Len(); }
   bool HasVal(const TGStatVal& StatVal) const;
   double GetVal(const TGStatVal& StatVal) const;
   void SetVal(const TGStatVal& StatVal, const double& Val);
-  int GetDistrs() const { return DistrStatH.Len(); }
+  int64 GetDistrs() const { return DistrStatH.Len(); }
   bool HasDistr(const TGStatDistr& Distr) const { return DistrStatH.IsKey(Distr); }
-  const TFltPrV& GetDistr(const TGStatDistr& Distr) const;
-  void GetDistr(const TGStatDistr& Distr, TFltPrV& FltPrV) const;
-  void SetDistr(const TGStatDistr& Distr, const TFltPrV& FltPrV);
+  const TFltPr64V& GetDistr(const TGStatDistr& Distr) const;
+  void GetDistr(const TGStatDistr& Distr, TFltPr64V& FltPrV) const;
+  void SetDistr(const TGStatDistr& Distr, const TFltPr64V& FltPrV);
 
-  int GetNodes() const { return (int) GetVal(gsvNodes); }
-  int GetEdges() const { return (int) GetVal(gsvEdges); }
+  int64 GetNodes() const { return (int64) GetVal(gsvNodes); }
+  int64 GetEdges() const { return (int64) GetVal(gsvEdges); }
 
   void TakeStat(const PNGraph& Graph, const TSecTm& Time, TFSet StatFSet, const TStr& GraphName);
   void TakeStat(const PUNGraph& Graph, const TSecTm& Time, TFSet StatFSet, const TStr& GraphName);
@@ -120,10 +120,10 @@ public:
   template <class PGraph> void TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc=false);
   template <class PGraph> void TakeConnComp(const PGraph& Graph);
   template <class PGraph> void TakeConnComp(const PGraph& Graph, TFSet StatFSet);
-  template <class PGraph> void TakeClustCf(const PGraph& Graph, const int& SampleNodes=-1);
+  template <class PGraph> void TakeClustCf(const PGraph& Graph, const int64& SampleNodes=-1);
   template <class PGraph> void TakeTriadPart(const PGraph& Graph);
-  void TakeSpectral(const PNGraph& Graph, const int _TakeSngVals = -1);
-  void TakeSpectral(const PNGraph& Graph, TFSet StatFSet, int _TakeSngVals = -1);
+  void TakeSpectral(const PNGraph& Graph, const int64 _TakeSngVals = -1);
+  void TakeSpectral(const PNGraph& Graph, TFSet StatFSet, int64 _TakeSngVals = -1);
 
   void Plot(const TGStatDistr& Distr, const TStr& FNmPref, TStr Desc=TStr(), bool PowerFit=false) const;
   void Plot(const TFSet& FSet, const TStr& FNmPref, const TStr& Desc=TStr(), bool PowerFit=false) const;
@@ -154,7 +154,7 @@ public:
 /// Graph Statistics Sequence
 class TGStatVec {
 public:
-  static uint MinNodesEdges;
+  static uint64 MinNodesEdges;
 private:
   TCRef CRef;
   TTmUnit TmUnit;
@@ -180,19 +180,19 @@ public:
   void Clr() { GStatV.Clr(); }
   void Sort(const TGStatVal& SortBy=gsvNodes, const bool& Asc=true);
 
-  int Len() const { return GStatV.Len(); }
+  int64 Len() const { return GStatV.Len(); }
   bool Empty() const { return GStatV.Empty(); }
-  PGStat operator[](const int& ValN) const { return GStatV[ValN]; }
-  PGStat At(const int& ValN) const { return GStatV[ValN]; }
+  PGStat operator[](const int64& ValN) const { return GStatV[ValN]; }
+  PGStat At(const int64& ValN) const { return GStatV[ValN]; }
   PGStat Last() const { return GStatV.Last(); }
   const TGStatV& GetGStatV() const { return GStatV; }
   int GetTime(const int& ValN) const { return At(ValN)->GetTime(TmUnit); }
 
-  void Del(const int& ValN) { GStatV.Del(ValN); }
+  void Del(const int64& ValN) { GStatV.Del(ValN); }
   void DelLast() { GStatV.DelLast(); }
   void DelBefore(const TSecTm& Tm);
   void DelAfter(const TSecTm& Tm);
-  void DelSmallNodes(const int& MinNodes);
+  void DelSmallNodes(const int64& MinNodes);
 
   void SetTmUnit(const TTmUnit& TimeUnit) { TmUnit = TimeUnit; }
   TTmUnit GetTmUnit() const { return TmUnit; }
@@ -200,7 +200,7 @@ public:
   bool HasVal(const TGStatVal& Stat) const { return StatFSet.In(Stat); }
   bool HasDistr(const TGStatDistr& Stat) const { return StatFSet.In(Stat); }
 
-  void GetValV(const TGStatVal& XVal, const TGStatVal& YVal, TFltPrV& ValV) const;
+  void GetValV(const TGStatVal& XVal, const TGStatVal& YVal, TFltPr64V& ValV) const;
   PGStat GetAvgGStat(const bool& ClipAt1=false);
 
   void Plot(const TGStatVal& XVal, const TGStatVal& YVal, const TStr& OutFNm, TStr& Desc,
@@ -265,7 +265,7 @@ void TGStat::TakeBasicStat(const PGraph& Graph, TFSet FSet, const bool& IsMxWcc)
     // gsvNodes, gsvZeroNodes, gsvNonZNodes, gsvSrcNodes, gsvDstNodes,
     // gsvEdges, gsvUniqEdges, gsvBiDirEdges
     printf("basic...");
-    const int Nodes = Graph->GetNodes();
+    const int64 Nodes = Graph->GetNodes();
     SetVal(gsvNodes, Nodes);
     SetVal(gsvZeroNodes, TSnap::CntDegNodes(Graph, 0));
     SetVal(gsvNonZNodes, Nodes - GetVal(gsvZeroNodes));
@@ -282,7 +282,7 @@ void TGStat::TakeBasicStat(const PGraph& Graph, TFSet FSet, const bool& IsMxWcc)
   } else {
     // gsvWccNodes, gsvWccSrcNodes, gsvWccDstNodes, gsvWccEdges, gsvWccUniqEdges, gsvWccBiDirEdges
     printf("basic wcc...");
-    const int Nodes = Graph->GetNodes();
+    const int64 Nodes = Graph->GetNodes();
     SetVal(gsvWccNodes, Nodes);
     SetVal(gsvWccSrcNodes, Nodes - TSnap::CntOutDegNodes(Graph, 0));
     SetVal(gsvWccDstNodes, Nodes - TSnap::CntInDegNodes(Graph, 0));
@@ -310,12 +310,12 @@ void TGStat::TakeDegDistr(const PGraph& Graph, TFSet StatFSet) {
     printf("deg:"); }
   if (StatFSet.In(gsdInDeg)) {
     printf("-in");
-    TFltPrV& InDegV = DistrStatH.AddDat(gsdInDeg);
+    TFltPr64V& InDegV = DistrStatH.AddDat(gsdInDeg);
     TSnap::GetInDegCnt(Graph, InDegV);
   }
   if (StatFSet.In(gsdOutDeg)) {
     printf("-out");
-    TFltPrV& OutDegV = DistrStatH.AddDat(gsdOutDeg);
+    TFltPr64V& OutDegV = DistrStatH.AddDat(gsdOutDeg);
     TSnap::GetOutDegCnt(Graph, OutDegV);
   }
   if (StatFSet.In(gsdOutDeg) || StatFSet.In(gsdOutDeg)) {
@@ -337,8 +337,8 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
     //bool Line=false;
     if (StatFSet.In(gsvEffDiam) || StatFSet.In(gsdHops)) {
       TMom DiamMom;  ExeTm.Tick();
-      TIntFltKdV DistNbrsV;
-      for (int r = 0; r < NDiamRuns; r++) {
+      TIntFltKd64V DistNbrsV;
+      for (int64 r = 0; r < NDiamRuns; r++) {
         TSnap::GetAnf(Graph, DistNbrsV, -1, false, 32);
         DiamMom.Add(TSnap::TSnapDetail::CalcEffDiam(DistNbrsV, 0.9));
         printf(".");
@@ -346,9 +346,9 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
       DiamMom.Def();
       SetVal(gsvEffDiam, DiamMom.GetMean());
       SetVal(gsvEffDiamDev, DiamMom.GetSDev());
-      TFltPrV& HopsV = DistrStatH.AddDat(gsdHops);
+      TFltPr64V& HopsV = DistrStatH.AddDat(gsdHops);
       HopsV.Gen(DistNbrsV.Len(), 0);
-      for (int i = 0; i < DistNbrsV.Len(); i++) {
+      for (int64 i = 0; i < DistNbrsV.Len(); i++) {
         HopsV.Add(TFltPr(DistNbrsV[i].Key(), DistNbrsV[i].Dat)); }
       printf("  anf-eff %.1f[%s]", DiamMom.GetMean(), ExeTm.GetTmStr());
       //Line=true;
@@ -358,7 +358,7 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
     //bool Line=false;
     if (StatFSet.In(gsvFullDiam)) {
       TMom DiamMom;  ExeTm.Tick();
-      for (int r = 0; r < NDiamRuns; r++) {
+      for (int64 r = 0; r < NDiamRuns; r++) {
         DiamMom.Add(TSnap::GetBfsFullDiam(Graph, 1, false));
         printf("."); }
       DiamMom.Def();
@@ -369,8 +369,8 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
     }
     if (StatFSet.In(gsvEffWccDiam) || StatFSet.In(gsdWccHops)) {
       TMom DiamMom; ExeTm.Tick();
-      TIntFltKdV DistNbrsV;
-      for (int r = 0; r < NDiamRuns; r++) {
+      TIntFltKd64V DistNbrsV;
+      for (int64 r = 0; r < NDiamRuns; r++) {
         TSnap::GetAnf(Graph, DistNbrsV, -1, false, 32);
         DiamMom.Add(TSnap::TSnapDetail::CalcEffDiam(DistNbrsV, 0.9));
         printf(".");
@@ -378,9 +378,9 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
       DiamMom.Def();
       SetVal(gsvEffWccDiam, DiamMom.GetMean());
       SetVal(gsvEffWccDiamDev, DiamMom.GetSDev());
-      TFltPrV& WccHopsV = DistrStatH.AddDat(gsdWccHops);
+      TFltPr64V& WccHopsV = DistrStatH.AddDat(gsdWccHops);
       WccHopsV.Gen(DistNbrsV.Len(), 0);
-      for (int i = 0; i < DistNbrsV.Len(); i++) {
+      for (int64 i = 0; i < DistNbrsV.Len(); i++) {
         WccHopsV.Add(TFltPr(DistNbrsV[i].Key(), DistNbrsV[i].Dat)); }
       printf("  anf-wcceff %.1f[%s]", DiamMom.GetMean(), ExeTm.GetTmStr());
       //Line=true;
@@ -398,20 +398,20 @@ void TGStat::TakeConnComp(const PGraph& Graph, TFSet StatFSet) {
   TExeTm ExeTm;
   if (StatFSet.In(gsdWcc)) {
     printf("wcc...");
-    TIntPrV WccSzCntV1;
+    TIntPr64V WccSzCntV1;
     TSnap::GetWccSzCnt(Graph, WccSzCntV1);
-    TFltPrV& WccSzCntV = DistrStatH.AddDat(gsdWcc);
+    TFltPr64V& WccSzCntV = DistrStatH.AddDat(gsdWcc);
     WccSzCntV.Gen(WccSzCntV1.Len(), 0);
-    for (int i = 0; i < WccSzCntV1.Len(); i++)
+    for (int64 i = 0; i < WccSzCntV1.Len(); i++)
       WccSzCntV.Add(TFltPr(WccSzCntV1[i].Val1(), WccSzCntV1[i].Val2()));
   }
   if (StatFSet.In(gsdScc)) {
     printf("scc...");
-    TIntPrV SccSzCntV1;
+    TIntPr64V SccSzCntV1;
     TSnap::GetSccSzCnt(Graph, SccSzCntV1);
-    TFltPrV& SccSzCntV = DistrStatH.AddDat(gsdScc);
+    TFltPr64V& SccSzCntV = DistrStatH.AddDat(gsdScc);
     SccSzCntV.Gen(SccSzCntV1.Len(), 0);
-    for (int i = 0; i < SccSzCntV1.Len(); i++)
+    for (int64 i = 0; i < SccSzCntV1.Len(); i++)
       SccSzCntV.Add(TFltPr(SccSzCntV1[i].Val1(), SccSzCntV1[i].Val2()));
   }
   if (StatFSet.In(gsdWcc) || StatFSet.In(gsdScc)) { printf("[%s]  ", ExeTm.GetTmStr()); }
@@ -444,10 +444,10 @@ void TGStat::TakeBccStat(const PGraph& Graph, TFSet StatFSet) {
 }
 
 template <class PGraph>
-void TGStat::TakeClustCf(const PGraph& Graph, const int& SampleNodes) {
+void TGStat::TakeClustCf(const PGraph& Graph, const int64& SampleNodes) {
   TExeTm ExeTm;
   printf("clustcf...");
-  TFltPrV& ClustCfV = DistrStatH.AddDat(gsdClustCf);
+  TFltPr64V& ClustCfV = DistrStatH.AddDat(gsdClustCf);
   int64 Open, Close;
   const double ClustCf =  TSnap::GetClustCf(Graph, ClustCfV, Close, Open, SampleNodes);
   SetVal(gsvClustCf, ClustCf);
@@ -460,11 +460,11 @@ template <class PGraph>
 void TGStat::TakeTriadPart(const PGraph& Graph) {
   TExeTm ExeTm;
   printf("triadparticip...");
-  TFltPrV& TriadCntV = DistrStatH.AddDat(gsdTriadPart);
-  TIntPrV CntV;
+  TFltPr64V& TriadCntV = DistrStatH.AddDat(gsdTriadPart);
+  TIntPr64V CntV;
   TSnap::GetTriadParticip(Graph, CntV);
   TriadCntV.Gen(CntV.Len(), 0);
-  for (int i = 0; i < CntV.Len(); i++) {
+  for (int64 i = 0; i < CntV.Len(); i++) {
     TriadCntV.Add(TFltPr(CntV[i].Val1(), CntV[i].Val2()));
   }
   printf("[%s]  ", ExeTm.GetTmStr());

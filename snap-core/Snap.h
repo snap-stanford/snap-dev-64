@@ -26,32 +26,31 @@
 // algorithms
 #include "subgraph.h"        // subgraph manipulations
 #include "anf.h"             // approximate diameter calculation
-#include "bfsdfs.h"          // breadth and depth first search      TODO 64
+#include "bfsdfs.h"          // breadth and depth first search
 #include "cncom.h"           // connected components
 #include "kcore.h"           // k-core decomposition
 #include "alg.h"             // misc graph algorithms
-#include "triad.h"           // clustering coefficient and triads   TODO 64
+#include "triad.h"           // clustering coefficient and triads
 #include "gsvd.h"            // SVD and eigenvector computations
-//#include "gstat.h"           // graph statistics                      TODO 64
-//#include "centr.h"           // centrality measures                   TODO 64
-//#include "cmty.h"            // community detection algorithms        TODO 64
+#include "gstat.h"           // graph statistics                      TODO 64
+#include "centr.h"           // centrality measures
+#include "cmty.h"            // community detection algorithms
 #include "flow.h"            // network flow algorithms
 //#include "coreper.h"         // core-periphery algorithms             TODO 64
 #include "randwalk.h"        // Personalized PageRank
 
 // graph generators
-#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)       TODO 64
-//#include "ff.h"              // forest fire graph generator            TODO 64
-
+#include "ggen.h"            // graph generators (preferential attachment, small-world, ...)
+#include "ff.h"              // forest fire graph generator
 #include "gio.h"
 #include "gviz.h"
 #include "ghash.h"
-//#include "statplot.h"                                                 TODO 64
+#include "statplot.h"
 
 // table data structures and algorithms
 #include "table.h"         // table                    
 #include "conv.h" 	   // conversion functions - table to graph
 #include "numpy.h" 	   // numpy conversion
-//#include "casc.h"          // cascade detection^M
+#include "casc.h"          // cascade detection^M
 
 #endif // SNAP_H

@@ -6,14 +6,14 @@ void TForestFire::InfectAll() {
     InfectNIdV.Add(NI.GetId()); }
 }
 
-void TForestFire::InfectRnd(const int& NInfect) {
+void TForestFire::InfectRnd(const int64& NInfect) {
   IAssert(NInfect < Graph->GetNodes());
-  TIntV NIdV(Graph->GetNodes(), 0);
+  TInt64V NIdV(Graph->GetNodes(), 0);
   for (TNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     NIdV.Add(NI.GetId()); }
   NIdV.Shuffle(Rnd);
   InfectNIdV.Gen(NInfect, 0);
-  for (int i = 0; i < NInfect; i++) {
+  for (int64 i = 0; i < NInfect; i++) {
     InfectNIdV.Add(NIdV[i]); }
 }
 
@@ -21,27 +21,27 @@ void TForestFire::InfectRnd(const int& NInfect) {
 void TForestFire::BurnExpFire() {
   const double OldFwdBurnProb = FwdBurnProb;
   const double OldBckBurnProb = BckBurnProb;
-  const int NInfect = InfectNIdV.Len();
+  const int64 NInfect = InfectNIdV.Len();
   const TNGraph& G = *Graph;
-  TIntH BurnedNIdH;               // burned nodes
-  TIntV BurningNIdV = InfectNIdV; // currently burning nodes
-  TIntV NewBurnedNIdV;            // nodes newly burned in current step
+  TInt64H BurnedNIdH;               // burned nodes
+  TInt64V BurningNIdV = InfectNIdV; // currently burning nodes
+  TInt64V NewBurnedNIdV;            // nodes newly burned in current step
   bool HasAliveNbrs;              // has unburned neighbors
-  int NBurned = NInfect, NDiedFire=0;
-  for (int i = 0; i < InfectNIdV.Len(); i++) {
+  int64 NBurned = NInfect, NDiedFire=0;
+  for (int64 i = 0; i < InfectNIdV.Len(); i++) {
     BurnedNIdH.AddDat(InfectNIdV[i]); }
   NBurnedTmV.Clr(false);  NBurningTmV.Clr(false);  NewBurnedTmV.Clr(false);
-  for (int time = 0; ; time++) {
+  for (int64 time = 0; ; time++) {
     NewBurnedNIdV.Clr(false);
     // for each burning node
-    for (int node = 0; node < BurningNIdV.Len(); node++) {
-      const int& BurningNId = BurningNIdV[node];
+    for (int64 node = 0; node < BurningNIdV.Len(); node++) {
+      const int64& BurningNId = BurningNIdV[node];
       const TNGraph::TNodeI Node = G.GetNI(BurningNId);
       HasAliveNbrs = false;
       NDiedFire = 0;
       // burn forward links  (out-links)
-      for (int e = 0; e < Node.GetOutDeg(); e++) {
-        const int OutNId = Node.GetOutNId(e);
+      for (int64 e = 0; e < Node.GetOutDeg(); e++) {
+        const int64 OutNId = Node.GetOutNId(e);
         if (! BurnedNIdH.IsKey(OutNId)) { // not yet burned
           HasAliveNbrs = true;
           if (Rnd.GetUniDev() < FwdBurnProb) {
@@ -50,8 +50,8 @@ void TForestFire::BurnExpFire() {
       }
       // burn backward links (in-links)
       if (BckBurnProb > 0.0) {
-        for (int e = 0; e < Node.GetInDeg(); e++) {
-          const int InNId = Node.GetInNId(e);
+        for (int64 e = 0; e < Node.GetInDeg(); e++) {
+          const int64 InNId = Node.GetInNId(e);
           if (! BurnedNIdH.IsKey(InNId)) { // not yet burned
             HasAliveNbrs = true;
             if (Rnd.GetUniDev() < BckBurnProb) {
@@ -71,7 +71,7 @@ void TForestFire::BurnExpFire() {
     BckBurnProb = BckBurnProb * ProbDecay;
   }
   BurnedNIdV.Gen(BurnedNIdH.Len(), 0);
-  for (int i = 0; i < BurnedNIdH.Len(); i++) {
+  for (int64 i = 0; i < BurnedNIdH.Len(); i++) {
     BurnedNIdV.Add(BurnedNIdH.GetKey(i)); }
   FwdBurnProb = OldFwdBurnProb;
   BckBurnProb = OldBckBurnProb;
@@ -82,35 +82,35 @@ void TForestFire::BurnExpFire() {
 void TForestFire::BurnGeoFire() {
   const double OldFwdBurnProb=FwdBurnProb;
   const double OldBckBurnProb=BckBurnProb;
-  const int& NInfect = InfectNIdV.Len();
+  const int64& NInfect = InfectNIdV.Len();
   const TNGraph& G = *Graph;
-  TIntH BurnedNIdH;               // burned nodes
-  TIntV BurningNIdV = InfectNIdV; // currently burning nodes
-  TIntV NewBurnedNIdV;            // nodes newly burned in current step
+  TInt64H BurnedNIdH;               // burned nodes
+  TInt64V BurningNIdV = InfectNIdV; // currently burning nodes
+  TInt64V NewBurnedNIdV;            // nodes newly burned in current step
   bool HasAliveInNbrs, HasAliveOutNbrs; // has unburned neighbors
-  TIntV AliveNIdV;                // NIds of alive neighbors
-  int NBurned = NInfect, time;
-  for (int i = 0; i < InfectNIdV.Len(); i++) {
+  TInt64V AliveNIdV;                // NIds of alive neighbors
+  int64 NBurned = NInfect, time;
+  for (int64 i = 0; i < InfectNIdV.Len(); i++) {
     BurnedNIdH.AddDat(InfectNIdV[i]); }
   NBurnedTmV.Clr(false);  NBurningTmV.Clr(false);  NewBurnedTmV.Clr(false);
   for (time = 0; ; time++) {
     NewBurnedNIdV.Clr(false);
-    for (int node = 0; node < BurningNIdV.Len(); node++) {
-      const int& BurningNId = BurningNIdV[node];
+    for (int64 node = 0; node < BurningNIdV.Len(); node++) {
+      const int64& BurningNId = BurningNIdV[node];
       const TNGraph::TNodeI Node = G.GetNI(BurningNId);
       // find unburned links
       HasAliveOutNbrs = false;
       AliveNIdV.Clr(false); // unburned links
-      for (int e = 0; e < Node.GetOutDeg(); e++) {
-        const int OutNId = Node.GetOutNId(e);
+      for (int64 e = 0; e < Node.GetOutDeg(); e++) {
+        const int64 OutNId = Node.GetOutNId(e);
         if (! BurnedNIdH.IsKey(OutNId)) {
           HasAliveOutNbrs = true;  AliveNIdV.Add(OutNId); }
       }
       // number of links to burn (geometric coin). Can also burn 0 links
-      const int BurnNFwdLinks = Rnd.GetGeoDev(1.0-FwdBurnProb) - 1;
+      const int64 BurnNFwdLinks = Rnd.GetGeoDev(1.0-FwdBurnProb) - 1;
       if (HasAliveOutNbrs && BurnNFwdLinks > 0) {
         AliveNIdV.Shuffle(Rnd);
-        for (int i = 0; i < TMath::Mn(BurnNFwdLinks, AliveNIdV.Len()); i++) {
+        for (int64 i = 0; i < TMath::Mn(BurnNFwdLinks, AliveNIdV.Len()); i++) {
           BurnedNIdH.AddDat(AliveNIdV[i]);
           NewBurnedNIdV.Add(AliveNIdV[i]);  NBurned++; }
       }
@@ -119,16 +119,16 @@ void TForestFire::BurnGeoFire() {
         // find unburned links
         HasAliveInNbrs = false;
         AliveNIdV.Clr(false);
-        for (int e = 0; e < Node.GetInDeg(); e++) {
-          const int InNId = Node.GetInNId(e);
+        for (int64 e = 0; e < Node.GetInDeg(); e++) {
+          const int64 InNId = Node.GetInNId(e);
           if (! BurnedNIdH.IsKey(InNId)) {
             HasAliveInNbrs = true;  AliveNIdV.Add(InNId); }
         }
          // number of links to burn (geometric coin). Can also burn 0 links
-        const int BurnNBckLinks = Rnd.GetGeoDev(1.0-BckBurnProb) - 1;
+        const int64 BurnNBckLinks = Rnd.GetGeoDev(1.0-BckBurnProb) - 1;
         if (HasAliveInNbrs && BurnNBckLinks > 0) {
           AliveNIdV.Shuffle(Rnd);
-          for (int i = 0; i < TMath::Mn(BurnNBckLinks, AliveNIdV.Len()); i++) {
+          for (int64 i = 0; i < TMath::Mn(BurnNBckLinks, AliveNIdV.Len()); i++) {
             BurnedNIdH.AddDat(AliveNIdV[i]);
             NewBurnedNIdV.Add(AliveNIdV[i]);  NBurned++; }
         }
@@ -142,7 +142,7 @@ void TForestFire::BurnGeoFire() {
     BckBurnProb = BckBurnProb * ProbDecay;
   }
   BurnedNIdV.Gen(BurnedNIdH.Len(), 0);
-  for (int i = 0; i < BurnedNIdH.Len(); i++) {
+  for (int64 i = 0; i < BurnedNIdH.Len(); i++) {
     BurnedNIdV.Add(BurnedNIdH.GetKey(i)); }
   FwdBurnProb = OldFwdBurnProb;
   BckBurnProb = OldBckBurnProb;
@@ -241,13 +241,16 @@ void TForestFire::PlotFire(const TStr& FNmPref, const TStr& Desc, const bool& Pl
   TGnuPlot GnuPlot(FNmPref, TStr::Fmt("%s. ForestFire. G(%d, %d). Fwd:%g  Bck:%g  NInfect:%d",
     Desc.CStr(), Graph->GetNodes(), Graph->GetEdges(), FwdBurnProb(), BckBurnProb(), InfectNIdV.Len()));
   GnuPlot.SetXYLabel("TIME EPOCH", "Number of NODES");
-  if (PlotAllBurned) GnuPlot.AddPlot(NBurnedTmV, gpwLinesPoints, "All burned nodes till time");
-  GnuPlot.AddPlot(NBurningTmV, gpwLinesPoints, "Burning nodes at time");
-  GnuPlot.AddPlot(NewBurnedTmV, gpwLinesPoints, "Newly burned nodes at time");
+  TIntV NBurnedTmV32Bit = TInt64VToTIntV(NBurnedTmV);
+  TIntV NBurningTmV32Bit = TInt64VToTIntV(NBurningTmV);
+  TIntV NewBurnedTmV32Bit = TInt64VToTIntV(NewBurnedTmV);
+  if (PlotAllBurned) GnuPlot.AddPlot(NBurnedTmV32Bit, gpwLinesPoints, "All burned nodes till time");
+  GnuPlot.AddPlot(NBurningTmV32Bit, gpwLinesPoints, "Burning nodes at time");
+  GnuPlot.AddPlot(NewBurnedTmV32Bit, gpwLinesPoints, "Newly burned nodes at time");
   GnuPlot.SavePng(TFile::GetUniqueFNm(TStr::Fmt("fireSz.%s_#.png", FNmPref.CStr())));
 }
 
-PNGraph TForestFire::GenGraph(const int& Nodes, const double& FwdProb, const double& BckProb) {
+PNGraph TForestFire::GenGraph(const int64& Nodes, const double& FwdProb, const double& BckProb) {
   TFfGGen Ff(false, 1, FwdProb, BckProb, 1.0, 0.0, 0.0);
   Ff.GenGraph(Nodes);
   return Ff.GetGraph();
@@ -255,9 +258,9 @@ PNGraph TForestFire::GenGraph(const int& Nodes, const double& FwdProb, const dou
 
 /////////////////////////////////////////////////
 // Forest Fire Graph Generator
-int TFfGGen::TimeLimitSec = 30*60; // 30 minutes
+int64 TFfGGen::TimeLimitSec = 30*60; // 30 minutes
 
-TFfGGen::TFfGGen(const bool& BurnExpFireP, const int& StartNNodes, const double& ForwBurnProb,
+TFfGGen::TFfGGen(const bool& BurnExpFireP, const int64& StartNNodes, const double& ForwBurnProb,
                  const double& BackBurnProb, const double& DecayProb, const double& Take2AmbasPrb, const double& OrphanPrb) :
  Graph(), BurnExpFire(BurnExpFireP), StartNodes(StartNNodes), FwdBurnProb(ForwBurnProb),
  BckBurnProb(BackBurnProb), ProbDecay(DecayProb), Take2AmbProb(Take2AmbasPrb), OrphanProb(OrphanPrb) {
@@ -269,41 +272,41 @@ TStr TFfGGen::GetParamStr() const {
     BurnExpFire?"EXP":"GEO", FwdBurnProb(), BckBurnProb(), StartNodes(), Take2AmbProb(), OrphanProb(), ProbDecay());
 }
 
-TFfGGen::TStopReason TFfGGen::AddNodes(const int& GraphNodes, const bool& FloodStop) {
+TFfGGen::TStopReason TFfGGen::AddNodes(const int64& GraphNodes, const bool& FloodStop) {
   printf("\n***ForestFire:  %s  Nodes:%d  StartNodes:%d  Take2AmbProb:%g\n", BurnExpFire?"ExpFire":"GeoFire", GraphNodes, StartNodes(), Take2AmbProb());
   printf("                FwdBurnP:%g  BckBurnP:%g  ProbDecay:%g  Orphan:%g\n", FwdBurnProb(), BckBurnProb(), ProbDecay(), OrphanProb());
   TExeTm ExeTm;
-  int Burned1=0, Burned2=0, Burned3=0; // last 3 fire sizes
+  int64 Burned1=0, Burned2=0, Burned3=0; // last 3 fire sizes
   // create initial set of nodes
   if (Graph.Empty()) { Graph = PNGraph::New(); }
   if (Graph->GetNodes() == 0) {
-    for (int n = 0; n < StartNodes; n++) { Graph->AddNode(); }
+    for (int64 n = 0; n < StartNodes; n++) { Graph->AddNode(); }
   }
-  int NEdges = Graph->GetEdges();
+  int64 NEdges = Graph->GetEdges();
   // forest fire
   TRnd Rnd(0);
   TForestFire ForestFire(Graph, FwdBurnProb, BckBurnProb, ProbDecay, 0);
   // add nodes
-  for (int NNodes = Graph->GetNodes()+1; NNodes <= GraphNodes; NNodes++) {
-    const int NewNId = Graph->AddNode(-1);
+  for (int64 NNodes = Graph->GetNodes()+1; NNodes <= GraphNodes; NNodes++) {
+    const int64 NewNId = Graph->AddNode(-1);
     IAssert(NewNId == Graph->GetNodes()-1); // node ids have to be 0...N
     // not an Orphan (burn fire)
     if (OrphanProb == 0.0 || Rnd.GetUniDev() > OrphanProb) {
       // infect ambassadors
       if (Take2AmbProb == 0.0 || Rnd.GetUniDev() > Take2AmbProb || NewNId < 2) {
-        ForestFire.Infect(Rnd.GetUniDevInt(NewNId)); // take 1 ambassador
+        ForestFire.Infect(Rnd.GetUniDevInt64(NewNId)); // take 1 ambassador
       } else {
-        const int AmbassadorNId1 = Rnd.GetUniDevInt(NewNId);
-        int AmbassadorNId2 = Rnd.GetUniDevInt(NewNId);
+        const int64 AmbassadorNId1 = Rnd.GetUniDevInt64(NewNId);
+        int64 AmbassadorNId2 = Rnd.GetUniDevInt64(NewNId);
         while (AmbassadorNId1 == AmbassadorNId2) {
-          AmbassadorNId2 = Rnd.GetUniDevInt(NewNId); }
-        ForestFire.Infect(TIntV::GetV(AmbassadorNId1, AmbassadorNId2)); // take 2 ambassadors
+          AmbassadorNId2 = Rnd.GetUniDevInt64(NewNId); }
+        ForestFire.Infect(TInt64V::GetV(AmbassadorNId1, AmbassadorNId2)); // take 2 ambassadors
       }
       // burn fire
       if (BurnExpFire) { ForestFire.BurnExpFire(); }
       else { ForestFire.BurnGeoFire(); }
       // add edges to burned nodes
-      for (int e = 0; e < ForestFire.GetBurned(); e++) {
+      for (int64 e = 0; e < ForestFire.GetBurned(); e++) {
         Graph->AddEdge(NewNId, ForestFire.GetBurnedNId(e));
         NEdges++;
       }
@@ -324,13 +327,13 @@ TFfGGen::TStopReason TFfGGen::AddNodes(const int& GraphNodes, const bool& FloodS
   return srOk;
 }
 
-TFfGGen::TStopReason TFfGGen::GenGraph(const int& GraphNodes, const bool& FloodStop) {
+TFfGGen::TStopReason TFfGGen::GenGraph(const int64& GraphNodes, const bool& FloodStop) {
   Graph = PNGraph::New();
   return AddNodes(GraphNodes, FloodStop);
 }
 
-TFfGGen::TStopReason TFfGGen::GenGraph(const int& GraphNodes, PGStatVec& EvolStat, const bool& FloodStop) {
-  int GrowthStatNodes = 100;
+TFfGGen::TStopReason TFfGGen::GenGraph(const int64& GraphNodes, PGStatVec& EvolStat, const bool& FloodStop) {
+  int64 GrowthStatNodes = 100;
   Graph = PNGraph::New();
   AddNodes(StartNodes);
   TStopReason SR = srUndef;
@@ -338,7 +341,7 @@ TFfGGen::TStopReason TFfGGen::GenGraph(const int& GraphNodes, PGStatVec& EvolSta
     SR = AddNodes(GrowthStatNodes, FloodStop);
     if (SR != srOk) { return SR; }
     EvolStat->Add(Graph, TSecTm(Graph->GetNodes()));
-    GrowthStatNodes = int(1.5*GrowthStatNodes);
+    GrowthStatNodes = int64(1.5*GrowthStatNodes);
   }
   return SR;
 }
@@ -347,17 +350,17 @@ void TFfGGen::PlotFireSize(const TStr& FNmPref, const TStr& DescStr) {
   TGnuPlot GnuPlot("fs."+FNmPref, TStr::Fmt("%s. Fire size. G(%d, %d)",
     DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges()));
   GnuPlot.SetXYLabel("Vertex id (iterations)", "Fire size (node out-degree)");
-  TFltPrV IdToOutDegV;
+  TFltPr64V IdToOutDegV;
   for (TNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     IdToOutDegV.Add(TFltPr(NI.GetId(), NI.GetOutDeg())); }
   IdToOutDegV.Sort();
-  GnuPlot.AddPlot(IdToOutDegV, gpwImpulses, "Node out-degree");
+  GnuPlot.AddPlot(IdToOutDegV.Get32BitVector(), gpwImpulses, "Node out-degree");
   GnuPlot.SavePng();
 }
 
 void TFfGGen::GenFFGraphs(const double& FProb, const double& BProb, const TStr& FNm) {
-  const int NRuns = 10;
-  const int NNodes = 10000;
+  const int64 NRuns = 10;
+  const int64 NNodes = 10000;
   TGStat::NDiamRuns = 10;
   //const double FProb = 0.35, BProb = 0.20;  // ff1
   //const double FProb = 0.37, BProb = 0.32;  // ff2
@@ -367,10 +370,10 @@ void TFfGGen::GenFFGraphs(const double& FProb, const double& BProb, const TStr& 
   //const double FProb = 0.38, BProb = 0.35;  // ff5
   TVec<PGStatVec> GAtTmV;
   TFfGGen FF(false, 1, FProb, BProb, 1.0, 0, 0);
-  for (int r = 0; r < NRuns; r++) {
+  for (int64 r = 0; r < NRuns; r++) {
     PGStatVec GV = TGStatVec::New(tmuNodes, TGStat::AllStat());
     FF.GenGraph(NNodes, GV, true);
-    for (int i = 0; i < GV->Len(); i++) {
+    for (int64 i = 0; i < GV->Len(); i++) {
       if (i == GAtTmV.Len()) {
         GAtTmV.Add(TGStatVec::New(tmuNodes, TGStat::AllStat()));
       }
@@ -379,7 +382,7 @@ void TFfGGen::GenFFGraphs(const double& FProb, const double& BProb, const TStr& 
     IAssert(GAtTmV.Len() == GV->Len());
   }
   PGStatVec AvgStat = TGStatVec::New(tmuNodes, TGStat::AllStat());
-  for (int i = 0; i < GAtTmV.Len(); i++) {
+  for (int64 i = 0; i < GAtTmV.Len(); i++) {
     AvgStat->Add(GAtTmV[i]->GetAvgGStat(false));
   }
   AvgStat->PlotAllVsX(gsvNodes, FNm, TStr::Fmt("Forest Fire: F:%g  B:%g (%d runs)", FProb, BProb, NRuns));
@@ -742,31 +745,31 @@ void TFfPhaseTrans::Merge(const TFfPhaseTrans& FfPhaseTrans) {
 
 // Node selects N~geometric(1.0-BurnProb)-1 links and burns them. 
 // geometirc(p) has mean 1/(p), so for given BurnProb, we burn 1/(1-BurnProb) links in average
-int TUndirFFire::BurnGeoFire(const int& StartNId) {
+int64 TUndirFFire::BurnGeoFire(const int64& StartNId) {
   BurnedSet.Clr(false);
   BurningNIdV.Clr(false);  
   NewBurnedNIdV.Clr(false);
   AliveNIdV.Clr(false);
   const TUNGraph& G = *Graph;
-  int NBurned = 1;
+  int64 NBurned = 1;
   BurnedSet.AddKey(StartNId);
   BurningNIdV.Add(StartNId);
   while (! BurningNIdV.Empty()) {
-    for (int node = 0; node < BurningNIdV.Len(); node++) {
-      const int& BurningNId = BurningNIdV[node];
+    for (int64 node = 0; node < BurningNIdV.Len(); node++) {
+      const int64& BurningNId = BurningNIdV[node];
       const TUNGraph::TNodeI& Node = G.GetNI(BurningNId);
       // find unburned links
       AliveNIdV.Clr(false); // unburned links
-      for (int e = 0; e < Node.GetOutDeg(); e++) {
-        const int OutNId = Node.GetOutNId(e);
+      for (int64 e = 0; e < Node.GetOutDeg(); e++) {
+        const int64 OutNId = Node.GetOutNId(e);
         if (! BurnedSet.IsKey(OutNId)) {
           AliveNIdV.Add(OutNId); }
       }
       // number of links to burn (geometric coin). Can also burn 0 links
-      const int BurnNLinks = Rnd.GetGeoDev(1.0-BurnProb) - 1;
+      const int64 BurnNLinks = Rnd.GetGeoDev(1.0-BurnProb) - 1;
       if (! AliveNIdV.Empty() && BurnNLinks > 0) {
         AliveNIdV.Shuffle(Rnd);
-        for (int i = 0; i < TMath::Mn(BurnNLinks, AliveNIdV.Len()); i++) {
+        for (int64 i = 0; i < TMath::Mn(BurnNLinks, AliveNIdV.Len()); i++) {
           BurnedSet.AddKey(AliveNIdV[i]);
           NewBurnedNIdV.Add(AliveNIdV[i]);
           NBurned++;
@@ -781,30 +784,30 @@ int TUndirFFire::BurnGeoFire(const int& StartNId) {
   return NBurned;
 }
 
-TFfGGen::TStopReason TUndirFFire::AddNodes(const int& GraphNodes, const bool& FloodStop) {
+TFfGGen::TStopReason TUndirFFire::AddNodes(const int64& GraphNodes, const bool& FloodStop) {
   printf("\n***Undirected GEO ForestFire: graph(%d,%d) add %d nodes, burn prob %.3f\n", 
     Graph->GetNodes(), Graph->GetEdges(), GraphNodes, BurnProb);
   TExeTm ExeTm;
-  int Burned1=0, Burned2=0, Burned3=0; // last 3 fire sizes
-  TIntPrV NodesEdgesV;
+  int64 Burned1=0, Burned2=0, Burned3=0; // last 3 fire sizes
+  TIntPr64V NodesEdgesV;
   // create initial set of nodes
   if (Graph.Empty()) { Graph = PUNGraph::New(); }
   if (Graph->GetNodes() == 0) { Graph->AddNode(); }
-  int NEdges = Graph->GetEdges();
+  int64 NEdges = Graph->GetEdges();
   // forest fire
-  for (int NNodes = Graph->GetNodes()+1; NNodes <= GraphNodes; NNodes++) {
-    const int NewNId = Graph->AddNode(-1);
+  for (int64 NNodes = Graph->GetNodes()+1; NNodes <= GraphNodes; NNodes++) {
+    const int64 NewNId = Graph->AddNode(-1);
     IAssert(NewNId == Graph->GetNodes()-1); // node ids have to be 0...N
-    const int StartNId = Rnd.GetUniDevInt(NewNId);
-    const int NBurned = BurnGeoFire(StartNId);
+    const int64 StartNId = Rnd.GetUniDevInt64(NewNId);
+    const int64 NBurned = BurnGeoFire(StartNId);
     // add edges to burned nodes
-    for (int e = 0; e < NBurned; e++) {
+    for (int64 e = 0; e < NBurned; e++) {
       Graph->AddEdge(NewNId, GetBurnedNId(e)); }
     NEdges += NBurned;
     Burned1=Burned2;  Burned2=Burned3;  Burned3=NBurned;
     if (NNodes % Kilo(1) == 0) {
       printf("(%d, %d)    burned: [%d,%d,%d]  [%s]\n", NNodes, NEdges, Burned1, Burned2, Burned3, ExeTm.GetStr()); 
-      NodesEdgesV.Add(TIntPr(NNodes, NEdges));
+      NodesEdgesV.Add(TInt64Pr(NNodes, NEdges));
     }
     if (FloodStop && NEdges>1000 && NEdges/double(NNodes)>100.0) { // average node degree is more than 50
       printf("!!! FLOOD. G(%6d, %6d)\n", NNodes, NEdges);  return TFfGGen::srFlood; }

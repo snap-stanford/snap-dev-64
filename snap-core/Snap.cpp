@@ -9,7 +9,7 @@
 
 #include "gbase.cpp"
 #include "util.cpp"
-#include "attr.cpp"     		 // sparse attributes
+#include "attr.cpp"          // sparse attributes
 
 // graph data structures
 #include "graph.cpp"         // graphs
@@ -26,21 +26,21 @@
 #include "cncom.cpp"         // connected components
 #include "alg.cpp"           // misc graph algorithms
 #include "gsvd.cpp"          // SVD and eigenvector computations
-//#include "gstat.cpp"         // graph statistics        TODO 64
-//#include "centr.cpp"         // centrality measures    TODO 64
-//#include "cmty.cpp"          // community detection algorithms   TODO 64
+#include "gstat.cpp"         // graph statistics        TODO 64
+#include "centr.cpp"         // centrality measures
+#include "cmty.cpp"          // community detection algorithms
 #include "flow.cpp"          // network flow algorithms
 //#include "coreper.cpp"       // core-periphery algorithms        TODO 64
-#include "triad.cpp"         // clustering coefficient and triads TODO 64
-//#include "casc.cpp"          // cascade detection^M
+#include "triad.cpp"         // clustering coefficient and triads
+#include "casc.cpp"          // cascade detection^M
 
 // graph generators
-#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)       TODO 64
-//#include "ff.cpp"            // forest fire graph generator           TODO 64
+#include "ggen.cpp"          // graph generators (preferential attachment, small-world, ...)
+#include "ff.cpp"            // forest fire graph generator
 
 #include "gviz.cpp"
 #include "ghash.cpp"
-//#include "statplot.cpp"            TODO 64
+#include "statplot.cpp"
 #include "gio.cpp"
 
 // table data structures and algorithms

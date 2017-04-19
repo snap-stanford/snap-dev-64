@@ -1,12 +1,12 @@
 /////////////////////////////////////////////////
 // Sigle Snapshot Graph Statistics
-int TGStat::NDiamRuns = 10;
-int TGStat::TakeSngVals = 100;
-const TFltPrV TGStat::EmptyV = TFltPrV();
+int64 TGStat::NDiamRuns = 10;
+int64 TGStat::TakeSngVals = 100;
+const TFltPr64V TGStat::EmptyV = TFltPr64V();
 
 bool TGStat::TCmpByVal::operator () (const TGStat& GS1, const TGStat& GS2) const {
   IAssertR(GS1.HasVal(ValCmp) && GS2.HasVal(ValCmp), TStr::Fmt("CmpVal: %d (%s)", 
-    int(ValCmp), TGStat::GetValStr(ValCmp).CStr()).CStr());
+    int64(ValCmp), TGStat::GetValStr(ValCmp).CStr()).CStr());
   bool Res;
   if (ValCmp == gsvTime) { Res = GS1.Time < GS2.Time; }
   else { Res = GS1.GetVal(ValCmp) < GS2.GetVal(ValCmp); }
@@ -63,7 +63,7 @@ bool TGStat::operator < (const TGStat& GStat) const {
   if (Time>GStat.Time) { return false; }
   if (ValStatH.Empty() && ! GStat.ValStatH.Empty()) { return true; }
   if (GStat.ValStatH.Empty()) { return false; }
-  for (int v = gsvTime; v < gsvMx; v++) {
+  for (int64 v = gsvTime; v < gsvMx; v++) {
     if (! ValStatH.IsKey(v) && ! GStat.ValStatH.IsKey(v)) { continue; }
     if (ValStatH.IsKey(v) && ! GStat.ValStatH.IsKey(v)) { return false; }
     if (! ValStatH.IsKey(v)) { return true; }
@@ -75,30 +75,30 @@ bool TGStat::operator < (const TGStat& GStat) const {
 bool TGStat::HasVal(const TGStatVal& StatVal) const {
   if (StatVal == gsvIndex) { return true; }
   if (StatVal == gsvTime) { return Time.IsDef(); }
-  return ValStatH.IsKey(int(StatVal));
+  return ValStatH.IsKey(int64(StatVal));
 }
 
 double TGStat::GetVal(const TGStatVal& StatVal) const {
   if (StatVal == gsvIndex) { return -1; }
   if (StatVal == gsvTime) { return Time.GetAbsSecs(); }
-  if (! ValStatH.IsKey(int(StatVal))) { return -1.0; }
-  return ValStatH.GetDat(int(StatVal));
+  if (! ValStatH.IsKey(int64(StatVal))) { return -1.0; }
+  return ValStatH.GetDat(int64(StatVal));
 }
 
 void TGStat::SetVal(const TGStatVal& StatVal, const double& Val) {
-  ValStatH.AddDat(int(StatVal), Val);
+  ValStatH.AddDat(int64(StatVal), Val);
 }
 
-const TFltPrV& TGStat::GetDistr(const TGStatDistr& Distr) const {
-  if (! DistrStatH.IsKey(int(Distr))) { return EmptyV; }
-  return DistrStatH.GetDat(int(Distr));
+const TFltPr64V& TGStat::GetDistr(const TGStatDistr& Distr) const {
+  if (! DistrStatH.IsKey(int64(Distr))) { return EmptyV; }
+  return DistrStatH.GetDat(int64(Distr));
 }
 
-void TGStat::SetDistr(const TGStatDistr& Distr, const TFltPrV& FltPrV) {
+void TGStat::SetDistr(const TGStatDistr& Distr, const TFltPr64V& FltPrV) {
   DistrStatH.AddDat(Distr, FltPrV);
 }
 
-void TGStat::GetDistr(const TGStatDistr& Distr, TFltPrV& FltPrV) const {
+void TGStat::GetDistr(const TGStatDistr& Distr, TFltPr64V& FltPrV) const {
   FltPrV = GetDistr(Distr);
 }
 
@@ -166,23 +166,23 @@ void TGStat::TakeStat(const PUNGraph& Graph, const TSecTm& _Time, TFSet StatFSet
   printf("**[%s]\n", FullTm.GetTmStr());
 }
 
-void TGStat::TakeSpectral(const PNGraph& Graph, const int _TakeSngVals) {
+void TGStat::TakeSpectral(const PNGraph& Graph, const int64 _TakeSngVals) {
   TakeSpectral(Graph, TFSet() | gsdSngVal | gsdSngVec, _TakeSngVals);
 }
 
-void TGStat::TakeSpectral(const PNGraph& Graph, TFSet StatFSet, int _TakeSngVals) {
+void TGStat::TakeSpectral(const PNGraph& Graph, TFSet StatFSet, int64 _TakeSngVals) {
   TExeTm ExeTm;
   if (_TakeSngVals == -1) { _TakeSngVals = TakeSngVals; }
   // singular values, vectors
   if (StatFSet.In(gsdSngVal)) {
     printf("sing-vals...");  
-    const int SngVals = TMath::Mn(_TakeSngVals, Graph->GetNodes()/2);
+    const int64 SngVals = TMath::Mn(_TakeSngVals, Graph->GetNodes()/2);
     TFltV SngValV1;
     TSnap::GetSngVals(Graph, SngVals, SngValV1);
     SngValV1.Sort(false);
-    TFltPrV& SngValV = DistrStatH.AddDat(gsdSngVal);
+    TFltPr64V& SngValV = DistrStatH.AddDat(gsdSngVal);
     SngValV.Gen(SngValV1.Len(), 0);
-    for (int i = 0; i < SngValV1.Len(); i++) {
+    for (int64 i = 0; i < SngValV1.Len(); i++) {
       SngValV.Add(TFltPr(i+1, SngValV1[i]));
     }
     printf("[%s]  ", ExeTm.GetTmStr());
@@ -192,9 +192,9 @@ void TGStat::TakeSpectral(const PNGraph& Graph, TFSet StatFSet, int _TakeSngVals
     TFltV LeftV, RightV;
     TSnap::GetSngVec(Graph, LeftV, RightV);
     LeftV.Sort(false);
-    TFltPrV& SngVec = DistrStatH.AddDat(gsdSngVec);
+    TFltPr64V& SngVec = DistrStatH.AddDat(gsdSngVec);
     SngVec.Gen(LeftV.Len(), 0);
-    for (int i = 0; i < TMath::Mn(Kilo(10), LeftV.Len()/2); i++) {
+    for (int64 i = 0; i < TMath::Mn(Kilo(10), LeftV.Len()/2); i++) {
       if (LeftV[i] > 0) { SngVec.Add(TFltPr(i+1, LeftV[i])); }
     }
     printf("[%s]  ", ExeTm.GetTmStr());
@@ -208,7 +208,8 @@ void TGStat::Plot(const TGStatDistr& Distr, const TStr& FNmPref, TStr Desc, bool
   TGnuPlot GnuPlot(Info.Val1+TStr(".")+FNmPref, TStr::Fmt("%s. G(%d, %d)", Desc.CStr(), GetNodes(),GetEdges()));
   GnuPlot.SetXYLabel(Info.Val2, Info.Val3);
   GnuPlot.SetScale(Info.Val4);
-  const int plotId = GnuPlot.AddPlot(GetDistr(Distr), gpwLinesPoints, "");
+  TFltPr64V ToPlot = GetDistr(Distr);
+  const int64 plotId = GnuPlot.AddPlot(ToPlot.Get32BitVector(), gpwLinesPoints, "");
   if (PowerFit) { GnuPlot.AddPwrFit(plotId, gpwLines); }
   #ifdef GLib_MACOSX
   GnuPlot.SaveEps();
@@ -218,7 +219,7 @@ void TGStat::Plot(const TGStatDistr& Distr, const TStr& FNmPref, TStr Desc, bool
 }
 
 void TGStat::Plot(const TFSet& FSet, const TStr& FNmPref, const TStr& Desc, bool PowerFit) const {
-  for (int d = gsdUndef; d < gsdMx; d++) {
+  for (int64 d = gsdUndef; d < gsdMx; d++) {
     const TGStatDistr Distr = TGStatDistr(d);
     if (! FSet.In(Distr)) { continue; }
     Plot(Distr, FNmPref, Desc, PowerFit);
@@ -226,14 +227,14 @@ void TGStat::Plot(const TFSet& FSet, const TStr& FNmPref, const TStr& Desc, bool
 }
 
 void TGStat::PlotAll(const TStr& FNmPref, TStr Desc, bool PowerFit) const {
-  for (int d = gsdUndef; d < gsdMx; d++) {
+  for (int64 d = gsdUndef; d < gsdMx; d++) {
     const TGStatDistr Distr = TGStatDistr(d);
     Plot(Distr, FNmPref, Desc, PowerFit);
   }
 }
 
 void TGStat::DumpValStat() {
-  for (int val = gsvNone; val < gsvMx; val++) {
+  for (int64 val = gsvNone; val < gsvMx; val++) {
     const TGStatVal Val = TGStatVal(val);
     if (! HasVal(Val)) { continue; }
     printf("  %s\t%g\n", GetValStr(Val).CStr(), GetVal(Val));
@@ -249,10 +250,10 @@ void TGStat::AvgGStat(const TGStatV& GStatV, const bool& ClipAt1) {
   Time = GStatV[0]->Time;
   GraphNm = GStatV[0]->GraphNm;
   // values
-  for (int statVal = 0; statVal > gsvMx; statVal++) {
+  for (int64 statVal = 0; statVal > gsvMx; statVal++) {
     const TGStatVal GStatVal = TGStatVal(statVal);
     TMom Mom;
-    for (int i = 0; i < GStatV.Len(); i++) {
+    for (int64 i = 0; i < GStatV.Len(); i++) {
       if (GStatV[i]->HasVal(GStatVal)) {
         Mom.Add(GStatV[i]->GetVal(GStatVal)); }
     }
@@ -263,22 +264,22 @@ void TGStat::AvgGStat(const TGStatV& GStatV, const bool& ClipAt1) {
     }
   }
   // distributions
-  for (int distr = gsdUndef; distr < gsdMx; distr++) {
+  for (int64 distr = gsdUndef; distr < gsdMx; distr++) {
     const TGStatDistr GStatDistr = TGStatDistr(distr);
-    THash<TFlt, TFlt> ValToSumH;
-    int DistrCnt = 0;
-    for (int i = 0; i < GStatV.Len(); i++) {
+    THash<TFlt, TFlt, int64> ValToSumH;
+    int64 DistrCnt = 0;
+    for (int64 i = 0; i < GStatV.Len(); i++) {
       if (GStatV[i]->HasDistr(GStatDistr)) {
-        const TFltPrV& D = GStatV[i]->GetDistr(GStatDistr);
-        for (int d = 0; d < D.Len(); d++) {
+        const TFltPr64V& D = GStatV[i]->GetDistr(GStatDistr);
+        for (int64 d = 0; d < D.Len(); d++) {
           ValToSumH.AddDat(D[d].Val1) += D[d].Val2; }
         DistrCnt++;
       }
     }
     IAssert(DistrCnt==0 || DistrCnt==GStatV.Len()); // all must have distribution
-    TFltPrV AvgStatV;
+    TFltPr64V AvgStatV;
     ValToSumH.GetKeyDatPrV(AvgStatV);  AvgStatV.Sort();
-    for (int i = 0; i < AvgStatV.Len(); i++) {
+    for (int64 i = 0; i < AvgStatV.Len(); i++) {
       AvgStatV[i].Val2 /= double(DistrCnt);
       if (ClipAt1 && AvgStatV[i].Val2 < 1) { AvgStatV[i].Val2 = 1; }
     }
@@ -344,8 +345,8 @@ TStr TGStat::GetValStr(const TGStatVal& Val) {
     ValTyStrH.AddDat(gsvBccSize, "BccSize");
     ValTyStrH.AddDat(gsvMx, "Mx");
   }
-  IAssert(ValTyStrH.IsKey(int(Val)));
-  return ValTyStrH.GetDat(int(Val));
+  IAssert(ValTyStrH.IsKey(int64(Val)));
+  return ValTyStrH.GetDat(int64(Val));
 }
 
 TGStat::TPlotInfo TGStat::GetPlotInfo(const TGStatVal& Val) {
@@ -406,7 +407,7 @@ TFSet TGStat::AllStat() {
 
 /////////////////////////////////////////////////
 // Graph Growth Statistics
-uint TGStatVec::MinNodesEdges = 10;
+uint64 TGStatVec::MinNodesEdges = 10;
 
 TGStatVec::TGStatVec(const TTmUnit& _TmUnit) : TmUnit(_TmUnit), StatFSet(), GStatV() {
   StatFSet = TGStat::AllStat();
@@ -420,7 +421,7 @@ TGStatVec::TGStatVec(const TGStatVec& GStat) :
   TmUnit(GStat.TmUnit), StatFSet(GStat.StatFSet), GStatV(GStat.GStatV) {
 }
 
-TGStatVec::TGStatVec(TSIn& SIn) : TmUnit((TTmUnit) TInt(SIn).Val), StatFSet(SIn), GStatV(SIn) {
+TGStatVec::TGStatVec(TSIn& SIn) : TmUnit((TTmUnit) TInt64(SIn).Val), StatFSet(SIn), GStatV(SIn) {
 }
 
 PGStatVec TGStatVec::New(const TTmUnit& _TmUnit) {
@@ -432,7 +433,7 @@ PGStatVec TGStatVec::New(const TTmUnit& _TmUnit, const TFSet& TakeGrowthStat) {
 }
 
 void TGStatVec::Save(TSOut& SOut) const {
-  TInt(TmUnit).Save(SOut);
+  TInt64(TmUnit).Save(SOut);
   StatFSet.Save(SOut);
   GStatV.Save(SOut);
 }
@@ -457,7 +458,7 @@ PGStat TGStatVec::Add(const TSecTm& Time, const TStr& GraphNm) {
 }
 
 void TGStatVec::Add(const PNGraph& Graph, const TSecTm& Time, const TStr& GraphNm) {
-  if (Graph->GetNodes() < (int) TGStatVec::MinNodesEdges) {
+  if (Graph->GetNodes() < (int64) TGStatVec::MinNodesEdges) {
     printf(" ** TGStatVec::Add: graph too small (%d nodes).SKIP\n", Graph->GetNodes());
     return;
   }
@@ -465,7 +466,7 @@ void TGStatVec::Add(const PNGraph& Graph, const TSecTm& Time, const TStr& GraphN
 }
 
 void TGStatVec::Add(const PUNGraph& Graph, const TSecTm& Time, const TStr& GraphNm) {
-  if (Graph->GetNodes() < (int) TGStatVec::MinNodesEdges) {
+  if (Graph->GetNodes() < (int64) TGStatVec::MinNodesEdges) {
     printf(" ** TGStatVec::Add: graph too small (%d nodes).SKIP\n", Graph->GetNodes());
     return;
   }
@@ -473,7 +474,7 @@ void TGStatVec::Add(const PUNGraph& Graph, const TSecTm& Time, const TStr& Graph
 }
 
 void TGStatVec::Add(const PNEGraph& Graph, const TSecTm& Time, const TStr& GraphNm) {
-  if (Graph->GetNodes() < (int) TGStatVec::MinNodesEdges) {
+  if (Graph->GetNodes() < (int64) TGStatVec::MinNodesEdges) {
     printf(" ** TGStatVec::Add: graph too small (%d nodes).SKIP\n", Graph->GetNodes());
     return;
   }
@@ -486,7 +487,7 @@ void TGStatVec::Sort(const TGStatVal& SortBy, const bool& Asc) {
 
 void TGStatVec::DelBefore(const TSecTm& Tm) {
   TGStatV NewTickV;
-  for (int i = 0; i < Len(); i++) {
+  for (int64 i = 0; i < Len(); i++) {
     if (At(i)->Time >= Tm) { NewTickV.Add(At(i)); }
   }
   GStatV.Swap(NewTickV);
@@ -494,24 +495,24 @@ void TGStatVec::DelBefore(const TSecTm& Tm) {
 
 void TGStatVec::DelAfter(const TSecTm& Tm) {
   TGStatV NewTickV;
-  for (int i = 0; i < Len(); i++) {
+  for (int64 i = 0; i < Len(); i++) {
     if (At(i)->Time <= Tm) { NewTickV.Add(At(i)); }
   }
   GStatV.Swap(NewTickV);
 }
 
-void TGStatVec::DelSmallNodes(const int& MinNodes) {
+void TGStatVec::DelSmallNodes(const int64& MinNodes) {
   TGStatV NewTickV;
-  for (int i = 0; i < Len(); i++) {
+  for (int64 i = 0; i < Len(); i++) {
     if (At(i)->GetNodes() >= MinNodes) { NewTickV.Add(At(i)); }
   }
   GStatV.Swap(NewTickV);
 }
 
-void TGStatVec::GetValV(const TGStatVal& XVal, const TGStatVal& YVal, TFltPrV& ValV) const {
+void TGStatVec::GetValV(const TGStatVal& XVal, const TGStatVal& YVal, TFltPr64V& ValV) const {
   ValV.Gen(Len(), 0);
   double x;
-  for (int t = 0; t < Len(); t++) {
+  for (int64 t = 0; t < Len(); t++) {
     if (XVal == gsvIndex) { x = t+1; }
     else if (XVal == gsvTime) { x = GetTime(t); }
     else { x = At(t)->GetVal(XVal); }
@@ -533,21 +534,21 @@ void TGStatVec::Plot(const TGStatVal& XVal, const TGStatVal& YVal, const TStr& O
     return;
   }
   if (Desc.Empty()) { Desc = OutFNm; }
-  TFltPrV ValV;
+  TFltPr64V ValV;
   TGStatVec::GetValV(XVal, YVal, ValV);
   TGnuPlot GP(TStr::Fmt("%s-%s.%s", TGStat::GetValStr(XVal).CStr(), TGStat::GetValStr(YVal).CStr(), OutFNm.CStr()),
     TStr::Fmt("%s. %s vs. %s. G(%d,%d)", Desc.CStr(), TGStat::GetValStr(XVal).CStr(), TGStat::GetValStr(YVal).CStr(),
     Last()->GetNodes(), Last()->GetEdges()));
   GP.SetScale(Scale);
   GP.SetXYLabel(TGStat::GetValStr(XVal), TGStat::GetValStr(YVal));
-  const int Id = GP.AddPlot(ValV, gpwLinesPoints);
+  const int64 Id = GP.AddPlot(ValV.Get32BitVector(), gpwLinesPoints);
   if (PowerFit) { GP.AddPwrFit(Id); }
   GP.SavePng();
 }
 
 void TGStatVec::PlotAllVsX(const TGStatVal& XVal, const TStr& OutFNm, TStr Desc, const TGpScaleTy& Scale, const bool& PowerFit) const {
   const TFSet SkipStat = TFSet() | gsvFullDiamDev | gsvEffDiamDev | gsvEffWccDiamDev | gsvFullWccDiamDev;
-  for (int stat = gsvNone; stat < gsvMx; stat++) {
+  for (int64 stat = gsvNone; stat < gsvMx; stat++) {
     const TGStatVal Stat = TGStatVal(stat);
     if (SkipStat.In(Stat)) { continue; }
     if (Last()->HasVal(Stat) && Last()->HasVal(XVal) && Stat!=XVal) {
@@ -565,15 +566,18 @@ void TGStatVec::ImposeDistr(const TGStatDistr& Distr, const TStr& FNmPref, TStr 
     At(0)->GetNodes(), At(0)->GetEdges(), Last()->GetNodes(), Last()->GetEdges()));
   GnuPlot.SetXYLabel(Info.Val2, Info.Val3);
   GnuPlot.SetScale(Info.Val4);
-  int plotId;
-  for (int at = 0; at < Len(); at++) {
+  int64 plotId;
+  for (int64 at = 0; at < Len(); at++) {
     TStr Legend = At(at)->GetNm();
     if (Legend.Empty()) { Legend = At(at)->GetTmStr(); }
     if (! ExpBin) { 
-      plotId = GnuPlot.AddPlot(At(at)->GetDistr(Distr), PlotWith, Legend, Style); }
+    	TFltPr64V ToPlot = At(at)->GetDistr(Distr);
+      plotId = GnuPlot.AddPlot(ToPlot.Get32BitVector(), PlotWith, Legend, Style); }
     else { 
-      TFltPrV ExpBinV; 
-      TGnuPlot::MakeExpBins(At(at)->GetDistr(Distr), ExpBinV, 2, 0);
+      TFltPrV ExpBinV;
+      TFltPr64V ToPlot64 = At(at)->GetDistr(Distr);
+      TFltPrV ToPlot = ToPlot64.Get32BitVector();
+      TGnuPlot::MakeExpBins(ToPlot, ExpBinV, 2, 0);
       plotId = GnuPlot.AddPlot(ExpBinV, PlotWith, Legend, Style);
     }
     if (PowerFit) { GnuPlot.AddPwrFit(plotId, gpwLines); }
@@ -585,19 +589,19 @@ void TGStatVec::SaveTxt(const TStr& FNmPref, const TStr& Desc) const {
   FILE *F = fopen(TStr::Fmt("growth.%s.tab", FNmPref.CStr()).CStr(), "wt");
   fprintf(F, "# %s\n", Desc.CStr());
   fprintf(F, "# %s", TTmInfo::GetTmUnitStr(TmUnit).CStr());
-  TIntSet StatValSet;
-  for (int i = 0; i < Len(); i++) {
-    for (int v = gsvNone; v < gsvMx; v++) {
+  TInt64Set StatValSet;
+  for (int64 i = 0; i < Len(); i++) {
+    for (int64 v = gsvNone; v < gsvMx; v++) {
       if (At(i)->HasVal(TGStatVal(v))) { StatValSet.AddKey(v); }
     }
   }
-  TIntV StatValV;  StatValSet.GetKeyV(StatValV);  StatValV.Sort();
-  for (int sv = 0; sv < StatValV.Len(); sv++) {
+  TInt64V StatValV;  StatValSet.GetKeyV(StatValV);  StatValV.Sort();
+  for (int64 sv = 0; sv < StatValV.Len(); sv++) {
     fprintf(F, "\t%s", TGStat::GetValStr(TGStatVal(StatValV[sv].Val)).CStr()); }
   fprintf(F, "Time\n");
-  for (int i = 0; i < Len(); i++) {
+  for (int64 i = 0; i < Len(); i++) {
     const TGStat& G = *At(i);
-    for (int sv = 0; sv < StatValV.Len(); sv++) {
+    for (int64 sv = 0; sv < StatValV.Len(); sv++) {
       fprintf(F, "%g\t", G.GetVal(TGStatVal(StatValV[sv].Val))); }
     fprintf(F, "%s\n", G.GetTmStr().CStr());
   }

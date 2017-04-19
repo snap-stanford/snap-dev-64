@@ -45,7 +45,7 @@ void PlotSngVec(const PNGraph& Graph, const TStr& FNmPref, TStr DescStr=TStr());
 // Implementation
 template <class PGraph>
 void PlotInDegDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, const bool& PlotCCdf, const bool& PowerFit) {
-  TIntPrV DegCntV;
+  TIntPr64V DegCntV;
   TSnap::GetInDegCnt(Graph, DegCntV);
   const double AvgDeg = 2*Graph->GetEdges()/double(Graph->GetNodes());
   int AboveAvg=0, Above2Avg=0;
@@ -56,7 +56,7 @@ void PlotInDegDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, cons
   if (PlotCCdf) {
     DegCntV = TGUtil::GetCCdf(DegCntV); }
   if (DescStr.Empty()) { DescStr = FNmPref; }
-  TGnuPlot::PlotValV(DegCntV, (PlotCCdf?"inDegC.":"inDeg.")+FNmPref,
+  TGnuPlot::PlotValV(TIntPr64VToTIntPrV(DegCntV), (PlotCCdf?"inDegC.":"inDeg.")+FNmPref,
     TStr::Fmt("%s. G(%d, %d). %d (%.4f) nodes with in-deg > avg deg (%.1f), %d (%.4f) with >2*avg.deg", DescStr.CStr(),
       Graph->GetNodes(), Graph->GetEdges(), AboveAvg, AboveAvg/double(Graph->GetNodes()), AvgDeg, Above2Avg, Above2Avg/double(Graph->GetNodes())),
     "In-degree", PlotCCdf?"Count (CCDF)":"Count", gpsLog10XY, PowerFit, gpwLinesPoints);
@@ -64,7 +64,7 @@ void PlotInDegDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, cons
 
 template <class PGraph>
 void PlotOutDegDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, const bool& PlotCCdf, const bool& PowerFit) {
-  TIntPrV DegCntV;
+  TIntPr64V DegCntV;
   TSnap::GetOutDegCnt(Graph, DegCntV);
   const double AvgDeg = 2*Graph->GetEdges()/double(Graph->GetNodes());
   int AboveAvg=0, Above2Avg=0;
@@ -75,7 +75,7 @@ void PlotOutDegDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, con
   if (PlotCCdf) {
     DegCntV = TGUtil::GetCCdf(DegCntV); }
   if (DescStr.Empty()) { DescStr = FNmPref; }
-  TGnuPlot::PlotValV(DegCntV, (PlotCCdf?"outDegC.":"outDeg.")+FNmPref,
+  TGnuPlot::PlotValV(TIntPr64VToTIntPrV(DegCntV), (PlotCCdf?"outDegC.":"outDeg.")+FNmPref,
     TStr::Fmt("%s. G(%d, %d). %d (%.4f) nodes with out-deg > avg deg (%.1f), %d (%.4f) with >2*avg.deg", DescStr.CStr(),
       Graph->GetNodes(), Graph->GetEdges(), AboveAvg, AboveAvg/double(Graph->GetNodes()), AvgDeg, Above2Avg, Above2Avg/double(Graph->GetNodes())),
     "Out-degree", PlotCCdf?"Count (CCDF)":"Count", gpsLog10XY, PowerFit, gpwLinesPoints);
@@ -124,7 +124,7 @@ void PlotClustCf(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
 
 template <class PGraph>
 void PlotHops(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, const bool& IsDir, const int& NApprox) {
-  TIntFltKdV DistNbrsV;
+  TIntFltKd64V DistNbrsV;
   TSnap::GetAnf(Graph, DistNbrsV, -1, IsDir, NApprox);
   const double EffDiam = TSnap::TSnapDetail::CalcEffDiam(DistNbrsV, 0.9);
   if (DescStr.Empty()) { DescStr = FNmPref; }
@@ -132,7 +132,7 @@ void PlotHops(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, const bool
     DescStr.CStr(), EffDiam, Graph->GetNodes(), Graph->GetEdges()));
   GnuPlot.SetXYLabel("Number of hops", "Number of pairs of nodes");
   GnuPlot.SetScale(gpsLog10Y);
-  GnuPlot.AddPlot(DistNbrsV, gpwLinesPoints, "", "pt 6");
+  GnuPlot.AddPlot(TIntFltKd64VToTIntFltKdV(DistNbrsV), gpwLinesPoints, "", "pt 6");
   GnuPlot.SavePng();
 }
 
@@ -150,7 +150,7 @@ void PlotShortPathDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, 
       DistToCntH.AddDat(BFS.NIdDistH[i]) += 1; }
   }
   DistToCntH.SortByKey(true);
-  TFltPrV DistNbrsPdfV;
+  TFltPr64V DistNbrsPdfV;
   for (int i = 0; i < DistToCntH.Len(); i++) {
     DistNbrsPdfV.Add(TFltPr(DistToCntH.GetKey(i)(), DistToCntH[i]()));
   }
@@ -158,25 +158,25 @@ void PlotShortPathDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, 
   const double AvgDiam = TSnap::TSnapDetail::CalcAvgDiamPdf(DistNbrsPdfV);
   const int FullDiam = (int) DistNbrsPdfV.Last().Val1;
   if (DescStr.Empty()) { DescStr = FNmPref; }
-  TGnuPlot::PlotValV(DistNbrsPdfV, "diam."+FNmPref,
+  TGnuPlot::PlotValV(DistNbrsPdfV.Get32BitVector(), "diam."+FNmPref,
     TStr::Fmt("%s. G(%d, %d). Diam: avg:%.2f  eff:%.2f  max:%d", DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges(),
     AvgDiam, EffDiam, FullDiam), "Number of hops", "Number of shortest paths", gpsLog10Y, false, gpwLinesPoints);
 }
   
 template <class PGraph>
 void PlotKCoreNodes(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
-  TIntPrV CoreNodesV;
+  TIntPr64V CoreNodesV;
   TSnap::GetKCoreNodes(Graph, CoreNodesV);
   if (DescStr.Empty()) { DescStr = FNmPref; }
-  TGnuPlot::PlotValV(CoreNodesV, "coreNodes."+FNmPref, TStr::Fmt("%s. G(%d, %d).", DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges()), "k-Core", "Number of nodes in the k-Core", gpsLog10Y, false, gpwLinesPoints);
+  TGnuPlot::PlotValV(TIntPr64VToTIntPrV(CoreNodesV), "coreNodes."+FNmPref, TStr::Fmt("%s. G(%d, %d).", DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges()), "k-Core", "Number of nodes in the k-Core", gpsLog10Y, false, gpwLinesPoints);
 }
 
 template <class PGraph>
 void PlotKCoreEdges(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
-  TIntPrV CoreEdgesV;
+  TIntPr64V CoreEdgesV;
   TSnap::GetKCoreEdges(Graph, CoreEdgesV);
   if (DescStr.Empty()) { DescStr = FNmPref; }
-  TGnuPlot::PlotValV(CoreEdgesV, "coreEdges."+FNmPref, TStr::Fmt("%s. G(%d, %d).", DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges()), "k-Core", "Number of edges in the k-Core", gpsLog10Y, false, gpwLinesPoints);
+  TGnuPlot::PlotValV(TIntPr64VToTIntPrV(CoreEdgesV), "coreEdges."+FNmPref, TStr::Fmt("%s. G(%d, %d).", DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges()), "k-Core", "Number of edges in the k-Core", gpsLog10Y, false, gpwLinesPoints);
 }
 
 //TIntPrV CoreNV, CoreEV;

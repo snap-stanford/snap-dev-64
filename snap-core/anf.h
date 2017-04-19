@@ -152,7 +152,7 @@ void TGraphAnf<PGraph>::GetGraphAnf(TIntFltKd64V& DistNbrsV, const int64& MxDist
   int64 v, e;
   double NPairs = 0.0;
   DistNbrsV.Clr();
-  DistNbrsV.Add(TIntFltKd64(0, Graph->GetNodes()));
+  DistNbrsV.Add(TIntFlt64Kd(0, Graph->GetNodes()));
   //TExeTm ExeTm;
   for (int64 dist = 1; dist < (MxDist==-1 ? TInt64::Mx : MxDist); dist++) {
     //printf("ANF dist %d...", dist);  ExeTm.Tick();

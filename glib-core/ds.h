@@ -1,4 +1,5 @@
 //#include <iostream>
+
 /////////////////////////////////////////////////
 // Address-Pointer
 template <class TRec>
@@ -186,6 +187,7 @@ typedef TTriple<TInt, TVec<TInt, int>, TInt> TIntIntVIntTr;
 typedef TTriple<TInt, TInt, TVec<TInt, int> > TIntIntIntVTr;
 typedef TTriple<TFlt, TFlt, TFlt> TFltTr;
 typedef TTriple<TFlt, TInt, TInt> TFltIntIntTr;
+typedef TTriple<TFlt, TInt64, TInt64> TFltIntInt64Tr;
 typedef TTriple<TFlt, TFlt, TInt> TFltFltIntTr;
 typedef TTriple<TFlt, TFlt, TStr> TFltFltStrTr;
 typedef TTriple<TChA, TChA, TChA> TChATr;
@@ -631,6 +633,18 @@ public:
     const TVal Val=ValT[ValN1]; ValT[ValN1]=ValT[ValN2]; ValT[ValN2]=Val;}
   /// Swaps the elements that iterators \c LVal and \c RVal point to.
   static void SwapI(TIter LVal, TIter RVal){const TVal Val=*LVal; *LVal=*RVal; *RVal=Val;}
+
+  TVec<TVal, int> Get32BitVector(){
+    	TVec<TVal, int> NewVec;
+    	int MaxLen = TInt::Mx;
+    	if (Vals < MaxLen)
+    		MaxLen = Vals;
+    	for (int i = 0; i < Vals; i++){
+    		NewVec.Add((*this)[i]);
+    	}
+    	return NewVec;
+
+    }
 
   /// Generates next permutation of the elements in the vector. ##TVec::NextPerm
   bool NextPerm();
@@ -1498,6 +1512,7 @@ TSizeTy TVec<TVal, TSizeTy>::GetMxValN() const {
   return MxValN;
 }
 
+
 /////////////////////////////////////////////////
 // Common-Vector-Types
 typedef TVec<TBool> TBoolV;
@@ -1591,6 +1606,13 @@ typedef TVec<TIntStrIntIntQu> TIntStrIntIntQuV;
 typedef TVec<TIntIntPrPr> TIntIntPrPrV;
 
 //#//////////////////////////////////////////////
+#ifndef TINT64V_TO_TINTV
+
+TIntV TInt64VToTIntV(TInt64V Vec);
+TIntPrV TIntPr64VToTIntPrV(TIntPr64V Vec);
+TIntFltKdV TIntFltKd64VToTIntFltKdV(TIntFltKd64V Vec);
+#endif // TINT64V_TO_TINTV
+
 /// Vector Pool. ##TVecPool
 template <class TVal, class TSizeTy=int>
 class TVecPool {
