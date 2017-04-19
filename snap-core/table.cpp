@@ -1826,6 +1826,7 @@ TVec<PTable, int64> TTable::SpliceByGroup(const TStr64V& GroupBy, TBool Ordered)
       NewSchema.Add(Sch[c]);
     }
   }
+  const bool UsePhysicalIds = GetIdColName().Empty();
 
   GroupAux(NGroupBy, Grouping, Ordered, "", false, UniqueVec);
 
@@ -1837,9 +1838,10 @@ TVec<PTable, int64> TTable::SpliceByGroup(const TStr64V& GroupBy, TBool Ordered)
     TVec<TPair<TAttrType, TInt64>, int64 > ColInfo;
     TInt64V V;
     for (TInt64 i = 0; i < Sch.Len(); i++) {
-      ColInfo.Add(GroupTable->GetColTypeMap(Sch[i].Val1));
-      if (Sch[i].Val1 == IdColName()) {
-        ColInfo[i].Val2 = -1;
+      if (Sch[i].Val1 == GetIdColName()) {
+        ColInfo.Add(TPair<TAttrType, TInt64>(atInt, -1));
+      } else {
+        ColInfo.Add(GroupTable->GetColTypeMap(Sch[i].Val1));
       }
       V.Add(GetColIdx(Sch[i].Val1));
     }
@@ -1849,7 +1851,7 @@ TVec<PTable, int64> TTable::SpliceByGroup(const TStr64V& GroupBy, TBool Ordered)
     // iterate over rows in group
     for (TInt64 i = 0; i < Rows.Len(); i++) {
       // convert from permanent ID to row ID
-      TInt64 RowIdx = RowIdMap.GetDat(Rows[i]);
+      TInt64 RowIdx = UsePhysicalIds ? Rows[i] : RowIdMap.GetDat(Rows[i]);
 
       // iterate over schema
       for (TInt64 c = 0; c < Sch.Len(); c++) {

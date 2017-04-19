@@ -654,13 +654,13 @@ protected:
   /// Adds column with name \c ColName and type \c ColType to the ColTypeMap.
   void DelColType(const TStr& ColName) {
     TStr NColName = NormalizeColName(ColName);
-    AssertR(ColTypeMap.IsKey(NColName), "Unknown column " + NColName);
+    AssertR(ColTypeMap.IsKey(NColName) || ColName == "_id", "Unknown column " + NColName);
     ColTypeMap.DelKey(NColName);
   }
   /// Gets column type and index of \c ColName.
   TPair<TAttrType, TInt64> GetColTypeMap(const TStr& ColName) const {
     TStr NColName = NormalizeColName(ColName);
-    AssertR(ColTypeMap.IsKey(NColName), "Unknown column " + NColName);
+    AssertR(ColTypeMap.IsKey(NColName) || ColName == "_id", "Unknown column " + NColName);
     return ColTypeMap.GetDat(NColName);
   }
   /// Returns a re-numbered column name based on number of existing columns with conflicting names.
@@ -1248,7 +1248,7 @@ public:
   /// Aggregates attributes in AggrAttrs across columns.
   void AggregateCols(const TStr64V& AggrAttrs, TAttrAggr AggOp, const TStr& ResAttr);
 
-  /// Splices table into subtables according to a grouping statement.
+  /// Splicetabls table into subtables according to a grouping statement.
   TVec<PTable, int64> SpliceByGroup(const TStr64V& GroupByAttrs, TBool Ordered = true);
 
   /// Performs equijoin. ##TTable::Join
