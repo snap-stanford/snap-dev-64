@@ -334,7 +334,7 @@ void GetPageRankMP(const PGraph& Graph, TIntFlt64H& PRankH, const double& C, con
     #pragma omp parallel for schedule(dynamic,10000)
     for (int64 j = 0; j < NNodes; j++) {
       typename PGraph::TObj::TNodeI NI = NV[j];
-      TFlt64 Tmp = 0;
+      TFlt Tmp = 0;
       for (int64 e = 0; e < NI.GetInDeg(); e++) {
         const int64 InNId = NI.GetInNId(e);
         const int64 OutDeg = OutDegV[InNId];
