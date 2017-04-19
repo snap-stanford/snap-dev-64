@@ -80,6 +80,7 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp)
 #include "fl.cpp"
 #include "dt.cpp"
 #include "ut.cpp"
+#include "ds.cpp"
 #include "hash.cpp"
 
 #include "unicode.cpp"

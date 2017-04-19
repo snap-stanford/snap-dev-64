@@ -1,5 +1,3 @@
-#include "stdafx.h"
-#include "ds.h"
 #include <iostream>
 TIntV TInt64VToTIntV(TInt64V Vec){
   	TIntV NewVec;
