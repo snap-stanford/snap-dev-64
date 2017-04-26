@@ -217,7 +217,7 @@ public:
 // Implementation
 template <class PGraph>
 void TGStat::TakeStat(const PGraph& Graph, const TSecTm& _Time, TFSet StatFSet, const TStr& GraphName) {
-  printf("**TakeStat:  G(%u, %u)\n", Graph->GetNodes(), Graph->GetEdges());
+  printf("**TakeStat:  G(%s, %s)\n", TInt64::GetStr(Graph->GetNodes()).GetCStr(), TInt64::GetStr(Graph->GetEdges()).GetCStr());
   TExeTm ExeTm, FullTm;
   Time = _Time;
   GraphNm = GraphName;
@@ -333,7 +333,7 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
   TExeTm ExeTm;
   if (! IsMxWcc) {
     if (StatFSet.In(gsvFullDiam) || StatFSet.In(gsvEffDiam) || StatFSet.In(gsdHops)) {
-      printf("anf:%druns...", NDiamRuns); }
+      printf("anf:%sruns...", TInt64::GetStr(NDiamRuns).GetCStr()); }
     //bool Line=false;
     if (StatFSet.In(gsvEffDiam) || StatFSet.In(gsdHops)) {
       TMom DiamMom;  ExeTm.Tick();

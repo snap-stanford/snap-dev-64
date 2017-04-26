@@ -224,7 +224,7 @@ public:
       if (! OnlyCount) { CnComV.Add(); }
       do { W = Stack.Top();  Stack.Pop();
       if (OnlyCount) { Cnt++; } else { CnComV.Last().Add(W); }
-      TmRtH.GetDat(W).Val1 = abs(TmRtH.GetDat(W).Val1); // node is in SCC
+      TmRtH.GetDat(W).Val1 = absolute(TmRtH.GetDat(W).Val1); // node is in SCC
       } while (W != NId);
       if (OnlyCount) { SccCntH.AddDat(Cnt) += 1; } } }
   void ExamineEdge(const int64& NId1, const int64& NId2) { }
@@ -232,7 +232,7 @@ public:
   void BackEdge(const int64& NId1, const int64& NId2) { }
   void FwdEdge(const int64& NId1, const int64& NId2) { }
   int64 GetMinDiscTm(const int64& NId1, const int64& NId2) const {
-    return abs(TmRtH.GetDat(NId1).Val1) < abs(TmRtH.GetDat(NId2).Val1) ? NId1 : NId2; }
+    return absolute(TmRtH.GetDat(NId1).Val1) < absolute(TmRtH.GetDat(NId2).Val1) ? NId1 : NId2; }
 };
 
 //#//////////////////////////////////////////////

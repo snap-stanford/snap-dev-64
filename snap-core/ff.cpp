@@ -273,7 +273,7 @@ TStr TFfGGen::GetParamStr() const {
 }
 
 TFfGGen::TStopReason TFfGGen::AddNodes(const int64& GraphNodes, const bool& FloodStop) {
-  printf("\n***ForestFire:  %s  Nodes:%d  StartNodes:%d  Take2AmbProb:%g\n", BurnExpFire?"ExpFire":"GeoFire", GraphNodes, StartNodes(), Take2AmbProb());
+  printf("\n***ForestFire:  %s  Nodes:%s  StartNodes:%s  Take2AmbProb:%g\n", BurnExpFire?"ExpFire":"GeoFire", TInt64::GetStr(GraphNodes).GetCStr(), TInt64::GetStr(StartNodes()).GetCStr(), Take2AmbProb());
   printf("                FwdBurnP:%g  BckBurnP:%g  ProbDecay:%g  Orphan:%g\n", FwdBurnProb(), BckBurnProb(), ProbDecay(), OrphanProb());
   TExeTm ExeTm;
   int64 Burned1=0, Burned2=0, Burned3=0; // last 3 fire sizes
@@ -316,11 +316,11 @@ TFfGGen::TStopReason TFfGGen::AddNodes(const int64& GraphNodes, const bool& Floo
       Burned1=Burned2;  Burned2=Burned3;  Burned3=0;
     }
     if (NNodes % Kilo(1) == 0) {
-      printf("(%d, %d)  burned: [%d,%d,%d]  [%s]\n", NNodes, NEdges, Burned1, Burned2, Burned3, ExeTm.GetStr()); }
+      printf("(%s, %s)  burned: [%s,%s,%s]  [%s]\n", TInt64::GetStr(NNodes).GetCStr(), TInt64::GetStr(NEdges).GetCStr(), TInt64::GetStr(Burned1).GetCStr(), TInt64::GetStr(Burned2).GetCStr(), TInt64::GetStr(Burned3).GetCStr(), ExeTm.GetStr()); }
     if (FloodStop && NEdges>GraphNodes && (NEdges/double(NNodes)>1000.0)) { // average node degree is more than 500
-      printf(". FLOOD. G(%6d, %6d)\n", NNodes, NEdges);  return srFlood; }
+      printf(". FLOOD. G(%s, %s)\n", TInt64::GetStr(NNodes).GetCStr(), TInt64::GetStr(NEdges).CStr());  return srFlood; }
     if (NNodes % 1000 == 0 && TimeLimitSec > 0 && ExeTm.GetSecs() > TimeLimitSec) {
-      printf(". TIME LIMIT. G(%d, %d)\n", Graph->GetNodes(), Graph->GetEdges());
+      printf(". TIME LIMIT. G(%s, %s)\n", TInt64::GetStr(Graph->GetNodes()).GetCStr(), TInt64::GetStr(Graph->GetEdges()).GetCStr());
       return srTimeLimit; }
   }
   IAssert(Graph->GetEdges() == NEdges);
@@ -785,8 +785,8 @@ int64 TUndirFFire::BurnGeoFire(const int64& StartNId) {
 }
 
 TFfGGen::TStopReason TUndirFFire::AddNodes(const int64& GraphNodes, const bool& FloodStop) {
-  printf("\n***Undirected GEO ForestFire: graph(%d,%d) add %d nodes, burn prob %.3f\n", 
-    Graph->GetNodes(), Graph->GetEdges(), GraphNodes, BurnProb);
+  printf("\n***Undirected GEO ForestFire: graph(%s,%s) add %s nodes, burn prob %.3f\n",
+    TInt64::GetStr(Graph->GetNodes()).GetCStr(), TInt64::GetStr(Graph->GetEdges()).GetCStr(), TInt64::GetStr(GraphNodes).GetCStr(), BurnProb);
   TExeTm ExeTm;
   int64 Burned1=0, Burned2=0, Burned3=0; // last 3 fire sizes
   TIntPr64V NodesEdgesV;
@@ -806,11 +806,11 @@ TFfGGen::TStopReason TUndirFFire::AddNodes(const int64& GraphNodes, const bool& 
     NEdges += NBurned;
     Burned1=Burned2;  Burned2=Burned3;  Burned3=NBurned;
     if (NNodes % Kilo(1) == 0) {
-      printf("(%d, %d)    burned: [%d,%d,%d]  [%s]\n", NNodes, NEdges, Burned1, Burned2, Burned3, ExeTm.GetStr()); 
+      printf("(%s, %s)    burned: [%s,%s,%s]  [%s]\n", TInt64::GetStr(NNodes).GetCStr(), TInt64::GetStr(NEdges).GetCStr(), TInt64::GetStr(Burned1).GetCStr(), TInt64::GetStr(Burned2).GetCStr(), TInt64::GetStr(Burned3).GetCStr(), ExeTm.GetStr());
       NodesEdgesV.Add(TInt64Pr(NNodes, NEdges));
     }
     if (FloodStop && NEdges>1000 && NEdges/double(NNodes)>100.0) { // average node degree is more than 50
-      printf("!!! FLOOD. G(%6d, %6d)\n", NNodes, NEdges);  return TFfGGen::srFlood; }
+      printf("!!! FLOOD. G(%s, %s)\n", TInt64::GetStr(NNodes).GetCStr(), TInt64::GetStr(NEdges).GetCStr());  return TFfGGen::srFlood; }
   }
   printf("\n");
   IAssert(Graph->GetEdges() == NEdges);

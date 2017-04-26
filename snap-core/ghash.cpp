@@ -245,7 +245,7 @@ bool TSimpleGraph::Join(const TSimpleGraph& G1, const TSimpleGraph& G2) {
   int64 e=0, g1=0, g2=0;
   while (g1 < Edges1 && g2 < Edges2) {
     if (e == MxEdges) return false;
-    if (abs(g1 - g2) > 1) return false;
+    if (absolute(g1 - g2) > 1) return false;
     if (EdgeV1[g1] == EdgeV2[g2]) { e++;  g1++;  g2++; }
     else if (EdgeV1[g1] < EdgeV2[g2]) { e++;  g1++; }
     else { e++;  g2++; }

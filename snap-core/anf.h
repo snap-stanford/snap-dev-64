@@ -74,7 +74,7 @@ void TGraphAnf<PGraph>::InitAnfBits(TAnfBitV& BitV) {
   IAssertR(VSize <= TInt64::Mx,
     TStr::Fmt("Your graph is too large for Approximate Neighborhood Function, %s is larger than %d",
     TUInt64::GetStr(VSize).CStr(),TInt64::Mx));
-  printf("size %d\n", static_cast<int64>(VSize));
+  printf("size %s\n", TInt64::GetStr(static_cast<int64>(VSize)).GetCStr());
   BitV.Gen((const int64)VSize);  IAssert(BitV.BegI() != NULL);
   BitV.PutAll(0);
   int64 SetBit = 0;
