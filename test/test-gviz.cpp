@@ -91,7 +91,7 @@ TEST(GVizTest, DrawGVizColor) {
   while(fgets(line, 80, CFile) != NULL) {
     int64 NId;
     char Color[20];
-    sscanf(line, "%d %s\n", &NId, Color);
+    sscanf(line, "%lld %s\n", &NId, Color);
     NIdColorH.AddDat(NId, Color);
   }
     
