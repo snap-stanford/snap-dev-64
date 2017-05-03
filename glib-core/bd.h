@@ -21,8 +21,8 @@ typedef short int16;
 typedef int int32;
 #ifdef GLib_WIN32
 typedef __int64 int64;
-#elif defined(GLib_GLIBC)
-typedef int64_t int64;
+//#elif defined(GLib_GLIBC)
+//typedef int64_t int64;
 #else
 typedef long long int64;
 #endif
@@ -32,8 +32,8 @@ typedef unsigned short uint16;
 typedef unsigned int uint32;
 #ifdef GLib_WIN32
 typedef unsigned __int64 uint64;
-#elif defined(GLib_GLIBC)
-typedef u_int64_t uint64;
+//#elif defined(GLib_GLIBC)
+//typedef u_int64_t uint64;
 #else
 typedef unsigned long long uint64;
 #endif

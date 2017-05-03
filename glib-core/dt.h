@@ -1002,6 +1002,7 @@ public:
   static int64 GetRnd(const int64& Range=0){return Rnd.GetUniDevInt(Range);}
   TNum() : Val(0){}
   TNum(const TNum& Int) : Val(Int.Val){}
+  TNum(const long& Int) : Val(Int){}
   TNum(const int64& Int) : Val(Int){}
   TNum(const uint64& Int) : Val((int64) Int){}
   TNum(const TInt& Int) : Val(Int.Val){}
