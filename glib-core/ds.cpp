@@ -13,6 +13,20 @@ TIntV TInt64VToTIntV(TInt64V Vec){
 
   }
 
+TFltPrV TFltPr64VToTFltPrV(TFltPr64V Vec){
+	TFltPrV NewVec;
+	int MaxLen = TInt::Mx;
+	if (Vec.Len() < MaxLen)
+		MaxLen = int(Vec.Len());
+	else
+	  std::cerr<<"TFltPr64V to TFltPrV conversion results in losing some values\n";
+	for (int i = 0; i < MaxLen; i++){
+		NewVec.Add(TFltPr((Vec[i].Val1),(Vec[i].Val2)));
+	}
+	return NewVec;
+
+}
+
 TIntPrV TIntPr64VToTIntPrV(TIntPr64V Vec){
   	TIntPrV NewVec;
   	int MaxLen = TInt::Mx;

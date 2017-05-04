@@ -1611,6 +1611,7 @@ typedef TVec<TIntIntPrPr> TIntIntPrPrV;
 TIntV TInt64VToTIntV(TInt64V Vec);
 TIntPrV TIntPr64VToTIntPrV(TIntPr64V Vec);
 TIntFltKdV TIntFltKd64VToTIntFltKdV(TIntFltKd64V Vec);
+TFltPrV TFltPr64VToTFltPrV(TFltPr64V Vec);
 #endif // TINT64V_TO_TINTV
 
 /// Vector Pool. ##TVecPool
