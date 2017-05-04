@@ -260,7 +260,7 @@ PNGraph GenRewire(const PNGraph& OrigGraph, const int64& NSwitch, TRnd& Rnd) {
 /// See:  On the uniform generation of random graphs with prescribed degree
 /// sequences by R. Milo, N. Kashtan, S. Itzkovitz, M. E. J. Newman, U. Alon
 /// URL: http://arxiv.org/abs/cond-mat/0312028
-PBPGraph GenRewire(const PBPGraph& OrigGraph, const int& NSwitch, TRnd& Rnd) {
+PBPGraph GenRewire(const PBPGraph& OrigGraph, const int64& NSwitch, TRnd& Rnd) {
   const int64 Nodes = OrigGraph->GetNodes();
   const int64 Edges = OrigGraph->GetEdges();
   PBPGraph GraphPt = TBPGraph::New();

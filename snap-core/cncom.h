@@ -74,7 +74,7 @@ public:
   const TInt64& GetVal(const int64& NIdN) const { return operator[](NIdN); }
   void Sort(const bool& Asc = true) { NIdV.Sort(Asc); }
   bool IsNIdIn(const int64& NId) const { return NIdV.SearchBin(NId) != -1; }
-  const TInt64& GetRndNId() const { return NIdV[TInt64::Rnd.GetUniDevInt(Len())]; }
+  const TInt64& GetRndNId() const { return NIdV[TInt::Rnd.GetUniDevInt(Len())]; }
   static void Dump(const TCnComV& CnComV, const TStr& Desc=TStr());
   static void SaveTxt(const TCnComV& CnComV, const TStr& FNm, const TStr& Desc=TStr());
   /// Depth-First-Search.
