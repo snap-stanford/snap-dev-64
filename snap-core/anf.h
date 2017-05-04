@@ -123,7 +123,7 @@ void TGraphAnf<PGraph>::GetNodeAnf(const int64& SrcNId, TIntFltKd64V& DistNbrsV,
   InitAnfBits(CurBitsV);          IAssert(CurBitsV.BegI() != NULL);
   LastBitsV.Gen(CurBitsV.Len());  IAssert(LastBitsV.BegI() != NULL);
   DistNbrsV.Clr();
-  DistNbrsV.Add(TIntFltKd64(1, Graph->GetNI(SrcNId).GetOutDeg()));
+  DistNbrsV.Add(TIntFlt64Kd(1, Graph->GetNI(SrcNId).GetOutDeg()));
   for (int64 dist = 1; dist < (MxDist==-1 ? TInt64::Mx : MxDist); dist++) {
     memcpy(LastBitsV.BegI(), CurBitsV.BegI(), sizeof(uint64)*CurBitsV.Len()); //LastBitsV = CurBitsV;
     for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {

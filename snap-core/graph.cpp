@@ -670,8 +670,8 @@ PNEGraph TNEGraph::GetSmallGraph() {
 // Bipartite graph
 int64 TBPGraph::AddNode(int64 NId, const bool& LeftNode) {
   if (NId == -1) { NId = MxNId;  MxNId++; }
-  else if (IsLNode(NId)) { IAssertR(LeftNode, TStr::Fmt("Node with id %s already exists on the 'left'.", NId));  return NId; }
-  else if (IsRNode(NId)) { IAssertR(! LeftNode, TStr::Fmt("Node with id %s already exists on the 'right'.", NId));  return NId; }
+  else if (IsLNode(NId)) { IAssertR(LeftNode, TStr::Fmt("Node with id %lld already exists on the 'left'.", NId));  return NId; }
+  else if (IsRNode(NId)) { IAssertR(! LeftNode, TStr::Fmt("Node with id %lld already exists on the 'right'.", NId));  return NId; }
   else { MxNId = TMath::Mx(NId+1, MxNId()); }
   if (LeftNode) { LeftH.AddDat(NId, TNode(NId)); }
   else { RightH.AddDat(NId, TNode(NId)); }
@@ -680,7 +680,7 @@ int64 TBPGraph::AddNode(int64 NId, const bool& LeftNode) {
 
 // Delete node of ID NId from the bipartite graph.
 void TBPGraph::DelNode(const int64& NId) {
-  AssertR(IsNode(NId), TStr::Fmt("NodeId %s does not exist", TInt64::GetStr(NId)).CStr());
+  AssertR(IsNode(NId), TStr::Fmt("NodeId %lld does not exist", NId));
   THash<TInt64, TNode, int64>& SrcH = IsLNode(NId) ? LeftH : RightH;
   THash<TInt64, TNode, int64>& DstH = IsLNode(NId) ? RightH : LeftH;
   { TNode& Node = SrcH.GetDat(NId);

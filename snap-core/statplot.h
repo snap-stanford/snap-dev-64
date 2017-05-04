@@ -83,12 +83,12 @@ void PlotOutDegDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, con
 
 template <class PGraph>
 void PlotWccDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   TSnap::GetWccSzCnt(Graph, WccSzCnt);
   if (DescStr.Empty()) { DescStr = FNmPref; }
   TGnuPlot GnuPlot("wcc."+FNmPref, TStr::Fmt("%s. G(%d, %d). Largest component has %f nodes",
     DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges(), WccSzCnt.Last().Val1/double(Graph->GetNodes())));
-  GnuPlot.AddPlot(WccSzCnt, gpwLinesPoints, "", "pt 6");
+  GnuPlot.AddPlot(TIntPr64VToTIntPrV(WccSzCnt), gpwLinesPoints, "", "pt 6");
   GnuPlot.SetXYLabel("Size of weakly connected component", "Number of components");
   GnuPlot.SetScale(gpsLog10XY);
   GnuPlot.SavePng();
@@ -96,12 +96,12 @@ void PlotWccDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
 
 template <class PGraph>
 void PlotSccDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
-  TIntPrV SccSzCnt;
+  TIntPr64V SccSzCnt;
   TSnap::GetSccSzCnt(Graph, SccSzCnt);
   if (DescStr.Empty()) { DescStr = FNmPref; }
   TGnuPlot GnuPlot("scc."+FNmPref, TStr::Fmt("%s. G(%d, %d). Largest component has %f nodes",
     DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges(), SccSzCnt.Last().Val1/double(Graph->GetNodes())));
-  GnuPlot.AddPlot(SccSzCnt, gpwLinesPoints, "", "pt 6");
+  GnuPlot.AddPlot(TIntPr64VToTIntPrV(SccSzCnt), gpwLinesPoints, "", "pt 6");
   GnuPlot.SetXYLabel("Size of strongly connected component", "Number of components");
   GnuPlot.SetScale(gpsLog10XY);
   GnuPlot.SavePng();
@@ -109,14 +109,14 @@ void PlotSccDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
 
 template <class PGraph>
 void PlotClustCf(const PGraph& Graph, const TStr& FNmPref, TStr DescStr) {
-  TFltPrV DegToCCfV;
+  TFltPr64V DegToCCfV;
   int64 ClosedTriads, OpenTriads;
   const double CCF = GetClustCf(Graph, DegToCCfV, ClosedTriads, OpenTriads);
   if (DescStr.Empty()) { DescStr = FNmPref; }
   TGnuPlot GnuPlot("ccf."+FNmPref,
     TStr::Fmt("%s. G(%d, %d). Average clustering: %.4f  OpenTriads: %d (%.4f)  ClosedTriads: %d (%.4f)", DescStr.CStr(), Graph->GetNodes(), Graph->GetEdges(),
     CCF, OpenTriads, OpenTriads/double(OpenTriads+ClosedTriads), ClosedTriads, ClosedTriads/double(OpenTriads+ClosedTriads)));
-  GnuPlot.AddPlot(DegToCCfV, gpwLinesPoints, "", "pt 6");
+  GnuPlot.AddPlot(TFltPr64VToTFltPrV(DegToCCfV), gpwLinesPoints, "", "pt 6");
   GnuPlot.SetXYLabel("Node degree", "Average clustering coefficient");
   GnuPlot.SetScale(gpsLog10XY);
   GnuPlot.SavePng();
@@ -138,12 +138,12 @@ void PlotHops(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, const bool
 
 template <class PGraph>
 void PlotShortPathDistr(const PGraph& Graph, const TStr& FNmPref, TStr DescStr, int TestNodes) {
-  TIntH DistToCntH;
+  TInt64H DistToCntH;
   TBreathFS<PGraph> BFS(Graph);
   // shotest paths
-  TIntV NodeIdV;
+  TInt64V NodeIdV;
   Graph->GetNIdV(NodeIdV);  NodeIdV.Shuffle(TInt::Rnd);
-  for (int tries = 0; tries < TMath::Mn(TestNodes, Graph->GetNodes()); tries++) {
+  for (int tries = 0; tries < TMath::Mn(int64(TestNodes), Graph->GetNodes()); tries++) {
     const int NId = NodeIdV[tries];
     BFS.DoBfs(NId, true, false, -1, TInt::Mx);
     for (int i = 0; i < BFS.NIdDistH.Len(); i++) {

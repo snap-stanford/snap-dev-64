@@ -120,8 +120,8 @@ void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const 
   }
   // print info
   fprintf(F, "\n");
-  fprintf(F, "  Nodes:                    %s\n", TInt64::GetStr(Graph->GetNodes()));
-  fprintf(F, "  Edges:                    %s\n", TInt64::GetStr(Graph->GetEdges()));
+  fprintf(F, "  Nodes:                    %s\n", TInt64::GetStr(Graph->GetNodes()).GetCStr());
+  fprintf(F, "  Edges:                    %s\n", TInt64::GetStr(Graph->GetEdges()).GetCStr());
   fprintf(F, "  Zero Deg Nodes:           %d\n", ZeroNodes);
   fprintf(F, "  Zero InDeg Nodes:         %d\n", ZeroInNodes);
   fprintf(F, "  Zero OutDeg Nodes:        %d\n", ZeroOutNodes);
