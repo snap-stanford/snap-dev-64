@@ -2170,6 +2170,8 @@ const int64 TInt64::Mx(0x7FFFFFFFFFFFFFFFi64);
 const int64 TInt64::Mn((int64) (-0x7FFFFFFFFFFFFFFFLL - 1));
 const int64 TInt64::Mx((int64)0x7FFFFFFFFFFFFFFFLL);
 #endif
+TRnd TInt64::Rnd;
+
 /*/////////////////////////////////////////////////
 // Unsigned-Integer-64Bit
 const TUInt64 TUInt64::Mn(0, 0);
