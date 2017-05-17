@@ -41,7 +41,7 @@ PUNGraph GenSmallWorld(const int64& Nodes, const int64& NodeOutDeg, const double
 /// Generates a random undirect graph with a given degree sequence.
 PUNGraph GenConfModel(const TInt64V& DegSeqV, TRnd& Rnd=TInt::Rnd);
 /// Generates a random Forest Fire, directed graph with given probabilities.
-//PNGraph GenForestFire(const int64& Nodes, const double& FwdProb, const double& BckProb);
+PNGraph GenForestFire(const int64& Nodes, const double& FwdProb, const double& BckProb);
 /// Generates a random scale-free network using the Copying Model.
 PNGraph GenCopyModel(const int64& Nodes, const double& Beta, TRnd& Rnd=TInt::Rnd);
 /// Generates a R-MAT graph using recursive descent into a 2x2 matrix [A,B; C, 1-(A+B+C)].
