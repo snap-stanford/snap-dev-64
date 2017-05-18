@@ -1113,6 +1113,8 @@ void TStrHash<TDat, TStringPool, TSizeTy, THashFunc>::GetDatKeyPrV(TVec<TPair<TD
 // Common-String-Hash-Types
 typedef TStrHash<TInt> TStrSH;
 typedef TStrHash<TInt> TStrIntSH;
+typedef TStrHash<TInt64, TStrPool, int64> TStrInt64SH;
+
 typedef TStrHash<TIntV> TStrToIntVSH;
 
 /////////////////////////////////////////////////
