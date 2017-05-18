@@ -439,11 +439,11 @@ PUNGraph GenSmallWorld(const int64& Nodes, const int64& NodeOutDeg, const double
   return GraphPt;
 }
 
-/*
+
 PNGraph GenForestFire(const int64& Nodes, const double& FwdProb, const double& BckProb) {
   return TForestFire::GenGraph(Nodes, FwdProb, BckProb);
 }
-*/
+
 /// Generates a random scale-free network using the Copying Model.
 /// The generating process operates as follows: Node u is added to a graph, it
 /// selects a random node v, and with prob Beta it links to v, with 1-Beta 
