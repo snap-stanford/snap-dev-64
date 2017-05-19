@@ -2569,8 +2569,8 @@ public:
   void Gen(const TSizeTy& _MxLast=64, const TSizeTy& _MxLen=-1){
     MxLast=_MxLast; MxLen=_MxLen; First=0; Last=0; ValV.Clr();}
   void GetSubValV(const TSizeTy& _BValN, const TSizeTy& _EValN, TVec<TVal, TSizeTy>& SubValV) const {
-    TSizeTy BValN=TSizeTy::GetMx(0, _BValN);
-    TSizeTy EValN=TSizeTy::GetMn(Len()-1, _EValN);
+    TSizeTy BValN=TInt64::GetMx(0, _BValN);
+    TSizeTy EValN=TInt64::GetMn(Len()-1, _EValN);
     SubValV.Gen(EValN-BValN+1);
     for (TSizeTy ValN=BValN; ValN<=EValN; ValN++){
       SubValV[ValN-BValN]=ValV[Last+ValN];}
