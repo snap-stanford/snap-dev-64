@@ -3800,8 +3800,8 @@ PTable TTable::GetEdgeTable(const PNEANet& Network, TTableContext* Context) {
   return T;
 }
 #ifdef GCC_ATOMIC
-// TODO64
-/*
+
+
 PTable TTable::GetEdgeTablePN(const PNGraphMP& Network, TTableContext* Context){
   Schema SR;
   SR.Add(TPair<TStr,TAttrType>("src_id",atInt));
@@ -3853,7 +3853,7 @@ PTable TTable::GetEdgeTablePN(const PNGraphMP& Network, TTableContext* Context){
   Assert(T->NumRows == NumEdges);
   return T;
 }
-*/
+
 #endif // GCC_ATOMIC
 PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property, 
  const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName, 
