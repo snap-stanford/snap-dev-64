@@ -2137,7 +2137,7 @@ PGraph ToNetwork(PTable Table,
 #ifdef GCC_ATOMIC
 
 /// Converts table to network in parallel. Takes edges from \c Table and nodes explicitly from \c NodeCol in \c NodeTable, with attribute vectors passed as columns in corresponding tables.
-#if 0
+//#if 0
 // start section_4
 template<class PGraphMP>
 inline PGraphMP ToNetworkMP(PTable Table,
@@ -2530,7 +2530,7 @@ inline PGraphMP ToNetworkMP(PTable Table,
   return Graph;
 }
 // end section_4
-#endif
+//#endif
 #endif // GCC_ATOMIC
 
 }; // TSnap namespace
