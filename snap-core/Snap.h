@@ -32,7 +32,7 @@
 #include "alg.h"             // misc graph algorithms
 #include "triad.h"           // clustering coefficient and triads
 #include "gsvd.h"            // SVD and eigenvector computations
-#include "gstat.h"           // graph statistics                      TODO 64
+#include "gstat.h"           // graph statistics
 #include "centr.h"           // centrality measures
 #include "cmty.h"            // community detection algorithms
 #include "flow.h"            // network flow algorithms

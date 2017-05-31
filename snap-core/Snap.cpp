@@ -26,7 +26,7 @@
 #include "cncom.cpp"         // connected components
 #include "alg.cpp"           // misc graph algorithms
 #include "gsvd.cpp"          // SVD and eigenvector computations
-#include "gstat.cpp"         // graph statistics        TODO 64
+#include "gstat.cpp"         // graph statistics
 #include "centr.cpp"         // centrality measures
 #include "cmty.cpp"          // community detection algorithms
 #include "flow.cpp"          // network flow algorithms

@@ -1100,7 +1100,7 @@ public:
   TKey& operator[](const TSizeTy& KeyId) {return GetSetKey(KeyId).Key; }
   //bool operator()(const TKey& Key) {return IsKey(Key); }
   ::TSize GetMemUsed() const {
-    return PortV.GetMemUsed() + KeyV.GetMemUsed() + sizeof(bool) + 2*sizeof(int64); } //TODO64
+    return PortV.GetMemUsed() + KeyV.GetMemUsed() + sizeof(bool) + 2*sizeof(int64); }
 
   TIter BegI() const {
     if (Len()>0) {
@@ -1158,7 +1158,6 @@ public:
 
   void Defrag();
   void Pack() {KeyV.Pack(); }
- //TODO64
   static THashSet<TKey> GetSet(const TKey& Key1){
 	THashSet<TKey> Set(1); Set.AddKey(Key1); return Set;}
   static THashSet<TKey> GetSet(const TKey& Key1, const TKey& Key2){
