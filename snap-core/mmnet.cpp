@@ -298,7 +298,7 @@ void TCrossNet::AttrValueEI(const TInt64& EId, TStrIntPr64H::TIter CrossHI, TStr
       Values.Add(GetEdgeAttrValue(EId, CrossHI));
     }
     CrossHI++;
-  }  
+  }
 }
 
 void TCrossNet::IntAttrNameEI(const TInt64& EId, TStrIntPr64H::TIter CrossHI, TStr64V& Names) const {
@@ -1081,21 +1081,22 @@ PNEANet TMMNet::ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, T
 
 void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxLen) const {
 
-  TInt64 PartitionSize = MxLen/NumPartitions;
-  TInt64 CurrStart = 0;
-  bool done = false;
-  while (!done) {
-    TInt64 CurrEnd = CurrStart + PartitionSize;
-    if (MxLen - CurrEnd < PartitionSize) {
-      CurrEnd = MxLen;
-      done = true;
-    }
-    Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
-    CurrStart = CurrEnd;
-  }
+	int64 reminder = MxLen.Val % NumPartitions.Val;
+	TInt64 PartitionSize = MxLen/NumPartitions;
+	TInt64 CurrStart = 0;
+	bool done = false;
+	for  (int64 i=0; i < reminder; i++) {
+		TInt64 CurrEnd = CurrStart + PartitionSize+ 1;
+		Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
+		CurrStart = CurrEnd;
+	}
+	for  (int64 i=0; i < NumPartitions.Val - reminder; i++) {
+				TInt64 CurrEnd = CurrStart + PartitionSize;
+				Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
+				CurrStart = CurrEnd;
+			}
 }
 
-//TODO64
 #ifdef GCC_ATOMIC
 PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
  
@@ -1133,7 +1134,6 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     TModeNet& ModeNet = GetModeNetById(ModeId);
     TInt64V KeyIds;
     ModeNet.NodeH.GetKeyV(KeyIds);
-
     TIntPr64V NodePartitions;
     GetPartitionRanges(NodePartitions, num_threads, KeyIds.Len());
 
@@ -1150,21 +1150,22 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
           TInt64V InNbrs;
           TInt64V OutNbrs;
           for (int64 j=0; j < CrossNetNames.Len(); j++) {
-            if (ModeNet.NeighborTypes.IsKey(CrossNetNames[j])) {
-              if (ModeNet.NeighborTypes.GetDat(CrossNetNames[j])) {
+          	TStr CrossNetName = TStr(CrossNetNames[j].CStr());
+            if (ModeNet.NeighborTypes.IsKey(CrossNetName)) {
+              if (ModeNet.NeighborTypes.GetDat(CrossNetName)) {
                 
                 TInt64V Neighbors;
-                ModeNet.GetNeighborsByCrossNet(n_i, CrossNetNames[j], Neighbors);
-                int64 edge_offset = CrossNetStart.GetDat(CrossNetNames[j]);
-                //TCrossNet CrossNet = GetCrossNetByName(CrossNetNames[j]);
-                TCrossNet* CrossNet = &CrossNets[j];
-                bool isDir = CrossNet->IsDirected();
-                bool isOutNbr = CrossNet->GetMode1() == ModeId;
+                ModeNet.GetNeighborsByCrossNet(n_i, CrossNetName, Neighbors);
+                int64 edge_offset = CrossNetStart.GetDat(CrossNetName);
+                TCrossNet& CrossNet = GetCrossNetByName(CrossNetName);
+                //TCrossNet* CrossNet = &CrossNets[j];
+                bool isDir = CrossNet.IsDirected();
+                bool isOutNbr = CrossNet.GetMode1() == ModeId;
                 int64 factor = isDir ? 1 : 2;
 
                 int64 id_offset = isDir || isOutNbr ? 0 : 1;
-                if (!isDir && CrossNet->GetMode1() == CrossNet->GetMode2()) {
-                  id_offset = n_i == CrossNet->GetEdge(n_i).GetSrcNId() ? 0 : 1;
+                if (!isDir && CrossNet.GetMode1() == CrossNet.GetMode2()) {
+                  id_offset = n_i == CrossNet.GetEdge(n_i).GetSrcNId() ? 0 : 1;
                 }
 
                 for (int64 k = 0; k < Neighbors.Len(); k++) {
@@ -1184,10 +1185,10 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
                 }
               } else {
                 TInt64V TempOut;
-                ModeNet.GetNeighborsByCrossNet(n_i, CrossNetNames[j], TempOut, true);
+                ModeNet.GetNeighborsByCrossNet(n_i, CrossNetName, TempOut, true);
                 OutNbrs.AddV(TempOut);
                 TInt64V TempIn;
-                ModeNet.GetNeighborsByCrossNet(n_i, CrossNetNames[j], TempIn, false);
+                ModeNet.GetNeighborsByCrossNet(n_i, CrossNetName, TempIn, false);
                 InNbrs.AddV(TempIn);
               }
             }
