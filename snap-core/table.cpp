@@ -781,9 +781,6 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
     // Right now, can load in parallel only in Linux (for mmap) and if
     // there are no string columns
 #ifdef GLib_LINUX
-     // Remove this when Parallel load works
-     // TODO64
-     //LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
      LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);

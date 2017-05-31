@@ -469,7 +469,6 @@ namespace TSnap {
   int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV);
 #ifdef GCC_ATOMIC
-// TODO64
 
   template<class PGraphMP> PGraphMP ToGraphMP(PTable Table,
     const TStr& SrcCol, const TStr& DstCol);
@@ -522,7 +521,6 @@ public:
             const TStr& NCol, TStr64V& NodeAttrV); 
 
 #ifdef GCC_ATOMIC
-// TODO64
 
   template<class PGraphMP> friend PGraphMP TSnap::ToGraphMP(PTable Table, const TStr& SrcCol, const TStr& DstCol);
   template<class PGraphMP> friend PGraphMP TSnap::ToGraphMP3(PTable Table, const TStr& SrcCol, const TStr& DstCol);
@@ -1396,21 +1394,21 @@ public:
   /// Distance based filter. ##TTable::IsNextK
   PTable IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName = "");
 
-//  /// Gets sequence of PageRank tables from given \c GraphSeq.
-//  static TTableIterator GetMapPageRank(const TVec<PNEANet, int64>& GraphSeq, TTableContext* Context,
-//   const double& C = 0.85, const double& Eps = 1e-4, const int64& MaxIter = 100) {
-//    TVec<PTable, int64> TableSeq(GraphSeq.Len());
-//    TSnap::MapPageRank(GraphSeq, TableSeq, Context, C, Eps, MaxIter);
-//    return TTableIterator(TableSeq);
-//  }
-//
-//  /// Gets sequence of Hits tables from given \c GraphSeq.
-//  static TTableIterator GetMapHitsIterator(const TVec<PNEANet, int64>& GraphSeq,
-//   TTableContext* Context, const int64& MaxIter = 20) {
-//    TVec<PTable, int64> TableSeq(GraphSeq.Len());
-//    TSnap::MapHits(GraphSeq, TableSeq, Context, MaxIter);
-//    return TTableIterator(TableSeq);
-//  }
+  /// Gets sequence of PageRank tables from given \c GraphSeq.
+  static TTableIterator GetMapPageRank(const TVec<PNEANet, int64>& GraphSeq, TTableContext* Context,
+   const double& C = 0.85, const double& Eps = 1e-4, const int64& MaxIter = 100) {
+    TVec<PTable, int64> TableSeq(GraphSeq.Len());
+    TSnap::MapPageRank(GraphSeq, TableSeq, Context, C, Eps, MaxIter);
+    return TTableIterator(TableSeq);
+  }
+
+  /// Gets sequence of Hits tables from given \c GraphSeq.
+  static TTableIterator GetMapHitsIterator(const TVec<PNEANet, int64>& GraphSeq,
+   TTableContext* Context, const int64& MaxIter = 20) {
+    TVec<PTable, int64> TableSeq(GraphSeq.Len());
+    TSnap::MapHits(GraphSeq, TableSeq, Context, MaxIter);
+    return TTableIterator(TableSeq);
+  }
   void PrintSize();
   void PrintContextSize();
   /// Returns approximate memory used by table in [KB]
@@ -1609,8 +1607,7 @@ void TTable::RegisterGrouping(const T& Grouping, const TStr& GroupByCol, TBool U
 }
 */
 
-// TODO64
-/*
+
 namespace TSnap {
 
   /// Gets sequence of PageRank tables from given \c GraphSeq into \c TableSeq.
@@ -1653,6 +1650,6 @@ namespace TSnap {
     }
   }
 }
-*/
+
 #endif //TABLE_H
 
