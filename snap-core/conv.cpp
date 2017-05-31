@@ -16,12 +16,10 @@ int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
 
   const TAttrType NodeType = Table->GetColType(NCol);
   const TInt64 NColIdx = Table->GetColIdx(NCol);
-
   for (int64 CurrRowIdx = 0; CurrRowIdx < (Table->Next).Len(); CurrRowIdx++) {
     if ((Table->Next)[CurrRowIdx] == Table->Invalid) {
       continue;
     }
-
     // add src and dst nodes to graph if they are not seen earlier
     TInt64 NVal;
     if (NodeType == atFlt) {
@@ -35,7 +33,6 @@ int64 LoadMode(TModeNet& Graph, PTable Table, const TStr& NCol,
       }
       if (!Graph.IsNode(NVal)) {Graph.AddNode(NVal); }
     }
-
     // Aggregate edge attributes and add to graph
     for (TInt64 i = 0; i < NodeAttrV.Len(); i++) {
       TStr ColName = NodeAttrV[i];

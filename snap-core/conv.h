@@ -187,7 +187,7 @@ PGraph ToNetwork(PTable Table,
 }
 
 #ifdef GCC_ATOMIC
-#if 0
+//#if 0
 // start section_1
 /// Performs table to graph conversion in parallel using the sort-first algorithm. This is the recommended method to use.
 template<class PGraphMP>
@@ -529,9 +529,9 @@ PGraphMP ToGraphMP(PTable Table, const TStr& SrcCol, const TStr& DstCol) {
   return Graph;
 }
 // end section_1
-#endif
+//#endif
 
-#if 0
+//#if 0
 // start section_2
 /// Performs table to graph conversion in parallel. Uses the hash-first method, which is less optimal, use ToGraphMP instead.
 template<class PGraphMP>
@@ -1557,7 +1557,7 @@ PGraphMP ToNetworkMP2(PTable Table,
   return ToNetworkMP2<PGraphMP>(Table, SrcCol, DstCol, V, V, V, AggrPolicy);
 }
 // end section_2
-#endif
+//#endif
 #endif // GCC_ATOMIC
 
 
@@ -1652,7 +1652,8 @@ PGraph ToNetwork(PTable Table,
 
 }
 
-#if 0
+//#if 0
+#ifdef GCC_ATOMIC
 // start section_3
 /// Converts table to network in parallel. Use if network has only edge attributes.
 template<class PGraphMP>

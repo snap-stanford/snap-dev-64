@@ -1098,7 +1098,7 @@ void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitio
 
 }
 
-//#ifdef GCC_ATOMIC
+#ifdef GCC_ATOMIC
 PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
  
   TStrInt64H CrossNetStart;
