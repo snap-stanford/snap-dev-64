@@ -541,7 +541,7 @@ public:
   /// Takes over the data and the capacity from \c Vec. ##TVec::MoveFrom
   void MoveFrom(TVec<TVal, TSizeTy>& Vec);
   /// Copy \c Sz values from \c Vec starting at \c Offset.
-  void CopyUniqueFrom(TVec<TVal, TSizeTy>& Vec, TInt Offset, TInt Sz);
+  void CopyUniqueFrom(TVec<TVal, TSizeTy>& Vec, TInt64 Offset, TInt64 Sz);
   /// Swaps the contents of the vector with \c Vec.
   void Swap(TVec<TVal, TSizeTy>& Vec);
   /// Tests whether the vector is empty. ##TVec::Empty
@@ -1006,7 +1006,7 @@ void TVec<TVal, TSizeTy>::MoveFrom(TVec<TVal, TSizeTy>& Vec){
 }
 
 template <class TVal, class TSizeTy>
-void TVec<TVal, TSizeTy>::CopyUniqueFrom(TVec<TVal, TSizeTy>& Vec, TInt Offset, TInt Sz){
+void TVec<TVal, TSizeTy>::CopyUniqueFrom(TVec<TVal, TSizeTy>& Vec, TInt64 Offset, TInt64 Sz){
   EAssertR(!(IsShM && (MxVals == -1)), "Cannot directly access shared memory");
   if (this!=&Vec){
     if (ValT!=NULL && MxVals!=-1 && MxVals < Sz){
