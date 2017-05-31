@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////
 // Mutimodal Network
-
+//#include <iostream>
 TStr TModeNet::GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const {
   TStr Cpy(CrossName);
   if (!isDir || !sameMode) { return Cpy; }
@@ -104,7 +104,7 @@ int64 TModeNet::DelNbrType(const TStr& CrossName) {
 }
 
 void TModeNet::GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId) const{
-  //IAssertR(NeighborTypes.IsKey(Name), TStr::Fmt("Cross Type does not exist: %s", Name));
+  IAssertR(NeighborTypes.IsKey(Name), TStr::Fmt("Cross Type does not exist: %s", Name.GetCStr()));
   TBool hasSingleVector = NeighborTypes.GetDat(Name);
   if (hasSingleVector) {
     Neighbors = GetIntVAttrDatN(NId, Name);
@@ -1095,18 +1095,20 @@ void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitio
 				Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
 				CurrStart = CurrEnd;
 			}
+
 }
 
-#ifdef GCC_ATOMIC
+//#ifdef GCC_ATOMIC
 PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
  
   TStrInt64H CrossNetStart;
   THashSet<TInt64, int64> ModeSet;
   int64 offset = 0;
   int64 NumEdges = 0;
-  TVec<TCrossNet> CrossNets;
+  //TVec<TCrossNet> CrossNets;
+  //std::cerr<<"here 0\n";
   for (int64 i=0; i < CrossNetNames.Len(); i++) {
-  	CrossNets.Add(GetCrossNetByName(CrossNetNames[i]));
+    //	CrossNets.Add(GetCrossNetByName(CrossNetNames[i]));
     CrossNetStart.AddDat(CrossNetNames[i], offset);
     TCrossNet& CrossNet = GetCrossNetByName(CrossNetNames[i]);
     int64 factor = CrossNet.IsDirected() ? 1 : 2;
@@ -1115,6 +1117,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     ModeSet.AddKey(CrossNet.GetMode1());
     ModeSet.AddKey(CrossNet.GetMode2());
   }
+  //std::cerr<<"here2\n";
   int64 MxEId = offset;
 
   int64 NumNodes = 0;
@@ -1122,12 +1125,13 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     TModeNet& ModeNet = GetModeNetById(MI.GetKey());
     NumNodes += ModeNet.GetNodes();
   }
-
+  //std::cerr<<"here3\n";
   THashMP<TInt64Pr, TInt64, int64> NodeMap(NumNodes);
   THashMP<TInt64Pr, TInt64Pr, int64> EdgeMap(NumEdges);
   PNEANetMP NewNet = TNEANetMP::New(NumNodes, NumEdges);
-
+  //std::cerr<<"here4\n";
   int64 num_threads = omp_get_max_threads();
+  // int64 num_threads = 21;
   offset = 0;
   for (THashSet<TInt64, int64>::TIter MI = ModeSet.BegI(); MI < ModeSet.EndI(); MI++) {
     TInt64 ModeId = MI.GetKey();
@@ -1136,21 +1140,23 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     ModeNet.NodeH.GetKeyV(KeyIds);
     TIntPr64V NodePartitions;
     GetPartitionRanges(NodePartitions, num_threads, KeyIds.Len());
-
+    //std::cerr<<"got partitions for mode "<<ModeId<<"\n";
     int64 curr_nid;
     #pragma omp parallel for schedule(static) private(curr_nid)
     for (int64 i = 0; i < NodePartitions.Len(); i++) {
+      //std::cerr<<"Entering first loop "<<i<<"\n";
       TInt64 CurrStart = NodePartitions[i].GetVal1();
       TInt64 CurrEnd = NodePartitions[i].GetVal2();
       curr_nid = offset + CurrStart;
       for (int64 idx = CurrStart; idx < CurrEnd ; idx++) {
+	
         int64 n_i = KeyIds[idx];
         if (ModeNet.IsNode(n_i)) {
           //Collect neighbors
           TInt64V InNbrs;
           TInt64V OutNbrs;
           for (int64 j=0; j < CrossNetNames.Len(); j++) {
-          	TStr CrossNetName = TStr(CrossNetNames[j].CStr());
+            TStr CrossNetName = TStr(CrossNetNames[j].CStr());
             if (ModeNet.NeighborTypes.IsKey(CrossNetName)) {
               if (ModeNet.NeighborTypes.GetDat(CrossNetName)) {
                 
@@ -1192,19 +1198,22 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
                 InNbrs.AddV(TempIn);
               }
             }
+	  //std::cerr<<"DOne \""<<CrossNetNames[j].GetCStr()<<"\"\n";
           }
-
+	  //std::cerr<<"Done for all crossnets\n";
           NewNet->AddNodeWithEdges(curr_nid, InNbrs, OutNbrs);
           TInt64Pr NodeKey(MI.GetKey(), n_i);
           NodeMap.AddDat(NodeKey, curr_nid);
           curr_nid++;
         }
       }
-    }
+     //std::cerr<<"Exiting first loop "<<i<<"\n";
+     }
+  
     offset += KeyIds.Len();
   }
   NewNet->SetNodes(offset);
-
+  //std::cerr<<"here 5\n";
   for (int64 j=0; j < CrossNetNames.Len(); j++) {
     TStr CrossNetName = CrossNetNames[j];
     TCrossNet& CrossNet = GetCrossNetByName(CrossNetName);
@@ -1247,7 +1256,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
   }
   NewNet->SetEdges(MxEId);
   NewNet->ReserveAttr(2, 0, 0, 2, 0, 0);
-
+  //std::cerr<<"here6\n";
   //Add attributes
   NewNet->AddIntAttrN(TStr("Mode"));
   NewNet->AddIntAttrN(TStr("Id"));
@@ -1263,7 +1272,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     NewNet->AddIntAttrDatN(NodeMap.GetDat(NewNodeIds[i]), NewNodeIds[i].GetVal2(), TStr("Id"));
   }
 
-
+  //std::cerr<<"Here8\n";
   TIntPr64V NewEdgeIds;
   EdgeMap.GetKeyV(NewEdgeIds);
   #pragma omp parallel for schedule(static)
@@ -1275,6 +1284,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
       NewNet->AddIntAttrDatE(EdgeMap.GetDat(NewEdgeIds[i]).GetVal2(), NewEdgeIds[i].GetVal2(), TStr("Id"));
     }
   }
+  //std::cerr<<"Here9\n";
   return NewNet;
 }
 #endif // GCC_ATOMIC
