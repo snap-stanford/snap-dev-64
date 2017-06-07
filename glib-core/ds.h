@@ -455,6 +455,13 @@ public:
     IsShM = false;
     IAssert((0<=_Vals)&&(_Vals<=_MxVals)); MxVals=_MxVals; Vals=_Vals;
     if (_MxVals==0){ValT=NULL;} else {ValT=new TVal[_MxVals];}}
+  TVec(const TSizeTy& _MxVals, const TSizeTy& _Vals, TVal Dat){
+      IsShM = false;
+      IAssert((0<=_Vals)&&(_Vals<=_MxVals)); MxVals=_MxVals; //Vals=_Vals;
+      if (_MxVals==0){ValT=NULL;} else {ValT=new TVal[_MxVals];}
+      for(TSizeTy i = 0; i < _Vals; i++ )
+      	Add(Dat);
+  }
   /// Constructs a vector of \c _Vals elements of memory array \c _ValT. ##TVec::TVec
   explicit TVec(TVal *_ValT, const TSizeTy& _Vals):
     MxVals(-1), Vals(_Vals), ValT(_ValT), IsShM(false){}
