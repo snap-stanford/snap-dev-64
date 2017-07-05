@@ -645,10 +645,26 @@ public:
   /// Returns the number of crossnets in the multimodal network.
   int64 GetCrossNets() { return TCrossNetH.Len(); }
 
-  ///Gets the induced subgraph given a vector of crossnet type names.
+  /// Gets the induced subgraph given a vector of crossnet type names.
   PMMNet GetSubgraphByCrossNet(TStr64V& CrossNetTypes);
-  ///Gets the induced subgraph given a vector of mode type names.
+
+  /// Gets the induced subgraph given a vector of mode type names.
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
+
+
+
+  /* Metapath Subnetwork Extraction */
+  /// Gets the induced subgraph given a set of starting nodes in a single mode and a number of acceptable
+  /// metapaths (crossnet sequences).
+  /// The zeroth entry of each metapath should have a source mode of StartModeId, and each subsequent entry
+  /// of the metapath should have a source mode matching the destination mode of the previous crossnet.
+  /// Any metapaths shorter than the longest metapath should have -1's at the end of their vector (unusable crossnet ID).
+  PMMNet GetSubgraphByMetapaths(const TInt64& StartModeID, const TInt64V& StartNodeIDs, const TInt64VV& Metapaths);
+  
+
+
+
+
 
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the (Mode/Cross Id, old att name, new attr name)
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);

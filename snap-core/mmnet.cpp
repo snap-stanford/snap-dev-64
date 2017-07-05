@@ -830,6 +830,45 @@ PMMNet TMMNet::GetSubgraphByModeNet(TStr64V& ModeNetTypes) {
   return Result;
 }
 
+
+// TODO: Is there a better solution for sentinels, and should this be defined somewhere else in code?
+static const int64 UNUSED_CROSSNET = -1;
+PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TInt64VV& Metapaths) {
+  // Ensure the start mode exists in the network
+  IAssertR(ModeIdToNameH.IsKey(StartModeId), TStr::Fmt("Mode with id %d does not exist", StartModeId));
+  // Ensure source mode of CN 0 of each metapath matches start mode; ensure all crossnets exist in network;
+  // ensure dst mode of CN y matches src mode of CN y+1
+  for(int64 x = 0; x < Metapaths.GetXDim(); x++) {
+    for(int64 y = 0; y < Metapaths.GetYDim(); y++) {
+      TInt64 MPCNXY_Id = Metapaths.GetXY(x,y);
+      if(MPCNXY_Id == UNUSED_CROSSNET) break;
+      IAssertR(CrossIdToNameH.IsKey(MPCNXY_Id), TStr::Fmt("Crossnet with id %d does not exist", MPCNXY_Id));
+      TInt64 MPCNXY_src = GetCrossNetById(MPCNXY_Id).GetMode1();
+      if(y == 0) {
+        IAssertR(MPCNXY_src == StartModeId, TStr::Fmt("Starting mode with id %d in metapath %d does not match StartModeId %d",
+                                                      MPCNXY_src, x, StartModeId));
+      } else {
+        TInt64 MPCNXY_Pred = Metapaths.GetXY(x,y-1);
+        TInt64 MPCNXY_Pred_dst = GetCrossNetById(MPCNXY_Pred).GetMode2();
+        IAssertR(MPCNXY_src == MPCNXY_Pred_dst, TStr::Fmt("Source mode %d of crossnet %d at position %d of metapath %d does not "
+                                                          "match destination mode %d of previous crossnet %d", MPCNXY_src,
+                                                          MPCNXY_Id, y, x, MPCNXY_Pred_dst, MPCNXY_Pred));
+      }
+    }
+  }
+
+  // Ensure all nodes in StartNodeIds exist in the given mode
+  TModeNet& StartMode = GetModeNetById(StartModeId);
+  for(TInt64V::TIter it = StartNodeIds.BegI(); it < StartNodeIds.EndI(); it++) {
+    IAssertR(StartMode.IsNode(*it), TStr::Fmt("Node with id %d does not exist in starting mode with id %d", *it, StartModeId));
+  }
+
+  PMMNet Result = New();
+  return Result;
+}
+
+
+
 PNEANet TMMNet::ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64>& EdgeAttrMap) {
   TIntPrInt64H NodeMap;
   THash<TInt64Pr, TInt64Pr, int64> EdgeMap;
