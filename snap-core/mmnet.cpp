@@ -741,6 +741,18 @@ int64 TMMNet::AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet
   return ModeId;
 
 }
+
+int64 TMMNet::AddEmptyMode(const TStr& ModeName, const TInt64& ModeId) {
+  ModeIdToNameH.AddDat(ModeId, ModeName);
+  ModeNameToIdH.AddDat(ModeName, ModeId);
+  
+  MxModeId = MAX(MxModeId+1, ModeId+1);
+  TModeNet NewGraph(ModeId);
+  NewGraph.SetParentPointer(this);
+  TModeNetH.AddDat(ModeId, NewGraph);
+  return ModeId;
+}
+
 int64 TMMNet::AddCrossNet(const TStr& CrossNetName, const TInt64& CrossNetId, const TCrossNet& CrossNet) {
   CrossIdToNameH.AddDat(CrossNetId, CrossNetName);
   CrossNameToIdH.AddDat(CrossNetName, CrossNetId);
@@ -864,6 +876,7 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& 
   }
 
   PMMNet Result = New();
+  Result->AddEmptyMode(GetModeName(StartModeId), StartModeId);
   return Result;
 }
 

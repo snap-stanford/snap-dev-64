@@ -661,7 +661,7 @@ public:
   /// Any metapaths shorter than the longest metapath should have -1's at the end of their vector (unusable crossnet ID).
   PMMNet GetSubgraphByMetapaths(const TInt64& StartModeID, const TInt64V& StartNodeIDs, const TInt64VV& Metapaths);
   
-
+  
 
 
 
@@ -677,6 +677,7 @@ public:
 private:
   void ClrNbr(const TInt64& ModeId, const TInt64& CrossNetId, const bool& outEdge, const bool& sameMode, bool& isDir);
   int64 AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet& ModeNet);
+  int64 AddEmptyMode(const TStr& ModeName, const TInt64& ModeId);
   int64 AddCrossNet(const TStr& CrossNetName, const TInt64& CrossNetId, const TCrossNet& CrossNet);
   int64 AddNodeAttributes(PNEANet& NewNet, TModeNet& Net, TVec<TPair<TStr, TStr>, int64>& Attrs, int64 ModeId, int64 oldId, int64 NId);
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);
