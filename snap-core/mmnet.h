@@ -74,6 +74,10 @@ public:
   /// For the given node, gets all the neighbors for the crossnet type. If this mode is both the source and dest type, use isOutEId to specify direction.
   void GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
 
+  /// Copy all nodes whose Ids are given from Src into Dst. All attributes of nodes in Src are preserved except those which denote their neighbors in the multimodal network.
+  static void CopyNodesExceptNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
+
+
   /// Returns an iterator referring to the first node in the graph.
   TNodeI BegMMNI() const { return TNodeI(NodeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end node in the graph.
@@ -651,8 +655,6 @@ public:
   /// Gets the induced subgraph given a vector of mode type names.
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
 
-
-
   /* Metapath Subnetwork Extraction */
   /// Gets the induced subgraph given a set of starting nodes in a single mode and a number of acceptable
   /// metapaths (crossnet sequences).
@@ -661,11 +663,6 @@ public:
   /// Any metapaths shorter than the longest metapath should have -1's at the end of their vector (unusable crossnet ID).
   PMMNet GetSubgraphByMetapaths(const TInt64& StartModeID, const TInt64V& StartNodeIDs, const TInt64VV& Metapaths);
   
-  
-
-
-
-
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the (Mode/Cross Id, old att name, new attr name)
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the Mode/Cross Id -> vec of pairs (old att name, new attr name)
@@ -677,7 +674,8 @@ public:
 private:
   void ClrNbr(const TInt64& ModeId, const TInt64& CrossNetId, const bool& outEdge, const bool& sameMode, bool& isDir);
   int64 AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet& ModeNet);
-  int64 AddEmptyMode(const TStr& ModeName, const TInt64& ModeId);
+  ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names are copied except those which denote crossnets.
+  static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
   int64 AddCrossNet(const TStr& CrossNetName, const TInt64& CrossNetId, const TCrossNet& CrossNet);
   int64 AddNodeAttributes(PNEANet& NewNet, TModeNet& Net, TVec<TPair<TStr, TStr>, int64>& Attrs, int64 ModeId, int64 oldId, int64 NId);
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);

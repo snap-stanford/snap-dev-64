@@ -114,6 +114,20 @@ void TModeNet::GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Nei
   }
 }
 
+
+void TModeNet::CopyNodesExceptNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds) {
+  // TStr64V Crossnets;
+  // Src.GetCrossNetNames(Crossnets);
+  // for(TInt64V::TIter NIdI = ToCopyIds.BegI(); NIdI < ToCopyIds.EndI(); NIdI++) {
+  //   if(!Dst.IsNode(*NIdI)) Dst.AddNode(*NIdI);
+  // }
+  // //copy all non-TIntV attributes and defaults
+  
+
+}
+
+
+
 int64 TModeNet::AddIntVAttrByVecN(const TStr& attr, TVec<TInt64V, int64>& Attrs){
   TInt64 CurrLen;
   TVec<TInt64V, int64> NewVec;
@@ -742,14 +756,29 @@ int64 TMMNet::AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet
 
 }
 
-int64 TMMNet::AddEmptyMode(const TStr& ModeName, const TInt64& ModeId) {
-  ModeIdToNameH.AddDat(ModeId, ModeName);
-  ModeNameToIdH.AddDat(ModeName, ModeId);
-  
-  MxModeId = MAX(MxModeId+1, ModeId+1);
-  TModeNet NewGraph(ModeId);
-  NewGraph.SetParentPointer(this);
-  TModeNetH.AddDat(ModeId, NewGraph);
+int64 TMMNet::CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId) {
+  if(Dst->ModeIdToNameH.IsKey(ModeId)) return -1; 
+
+  TStr ModeName = Src->GetModeName(ModeId);
+  Dst->ModeIdToNameH.AddDat(ModeId, ModeName);
+  Dst->ModeNameToIdH.AddDat(ModeName, ModeId);
+
+  TModeNet& SrcMode = Src->GetModeNetById(ModeId);
+  TModeNet DstMode(SrcMode);
+  // clear all nodes and edges and their attribute data
+  DstMode.DelAllAttrDatN();
+  DstMode.DelAllAttrDatE();
+  DstMode.MxNId = 0; DstMode.MxEId = 0; DstMode.NodeH.Clr(); DstMode.EdgeH.Clr();
+
+  // remove all crossnet attributes
+  TStr64V Crossnets;
+  SrcMode.GetCrossNetNames(Crossnets);
+  for(int64 i = 0; i < Crossnets.Len(); i++) {
+    DstMode.DelAttrN(Crossnets[i]);
+  }
+
+  Dst->TModeNetH.AddDat(ModeId, DstMode);
+  Dst->TModeNetH[ModeId].SetParentPointer(&*Dst); //todo (millimat): ensure this correct
   return ModeId;
 }
 
@@ -876,7 +905,13 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& 
   }
 
   PMMNet Result = New();
-  Result->AddEmptyMode(GetModeName(StartModeId), StartModeId);
+  // Result->AddEmptyMode(GetModeName(StartModeId), StartModeId);
+  
+  // for(TInt64V::TIter it = StartNodeIds.BegI(); it < StartNodeIds.EndI(); it++) {
+  //   TModeNet::CopyNodeExceptNeighbors(Result->GetModeNetById(
+  //   Result->GetModeNetById(StartModeId)->CopyNodeExceptNeighbors(
+  // }
+
   return Result;
 }
 

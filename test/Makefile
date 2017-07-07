@@ -11,6 +11,7 @@
 
 include ../Makefile.config
 CXXFLAGS += $(CXXOPENMP)
+CXXFLAGS_MPEXTRACT = -std=c++0x -g -Wall -O0 -DNDEBUG -fopenmp $(CXXOPENMP)
 LIBS += -lgtest
 
 ## Main application file
@@ -40,7 +41,7 @@ TEST_SRCS = 	test-helper.cpp \
 	test-flow.cpp \
 	test-randwalk.cpp \
 	test-priority-queue.cpp \
-	test-triad.cpp 
+	test-triad.cpp \
 
 #	test-THash64.cpp \
 #	test-TNGraph64.cpp \
@@ -52,15 +53,23 @@ TEST_SRCS = 	test-helper.cpp \
 
 TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 
-all: $(MAIN)
+MPEXTRACT = mptest
+MPEXTRACT_SRC = mpextract-test.cpp
+MPEXTRACT_OBJ = mpextract-test.o
+
+all: $(MAIN) $(MPEXTRACT)
+mpextract: $(MPEXTRACT)
 run: test
 
 # COMPILE
 .cpp.o:
-	$(CC) $(CXXFLAGS) -I$(CSNAP) -I$(CGLIB) -c $<
+	$(CC) $(CXXFLAGS_MPEXTRACT) -I$(CSNAP) -I$(CGLIB) -c $<
 
 $(MAIN): $(MAIN).o $(TEST_OBJS) $(CSNAP)/Snap.o
 	$(CC) $(CXXFLAGS) -o $(MAIN) $^ -I$(CSNAP) -I$(CGLIB) $(LDFLAGS) $(LIBS)
+
+$(MPEXTRACT): $(MPEXTRACT_OBJ) $(CSNAP)/Snap.o
+	$(CC) $(CXXFLAGS_MPEXTRACT) -o $(MPEXTRACT) $^ -I$(CSNAP) -I$(CGLIB) $(LDFLAGS) $(LIBS)	
 
 $(CSNAP)/Snap.o:
 	$(MAKE) -C $(CSNAP)
@@ -69,7 +78,7 @@ test: $(MAIN)
 	./$(MAIN)
 
 clean:
-	rm -f *.o $(MAIN) $(MAIN).exe
+	rm -f *.o $(MAIN) $(MAIN).exe $(MPEXTRACT)
 	rm -rf Debug Release
 	rm -rf demo*.dat test*.dat *.Err
 	rm -rf graphviz/test_*

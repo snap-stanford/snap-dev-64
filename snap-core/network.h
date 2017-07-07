@@ -2368,6 +2368,10 @@ public:
   /// Deletes the edge attribute for NodeI.
   int64 DelAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return DelAttrDatE(EdgeI.GetId(), attr); } 
   int64 DelAttrDatE(const int64& EId, const TStr& attr); 
+  /// Deletes node attributes for all nodes, leaves attribute names in place.
+  int64 DelAllAttrDatN();
+  /// Deletes edge attributes for all edges, leaves attribute names in place.
+  int64 DelAllAttrDatE();
 
   /// Adds a new Int node attribute to the hashmap.
   int64 AddIntAttrN(const TStr& attr, TInt64 defaultValue=TInt64::Mn);
@@ -2444,11 +2448,21 @@ public:
   /// Gets the sum of the weights of all the outgoing edges of the node.
   TFlt GetWeightOutEdges(const TNodeI& NI, const TStr& attr);
   /// Checks if there is an edge attribute with name attr.
+  bool IsFltAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsStrAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntVAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
   bool IsFltAttrE(const TStr& attr);
   /// Checks if there is an edge attribute with name attr.
   bool IsIntAttrE(const TStr& attr);
   /// Checks if there is an edge attribute with name attr.
   bool IsStrAttrE(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntVAttrE(const TStr& attr);
   /// Gets Vector for the Flt Attribute attr.
   TVec<TFlt, int64>& GetFltAttrVecE(const TStr& attr);
   /// Gets keyid for edge with id EId.
@@ -2458,9 +2472,12 @@ public:
   void GetWeightOutEdgesV(TFlt64V& OutWeights, const TFlt64V& AttrVal) ;
   /// Fills each of the vectors with the names of node attributes of the given type.
   void GetAttrNNames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
+  /// Fills vector with names of node attributes of type TIntV.
+  void GetIntVAttrNNames(TStr64V& IntVAttrNames) const;
   /// Fills each of the vectors with the names of edge attributes of the given type.
   void GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
-
+  /// Fills vector with names of edge attributes of type TIntV.
+  void GetIntVAttrENames(TStr64V& IntVAttrNames) const;
 
   /// Adds Int sparse attribute with name \c AttrName to the given node with id \c NId.
   int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TInt64& Val);
