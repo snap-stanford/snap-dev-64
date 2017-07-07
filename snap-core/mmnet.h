@@ -75,8 +75,7 @@ public:
   void GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
 
   /// Copy all nodes whose Ids are given from Src into Dst. All attributes of nodes in Src are preserved except those which denote their neighbors in the multimodal network.
-  static void CopyNodesExceptNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
-
+  static void CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
 
   /// Returns an iterator referring to the first node in the graph.
   TNodeI BegMMNI() const { return TNodeI(NodeH.BegI(), this); }
@@ -661,7 +660,7 @@ public:
   /// The zeroth entry of each metapath should have a source mode of StartModeId, and each subsequent entry
   /// of the metapath should have a source mode matching the destination mode of the previous crossnet.
   /// Any metapaths shorter than the longest metapath should have -1's at the end of their vector (unusable crossnet ID).
-  PMMNet GetSubgraphByMetapaths(const TInt64& StartModeID, const TInt64V& StartNodeIDs, const TInt64VV& Metapaths);
+  PMMNet GetSubgraphByMetapaths(const TInt64& StartModeID, const TInt64V& StartNodeIDs, const TVec<TInt64V>& Metapaths);
   
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the (Mode/Cross Id, old att name, new attr name)
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);

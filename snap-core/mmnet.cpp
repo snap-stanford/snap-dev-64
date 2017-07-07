@@ -114,17 +114,42 @@ void TModeNet::GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Nei
   }
 }
 
+// TODO (millimat): test in mptest when done
+void TModeNet::CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds) {
+  for(int64 i = 0; i < ToCopyIds.Len(); i++) {
+    if(!Dst.IsNode(ToCopyIds[i])) {
+      Dst.AddNode(ToCopyIds[i]);
+    }
+  }
+  // copy all non-IntV attributes and defaults // TODO (millimat): also copy defaults
+  for(TStrInt64PrH::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
+    TStr& AttrName = it.GetKey();
+    TAttr AttrType = it.GetDat().GetVal1();
+    TInt64 AttrIndex = it.GetDat().GetVal2();
+    for(int64 i = 0; i < ToCopyIds.Len(); i++) {
+      TInt64 Id = ToCopyIds[i];
+      if(AttrType == IntType) {
+        Dst.AddIntAttrDatN(Id, Src.VecOfIntVecsN[AttrIndex][Id], AttrName);
+      } else if(AttrType == FltType) {
+        Dst.AddFltAttrDatN(Id, Src.VecOfFltVecsN[AttrIndex][Id], AttrName);
+      } else if(AttrType == StrType) {  
+        Dst.AddStrAttrDatN(Id, Src.VecOfStrVecsN[AttrIndex][Id], AttrName);
+      }
+    }
+  }
 
-void TModeNet::CopyNodesExceptNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds) {
-  // TStr64V Crossnets;
-  // Src.GetCrossNetNames(Crossnets);
-  // for(TInt64V::TIter NIdI = ToCopyIds.BegI(); NIdI < ToCopyIds.EndI(); NIdI++) {
-  //   if(!Dst.IsNode(*NIdI)) Dst.AddNode(*NIdI);
-  // }
-  // //copy all non-TIntV attributes and defaults
-  
 
-}
+  // fetch names of all non-crossnet intv attrs, then copy values into Dst
+  TStr64V Crossnets;
+  Src.GetCrossNetNames(Crossnets);
+  Crossnets.Sort();
+  TStr64V IntVAttrNames;
+  Src.GetIntVAttrNNames(IntVAttrNames);
+  IntVAttrNames.Sort();
+  TStr64V NonCrossnetIntVAttrNames;
+  IntVAttrNames.Diff(Crossnets, NonCrossnetIntVAttrNames);
+
+ }
 
 
 
@@ -749,19 +774,22 @@ TCrossNet& TMMNet::GetCrossNetById(const TInt64& CrossId) const{
 int64 TMMNet::AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet& ModeNet) {
   ModeIdToNameH.AddDat(ModeId, ModeName);
   ModeNameToIdH.AddDat(ModeName, ModeId);
+  DstMode.MxModeId = MAX(Dst->MxModeId, ModeId+1); //TODO(millimat): this should be here for correctness but is it a backwards compatibility issue?
 
   TModeNetH.AddDat(ModeId, ModeNet);
   TModeNetH[ModeId].SetParentPointer(this);
   return ModeId;
-
 }
 
+// TODO (millimat): This seems to be the best way to accomplish nodeless copying in 
+// the least lines of code, but may be suboptimal in terms of performance. Investigate
 int64 TMMNet::CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId) {
   if(Dst->ModeIdToNameH.IsKey(ModeId)) return -1; 
 
   TStr ModeName = Src->GetModeName(ModeId);
   Dst->ModeIdToNameH.AddDat(ModeId, ModeName);
   Dst->ModeNameToIdH.AddDat(ModeName, ModeId);
+  Dst->MxModeId = MAX(Dst->MxModeId, ModeId+1);
 
   TModeNet& SrcMode = Src->GetModeNetById(ModeId);
   TModeNet DstMode(SrcMode);
@@ -778,7 +806,7 @@ int64 TMMNet::CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64&
   }
 
   Dst->TModeNetH.AddDat(ModeId, DstMode);
-  Dst->TModeNetH[ModeId].SetParentPointer(&*Dst); //todo (millimat): ensure this correct
+  Dst->TModeNetH[ModeId].SetParentPointer(&*Dst); // TODO (millimat): ensure this correct
   return ModeId;
 }
 
@@ -872,28 +900,25 @@ PMMNet TMMNet::GetSubgraphByModeNet(TStr64V& ModeNetTypes) {
 }
 
 
-// TODO: Is there a better solution for sentinels, and should this be defined somewhere else in code?
-static const int64 UNUSED_CROSSNET = -1;
-PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TInt64VV& Metapaths) {
+PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths) {
   // Ensure the start mode exists in the network
   IAssertR(ModeIdToNameH.IsKey(StartModeId), TStr::Fmt("Mode with id %d does not exist", StartModeId));
   // Ensure source mode of CN 0 of each metapath matches start mode; ensure all crossnets exist in network;
-  // ensure dst mode of CN y matches src mode of CN y+1
-  for(int64 x = 0; x < Metapaths.GetXDim(); x++) {
-    for(int64 y = 0; y < Metapaths.GetYDim(); y++) {
-      TInt64 MPCNXY_Id = Metapaths.GetXY(x,y);
-      if(MPCNXY_Id == UNUSED_CROSSNET) break;
-      IAssertR(CrossIdToNameH.IsKey(MPCNXY_Id), TStr::Fmt("Crossnet with id %d does not exist", MPCNXY_Id));
-      TInt64 MPCNXY_src = GetCrossNetById(MPCNXY_Id).GetMode1();
-      if(y == 0) {
-        IAssertR(MPCNXY_src == StartModeId, TStr::Fmt("Starting mode with id %d in metapath %d does not match StartModeId %d",
-                                                      MPCNXY_src, x, StartModeId));
+  // ensure dst mode of CN j matches src mode of CN j+1
+  for(int64 i = 0; i < Metapaths.Len(); i++) {
+    for(int64 j = 0; j < Metapaths[i].Len(); j++) {
+      TInt64 MPCNij_Id = Metapaths[i][j];
+      IAssertR(CrossIdToNameH.IsKey(MPCNij_Id), TStr::Fmt("Crossnet with id %d does not exist", MPCNij_Id));
+      TInt64 MPCNij_src = GetCrossNetById(MPCNij_Id).GetMode1();
+      if(j == 0) {
+        IAssertR(MPCNij_src == StartModeId, TStr::Fmt("Starting mode with id %d in metapath %d does not match StartModeId %d",
+                                                      MPCNij_src, i, StartModeId));
       } else {
-        TInt64 MPCNXY_Pred = Metapaths.GetXY(x,y-1);
-        TInt64 MPCNXY_Pred_dst = GetCrossNetById(MPCNXY_Pred).GetMode2();
-        IAssertR(MPCNXY_src == MPCNXY_Pred_dst, TStr::Fmt("Source mode %d of crossnet %d at position %d of metapath %d does not "
-                                                          "match destination mode %d of previous crossnet %d", MPCNXY_src,
-                                                          MPCNXY_Id, y, x, MPCNXY_Pred_dst, MPCNXY_Pred));
+        TInt64 MPCNij_Pred = Metapaths[i][j-1];
+        TInt64 MPCNij_Pred_dst = GetCrossNetById(MPCNij_Pred).GetMode2();
+        IAssertR(MPCNij_src == MPCNij_Pred_dst, TStr::Fmt("Source mode %d of crossnet %d at position %d of metapath %d does not "
+                                                          "match destination mode %d of previous crossnet %d", MPCNij_src,
+                                                          MPCNij_Id, j, i, MPCNij_Pred_dst, MPCNij_Pred));
       }
     }
   }
@@ -905,8 +930,11 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& 
   }
 
   PMMNet Result = New();
-  // Result->AddEmptyMode(GetModeName(StartModeId), StartModeId);
-  
+  TMMNet::CopyModeWithoutNodes(this, Result, StartModeId); // todo (millimat): ensure ok to implicitly cast ptr as TPt
+  TModeNet& StartMode_Copy = Result->GetModeNetById(StartModeId);
+  TModeNet::CopyNodesWithoutNeighbors(StartMode, StartMode_Copy, StartNodeIds);
+
+
   // for(TInt64V::TIter it = StartNodeIds.BegI(); it < StartNodeIds.EndI(); it++) {
   //   TModeNet::CopyNodeExceptNeighbors(Result->GetModeNetById(
   //   Result->GetModeNetById(StartModeId)->CopyNodeExceptNeighbors(
