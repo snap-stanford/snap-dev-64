@@ -116,15 +116,20 @@ void TModeNet::GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Nei
 
 // TODO (millimat): test in mptest when done
 void TModeNet::CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds) {
+  // copy nodes and sparse attributes
   for(int64 i = 0; i < ToCopyIds.Len(); i++) {
-    if(!Dst.IsNode(ToCopyIds[i])) {
-      Dst.AddNode(ToCopyIds[i]);
-    }
+    TInt64 Id = ToCopyIds[i];
+    if(Dst.IsNode(Id)) continue;
+    Dst.AddNode(Id);
+    CopyAllSAttrN(Id, atInt, Src, Dst);
+    CopyAllSAttrN(Id, atFlt, Src, Dst);
+    CopyAllSAttrN(Id, atStr, Src, Dst);
   }
-  // copy all non-IntV attributes and defaults // TODO (millimat): also copy defaults
-  for(TStrInt64PrH::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
-    TStr& AttrName = it.GetKey();
-    TAttr AttrType = it.GetDat().GetVal1();
+
+  // copy all non-IntV dense attributes 
+  for(TStrIntPr64H::TIter it = Src.KeyToIndexTypeN.BegI(); it < Src.KeyToIndexTypeN.EndI(); it++) {
+    const TStr& AttrName = it.GetKey();
+    TInt64 AttrType = it.GetDat().GetVal1();
     TInt64 AttrIndex = it.GetDat().GetVal2();
     for(int64 i = 0; i < ToCopyIds.Len(); i++) {
       TInt64 Id = ToCopyIds[i];
@@ -137,8 +142,7 @@ void TModeNet::CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, con
       }
     }
   }
-
-
+  
   // fetch names of all non-crossnet intv attrs, then copy values into Dst
   TStr64V Crossnets;
   Src.GetCrossNetNames(Crossnets);
@@ -148,8 +152,15 @@ void TModeNet::CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, con
   IntVAttrNames.Sort();
   TStr64V NonCrossnetIntVAttrNames;
   IntVAttrNames.Diff(Crossnets, NonCrossnetIntVAttrNames);
-
- }
+  for(TStr64V::TIter it = NonCrossnetIntVAttrNames.BegI(); it < NonCrossnetIntVAttrNames.EndI(); it++) {
+    const TStr& AttrName = *it;
+    TInt64 AttrIndex = Src.KeyToIndexTypeN.GetDat(AttrName).GetVal2();
+    for(int64 i = 0; i < ToCopyIds.Len(); i++) {
+      TInt64 Id = ToCopyIds[i];
+      Dst.AddIntVAttrDatN(Id, Src.VecOfIntVecVecsN[AttrIndex][Id], AttrName);
+    }
+  }
+}
 
 
 
@@ -200,6 +211,24 @@ int64 TModeNet::GetAttrTypeN(const TStr& attr) const {
     return KeyToIndexTypeN.GetDat(attr).Val1;
   }
   return -1;
+}
+
+void TModeNet::CopyAllSAttrN(TInt64 Id, const TAttrType& AttrType, const TModeNet& Src, TModeNet& Dst) {
+  TAttrPrV SparseAttrs;
+  Src.SAttrN.GetSAttrV(Id, AttrType, SparseAttrs);
+  for(TAttrPrV::TIter it = SparseAttrs.BegI(); it < SparseAttrs.EndI(); it++) {
+    TStr AttrName = it->Val1;
+    if(AttrType == atInt) {
+      TInt64 AttrDatI;
+      if(Src.SAttrN.GetSAttrDat(Id, AttrName, AttrDatI) != -1) Dst.SAttrN.AddSAttrDat(Id, AttrName, AttrDatI);
+    } else if(AttrType == atFlt) {
+      TFlt AttrDatF;
+      if(Src.SAttrN.GetSAttrDat(Id, AttrName, AttrDatF) != -1) Dst.SAttrN.AddSAttrDat(Id, AttrName, AttrDatF);
+    } else if(AttrType == atStr) {
+      TStr AttrDatS;
+      if(Src.SAttrN.GetSAttrDat(Id, AttrName, AttrDatS) != -1) Dst.SAttrN.AddSAttrDat(Id, AttrName, AttrDatS);
+    }
+  }
 }
 
 
@@ -774,39 +803,29 @@ TCrossNet& TMMNet::GetCrossNetById(const TInt64& CrossId) const{
 int64 TMMNet::AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet& ModeNet) {
   ModeIdToNameH.AddDat(ModeId, ModeName);
   ModeNameToIdH.AddDat(ModeName, ModeId);
-  DstMode.MxModeId = MAX(Dst->MxModeId, ModeId+1); //TODO(millimat): this should be here for correctness but is it a backwards compatibility issue?
+  MxModeId = MAX((int64)MxModeId, ModeId+1); //TODO(millimat): this should be here for correctness but is it a backwards compatibility issue?
 
   TModeNetH.AddDat(ModeId, ModeNet);
   TModeNetH[ModeId].SetParentPointer(this);
   return ModeId;
 }
 
-// TODO (millimat): This seems to be the best way to accomplish nodeless copying in 
-// the least lines of code, but may be suboptimal in terms of performance. Investigate
 int64 TMMNet::CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId) {
   if(Dst->ModeIdToNameH.IsKey(ModeId)) return -1; 
 
   TStr ModeName = Src->GetModeName(ModeId);
   Dst->ModeIdToNameH.AddDat(ModeId, ModeName);
   Dst->ModeNameToIdH.AddDat(ModeName, ModeId);
-  Dst->MxModeId = MAX(Dst->MxModeId, ModeId+1);
+  Dst->MxModeId = MAX((int64)Dst->MxModeId, ModeId+1);
 
   TModeNet& SrcMode = Src->GetModeNetById(ModeId);
   TModeNet DstMode(SrcMode);
-  // clear all nodes and edges and their attribute data
   DstMode.DelAllAttrDatN();
   DstMode.DelAllAttrDatE();
   DstMode.MxNId = 0; DstMode.MxEId = 0; DstMode.NodeH.Clr(); DstMode.EdgeH.Clr();
 
-  // remove all crossnet attributes
-  TStr64V Crossnets;
-  SrcMode.GetCrossNetNames(Crossnets);
-  for(int64 i = 0; i < Crossnets.Len(); i++) {
-    DstMode.DelAttrN(Crossnets[i]);
-  }
-
+  DstMode.SetParentPointer(&*Dst); // TODO (millimat): ensure pointer treatment correct
   Dst->TModeNetH.AddDat(ModeId, DstMode);
-  Dst->TModeNetH[ModeId].SetParentPointer(&*Dst); // TODO (millimat): ensure this correct
   return ModeId;
 }
 
@@ -933,12 +952,6 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& 
   TMMNet::CopyModeWithoutNodes(this, Result, StartModeId); // todo (millimat): ensure ok to implicitly cast ptr as TPt
   TModeNet& StartMode_Copy = Result->GetModeNetById(StartModeId);
   TModeNet::CopyNodesWithoutNeighbors(StartMode, StartMode_Copy, StartNodeIds);
-
-
-  // for(TInt64V::TIter it = StartNodeIds.BegI(); it < StartNodeIds.EndI(); it++) {
-  //   TModeNet::CopyNodeExceptNeighbors(Result->GetModeNetById(
-  //   Result->GetModeNetById(StartModeId)->CopyNodeExceptNeighbors(
-  // }
 
   return Result;
 }

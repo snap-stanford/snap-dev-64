@@ -115,6 +115,8 @@ private:
   int64 DelNbrType(const TStr& CrossName);
   int64 GetAttrTypeN(const TStr& attr) const;
   void ClrNbr(const TStr& CrossNetName, const bool& outEdge, const bool& sameMode, bool& isDir);
+  /// Copy all sparse attributes for the given node Id and attribute type from one TModeNet to another.
+  static void CopyAllSAttrN(TInt64 Id, const TAttrType& AttrType, const TModeNet& Src, TModeNet& Dst);
 public:
   friend class TMMNet;
   friend class TCrossNet;
@@ -673,8 +675,10 @@ public:
 private:
   void ClrNbr(const TInt64& ModeId, const TInt64& CrossNetId, const bool& outEdge, const bool& sameMode, bool& isDir);
   int64 AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet& ModeNet);
+ public:
   ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names are copied except those which denote crossnets.
   static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
+ private:
   int64 AddCrossNet(const TStr& CrossNetName, const TInt64& CrossNetId, const TCrossNet& CrossNet);
   int64 AddNodeAttributes(PNEANet& NewNet, TModeNet& Net, TVec<TPair<TStr, TStr>, int64>& Attrs, int64 ModeId, int64 oldId, int64 NId);
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);

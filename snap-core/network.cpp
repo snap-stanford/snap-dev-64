@@ -1193,40 +1193,44 @@ int64 TNEANet::DelAttrDatE(const int64& EId, const TStr& attr) {
 }
 
 int64 TNEANet::DelAllAttrDatN() {
-  for(int64 i = 0; i < KeyToIndexTypeN.Len(); i++) {
-    TInt64 vecType = KeyToIndexTypeN[i].Val1;
-    TInt64 index = KeyToIndexTypeN[i].Val2;
+  for(TStrIntPr64H::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
+    TStr AttrName = it.GetKey();
+    TInt64 vecType = it.GetDat().Val1;
+    TInt64 AttrIndex = it.GetDat().Val2;
     if(vecType == IntType) {
-      VecOfIntVecsN[index] = TVec<TInt64, int64>();
+      VecOfIntVecsN[AttrIndex].PutAll(GetIntAttrDefaultN(AttrName));
     } else if(vecType == StrType) {
-      VecOfStrVecsN[index] = TVec<TStr, int64>();
+      VecOfStrVecsN[AttrIndex].PutAll(GetStrAttrDefaultN(AttrName));
     } else if(vecType == FltType) {
-      VecOfFltVecsN[index] = TVec<TFlt, int64>();
+      VecOfFltVecsN[AttrIndex].PutAll(GetFltAttrDefaultN(AttrName));
     } else if(vecType == IntVType) {
-      VecOfIntVecVecsN[index] = TVec<TInt64V, int64>();
+      VecOfIntVecVecsN[AttrIndex] = TVec<TInt64V, int64>();
     } else {
-      return -1; 
+      return -1;
     }
   }
+  SAttrN.Clr();
   return 0;
 }
 
 int64 TNEANet::DelAllAttrDatE() {
-  for(int64 i = 0; i < KeyToIndexTypeE.Len(); i++) {
-    TInt64 vecType = KeyToIndexTypeE[i].Val1;
-    TInt64 index = KeyToIndexTypeE[i].Val2;
+  for(TStrIntPr64H::TIter it = KeyToIndexTypeE.BegI(); it < KeyToIndexTypeE.EndI(); it++) {
+    TStr AttrName = it.GetKey();
+    TInt64 vecType = it.GetDat().Val1;
+    TInt64 AttrIndex = it.GetDat().Val2;
     if(vecType == IntType) {
-      VecOfIntVecsE[index] = TVec<TInt64, int64>();
+      VecOfIntVecsE[AttrIndex].PutAll(GetIntAttrDefaultE(AttrName));
     } else if(vecType == StrType) {
-      VecOfStrVecsE[index] = TVec<TStr, int64>();
+      VecOfStrVecsE[AttrIndex].PutAll(GetStrAttrDefaultE(AttrName));
     } else if(vecType == FltType) {
-      VecOfFltVecsE[index] = TVec<TFlt, int64>();
+      VecOfFltVecsE[AttrIndex].PutAll(GetFltAttrDefaultE(AttrName));
     } else if(vecType == IntVType) {
-      VecOfIntVecVecsE[index] = TVec<TInt64V, int64>();
+      VecOfIntVecVecsE[AttrIndex] = TVec<TInt64V, int64>();
     } else {
-      return -1; 
+      return -1;
     }
   }
+  SAttrE.Clr();
   return 0;
 }
 
