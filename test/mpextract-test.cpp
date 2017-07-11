@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
       if(float(rand())/RAND_MAX < 0.05) {
         for(TNEANet::TNodeI kt = md2.BegNI(); kt < md2.EndNI(); kt++) {
           if(float(rand())/RAND_MAX < 0.25) {
-            cn.AddEdge(jt.GetId(), kt.GetId());
+            cn.AddEdge(jt.GetId(), kt.GetId(), TInt64::Mx - nedges);
             nedges++;
           }
         }
@@ -157,19 +157,16 @@ int main(int argc, char *argv[]) {
   std::cout << "\nMode dump:" << std::endl;
   copymode.Dump();
 
-  // Check that values of crossnet attribute are not copied from original mode but values of non-crossnet
-  // intv attribute ARE copied
+  // Check that values of non-crossnet attribute are copied properly
   TStr64V cnnames; mode.GetCrossNetNames(cnnames);
   TStr firstCN = cnnames[0];
   TInt64 lastid = copymode.GetMxNId() - 1;
 
-  std::cout << "\nElements of first crossnet attribute for last node of " << modename.CStr() << ": ";
-  print_intvattr_elements(mode, lastid, firstCN);
-  std::cout << "\nElements of first crossnet attribute for last node of " << modename.CStr() << " copy: ";
-  print_intvattr_elements(copymode, lastid, firstCN);
   std::cout << "\nElements of TEST_INTVN attribute for last node of " << modename.CStr() << ": ";
   print_intvattr_elements(mode, lastid, "TEST_INTVN");  
   std::cout << "\nElements of TEST_INTVN attribute for last node of " << modename.CStr() << " copy: ";
   print_intvattr_elements(copymode, lastid, "TEST_INTVN"); 
+
+  TCrossNet cn = mmnet->GetCrossNetByName(firstCN);
   return 0;
 }
