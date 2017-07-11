@@ -107,6 +107,8 @@ private:
   int64 DelNeighbor(const int64& NId, const int64& EId, bool outEdge, const TStr& CrossName, const bool sameMode, bool isDir);
   int64 DelNeighbor(const int64& NId, const int64& EId, bool outEdge, const TInt64& linkId, const bool sameMode, bool isDir);
   TStr GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const;
+  /// Get names of all crossnet attributes for this mode. Identical to GetCrossNetNames, but directed self crossnet names are replaced with name + ":SRC" and name + ":DST".
+  void GetNeighborCrossNames(TStr64V& Names) const;
   void SetParentPointer(TMMNet* parent);
   int64 AddNbrType(const TStr& CrossName, const bool sameMode, bool isDir);
   /// Adds a new TIntV node attribute to the hashmap.
@@ -322,7 +324,7 @@ public:
   int64 GetEdges() const { return CrossH.Len(); }
   /// Deletes all nodes and edges from the graph.
   void Clr();
-
+  void PrintAttrs(); // TODO (millimat): rm
   /// Adds an edge to the CrossNet; Mode1 NId should be the sourceNId always, regardless of whether edge is directed.
   int64 AddEdge(const int64& sourceNId, const int64& destNId, int64 EId=-1);
   /// Edge iterators.
@@ -463,8 +465,11 @@ public:
   /// Adds a new Flt edge attribute to the hashmap.
   int64 AddFltAttrE(const TStr& attr, TFlt defaultValue=TFlt::Mn);
 
-  /// Removes all the values for edge  attr.
+  /// Removes all the values for edge attr.
   int64 DelAttrE(const TStr& attr);
+
+  /// Removes attribute data for all edges. Labels and defaults for attributes are preserved.
+  int64 DelAllAttrDatE();
 
   // Returns true if \c attr exists for edge \c EId and has default value.
   bool IsAttrDeletedE(const int64& EId, const TStr& attr) const;
@@ -656,6 +661,12 @@ public:
   /// Gets the induced subgraph given a vector of mode type names.
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
 
+  ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names and defaults are copied except those which denote crossnets.
+  static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
+  ///Add to Dst a copy of the crossnet with given ID from Src, without any edges. All edge attribute names and defaults are copied
+  static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const TInt64& CrossId);
+
+
   /* Metapath Subnetwork Extraction */
   /// Gets the induced subgraph given a set of starting nodes in a single mode and a number of acceptable
   /// metapaths (crossnet sequences).
@@ -675,10 +686,6 @@ public:
 private:
   void ClrNbr(const TInt64& ModeId, const TInt64& CrossNetId, const bool& outEdge, const bool& sameMode, bool& isDir);
   int64 AddMode(const TStr& ModeName, const TInt64& ModeId, const TModeNet& ModeNet);
- public:
-  ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names are copied except those which denote crossnets.
-  static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
- private:
   int64 AddCrossNet(const TStr& CrossNetName, const TInt64& CrossNetId, const TCrossNet& CrossNet);
   int64 AddNodeAttributes(PNEANet& NewNet, TModeNet& Net, TVec<TPair<TStr, TStr>, int64>& Attrs, int64 ModeId, int64 oldId, int64 NId);
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);

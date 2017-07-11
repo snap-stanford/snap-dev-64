@@ -60,6 +60,11 @@ int main(int argc, char *argv[]) {
       oss << i << "to" << j;
       if(float(rand())/RAND_MAX < 0.2) mmnet->AddCrossNet(TStr(oss1.str().c_str()), TStr(oss2.str().c_str()),
                                                           TStr(oss.str().c_str()));
+      if(i == j) { // add directed and undirected selfnet
+        mmnet->AddCrossNet(TStr(oss1.str().c_str()), TStr(oss2.str().c_str()), TStr(oss.str().c_str()));
+        oss << "UNDIR";
+        mmnet->AddCrossNet(TStr(oss1.str().c_str()), TStr(oss2.str().c_str()), TStr(oss.str().c_str()), false);
+      }
     }
   }
 

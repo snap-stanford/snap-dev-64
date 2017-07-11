@@ -1198,11 +1198,11 @@ int64 TNEANet::DelAllAttrDatN() {
     TInt64 vecType = it.GetDat().Val1;
     TInt64 AttrIndex = it.GetDat().Val2;
     if(vecType == IntType) {
-      VecOfIntVecsN[AttrIndex].PutAll(GetIntAttrDefaultN(AttrName));
+      VecOfIntVecsN[AttrIndex] = TVec<TInt64, int64>();
     } else if(vecType == StrType) {
-      VecOfStrVecsN[AttrIndex].PutAll(GetStrAttrDefaultN(AttrName));
+      VecOfStrVecsN[AttrIndex] = TVec<TStr, int64>();
     } else if(vecType == FltType) {
-      VecOfFltVecsN[AttrIndex].PutAll(GetFltAttrDefaultN(AttrName));
+      VecOfFltVecsN[AttrIndex] = TVec<TFlt, int64>();
     } else if(vecType == IntVType) {
       VecOfIntVecVecsN[AttrIndex] = TVec<TInt64V, int64>();
     } else {
@@ -1219,11 +1219,11 @@ int64 TNEANet::DelAllAttrDatE() {
     TInt64 vecType = it.GetDat().Val1;
     TInt64 AttrIndex = it.GetDat().Val2;
     if(vecType == IntType) {
-      VecOfIntVecsE[AttrIndex].PutAll(GetIntAttrDefaultE(AttrName));
+      VecOfIntVecsE[AttrIndex] = TVec<TInt64, int64>();
     } else if(vecType == StrType) {
-      VecOfStrVecsE[AttrIndex].PutAll(GetStrAttrDefaultE(AttrName));
+      VecOfStrVecsE[AttrIndex] = TVec<TStr, int64>();
     } else if(vecType == FltType) {
-      VecOfFltVecsE[AttrIndex].PutAll(GetFltAttrDefaultE(AttrName));
+      VecOfFltVecsE[AttrIndex] = TVec<TFlt, int64>();
     } else if(vecType == IntVType) {
       VecOfIntVecVecsE[AttrIndex] = TVec<TInt64V, int64>();
     } else {

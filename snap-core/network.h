@@ -2368,9 +2368,9 @@ public:
   /// Deletes the edge attribute for NodeI.
   int64 DelAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return DelAttrDatE(EdgeI.GetId(), attr); } 
   int64 DelAttrDatE(const int64& EId, const TStr& attr); 
-  /// Deletes attributes for all nodes, including sparse attributes.
+  /// Deletes attribute values for all nodes, including sparse attributes. Labels and defaults for dense attributes are preserved.
   int64 DelAllAttrDatN();
-  /// Deletes attributes for all edges, including sparse attributes.
+  /// Deletes attribute values for all edges, including sparse attributes. Labels and defaults for dense attributes are preserved.
   int64 DelAllAttrDatE();
 
   /// Adds a new Int node attribute to the hashmap.
