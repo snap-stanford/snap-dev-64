@@ -74,7 +74,7 @@ public:
   /// For the given node, gets all the neighbors for the crossnet type. If this mode is both the source and dest type, use isOutEId to specify direction.
   void GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
 
-  /// Copy all nodes whose Ids are given from Src into Dst. All attributes of nodes in Src are preserved except those which denote their neighbors in the multimodal network.
+  /// Copy all nodes whose Ids are given from Src into Dst. All attributes of nodes in Src are copied except those which denote their neighbors in the multimodal network. If a node already exists in Dst, it is not overwritten.
   static void CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
 
   /// Returns an iterator referring to the first node in the graph.
@@ -315,6 +315,8 @@ private:
   TFlt GetFltAttrDefaultE(const TStr& attribute) const { return FltDefaultsE.IsKey(attribute) ? FltDefaultsE.GetDat(attribute) : (TFlt) TFlt::Mn; }
   int64 GetAttrTypeE(const TStr& attr) const;
   TCrossEdge& GetEdge(int64 eid) { return CrossH[eid]; }
+  /// Copy all edges whose Ids are given from Src into Dst. All attributes of edges in Src are copied. If an edge already exists in Dst, it is not overwritten. Each triple should be of the format (EId, SrcNId, DstNId).
+  static void CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TIntTr64V& ToCopyIds);
 public:
   /// Tests whether an edge with edge ID EId exists in the graph.
   bool IsEdge(const int64& EId) const { return CrossH.IsKey(EId); }
@@ -324,7 +326,6 @@ public:
   int64 GetEdges() const { return CrossH.Len(); }
   /// Deletes all nodes and edges from the graph.
   void Clr();
-  void PrintAttrs(); // TODO (millimat): rm
   /// Adds an edge to the CrossNet; Mode1 NId should be the sourceNId always, regardless of whether edge is directed.
   int64 AddEdge(const int64& sourceNId, const int64& destNId, int64 EId=-1);
   /// Edge iterators.
