@@ -662,11 +662,11 @@ public:
   /// Gets the induced subgraph given a vector of mode type names.
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
 
-  ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names and defaults are copied except those which denote crossnets.
+  // TODO (millimat): Since TModeNets do not store any edges in their internal structure, any edge information stored in one is technically outside of what should be removed by the extraction algorithm. Should I actually keep this edge data?
+  ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names and defaults are copied except those which denote crossnets. All edge attribute names and defaults are deleted.
   static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
-  ///Add to Dst a copy of the crossnet with given ID from Src, without any edges. All edge attribute names and defaults are copied
+  ///Add to Dst a copy of the crossnet with given ID from Src, without any edges. All edge attribute names and defaults are copied.
   static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const TInt64& CrossId);
-
 
   /* Metapath Subnetwork Extraction */
   /// Gets the induced subgraph given a set of starting nodes in a single mode and a number of acceptable

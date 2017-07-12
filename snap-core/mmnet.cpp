@@ -501,7 +501,7 @@ bool TCrossNet::EdgeAttrIsDeleted(const int64& EId, const TStrIntPr64H::TIter& C
 bool TCrossNet::EdgeAttrIsIntDeleted(const int64& EId, const TStrIntPr64H::TIter& CrossHI) const {
   return (CrossHI.GetDat().Val1 == IntType &&
           GetIntAttrDefaultE(CrossHI.GetKey()) == this->VecOfIntVecsE.GetVal(
-                                                                             this->KeyToIndexTypeE.GetDat(CrossHI.GetKey()).Val2).GetVal(CrossH.GetKeyId(EId)));
+          this->KeyToIndexTypeE.GetDat(CrossHI.GetKey()).Val2).GetVal(CrossH.GetKeyId(EId)));
 }
 
 bool TCrossNet::EdgeAttrIsStrDeleted(const int64& EId, const TStrIntPr64H::TIter& CrossHI) const {
@@ -876,13 +876,15 @@ int64 TMMNet::CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64&
   Dst->ModeNameToIdH.AddDat(ModeName, ModeId);
   Dst->MxModeId = MAX(Dst->MxModeId.Val, ModeId+1);
 
+  // create new modenet. copy id and dense non-crossnet attr names/defaults but nothing else
   TModeNet& SrcMode = Src->GetModeNetById(ModeId);
-  TModeNet DstMode(SrcMode);
+  TModeNet DstMode(ModeId);
+  DstMode.KeyToIndexTypeN = SrcMode.KeyToIndexTypeN; DstMode.IntDefaultsN = SrcMode.IntDefaultsN;
+  DstMode.StrDefaultsN = SrcMode.StrDefaultsN; DstMode.FltDefaultsN = SrcMode.FltDefaultsN; 
+  DstMode.VecOfIntVecsN = SrcMode.VecOfIntVecsN; DstMode.VecOfStrVecsN = SrcMode.VecOfStrVecsN;
+  DstMode.VecOfFltVecsN = SrcMode.VecOfFltVecsN; DstMode.VecOfIntVecVecsN = SrcMode.VecOfIntVecVecsN;
   DstMode.DelAllAttrDatN();
-  DstMode.DelAllAttrDatE(); // TODO (millimat): Since TModeNets do not store any edges in their internal structure, any edge information stored in one is technically outside of what should be removed by the extraction algorithm. Should I actually keep this edge data?
-  DstMode.MxNId = 0; DstMode.MxEId = 0; DstMode.NodeH.Clr(); DstMode.EdgeH.Clr();
-
-  // Delete all crossnet attributes
+  // delete all crossnet attribute names
   TStr64V CNAttrNames;
   SrcMode.GetNeighborCrossNames(CNAttrNames);
   for(int i = 0; i < CNAttrNames.Len(); i++) {
