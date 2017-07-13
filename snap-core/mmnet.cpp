@@ -472,6 +472,21 @@ void TCrossNet::FltAttrValueEI(const TInt64& EId, TStrIntPr64H::TIter CrossHI, T
   }  
 }
 
+bool TCrossNet::IsFltAttrE(const TStr& attr) {
+  return (KeyToIndexTypeE.IsKey(attr) &&
+    KeyToIndexTypeE.GetDat(attr).Val1 == FltType);
+}
+
+bool TCrossNet::IsIntAttrE(const TStr& attr) {
+  return (KeyToIndexTypeE.IsKey(attr) &&
+    KeyToIndexTypeE.GetDat(attr).Val1 == IntType);
+}
+
+bool TCrossNet::IsStrAttrE(const TStr& attr) {
+  return (KeyToIndexTypeE.IsKey(attr) &&
+    KeyToIndexTypeE.GetDat(attr).Val1 == StrType);
+}
+
 bool TCrossNet::IsAttrDeletedE(const int64& EId, const TStr& attr) const {
   bool IntDel = IsIntAttrDeletedE(EId, attr);
   bool StrDel = IsStrAttrDeletedE(EId, attr);

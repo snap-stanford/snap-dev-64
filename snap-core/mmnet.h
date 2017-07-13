@@ -472,6 +472,13 @@ public:
   /// Removes attribute data for all edges. Labels and defaults for attributes are preserved.
   int64 DelAllAttrDatE();
 
+  /// Checks if there is an edge attribute with name attr.
+  bool IsFltAttrE(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntAttrE(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsStrAttrE(const TStr& attr);
+
   // Returns true if \c attr exists for edge \c EId and has default value.
   bool IsAttrDeletedE(const int64& EId, const TStr& attr) const;
   // Returns true if Int \c attr exists for edge \c EId and has default value.
