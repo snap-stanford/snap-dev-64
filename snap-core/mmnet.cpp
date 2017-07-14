@@ -250,35 +250,6 @@ int64 TCrossNet::GetAttrTypeE(const TStr& attr) const {
   return -1;
 }
 
-void TCrossNet::CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TIntTr64V& ToCopyIds) {
-  TInt64V NewlyAdded;
-  // copy edges with original orientations
-  for(int64 i = 0; i < ToCopyIds.Len(); i++) {
-    const TInt64Tr& IdTriple = ToCopyIds[i];
-    TInt64 EId = IdTriple.GetVal1();
-    if(Dst.IsEdge(EId)) continue;    
-    Dst.AddEdge(IdTriple.GetVal2(), IdTriple.GetVal3(), EId);
-    NewlyAdded.Add(EId);
-  }
-
-  // copy all attributes
-  for(TStrIntPr64H::TIter it = Src.KeyToIndexTypeE.BegI(); it < Src.KeyToIndexTypeE.EndI(); it++) {
-    const TStr& AttrName = it.GetKey();
-    TInt64 AttrType = it.GetDat().GetVal1();
-    TInt64 AttrIndex = it.GetDat().GetVal2();
-    for(int64 i = 0; i < NewlyAdded.Len(); i++) {
-      TInt64 EId = NewlyAdded[i];
-      if(AttrType == IntType) {
-        Dst.AddIntAttrDatE(EId, Src.VecOfIntVecsE[AttrIndex][Src.CrossH.GetKeyId(EId)], AttrName);
-      } else if(AttrType == FltType) {
-        Dst.AddFltAttrDatE(EId, Src.VecOfFltVecsE[AttrIndex][Src.CrossH.GetKeyId(EId)], AttrName);
-      } else if(AttrType == StrType) {
-        Dst.AddStrAttrDatE(EId, Src.VecOfStrVecsE[AttrIndex][Src.CrossH.GetKeyId(EId)], AttrName);
-      }
-    }
-  }
-}
-
 void TCrossNet::Clr() {
   CrossH.Clr();
   MxEId=0;
@@ -742,6 +713,35 @@ int64 TCrossNet::DelAllAttrDatE() {
   return 0;
 }
 
+void TCrossNet::CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& ToCopyIds) {
+  TInt64V NewlyAdded;
+  // copy edges with original orientations
+  for(int64 i = 0; i < ToCopyIds.Len(); i++) {
+    TInt64 EId = ToCopyIds[i];
+    if(Dst.IsEdge(EId)) continue;    
+    TInt64 NId1 = Src.GetEdgeI(EId).GetSrcNId(), NId2 = Src.GetEdgeI(EId).GetDstNId();
+    Dst.AddEdge(NId1, NId2, EId);
+    NewlyAdded.Add(EId);
+  }
+
+  // copy all attributes
+  for(TStrIntPr64H::TIter it = Src.KeyToIndexTypeE.BegI(); it < Src.KeyToIndexTypeE.EndI(); it++) {
+    const TStr& AttrName = it.GetKey();
+    TInt64 AttrType = it.GetDat().GetVal1();
+    TInt64 AttrIndex = it.GetDat().GetVal2();
+    for(int64 i = 0; i < NewlyAdded.Len(); i++) {
+      TInt64 EId = NewlyAdded[i];
+      if(AttrType == IntType) {
+        Dst.AddIntAttrDatE(EId, Src.VecOfIntVecsE[AttrIndex][Src.CrossH.GetKeyId(EId)], AttrName);
+      } else if(AttrType == FltType) {
+        Dst.AddFltAttrDatE(EId, Src.VecOfFltVecsE[AttrIndex][Src.CrossH.GetKeyId(EId)], AttrName);
+      } else if(AttrType == StrType) {
+        Dst.AddStrAttrDatE(EId, Src.VecOfStrVecsE[AttrIndex][Src.CrossH.GetKeyId(EId)], AttrName);
+      }
+    }
+  }
+}
+
 PBPGraph TCrossNet::GetBipartiteGraph(){
   PBPGraph Graph = TBPGraph::New();
   for (TCrossEdgeI EI = BegEdgeI(); EI != EndEdgeI(); EI++){
@@ -906,7 +906,7 @@ int64 TMMNet::CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64&
     DstMode.DelAttrN(CNAttrNames[i]);
   }
 
-  DstMode.SetParentPointer(&*Dst); // TODO (millimat): ensure pointer treatment correct
+  DstMode.SetParentPointer(&*Dst); 
   Dst->TModeNetH.AddDat(ModeId, DstMode);
   return ModeId;
 }
@@ -929,9 +929,12 @@ int64 TMMNet::CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const TIn
   Dst->MxCrossNetId = MAX(Dst->MxCrossNetId.Val, CrossId+1);
 
   TCrossNet& SrcCross = Src->GetCrossNetById(CrossId);
-  TCrossNet& DstCross(SrcCross);
+  TCrossNet DstCross(SrcCross.GetMode1(), SrcCross.GetMode2(), SrcCross.IsDirected(), CrossId);
+  DstCross.KeyToIndexTypeE = SrcCross.KeyToIndexTypeE; DstCross.IntDefaultsE = SrcCross.IntDefaultsE;
+  DstCross.StrDefaultsE = SrcCross.StrDefaultsE; DstCross.FltDefaultsE = SrcCross.FltDefaultsE;
+  DstCross.VecOfIntVecsE = SrcCross.VecOfIntVecsE; DstCross.VecOfStrVecsE = SrcCross.VecOfStrVecsE;
+  DstCross.VecOfFltVecsE = SrcCross.VecOfFltVecsE;
   DstCross.DelAllAttrDatE();
-  DstCross.CrossH.Clr(); DstCross.MxEId = 0;
   DstCross.SetParentPointer(&*Dst);
 
   const TInt64 &ModeId1 = DstCross.GetMode1(), &ModeId2 = DstCross.GetMode2();
@@ -1062,7 +1065,7 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& 
 
     for(int64 j = 0; j < Metapaths[i].Len(); j++) {
       TInt64Set NodesToAdd;
-      TIntTr64V EdgesToAdd; // (EId, SrcNId, DstNId)
+      TInt64V EdgesToAdd; // (EId, SrcNId, DstNId)
 
       TInt64 CNId = Metapaths[i][j];
       TStr CNName = GetCrossName(CNId);
@@ -1083,7 +1086,7 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const TInt64& StartModeId, const TInt64V& 
         for(TInt64V::TIter EdgeIt = CNNeighboringEdges.BegI(); EdgeIt < CNNeighboringEdges.EndI(); EdgeIt++) {
           TInt64 DstNId = CN.GetEdge(*EdgeIt).GetDstNId();
           NodesToAdd.AddKey(DstNId);          
-          EdgesToAdd.Add(TInt64Tr(*EdgeIt, SrcNId, DstNId));
+          EdgesToAdd.Add(*EdgeIt);
         }
       }
       

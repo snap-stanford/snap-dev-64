@@ -315,8 +315,6 @@ private:
   TFlt GetFltAttrDefaultE(const TStr& attribute) const { return FltDefaultsE.IsKey(attribute) ? FltDefaultsE.GetDat(attribute) : (TFlt) TFlt::Mn; }
   int64 GetAttrTypeE(const TStr& attr) const;
   TCrossEdge& GetEdge(int64 eid) { return CrossH[eid]; }
-  /// Copy all edges whose Ids are given from Src into Dst. All attributes of edges in Src are copied. If an edge already exists in Dst, it is not overwritten. Each triple should be of the format (EId, SrcNId, DstNId).
-  static void CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TIntTr64V& ToCopyIds);
 public:
   /// Tests whether an edge with edge ID EId exists in the graph.
   bool IsEdge(const int64& EId) const { return CrossH.IsKey(EId); }
@@ -499,6 +497,10 @@ public:
 
   // Returns edge attribute value, converted to Str type.
   TStr GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& CrossHI) const;
+
+  /// Copy all edges whose Ids are given from Src into Dst. All attributes of edges in Src are copied. If an edge already exists in Dst, it is not overwritten. Each triple should be of the format (EId, SrcNId, DstNId).
+  static void CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& ToCopyIds);
+
 
   PBPGraph GetBipartiteGraph();
 

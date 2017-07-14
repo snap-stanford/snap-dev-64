@@ -2,7 +2,6 @@
 
 #include "Snap.h"
 #include <sstream>
-#include <iostream> // TODO (millimat): remove
 
 TEST(multimodal, AddNbrType) {
   PMMNet Net;
@@ -1474,15 +1473,19 @@ TEST(multimodal, CopyCrossNetWithoutEdges) {
   }
   
   // Copy all crossnets. Verify that they contain no edges, but that crossedge attribute names
-  // and defaults hold.
+  // and defaults hold. 
   for(int i = 0; i < mmnet->GetCrossNets(); i++) {
     TMMNet::CopyCrossNetWithoutEdges(mmnet, mmnet2, i);
-    TCrossNet& CN2 = mmnet2->GetCrossNetById(i);
+    EXPECT_EQ(mmnet->GetCrossName(i), mmnet2->GetCrossName(i)); // check crossnet name preserved
+    TCrossNet& CN = mmnet->GetCrossNetById(i), CN2 = mmnet2->GetCrossNetById(i);
     EXPECT_EQ(0, CN2.GetEdges());
+    EXPECT_EQ(CN.GetMode1(), CN2.GetMode1());
+    EXPECT_EQ(CN.GetMode2(), CN2.GetMode2());
+    EXPECT_EQ(CN.IsDirected(), CN2.IsDirected());
+
     EXPECT_TRUE(CN2.IsIntAttrE(kIntANameE));
     EXPECT_TRUE(CN2.IsFltAttrE(kFltANameE));
     EXPECT_TRUE(CN2.IsStrAttrE(kStrANameE));
-    
     CN2.AddEdge(0, 0, 0);
     EXPECT_EQ(int_default, CN2.GetIntAttrDatE(0, kIntANameE));
     EXPECT_EQ(flt_default, CN2.GetFltAttrDatE(0, kFltANameE));
@@ -1497,3 +1500,78 @@ TEST(multimodal, CopyCrossNetWithoutEdges) {
     for(int j = 0; j < CNAttrNames.Len(); j++) EXPECT_TRUE(modecopy.IsIntVAttrN(CNAttrNames[j]));
   }
 }
+
+
+TEST(multimodal, CopyEdges) {
+  PMMNet mmnet, mmnet2;
+  setup_copytests(mmnet, mmnet2);
+  TInt64V ToCopy; for(TInt64 i = 0; i < kNNodes; i++) ToCopy.Add(i);
+  for(int i = 0; i < kNModes; i++) { 
+    TMMNet::CopyModeWithoutNodes(mmnet, mmnet2, i);
+    TModeNet::CopyNodesWithoutNeighbors(mmnet->GetModeNetById(i), mmnet2->GetModeNetById(i), ToCopy);
+  }
+
+  // Copy crossnets and all crossedges. Ensure crossnets' records of edges are preserved 
+  // (ID, source and destination node and mode ID, directedness, attributes)
+  for(int i = 0; i < mmnet->GetCrossNets(); i++) {
+    TMMNet::CopyCrossNetWithoutEdges(mmnet, mmnet2, i);
+    TCrossNet& CN = mmnet->GetCrossNetById(i), CN2 = mmnet2->GetCrossNetById(i);
+    TInt64V ToCopyEdges;
+    for(TCrossNet::TCrossEdgeI jt = CN.BegEdgeI(); jt < CN.EndEdgeI(); jt++) ToCopyEdges.Add(jt.GetId());
+    TCrossNet::CopyEdges(CN, CN2, ToCopyEdges);
+    EXPECT_EQ(CN.GetEdges(), CN2.GetEdges());              
+    for(TCrossNet::TCrossEdgeI jt = CN.BegEdgeI(), kt = CN2.BegEdgeI(); jt < CN.EndEdgeI(); jt++, kt++) {
+      EXPECT_EQ(jt.GetId(), kt.GetId());
+      EXPECT_EQ(jt.GetSrcNId(), kt.GetSrcNId());
+      EXPECT_EQ(jt.GetDstNId(), kt.GetDstNId());
+      EXPECT_EQ(jt.GetSrcModeId(), kt.GetSrcModeId());
+      EXPECT_EQ(jt.GetDstModeId(), kt.GetDstModeId());
+      EXPECT_EQ(jt.IsDirected(), kt.IsDirected());
+      EXPECT_EQ(CN.GetIntAttrDatE(jt, kIntANameE), CN2.GetIntAttrDatE(kt, kIntANameE));
+      EXPECT_EQ(CN.GetFltAttrDatE(jt, kFltANameE), CN2.GetFltAttrDatE(kt, kFltANameE));
+      EXPECT_EQ(CN.GetStrAttrDatE(jt, kStrANameE), CN2.GetStrAttrDatE(kt, kStrANameE));
+    }
+
+    // Ensure every node in source and destination modes have matching neighbor lists
+    TStr CNName = mmnet->GetCrossName(i);
+    TInt64 Mode1 = CN.GetMode1(), Mode2 = CN.GetMode2();
+    TModeNet& origmode1 = mmnet->GetModeNetById(Mode1), & origmode2 = mmnet->GetModeNetById(Mode2),
+            & copymode1 = mmnet2->GetModeNetById(Mode1), & copymode2 = mmnet2->GetModeNetById(Mode2);
+    TInt64V neighbors, copyneighbors;
+    for(int j = 0; j < kNNodes; j++) {
+      // std::cout << CNName.CStr() << std::endl;
+      // std::cout << Mode1.Val << " " << Mode2.Val << std::endl;
+
+      // for(TStrIntPr64H::TIter kt = origmode1.KeyToIndexTypeN.BegI(); kt < origmode1.KeyToIndexTypeN.EndI(); kt++) {
+      //   std::cout << kt.GetKey().CStr() << std::endl;
+      // }
+      // std::cout << "Done" << std::endl;
+      // for(TStrIntPr64H::TIter kt = copymode1.KeyToIndexTypeN.BegI(); kt < copymode1.KeyToIndexTypeN.EndI(); kt++) {
+      //   std::cout << kt.GetKey().CStr() << std::endl;
+      // }
+
+      origmode1.GetNeighborsByCrossNet(j, CNName, neighbors, true);
+      //      std::cout << "lol" << std::endl;
+      ASSERT_TRUE(copymode1.IsNode(j));
+      //      std::cout << "lol2" << std::endl;
+      copymode1.GetNeighborsByCrossNet(j, CNName, copyneighbors, true);
+      //      std::cout << "lol3" << std::endl;
+      EXPECT_EQ(neighbors, copyneighbors);
+      origmode2.GetNeighborsByCrossNet(j, CNName, neighbors, false);
+      copymode2.GetNeighborsByCrossNet(j, CNName, copyneighbors, false);
+      EXPECT_EQ(neighbors, copyneighbors);
+      if(Mode1 == Mode2 || !CN.IsDirected()) { // bidirectional or self mode, so check other direction
+        origmode1.GetNeighborsByCrossNet(j, CNName, neighbors, false);
+        copymode1.GetNeighborsByCrossNet(j, CNName, copyneighbors, false);
+        EXPECT_EQ(neighbors, copyneighbors);
+        origmode1.GetNeighborsByCrossNet(j, CNName, neighbors, true);
+        copymode1.GetNeighborsByCrossNet(j, CNName, copyneighbors, true);
+        EXPECT_EQ(neighbors, copyneighbors);
+      }
+    }
+  }
+}
+
+// TEST(multimodal, CopyNonOverwrite) {
+
+// }
