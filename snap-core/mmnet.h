@@ -14,7 +14,7 @@ class TModeNet;
 class TCrossNet;
 
 
-//#//////////////////////////////////////////////
+//#///////////////////////////////////////////////
 /// The nodes of one particular mode in a TMMNet, and their neighbor vectors as TIntV attributes ##TModeNet::Class
 class TModeNet : public TNEANet {
 public:
@@ -73,10 +73,8 @@ public:
   void GetCrossNetNames(TStr64V& Names) const { NeighborTypes.GetKeyV(Names); }
   /// For the given node, gets all the neighbors for the crossnet type. If this mode is both the source and dest type, use isOutEId to specify direction.
   void GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
-
-  /// Copy all nodes whose Ids are given from Src into Dst. All attributes of nodes in Src are copied except those which denote their neighbors in the multimodal network. If a node already exists in Dst, it is not overwritten.
+  /// Copy all nodes whose Ids are given from Src into Dst. ##TModeNet::CopyNodesWithoutNeighbors
   static void CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
-
   /// Returns an iterator referring to the first node in the graph.
   TNodeI BegMMNI() const { return TNodeI(NodeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end node in the graph.
@@ -107,7 +105,7 @@ private:
   int64 DelNeighbor(const int64& NId, const int64& EId, bool outEdge, const TStr& CrossName, const bool sameMode, bool isDir);
   int64 DelNeighbor(const int64& NId, const int64& EId, bool outEdge, const TInt64& linkId, const bool sameMode, bool isDir);
   TStr GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const;
-  /// Get names of all crossnet attributes for this mode. Identical to GetCrossNetNames, but directed self crossnet names are replaced with name + ":SRC" and name + ":DST".
+  /// Get names of all crossnet attributes for this mode; identical to GetCrossNetNames, except directed self crossnet names are replaced with [name]:SRC and [name]:DST
   void GetNeighborCrossNames(TStr64V& Names) const;
   void SetParentPointer(TMMNet* parent);
   int64 AddNbrType(const TStr& CrossName, const bool sameMode, bool isDir);
@@ -467,7 +465,7 @@ public:
   /// Removes all the values for edge attr.
   int64 DelAttrE(const TStr& attr);
 
-  /// Removes attribute data for all edges. Labels and defaults for attributes are preserved.
+  /// Removes attribute data for all edges; labels and defaults for attributes are preserved.
   int64 DelAllAttrDatE();
 
   /// Checks if there is an edge attribute with name attr.
@@ -498,9 +496,8 @@ public:
   // Returns edge attribute value, converted to Str type.
   TStr GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& CrossHI) const;
 
-  /// Copy all edges whose Ids are given from Src into Dst. All attributes of edges in Src are copied. If an edge already exists in Dst, it is not overwritten. Each triple should be of the format (EId, SrcNId, DstNId).
+  /// Copy all edges whose Ids are given from Src into Dst. ##TCrossNet::CopyEdges
   static void CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& ToCopyIds);
-
 
   PBPGraph GetBipartiteGraph();
 
@@ -671,19 +668,12 @@ public:
   /// Gets the induced subgraph given a vector of mode type names.
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
 
-  // TODO (millimat): Since TModeNets do not store any edges in their internal structure, any edge information stored in one is technically outside of what should be removed by the extraction algorithm. Should I actually keep this edge data?
-  ///Add to Dst a copy of the mode with given ID from Src, without any nodes or edges. All node attribute names and defaults are copied except those which denote crossnets. All edge attribute names and defaults are deleted.
+  // Add to Dst a copy of the mode with given ID from Src, without any nodes. ##TMMNet::CopyModeWithoutNodes
   static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
-  ///Add to Dst a copy of the crossnet with given ID from Src, without any edges. All edge attribute names and defaults are copied.
+  /// Add to Dst a copy of the crossnet with given ID from Src, without any edges; all edge attribute names and defaults are copied.
   static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const TInt64& CrossId);
-
-  /* Metapath Subnetwork Extraction */
-  /// Gets the induced subgraph given a set of starting nodes in a single mode and a number of acceptable
-  /// metapaths (crossnet sequences).
-  /// The zeroth entry of each metapath should have a source mode of StartModeId, and each subsequent entry
-  /// of the metapath should have a source mode matching the destination mode of the previous crossnet.
-  /// Any metapaths shorter than the longest metapath should have -1's at the end of their vector (unusable crossnet ID).
-  PMMNet GetSubgraphByMetapaths(const TInt64& StartModeID, const TInt64V& StartNodeIDs, const TVec<TInt64V>& Metapaths);
+  /// Gets the subnetwork reachable a set of starting nodes in a single mode and a sequence of metapaths to traverse from the starting mode. ##TMMNet::GetSubgraphByCrossNetMetapaths
+  PMMNet GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths);
   
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the (Mode/Cross Id, old att name, new attr name)
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);
@@ -700,6 +690,8 @@ private:
   int64 AddNodeAttributes(PNEANet& NewNet, TModeNet& Net, TVec<TPair<TStr, TStr>, int64>& Attrs, int64 ModeId, int64 oldId, int64 NId);
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);
   void GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxVal) const;
+  /// Ensures the parameters of GetSubgraphByCrossNetMetapaths are valid as described in its documentation; sets orientations of undirected crossnets in CrossOrientations.
+  void ValidateCrossNetMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations); 
 };
 
 // set flags

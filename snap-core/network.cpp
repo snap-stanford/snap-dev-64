@@ -229,7 +229,7 @@ TStr TNEANet::GetNodeAttrValue(const int64& NId, const TStrIntPr64H::TIter& Node
   if (NodeHI.GetDat().Val1 == IntType) {
     return (this->VecOfIntVecsN.GetVal(
       this->KeyToIndexTypeN.GetDat(NodeHI.GetKey()).Val2).GetVal(NodeH.GetKeyId(NId))).GetStr();
-  } else if(NodeHI.GetDat().Val1 == StrType) {
+  } else if (NodeHI.GetDat().Val1 == StrType) {
     return this->VecOfStrVecsN.GetVal(
     this->KeyToIndexTypeN.GetDat(NodeHI.GetKey()).Val2).GetVal(NodeH.GetKeyId(NId));
   } else if (NodeHI.GetDat().Val1 == FltType) {
@@ -403,7 +403,7 @@ TStr TNEANet::GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& Edge
   if (EdgeHI.GetDat().Val1 == IntType) {
     return (this->VecOfIntVecsE.GetVal(
       this->KeyToIndexTypeE.GetDat(EdgeHI.GetKey()).Val2).GetVal(EdgeH.GetKeyId(EId))).GetStr();
-  } else if(EdgeHI.GetDat().Val1 == StrType) {
+  } else if (EdgeHI.GetDat().Val1 == StrType) {
     return this->VecOfStrVecsE.GetVal(
     this->KeyToIndexTypeE.GetDat(EdgeHI.GetKey()).Val2).GetVal(EdgeH.GetKeyId(EId));
   } else if (EdgeHI.GetDat().Val1 == FltType) {
@@ -1197,13 +1197,13 @@ int64 TNEANet::DelAllAttrDatN() {
     TStr AttrName = it.GetKey();
     TInt64 vecType = it.GetDat().Val1;
     TInt64 AttrIndex = it.GetDat().Val2;
-    if(vecType == IntType) {
+    if (vecType == IntType) {
       VecOfIntVecsN[AttrIndex] = TVec<TInt64, int64>();
-    } else if(vecType == StrType) {
+    } else if (vecType == StrType) {
       VecOfStrVecsN[AttrIndex] = TVec<TStr, int64>();
-    } else if(vecType == FltType) {
+    } else if (vecType == FltType) {
       VecOfFltVecsN[AttrIndex] = TVec<TFlt, int64>();
-    } else if(vecType == IntVType) {
+    } else if (vecType == IntVType) {
       VecOfIntVecVecsN[AttrIndex] = TVec<TInt64V, int64>();
     } else {
       return -1;
@@ -1218,13 +1218,13 @@ int64 TNEANet::DelAllAttrDatE() {
     TStr AttrName = it.GetKey();
     TInt64 vecType = it.GetDat().Val1;
     TInt64 AttrIndex = it.GetDat().Val2;
-    if(vecType == IntType) {
+    if (vecType == IntType) {
       VecOfIntVecsE[AttrIndex] = TVec<TInt64, int64>();
-    } else if(vecType == StrType) {
+    } else if (vecType == StrType) {
       VecOfStrVecsE[AttrIndex] = TVec<TStr, int64>();
-    } else if(vecType == FltType) {
+    } else if (vecType == FltType) {
       VecOfFltVecsE[AttrIndex] = TVec<TFlt, int64>();
-    } else if(vecType == IntVType) {
+    } else if (vecType == IntVType) {
       VecOfIntVecVecsE[AttrIndex] = TVec<TInt64V, int64>();
     } else {
       return -1;
@@ -1450,7 +1450,7 @@ void TNEANet::GetAttrNNames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64
 
 void TNEANet::GetIntVAttrNNames(TStr64V& IntVAttrNames) const {
   for(TStrIntPr64H::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
-    if(it.GetDat().GetVal1() == IntVType) {
+    if (it.GetDat().GetVal1() == IntVType) {
       IntVAttrNames.Add(it.GetKey());
     }
   }
@@ -1473,7 +1473,7 @@ void TNEANet::GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64
 
 void TNEANet::GetIntVAttrENames(TStr64V& IntVAttrNames) const {
   for(TStrIntPr64H::TIter it = KeyToIndexTypeE.BegI(); it < KeyToIndexTypeE.EndI(); it++) {
-    if(it.GetDat().GetVal1() == IntVType) {
+    if (it.GetDat().GetVal1() == IntVType) {
       IntVAttrNames.Add(it.GetKey());
     }
   }

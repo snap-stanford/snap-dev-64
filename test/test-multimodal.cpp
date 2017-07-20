@@ -2,6 +2,7 @@
 
 #include "Snap.h"
 #include <sstream>
+// #include <iostream> 
 
 TEST(multimodal, AddNbrType) {
   PMMNet Net;
@@ -1562,7 +1563,6 @@ TEST(multimodal, CopyNonOverwrite) {
   PMMNet mmnet, mmnet3;
   PMMNet mmnet2 = TMMNet::New();
   setup_copytests(mmnet, mmnet3);
-  
 
   // use copy routines to make mmnet3 a clone of mmnet
   // Add empty modes and crossnets to mmnet2 
@@ -1594,18 +1594,17 @@ TEST(multimodal, CopyNonOverwrite) {
 
   // Add nodes and crossedges to mmnet2 without attributes, then attempt to clear mmnet3's 
   // node and crossedge attributes by copying mmnet2's nodes/edges onto it.
-  
   ToCopy.Clr();
-  TModeNet& mode2 = mmnet2->GetModeNetById(0), & mode3 = mmnet3->GetModeNetById(0);
-  for(int j = 0; j < kNNodes; j++) {
-    ToCopy.Add(j);
-    mode2.AddNode();
+  for(int i = 0; i < kNModes; i++) {
+    TModeNet& mode2 = mmnet2->GetModeNetById(i), & mode3 = mmnet3->GetModeNetById(i);
+    for(int j = 0; j < kNNodes; j++) { mode2.AddNode(); }
+    TModeNet::CopyNodesWithoutNeighbors(mode2, mode3, ToCopy);
   }
-  TModeNet::CopyNodesWithoutNeighbors(mode2, mode3, ToCopy);
+  for(int i = 0; i < kNNodes; i++) { ToCopy.Add(i); }
  
   for(int i = 0; i < mmnet2->GetCrossNets(); i++) {
     ToCopy.Clr();
-    TCrossNet& cross = mmnet->GetCrossNetById(i), cross2 = mmnet2->GetCrossNetById(i), & cross3 = mmnet3->GetCrossNetById(i);
+    TCrossNet& cross = mmnet->GetCrossNetById(i), & cross2 = mmnet2->GetCrossNetById(i), & cross3 = mmnet3->GetCrossNetById(i);
     for(TCrossNet::TCrossEdgeI it = cross.BegEdgeI(); it < cross.EndEdgeI(); it++) {
       cross2.AddEdge(it.GetSrcNId(), it.GetDstNId(), it.GetId());
       ToCopy.Add(it.GetId());
@@ -1621,8 +1620,8 @@ TEST(multimodal, CopyNonOverwrite) {
     }
   }
 
-  // Check that node attributes are preserved in mode 0, where they were set.
-  TModeNet& mode = mmnet->GetModeNetById(0); mode3 = mmnet3->GetModeNetById(0);
+  // Check that node attributes are preserved in mmnet3's mode 0, where they were set.
+  TModeNet& mode = mmnet->GetModeNetById(0), & mode3 = mmnet3->GetModeNetById(0);
   for(int j = 0; j < kNNodes; j++) {
     EXPECT_TRUE(mode3.IsNode(j));
     EXPECT_EQ(mode.GetIntAttrDatN(j, kIntANameN), mode3.GetIntAttrDatN(j, kIntANameN));

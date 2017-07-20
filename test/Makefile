@@ -10,13 +10,13 @@
 #
 
 include ../Makefile.config
-CXXFLAGS = -std=c++98 -Wall -O3 -DNDEBUG -fopenmp $(CXXOPENMP)
+CXXFLAGS = -std=c++98 -Wall -O3 -DNDEBUG -fopenmp $(CXXOPENMP) 
 LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
 TEST_SRCS = test-multimodal.cpp \
-# test-helper.cpp \
+# test-helper.cpp \ # TODO (millimat): uncomment
 # test-TUNGraph.cpp test-TNGraph.cpp \
 # test-TNEGraph.cpp test-TNEANet.cpp \
 # test-TNodeNet.cpp test-TNodeEDatNet.cpp test-TNodeEdgeNet.cpp \
