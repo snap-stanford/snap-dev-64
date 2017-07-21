@@ -1273,9 +1273,8 @@ static const char *str_default = "3000";
 static const int kNModes = 3;
 static const int kNNodes = 30;
 
-static void setup_copytests(PMMNet& mmnet, PMMNet& mmnet2) {
+static void setup_copytests(PMMNet& mmnet) {
   mmnet = TMMNet::New();
-  mmnet2 = TMMNet::New();
   // add modes and nodes
   for(int i = 0; i < kNModes; i++) {
     std::ostringstream oss; oss << "Mode " << i;
@@ -1347,7 +1346,7 @@ static void setup_copytests(PMMNet& mmnet, PMMNet& mmnet2) {
     for(TInt64 j = 0; j < kNNodes; j++) {
       for(TInt64 k = 0; k < kNNodes; k++) {
         TInt64 EId = i * mmnet->GetCrossNets() * kNNodes + j * kNNodes + k;
-        if(EId % kMagicPrime == 0) {
+        if (EId % kMagicPrime == 0) {
           CN.AddEdge(j, k, EId);
           CN.AddIntAttrDatE(EId, int_default + j * kNNodes + k, kIntANameE);
           CN.AddFltAttrDatE(EId, flt_default + j * kNNodes + k, kFltANameE);
@@ -1366,7 +1365,7 @@ static void GetCNAttrNames(TStr64V& Names, const PMMNet& mmnet, TModeNet& mode) 
   for(int64 i = 0; i < CNNames.Len(); i++) {
     TStr name = CNNames[i];
     TCrossNet& origCN = mmnet->GetCrossNetByName(name);
-    if(origCN.GetMode1() == origCN.GetMode2() && origCN.IsDirected()) { // attrs are name:SRC and name:DST
+    if (origCN.GetMode1() == origCN.GetMode2() && origCN.IsDirected()) { // attrs are name:SRC and name:DST
       Names.Add(name + (TStr)":SRC");
       Names.Add(name + (TStr)":DST");
     } else {
@@ -1377,7 +1376,8 @@ static void GetCNAttrNames(TStr64V& Names, const PMMNet& mmnet, TModeNet& mode) 
 
 TEST(multimodal, CopyModeWithoutNodes) {
   PMMNet mmnet, mmnet2;
-  setup_copytests(mmnet, mmnet2);
+  setup_copytests(mmnet);
+  mmnet2 = TMMNet::New();
   TModeNet& mode = mmnet->GetModeNetById(0);
   
   // invoke method, ensure basic information about TMMNet and nodeless modenet holds
@@ -1425,7 +1425,9 @@ TEST(multimodal, CopyModeWithoutNodes) {
 
 TEST(multimodal, CopyNodesWithoutNeighbors) {
   PMMNet mmnet, mmnet2;
-  setup_copytests(mmnet, mmnet2);
+  setup_copytests(mmnet);
+  mmnet2 = TMMNet::New();
+
   TMMNet::CopyModeWithoutNodes(mmnet, mmnet2, 0);
   TModeNet& mode = mmnet->GetModeNetById(0), &modecopy = mmnet2->GetModeNetById(0);
 
@@ -1466,7 +1468,8 @@ TEST(multimodal, CopyNodesWithoutNeighbors) {
 
 TEST(multimodal, CopyCrossNetWithoutEdges) {
   PMMNet mmnet, mmnet2;
-  setup_copytests(mmnet, mmnet2);
+  setup_copytests(mmnet);
+  mmnet2 = TMMNet::New();
   TInt64V ToCopy; for(TInt64 i = 0; i < kNNodes; i++) ToCopy.Add(i);
   for(int i = 0; i < kNModes; i++) { 
     TMMNet::CopyModeWithoutNodes(mmnet, mmnet2, i);
@@ -1505,7 +1508,8 @@ TEST(multimodal, CopyCrossNetWithoutEdges) {
 
 TEST(multimodal, CopyEdges) {
   PMMNet mmnet, mmnet2;
-  setup_copytests(mmnet, mmnet2);
+  setup_copytests(mmnet);
+  mmnet2 = TMMNet::New();
   TInt64V ToCopy; for(TInt64 i = 0; i < kNNodes; i++) ToCopy.Add(i);
   for(int i = 0; i < kNModes; i++) { 
     TMMNet::CopyModeWithoutNodes(mmnet, mmnet2, i);
@@ -1547,7 +1551,7 @@ TEST(multimodal, CopyEdges) {
       origmode2.GetNeighborsByCrossNet(j, CNName, neighbors, false);
       copymode2.GetNeighborsByCrossNet(j, CNName, copyneighbors, false);
       EXPECT_EQ(neighbors, copyneighbors);
-      if(Mode1 == Mode2 || !CN.IsDirected()) { // bidirectional or self mode, so check other direction
+      if (Mode1 == Mode2 || !CN.IsDirected()) { // bidirectional or self mode, so check other direction
         origmode1.GetNeighborsByCrossNet(j, CNName, neighbors, false);
         copymode1.GetNeighborsByCrossNet(j, CNName, copyneighbors, false);
         EXPECT_EQ(neighbors, copyneighbors);
@@ -1560,9 +1564,10 @@ TEST(multimodal, CopyEdges) {
 }
 
 TEST(multimodal, CopyNonOverwrite) {
-  PMMNet mmnet, mmnet3;
-  PMMNet mmnet2 = TMMNet::New();
-  setup_copytests(mmnet, mmnet3);
+  PMMNet mmnet, mmnet2, mmnet3;
+  setup_copytests(mmnet);
+  mmnet2 = TMMNet::New();
+  mmnet3 = TMMNet::New();
 
   // use copy routines to make mmnet3 a clone of mmnet
   // Add empty modes and crossnets to mmnet2 
@@ -1600,8 +1605,7 @@ TEST(multimodal, CopyNonOverwrite) {
     for(int j = 0; j < kNNodes; j++) { mode2.AddNode(); }
     TModeNet::CopyNodesWithoutNeighbors(mode2, mode3, ToCopy);
   }
-  for(int i = 0; i < kNNodes; i++) { ToCopy.Add(i); }
- 
+  for(int i = 0; i < kNNodes; i++) { ToCopy.Add(i); } 
   for(int i = 0; i < mmnet2->GetCrossNets(); i++) {
     ToCopy.Clr();
     TCrossNet& cross = mmnet->GetCrossNetById(i), & cross2 = mmnet2->GetCrossNetById(i), & cross3 = mmnet3->GetCrossNetById(i);
@@ -1637,5 +1641,33 @@ TEST(multimodal, CopyNonOverwrite) {
     EXPECT_EQ(Flt1, Flt2);
     mode.GetSAttrDatN(j, (TStr)kStrSANameN, Str1); mode3.GetSAttrDatN(j, (TStr)kStrSANameN, Str2);
     EXPECT_EQ(Str1, Str2);
+  }
+}
+
+TEST(multimodal, GetMetagraph) {
+  PMMNet mmnet;
+  setup_copytests(mmnet);
+  PNEANet metagraph = mmnet->GetMetagraph();
+  
+  // Ensure all mode data matches
+  for(TMMNet::TModeNetI modeit = mmnet->BegModeNetI(); modeit < mmnet->EndModeNetI(); modeit++) {
+    ASSERT_TRUE(metagraph->IsNode(modeit.GetModeId()));
+    TNEANet::TNodeI nit = metagraph->GetNI(modeit.GetModeId());
+    EXPECT_EQ(modeit.GetModeName(), metagraph->GetStrAttrDatN(nit, "ModeName"));
+    EXPECT_EQ(modeit.GetModeNet().GetNodes(), metagraph->GetIntAttrDatN(nit, "Weight"));
+  }
+
+  // Ensure all crossnet data matches
+  for(TNEANet::TEdgeI edgeit = metagraph->BegEI(); edgeit < metagraph->EndEI(); edgeit++) {
+    TInt64 EId = edgeit.GetId();
+    TInt64 CrossId = (mmnet->IsCrossNet(EId) ? EId : metagraph->GetIntAttrDatE(edgeit, "Reverse"));
+    TCrossNet & CN = mmnet->GetCrossNetById(CrossId);
+    
+    EXPECT_EQ(mmnet->GetCrossName(CrossId), metagraph->GetStrAttrDatE(edgeit, "CrossName"));
+    EXPECT_EQ(CN.GetEdges(), metagraph->GetIntAttrDatE(edgeit, "Weight"));
+    EXPECT_EQ(CN.IsDirected(), metagraph->GetIntAttrDatE(edgeit, "Directed"));
+    if (!CN.IsDirected()) { // does the Reverse field of this edge's reverse match it?
+      EXPECT_EQ(EId, metagraph->GetIntAttrDatE(metagraph->GetIntAttrDatE(edgeit, "Reverse"), "Reverse"));
+    }
   }
 }

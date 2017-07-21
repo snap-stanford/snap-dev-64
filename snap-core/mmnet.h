@@ -562,9 +562,10 @@ public:
   TCRef CRef; //Reference counter. Necessary for pointers.
 
 private:
-
-  TInt64 MxModeId; /// Keeps track of the max mode id.
-  TInt64 MxCrossNetId; /// Keeps track of the max crossnet id
+  /// Keeps track of the max mode id.
+  TInt64 MxModeId; 
+  /// Keeps track of the max crossnet id
+  TInt64 MxCrossNetId; 
   THash<TInt64, TModeNet, int64> TModeNetH;
   THash<TInt64, TCrossNet, int64> TCrossNetH;
 
@@ -604,12 +605,16 @@ public:
       it.GetDat().SetParentPointer(this);
     }
   }
+  /// Returns true if and only if there is a mode with the given id in the multimodal network.
+  bool IsModeNet(const int& MId) { return TModeNetH.IsKey(MId); }
   /// Adds a mode to the multimodal network.
   int64 AddModeNet(const TStr& ModeName);
   /// Deletes a mode from the multimodal network.
   int64 DelModeNet(const TInt64& ModeId); 
   int64 DelModeNet(const TStr& ModeName);
-  /// Adds a crossnet to the multimodal network. Specify modes by id or names; by default, crossnet is directed
+  /// Returns true if and only if there is a crossnet with the given id in the multimodal network.
+  bool IsCrossNet(const int& CNId) { return TCrossNetH.IsKey(CNId); }
+    /// Adds a crossnet to the multimodal network. Specify modes by id or names; by default, crossnet is directed
   int64 AddCrossNet(const TStr& ModeName1, const TStr& ModeName2, const TStr& CrossNetName, bool isDir=true);
   int64 AddCrossNet(const TInt64& ModeId1, const TInt64& ModeId2, const TStr& CrossNetName, bool isDir=true);
   /// Deletes a crossnet from the multimodal network.
@@ -661,6 +666,10 @@ public:
   int64 GetModeNets() { return TModeNetH.Len(); }
   /// Returns the number of crossnets in the multimodal network.
   int64 GetCrossNets() { return TCrossNetH.Len(); }
+  /// Returns the max mode id.
+  int64 GetMxModeId() { return MxModeId; }
+  /// Returns the max crossnet id.
+  int64 GetMxCrossId() { return MxCrossNetId; }
 
   /// Gets the induced subgraph given a vector of crossnet type names.
   PMMNet GetSubgraphByCrossNet(TStr64V& CrossNetTypes);
@@ -679,6 +688,9 @@ public:
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the Mode/Cross Id -> vec of pairs (old att name, new attr name)
   PNEANet ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, THash<TInt64, TVec<TPair<TStr, TStr>, int64>,int64 >& EdgeAttrMap);
+  /// Constructs a metagraph representation of this multimodal network. #TMMNet::GetMetagraph
+  PNEANet GetMetagraph();
+
   #ifdef GCC_ATOMIC
   PNEANetMP ToNetworkMP(TStr64V& CrossNetNames);
   #endif // GCC_ATOMIC

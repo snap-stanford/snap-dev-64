@@ -132,7 +132,7 @@ void TModeNet::CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, con
   for(int64 i = 0; i < ToCopyIds.Len(); i++) {
     TInt64 Id = ToCopyIds[i];
     IAssertR(Src.IsNode(Id), TStr::Fmt("No node with id %d in source mode", Id.Val));
-    if (Dst.IsNode(Id)) continue;
+    if (Dst.IsNode(Id)) { continue; }
     Dst.AddNode(Id);
     NewlyAdded.Add(Id);
     CopyAllSAttrN(Id, atInt, Src, Dst);
@@ -1392,6 +1392,55 @@ PNEANet TMMNet::ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, T
 
   return NewNet;
 }
+
+PNEANet TMMNet::GetMetagraph() {
+  PNEANet Result = TNEANet::New(GetModeNets(), GetCrossNets());
+  Result->AddStrAttrN("ModeName");
+  Result->AddIntAttrN("Weight");
+  Result->AddStrAttrE("CrossName");
+  Result->AddIntAttrE("Weight");
+  Result->AddIntAttrE("Directed", true);
+  Result->AddIntAttrE("Reverse", -1);
+  
+  for(TModeNetI modeit = BegModeNetI(); modeit < EndModeNetI(); modeit++) {
+    TInt64 ModeId = modeit.GetModeId();
+    TStr ModeName = modeit.GetModeName();
+    Result->AddNode(ModeId);
+    Result->AddStrAttrDatN(ModeId, ModeName, "ModeName");
+    Result->AddIntAttrDatN(ModeId, modeit.GetModeNet().GetNodes(), "Weight");
+  }
+
+  TInt64Set undirs; // crossid
+  for(TCrossNetI crossit = BegCrossNetI(); crossit < EndCrossNetI(); crossit++) {
+    TInt64 CrossId = crossit.GetCrossId();
+    TStr CrossName = crossit.GetCrossName();
+    const TCrossNet& CN = crossit.GetCrossNet();
+    Result->AddEdge(CN.GetMode1(), CN.GetMode2(), CrossId);
+    Result->AddStrAttrDatE(CrossId, CrossName, "CrossName");
+    Result->AddIntAttrDatE(CrossId, CN.GetEdges(), "Weight");
+    if (!CN.IsDirected()) {
+      Result->AddIntAttrDatE(CrossId, false, "Directed");
+      undirs.AddKey(CrossId);
+    }
+  }
+
+  // For undirected crossnets, add another edge with opposite orientation from the first.
+  // Addition only done now so that new edges have ids greater than any crossnet id.
+  for(TInt64Set::TIter it = undirs.BegI(); it < undirs.EndI(); it++) {
+    TInt64 CrossId = it.GetKey();
+    TStr CrossName = GetCrossName(CrossId);
+    const TCrossNet& CN = GetCrossNetById(CrossId);
+    TInt64 NewEId = Result->AddEdge(CN.GetMode2(), CN.GetMode1());
+    Result->AddStrAttrDatE(NewEId, CrossName, "CrossName");
+    Result->AddIntAttrDatE(NewEId, CN.GetEdges(), "Weight");
+    Result->AddIntAttrDatE(NewEId, false, "Directed");
+    Result->AddIntAttrDatE(CrossId, NewEId, "Reverse");
+    Result->AddIntAttrDatE(NewEId, CrossId, "Reverse");
+  }
+
+  return Result;
+}
+
 
 void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxLen) const {
 

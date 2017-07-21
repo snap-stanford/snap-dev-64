@@ -33,3 +33,9 @@ For every subsequent crossnet in a metapath, \c Mode1 must match the destination
 All nodes whose ids are given in \c StartNodeIds must exist in the mode whose id is given in \c StartModeId.  
 All ids of discovered modes, nodes, crossnets, and crossedges are preserved in the new network. All attributes of edges, and all non-crossnet attributes of nodes, are preserved as well, along with their attribute ids. Crossnet attributes of nodes are preserved if and only if those crossnets are listed in \c Metapaths. Crossnet attribute ids may not be preserved. 
 ///
+
+/// TMMNet::GetMetagraph
+The metagraph contains one node for each mode in the source multimodal network. It contains one edge for every directed crossnet in the network, and a pair of edges for every undirected crossnet (one per direction). The id of each node in the metagraph matches the id of its corresponding mode in the network. 
+Each edge in the network may or may not match the id of its corresponding crossnet. If the crossnet was directed, its edge will match its id. If the crossnet was undirected, one of its edges will match its id (the one whose \c SrcNId equals the crossnet's \c Mode1 ) and the other edge will have an id greater than that of any crossnet in the source network. 
+The metagraph has two node attributes: \c ModeName, a \c TStr that gives the name of the corresponding mode of the source network, and \c Weight, a \c TInt that gives the number of nodes in that mode. The metagraph has four edge attributes: \c CrossName, a \c TStr that gives the name of the corresponding crossnet, \c Weight, a \c TInt that gives the number of edges in the crossnet, \c Directed, a \c TInt that is 1 if the crossnet is directed and 0 otherwise, and \c Reverse, a \c TInt that gives the edge id of the reversed counterpart of an edge representing an undirected crossnet. If an edge represents a directed crossnet, \c Reverse is set to -1.
+///
