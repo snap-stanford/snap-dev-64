@@ -1742,16 +1742,16 @@ static void generate_networks() {
   srand(time(NULL));
 
   std::cout << "Generating sample networks..." << std::endl;
-  makenetwork(TSnap::GenFull<PNEANet>(kNGenModes), "full");
-  makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, 1, true), "1-circle");
-  makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, kNGenModes/10, true), "many-circle");
-  makenetwork(TSnap::GenGrid<PNEANet>((int64)sqrt(kNGenModes), (int64)sqrt(kNGenModes), false), "grid");
-  makenetwork(TSnap::GenStar<PNEANet>(kNGenModes, true), "star");
-  makenetwork(TSnap::GenTree<PNEANet>(3, 3, true, false), "3-tree");
-  makenetwork(TSnap::GenPrefAttach(kNGenModes, 10), "prefattach");
-  makenetwork(TSnap::GenForestFire(kNGenModes, 0.75, 0.25), "forestfire");
-  makenetwork(TSnap::GenBaraHierar<PNEANet>(2, true), "barahierar");
-  makenetwork(TSnap::GenRndDegK(kNGenModes, 2), "5-random");
+  makenetwork(TSnap::GenFull<PNEANet>(3), "full");
+  // makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, 1, true), "1-circle");
+  // makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, kNGenModes/10, true), "many-circle");
+  // makenetwork(TSnap::GenGrid<PNEANet>((int64)sqrt(kNGenModes), (int64)sqrt(kNGenModes), false), "grid");
+  // makenetwork(TSnap::GenStar<PNEANet>(kNGenModes, true), "star");
+  // makenetwork(TSnap::GenTree<PNEANet>(3, 3, true, false), "3-tree");
+  // makenetwork(TSnap::GenPrefAttach(kNGenModes, 10), "prefattach");
+  // makenetwork(TSnap::GenForestFire(kNGenModes, 0.75, 0.25), "forestfire");
+  // makenetwork(TSnap::GenBaraHierar<PNEANet>(2, true), "barahierar");
+  // makenetwork(TSnap::GenRndDegK(kNGenModes, 2), "5-random");
 }
 
 static void destroy_networks() {
@@ -1769,26 +1769,46 @@ static void destroy_networks() {
   std::cout << " Done." << std::endl;
 }
 
-TEST(multimodal, lol) {
-  generate_networks();
-  TFIn input("multimodal/networks/full.graph");
-  PMMNet fullnet = TMMNet::Load(input);
-  PNEANet metagraph = fullnet->GetMetagraph();
-  //  metagraph->Dump();
-  
-  TInt64V metapath;
-  ASSERT_TRUE(metagraph->GetEulerPath(metapath));
-  // Convert metagraph edge id's to crossnet id's
+static bool get_metagraph_euler_path(const PMMNet& mmnet, TInt64V& metapath) {
+  PNEANet metagraph = mmnet->GetMetagraph();
+  if (!metagraph->GetEulerPath(metapath)) { return false; }
+
+  // convert metagraph edge id's to crossnet id's
   for(int i = 0; i < metapath.Len(); i++) {
+    std::cout << std::setw(5) << metapath[i] << ": (" << metagraph->GetEI(metapath[i]).GetSrcNId()
+              << " -> " << metagraph->GetEI(metapath[i]).GetDstNId() << ")" << std::endl;
+
     TInt64 eid = metapath[i];
     if(!metagraph->GetIntAttrDatE(eid, "Directed")) { metapath[i] = MIN(eid, metagraph->GetIntAttrDatE(eid, "Reverse")); }
   }  
+
+  std::cout << "\n\n------------------\n\n" << std::endl;
+  return true;
+}
+
+TEST(multimodal, lol) {
+  generate_networks();
+  TFIn input("multimodal/networks/full.graph");
+  PMMNet fullnet = TMMNet::Load(input);  
+  TInt64V metapath;
+  ASSERT_TRUE(get_metagraph_euler_path(fullnet, metapath));
   
   int64 ncrossnetvisits = 0; // count each directed once, each undirected twice
   for(TMMNet::TCrossNetI cni = fullnet->BegCrossNetI(); cni < fullnet->EndCrossNetI(); cni++) {
     ncrossnetvisits += (cni.GetCrossNet().IsDirected() ? 1 : 2);
   }
   ASSERT_EQ(ncrossnetvisits, metapath.Len());
+  
+  TInt64 StartModeId = 0;
+  TModeNet& Mode = fullnet->GetModeNetById(StartModeId);
+  TInt64V StartNodeIds;
+  for(TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
+  TVec<TInt64V> Metapaths; 
+  Metapaths.Add(metapath);
+  
+  PMMNet replica = fullnet->GetSubgraphByCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths);
+  EXPECT_EQ(fullnet->GetModeNets(), replica->GetModeNets());
+  EXPECT_EQ(fullnet->GetCrossNets(), replica->GetCrossNets());
   
   destroy_networks();
 }

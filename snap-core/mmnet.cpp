@@ -1028,7 +1028,6 @@ PMMNet TMMNet::GetSubgraphByModeNet(TStr64V& ModeNetTypes) {
   return Result;
 }
 
-
 void TMMNet::ValidateCrossNetMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations) {
   // Ensure the start mode exists in the network
   IAssertR(ModeIdToNameH.IsKey(StartModeId), TStr::Fmt("Mode with id %d does not exist", StartModeId.Val));
@@ -1040,6 +1039,15 @@ void TMMNet::ValidateCrossNetMetapaths(const TInt64& StartModeId, const TInt64V&
       TInt64 CNij_Id = Metapaths[i][j];
       IAssertR(CrossIdToNameH.IsKey(CNij_Id), TStr::Fmt("Crossnet with id %d does not exist", CNij_Id.Val));
       const TCrossNet& CNij = GetCrossNetById(CNij_Id);
+
+      std::cout << std::setw(5) << CNij_Id.Val << ": (" << CNij.GetMode1();
+      if(CNij.IsDirected()) { 
+        std::cout << " -> ";
+      } else {
+        std::cout << " <-> ";
+      }
+      std::cout << CNij.GetMode2() << ")" << std::endl;
+
       TBool predicate, orientation;
       TStr assertmsg;      
       if (CNij.IsDirected()) {
@@ -1410,7 +1418,7 @@ PNEANet TMMNet::GetMetagraph() {
     Result->AddIntAttrDatN(ModeId, modeit.GetModeNet().GetNodes(), "Weight");
   }
 
-  TInt64Set undirs; // crossid
+  TInt64Set undirs; // crossids of undirected crossnets
   for(TCrossNetI crossit = BegCrossNetI(); crossit < EndCrossNetI(); crossit++) {
     TInt64 CrossId = crossit.GetCrossId();
     TStr CrossName = crossit.GetCrossName();
@@ -1438,6 +1446,7 @@ PNEANet TMMNet::GetMetagraph() {
     Result->AddIntAttrDatE(NewEId, CrossId, "Reverse");
   }
 
+  Result->Dump();
   return Result;
 }
 

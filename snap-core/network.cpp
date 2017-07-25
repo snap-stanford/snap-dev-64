@@ -879,6 +879,7 @@ bool TNEANet::IsEulerian(int64 *StartNId) {
   }
 }
 
+#include <iostream>
 void TNEANet::AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath) {
   for(int64 i = 0; i < ToAddPath.Len(); i++) {
     if (AllPaths.IsKey(CurrNId)) { // Pause traversing current path and recursively traverse paths reachable from here
@@ -889,11 +890,15 @@ void TNEANet::AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& To
         AddPath(AllPaths, RecursivePathToAdd, CurrNId, ResultPath);
       }
     }
+    
+    std::cout << ToAddPath[i].Val << std::endl;
     ResultPath.Add(ToAddPath[i]);
     CurrNId = GetEI(ToAddPath[i]).GetDstNId();    
   }
 }
 
+
+#include <iostream> // TODO (millimat): rm
 bool TNEANet::GetEulerPath(TInt64V& Path) {
   Path = TInt64V();
   int64 StartNId;
@@ -918,6 +923,7 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
   // Use Hierholzer's algorithm to generate Euler path.
   THash<TInt64, TVec<TInt64V> > Paths; // Node id -> all paths that start at this node
   
+  int nedges = 0; // TODO (millimat): rm
   // 1. Create a set of edge-disjoint paths that span all edges of the graph.
   // All paths except possibly the first are cycles.
   bool firstpath = true;
@@ -932,9 +938,7 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
       TInt64Set& currself = SelfEdges.GetDat(currnode.GetId());
       
       if(!currself.Empty()) { // First time visit; get self edges out of the way
-        TInt64V allself;
-        currself.GetKeyV(allself);
-        currpath.AddV(allself);
+        for(int i = 0; i < currself.Len(); i++) { currpath.Add(currnode.GetOutEId(currself[i])); }
         currself.Clr();
       }
 
@@ -943,6 +947,7 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
       TInt64 outeid = currnode.GetOutEId(outrelid);
       TEdgeI outedge = GetEI(outeid);
       currpath.Add(outeid);
+      if(++nedges % 100000 == 0) std::cout << nedges << std::endl;
 
       // Delete the visited edge from the node's list. If the list is empty, delete the node from OutboundEdges.
       curroutbound.DelKey(outrelid);
@@ -953,6 +958,19 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
     Paths.GetDat(PathStartNId).Add(currpath); // we're stuck at the current node so we completed a path    
   }
   
+  for(THash<TInt64, TVec<TInt64V> >::TIter it = Paths.BegI(); it < Paths.EndI(); it++) {
+    std::cout << it.GetKey().Val << ": ";
+    TVec<TInt64V>& pathv = it.GetDat();
+    for(int i = 0; i < pathv.Len(); i++) {
+      std::cout << "( ";
+      for(int j = 0; j < pathv[i].Len(); j++) {
+        std::cout << pathv[i][j] << " ";
+      }
+      std::cout << ") ";
+    }
+    std::cout << std::endl;
+  }
+
   // 2. Traverse the first/"main" path. Each time we encounter a node with a different cycle
   // starting at it, recursively add it to the result path, then continue with the main path.
   TVec<TInt64V>& PathsFromStart = Paths.GetDat(StartNId);
