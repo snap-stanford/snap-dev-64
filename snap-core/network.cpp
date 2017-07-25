@@ -843,7 +843,128 @@ void TNEANet::Dump(FILE *OutF) const {
   //fprintf(OutF, "\n");
 }
 
-// Attribute related function
+bool TNEANet::IsEulerian(int64 *StartNId) {
+  if (!TSnap::IsConnected(PNEANet(this))) { return false; }
+  bool startfound = false, finishfound = false;
+
+  for(TNEANet::TNodeI NI = BegNI(); NI < EndNI(); NI++) {
+    int64 indeg = NI.GetInDeg(), outdeg = NI.GetOutDeg();
+    if(indeg != outdeg) {
+      if(indeg - outdeg == 1) { // must be destination of path
+        if(finishfound) {
+          return false; 
+        } else {
+          finishfound = true;
+        }
+      } else if(outdeg - indeg == 1) { // must be source of path
+        if(startfound) { 
+          return false; 
+        } else {
+          if (StartNId) { *StartNId = NI.GetId(); }
+          startfound = true;
+        }
+      } else { // abs(indeg - outdeg) > 1
+        return false; 
+      }
+    }
+  }
+
+  if(!startfound && !finishfound) { // all nodes have equal indeg/outdeg
+    if(StartNId) { *StartNId = BegNI().GetId(); } // cycle can begin anywhere
+    return true;
+  } else if(startfound && finishfound) { // exactly one start and finish node
+    return true;
+  } else { // one start but no finish, or vice versa
+    return false;
+  }
+}
+
+void TNEANet::AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath) {
+  for(int64 i = 0; i < ToAddPath.Len(); i++) {
+    if (AllPaths.IsKey(CurrNId)) { // Pause traversing current path and recursively traverse paths reachable from here
+      TVec<TInt64V>& PathsStartingHere = AllPaths.GetDat(CurrNId);
+      while(!PathsStartingHere.Empty()) {
+        TInt64V RecursivePathToAdd = PathsStartingHere.Last();
+        PathsStartingHere.DelLast(); // so recursive calls embark on new paths
+        AddPath(AllPaths, RecursivePathToAdd, CurrNId, ResultPath);
+      }
+    }
+    ResultPath.Add(ToAddPath[i]);
+    CurrNId = GetEI(ToAddPath[i]).GetDstNId();    
+  }
+}
+
+bool TNEANet::GetEulerPath(TInt64V& Path) {
+  Path = TInt64V();
+  int64 StartNId;
+  if (!IsEulerian(&StartNId)) { return false; }
+  
+  THash<TInt64, TInt64Set> OutboundEdges; // nodeid -> (list of outbound edges (id relative to node, not absolute eid))
+  THash<TInt64, TInt64Set> SelfEdges; // nodeid -> (list of self edges (id relative to node))
+  for(TNodeI NI = BegNI(); NI < EndNI(); NI++) {
+    TInt64Set out, self;
+    for(int64 i = 0; i < NI.GetOutDeg(); i++) { 
+      TEdgeI edge = GetEI(NI.GetOutEId(i));
+      if (edge.GetDstNId() == edge.GetSrcNId()) { // self edge
+        self.AddKey(i);
+      } else { 
+        out.AddKey(i);
+      }
+    }
+    OutboundEdges.AddDat(NI.GetId(), out);
+    SelfEdges.AddDat(NI.GetId(), self);
+  }
+  
+  // Use Hierholzer's algorithm to generate Euler path.
+  THash<TInt64, TVec<TInt64V> > Paths; // Node id -> all paths that start at this node
+  
+  // 1. Create a set of edge-disjoint paths that span all edges of the graph.
+  // All paths except possibly the first are cycles.
+  bool firstpath = true;
+  while(!OutboundEdges.Empty()) { 
+    TInt64V currpath;
+    TInt64 PathStartNId = (firstpath ? StartNId : OutboundEdges.BegI().GetKey().Val);
+    firstpath = false;
+    TNodeI currnode = GetNI(PathStartNId);
+
+    while(OutboundEdges.IsKey(currnode.GetId())) {
+      TInt64Set& curroutbound = OutboundEdges.GetDat(currnode.GetId());
+      TInt64Set& currself = SelfEdges.GetDat(currnode.GetId());
+      
+      if(!currself.Empty()) { // First time visit; get self edges out of the way
+        TInt64V allself;
+        currself.GetKeyV(allself);
+        currpath.AddV(allself);
+        currself.Clr();
+      }
+
+      // Visit the first available edge out of this node.
+      TInt64 outrelid = curroutbound.BegI().GetKey();
+      TInt64 outeid = currnode.GetOutEId(outrelid);
+      TEdgeI outedge = GetEI(outeid);
+      currpath.Add(outeid);
+
+      // Delete the visited edge from the node's list. If the list is empty, delete the node from OutboundEdges.
+      curroutbound.DelKey(outrelid);
+      if(curroutbound.Empty()) { OutboundEdges.DelKey(currnode.GetId()); }
+      currnode = GetNI(outedge.GetDstNId());      
+    }
+    if (!Paths.IsKey(PathStartNId)) { Paths.AddKey(PathStartNId); }
+    Paths.GetDat(PathStartNId).Add(currpath); // we're stuck at the current node so we completed a path    
+  }
+  
+  // 2. Traverse the first/"main" path. Each time we encounter a node with a different cycle
+  // starting at it, recursively add it to the result path, then continue with the main path.
+  TVec<TInt64V>& PathsFromStart = Paths.GetDat(StartNId);
+  PathsFromStart.Swap(0, PathsFromStart.Len()-1); // so main path can be removed efficiently
+  TInt64V MainPath = PathsFromStart.Last();
+  PathsFromStart.DelLast();
+  AddPath(Paths, MainPath, StartNId, Path);
+
+  return true;
+}
+
+// Attribute related functions
 
 int64 TNEANet::AddIntAttrDatN(const int64& NId, const TInt64& value, const TStr& attr) {
   int64 i;
@@ -2006,6 +2127,7 @@ void TUndirNet::Dump(FILE *OutF) const {
   }
   fprintf(OutF, "\n");
 }
+
 
 // Return a small graph on 5 nodes and 5 edges.
 PUndirNet TUndirNet::GetSmallGraph() {

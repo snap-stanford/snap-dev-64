@@ -2,7 +2,7 @@
 
 #include "Snap.h"
 #include <sstream>
-// #include <iostream> 
+#include <iostream> 
 
 TEST(multimodal, AddNbrType) {
   PMMNet Net;
@@ -1670,4 +1670,125 @@ TEST(multimodal, GetMetagraph) {
       EXPECT_EQ(EId, metagraph->GetIntAttrDatE(metagraph->GetIntAttrDatE(edgeit, "Reverse"), "Reverse"));
     }
   }
+}
+
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
+#include <cstdio>
+#include "dirent.h"
+
+static const int kNGenModes = 25;
+static const int kNNodesPerMode = 100;
+static const double kCrossEdgeProb = 0.1;
+static const TStr outpathbase = "multimodal/networks";
+
+static bool coinflip(double p) { return (float)rand()/RAND_MAX < p; }
+
+template<class PGraph>
+static void makenetwork(const PGraph& metagraph, const TStr& filename) {
+  PMMNet mmnet = TMMNet::New();
+
+  // Add modes to the network based on nodes from the metagraph
+  std::cout << filename.CStr() << ": Adding modes" << std::flush;
+  int64 count = 0;
+  for(typename PGraph::TObj::TNodeI NI = metagraph->BegNI(); NI < metagraph->EndNI(); NI++) {
+    if (count % metagraph->GetNodes()/10 == 0) { std::cout << "." << std::flush; }
+    int64 mid = mmnet->AddModeNet(TStr::Fmt("Mode %d", NI.GetId()));
+    TModeNet& mode = mmnet->GetModeNetById(mid);
+    mode.AddIntAttrN(TStr::Fmt("Attr %d", mid));
+
+    // Add nodes to the mode (and intra-mode edges, as a crossnet) using Barabasi-Albert model
+    PUNGraph temp = TSnap::GenPrefAttach(kNNodesPerMode, kNNodesPerMode/10);
+    for(TUNGraph::TNodeI NJ = temp->BegNI(); NJ < temp->EndNI(); NJ++) {
+      TInt64 nid = NJ.GetId();
+      mode.AddNode(nid);
+      mode.AddIntAttrDatN(nid, -nid, TStr::Fmt("Attr %d", mid));
+    }
+    mmnet->AddCrossNet(mid, mid, TStr::Fmt("%d to %d", mid, mid), false);
+    TCrossNet& selfnet = mmnet->GetCrossNetByName(TStr::Fmt("%d to %d", mid, mid));
+    for(TUNGraph::TEdgeI EJ = temp->BegEI(); EJ < temp->EndEI(); EJ++) { selfnet.AddEdge(EJ.GetSrcNId(), EJ.GetDstNId()); }  
+    count++;
+  } 
+  std::cout << " Done." << std::endl;
+  
+  // Add crossnets to the network based on edges from the metagraph.
+  std::cout << filename.CStr() << ": Adding crossnets" << std::flush;
+  count = 0;
+  for(typename PGraph::TObj::TEdgeI EI = metagraph->BegEI(); EI < metagraph->EndEI(); EI++) {
+    if (count % metagraph->GetEdges()/10 == 0) { std::cout << "." << std::flush; }
+    TStr name = TStr::Fmt("%d to %d", EI.GetSrcNId(), EI.GetDstNId());
+    TInt64 crossid = mmnet->AddCrossNet(EI.GetSrcNId(), EI.GetDstNId(), name, true);
+    TCrossNet& crossnet = mmnet->GetCrossNetById(crossid);
+    
+    for(int i = 0; i < kNNodesPerMode; i++) {
+      for(int j = 0; j < kNNodesPerMode; j++) {
+        if (coinflip(kCrossEdgeProb)) { crossnet.AddEdge(i, j); }
+      }
+    }
+    count++;
+  }
+  std::cout << " Done." << std::endl;
+
+  // Save graph
+  std::cout << filename.CStr() << ": Saving..." << std::flush;
+  TFOut out(TStr::Fmt("%s/%s.graph", outpathbase.CStr(), filename.CStr()));
+  mmnet->Save(out);
+  out.Flush();
+  std::cout << " Done." << std::endl;
+}
+
+static void generate_networks() {
+  srand(time(NULL));
+
+  std::cout << "Generating sample networks..." << std::endl;
+  makenetwork(TSnap::GenFull<PNEANet>(kNGenModes), "full");
+  makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, 1, true), "1-circle");
+  makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, kNGenModes/10, true), "many-circle");
+  makenetwork(TSnap::GenGrid<PNEANet>((int64)sqrt(kNGenModes), (int64)sqrt(kNGenModes), false), "grid");
+  makenetwork(TSnap::GenStar<PNEANet>(kNGenModes, true), "star");
+  makenetwork(TSnap::GenTree<PNEANet>(3, 3, true, false), "3-tree");
+  makenetwork(TSnap::GenPrefAttach(kNGenModes, 10), "prefattach");
+  makenetwork(TSnap::GenForestFire(kNGenModes, 0.75, 0.25), "forestfire");
+  makenetwork(TSnap::GenBaraHierar<PNEANet>(2, true), "barahierar");
+  makenetwork(TSnap::GenRndDegK(kNGenModes, 2), "5-random");
+}
+
+static void destroy_networks() {
+  std::cout << "Deleting sample networks..." << std::flush;
+  DIR *netdir = opendir(outpathbase.CStr());
+  if(netdir == NULL) return;
+  
+  dirent *network;
+  while((network = readdir(netdir)) != NULL) {
+    if(network->d_type == DT_REG) {
+      std::remove(TStr::Fmt("%s/%s", outpathbase.CStr(), network->d_name).CStr()); //filename in network directory
+    }
+  } 
+  closedir(netdir);
+  std::cout << " Done." << std::endl;
+}
+
+TEST(multimodal, lol) {
+  generate_networks();
+  TFIn input("multimodal/networks/full.graph");
+  PMMNet fullnet = TMMNet::Load(input);
+  PNEANet metagraph = fullnet->GetMetagraph();
+  //  metagraph->Dump();
+  
+  TInt64V metapath;
+  ASSERT_TRUE(metagraph->GetEulerPath(metapath));
+  // Convert metagraph edge id's to crossnet id's
+  for(int i = 0; i < metapath.Len(); i++) {
+    TInt64 eid = metapath[i];
+    if(!metagraph->GetIntAttrDatE(eid, "Directed")) { metapath[i] = MIN(eid, metagraph->GetIntAttrDatE(eid, "Reverse")); }
+  }  
+  
+  int64 ncrossnetvisits = 0; // count each directed once, each undirected twice
+  for(TMMNet::TCrossNetI cni = fullnet->BegCrossNetI(); cni < fullnet->EndCrossNetI(); cni++) {
+    ncrossnetvisits += (cni.GetCrossNet().IsDirected() ? 1 : 2);
+  }
+  ASSERT_EQ(ncrossnetvisits, metapath.Len());
+  
+  destroy_networks();
 }

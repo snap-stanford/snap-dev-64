@@ -270,6 +270,22 @@ For each node in the graph check that its neighbors are also nodes in the
 graph.
 ///
 
+/// TNEANet::IsEulerian
+If \c StartNId is specified and not \c NULL, the underlying \c int64 is changed to the
+id of a node that can act as the start of an Eulerian path.
+This (directed) graph has a cyclic Eulerian path if and only if it is (weakly) connected and
+every node's in-degree equals its out-degree. It has a non-cyclic Eulerian path if and only if
+it is connected, there are exactly two nodes whose in-degrees do not match their out-degrees,
+one of those nodes has one more in-edge than out-edge, and the other has one more out-edge
+than in-edge.
+///
+
+/// TNEANET::GetEulerPath
+The path will visit every edge in the graph exactly once; \c Path is populated
+with the ids of the visited edges, in order. Self edges are visited by the path.
+///
+
+
 /// TNEANet::AddIntAttrDatN
 Adds the key int value pair to the corresponding node attribute value vector.
 ///

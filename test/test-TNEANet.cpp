@@ -1422,3 +1422,30 @@ TEST(TNEANet, AddEdgeAttributeError) {
     ASSERT_EQ(Graph->GetStrAttrDatE(j, StrAttr), Val.GetStr());
   }
 }
+
+TEST(TNEANet, GetEulerPath) {
+  PNEANet Full, Circle, DirGrid, UnDirGrid, UnDirGridMinusOne, DirStar, UnDirStar, DirBinTree;
+  Full = TSnap::GenFull<PNEANet>(25);
+  Circle = TSnap::GenCircle<PNEANet>(100, 1, true);
+  DirGrid = TSnap::GenGrid<PNEANet>(1000, 1000, true);
+  UnDirGrid = TSnap::GenGrid<PNEANet>(100, 100, false);
+  UnDirGridMinusOne = TSnap::GenGrid<PNEANet>(100, 100, false);
+  UnDirGridMinusOne->DelEdge(UnDirGridMinusOne->GetRndEId());
+  DirStar = TSnap::GenStar<PNEANet>(100, true);
+  UnDirStar = TSnap::GenStar<PNEANet>(100, false);
+  DirBinTree = TSnap::GenTree<PNEANet>(2, 6, true, false);
+
+  PNEANet euler[5] = {Full, Circle, UnDirGrid, UnDirGridMinusOne, UnDirStar};
+  PNEANet noneuler[3] = {DirGrid, DirStar, DirBinTree};
+
+  for(int i = 0; i < 5; i++) {
+    TInt64V Path;
+    EXPECT_TRUE(euler[i]->GetEulerPath(Path));
+    EXPECT_EQ(euler[i]->GetEdges(), Path.Len());    
+  }
+
+  for(int i = 0; i < 3; i++) {
+    TInt64V Path;
+    EXPECT_FALSE(noneuler[i]->GetEulerPath(Path));
+  }
+}

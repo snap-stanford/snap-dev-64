@@ -15,10 +15,11 @@ LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
-TEST_SRCS = test-multimodal.cpp \
+TEST_SRCS = test-TNEANet.cpp \
+ test-multimodal.cpp \
 # test-helper.cpp \ # TODO (millimat): uncomment
 # test-TUNGraph.cpp test-TNGraph.cpp \
-# test-TNEGraph.cpp test-TNEANet.cpp \
+# test-TNEGraph.cpp 
 # test-TNodeNet.cpp test-TNodeEDatNet.cpp test-TNodeEdgeNet.cpp \
 # test-TTable.cpp \
 # test-TUndirNet.cpp test-TDirNet.cpp \

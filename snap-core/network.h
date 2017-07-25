@@ -2262,6 +2262,15 @@ public:
   /// Print the graph in a human readable form to an output stream OutF.
   void Dump(FILE *OutF=stdout) const;
 
+  /// Returns whether the graph has an Eulerian path. ##TNEANet::IsEulerian
+  bool IsEulerian(int64 *StartNId=NULL);
+ private:
+  /// Recursive path addition function for construction of Euler tour.
+  void AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath);
+ public:
+  /// If graph is Eulerian, returns true and fetches an Euler path; else returns false. ##TNEANet::GetEulerPath
+  bool GetEulerPath(TInt64V& Path);
+
   /// Attribute based add function for attr to Int value. ##TNEANet::AddIntAttrDatN
   int64 AddIntAttrDatN(const TNodeI& NodeI, const TInt64& value, const TStr& attr) { return AddIntAttrDatN(NodeI.GetId(), value, attr); }
   int64 AddIntAttrDatN(const int64& NId, const TInt64& value, const TStr& attr);
