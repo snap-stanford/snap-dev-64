@@ -2678,6 +2678,8 @@ public:
   void PutFront(const PLstNd& Nd);
   void PutBack(const PLstNd& Nd);
   PLstNd Ins(const PLstNd& Nd, const TVal& Val);
+  /// Inserts all elements of the other TLst after Nd and clears the other TLst.
+  PLstNd InsLst(const PLstNd& Nd, TLst& Other);
   void Del(const TVal& Val);
   void Del(const PLstNd& Nd);
   void DelFirst() { PLstNd DelNd = FirstNd; Del(DelNd); }
@@ -2780,6 +2782,27 @@ TLstNd<TVal>* TLst<TVal, TSizeTy>::Ins(const PLstNd& Nd, const TVal& Val){
     Nd->NextNd=NewNd; NewNd->NextNd->PrevNd=Nd;
     Nds++; return Nd;
   }
+}
+
+template <class TVal, class TSizeTy>
+TLstNd<TVal>* TLst<TVal, TSizeTy>::InsLst(const PLstNd& Nd, TLst<TVal, TSizeTy>& Other) {
+  Other.FirstNd->PrevNd = Nd;
+  Other.LastNd->NextNd = (Nd == NULL ? this->FirstNd : Nd->NextNd);
+  if (Nd == NULL) {
+    this->FirstNd = Other.FirstNd;
+  } else {
+    Nd->NextNd = Other.FirstNd;
+  }
+  if (Nd->NextNd == NULL) {
+    this->LastNd = Other.LastNd;
+  } else {
+    Nd->NextNd->PrevNd = Other.LastNd;
+  }
+
+  this->Nds += Other.Nds;
+  Other.FirstNd = NULL; // so Other.Clr() won't destroy moved nodes
+  Other.Clr();
+  return Nd;
 }
 
 template <class TVal, class TSizeTy>
