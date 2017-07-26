@@ -2,11 +2,6 @@
 // Mutimodal Network
 //#include <iostream> 
 
-// Timing metapaths. TODO (millimat): rm
-#include <iostream> 
-#include <ctime>
-static int64 nedges_visited = 0, nedges_added = 0;
-
 TStr TModeNet::GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const {
   TStr Cpy(CrossName);
   if (!isDir || !sameMode) { return Cpy; }
@@ -741,13 +736,11 @@ void TCrossNet::CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& T
   for(int64 i = 0; i < ToCopyIds.Len(); i++) {
     TInt64 EId = ToCopyIds[i];
     IAssertR(Src.IsEdge(EId), TStr::Fmt("No edge with id %d in source crossnet", EId.Val));
-    if (Dst.IsEdge(EId)) { nedges_added--; continue; } // TODO (millimat): rm nedges--
+    if (Dst.IsEdge(EId)) { continue; }
     TInt64 NId1 = Src.GetEdgeI(EId).GetSrcNId(), NId2 = Src.GetEdgeI(EId).GetDstNId();
     Dst.AddEdge(NId1, NId2, EId);
     NewlyAdded.Add(EId);
   }
-  nedges_added += ToCopyIds.Len(); // TODO (millimat): rm
-  nedges_visited += ToCopyIds.Len();
 
   // copy all attributes
   for(TStrIntPr64H::TIter it = Src.KeyToIndexTypeE.BegI(); it < Src.KeyToIndexTypeE.EndI(); it++) {
@@ -1114,10 +1107,6 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const T
   TVec<TBoolV> CrossOrientations(Metapaths.Len(), Metapaths.Len()); // for undirected edges. true = treat mode1 as src, false = treat mode2 as src. Must be true for directed.
   ValidateCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths, CrossOrientations);
 
-  nedges_visited = 0; // todo (millimat): rm
-  nedges_added = 0;
-  std::clock_t tick = std::clock();
-
   // Initialization: start with an active set of nodes in the start mode
   PMMNet Result = New();
   TMMNet::CopyModeWithoutNodes(this, Result, StartModeId);
@@ -1170,12 +1159,6 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const T
       ActiveNodes = NodesToAdd;
     }
   }
-
-  std::clock_t tock = std::clock();
-  double nseconds = (tock - tick)/(double)CLOCKS_PER_SEC;
-  std::cout << nedges_visited << " edges visited, " << nedges_added << " edges added in " 
-            << nseconds << " seconds = " << nedges_visited * (int)(1/nseconds) << " visits/sec, "
-            << nedges_added * (int)(1/nseconds) << " additions/sec" << std::endl;
 
   return Result;
 }
