@@ -1672,21 +1672,35 @@ TEST(multimodal, GetMetagraph) {
   }
 }
 
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
 #include <cstdio>
 #include "dirent.h"
 
 static const int kNGenModes = 25;
 static const int kNNodesPerMode = 100;
 static const double kCrossEdgeProb = 0.1;
-static const TStr outpathbase = "multimodal/networks";
+static const TStr outpathbase = "multimodal/networks/";
 
-static bool coinflip(double p) { return (float)rand()/RAND_MAX < p; }
+static bool coinflip(double p) { return TFlt::Rnd.GetUniDev() < p; }
+
+static void makecn(PMMNet mmnet, int64 srcmid, int64 dstmid) {
+  TStr name = TStr::Fmt("%d to %d", srcmid, dstmid);
+  TInt64 crossid = mmnet->AddCrossNet(srcmid, dstmid, name, true);
+  TCrossNet& crossnet = mmnet->GetCrossNetById(crossid);
+  
+  // Add an edge from each node in mode 1 to its id counter part in mode 2
+  // Guarantees if all nodes active in one mode, all nodes in a neighbor will become active
+  for(int i = 0; i < kNNodesPerMode; i++) { crossnet.AddEdge(i, i); }
+  
+  // Randomly add other edges
+  for(int i = 0; i < kNNodesPerMode; i++) {
+    for(int j = i+1; j < kNNodesPerMode; j++) {
+      if(coinflip(kCrossEdgeProb)) { crossnet.AddEdge(i, j); }
+    }
+  }
+}
 
 template<class PGraph>
-static void makenetwork(const PGraph& metagraph, const TStr& filename) {
+static void makenetwork(const PGraph& metagraph, const TStr& filename, bool undirected=false) {
   PMMNet mmnet = TMMNet::New();
 
   // Add modes to the network based on nodes from the metagraph
@@ -1700,13 +1714,16 @@ static void makenetwork(const PGraph& metagraph, const TStr& filename) {
 
     // Add nodes to the mode (and intra-mode edges, as a crossnet) using Barabasi-Albert model
     PUNGraph temp = TSnap::GenPrefAttach(kNNodesPerMode, kNNodesPerMode/10);
+    ASSERT_TRUE(TSnap::IsConnected<PUNGraph>(temp));
     for(TUNGraph::TNodeI NJ = temp->BegNI(); NJ < temp->EndNI(); NJ++) {
       TInt64 nid = NJ.GetId();
       mode.AddNode(nid);
       mode.AddIntAttrDatN(nid, -nid, TStr::Fmt("Attr %d", mid));
     }
-    mmnet->AddCrossNet(mid, mid, TStr::Fmt("%d to %d", mid, mid), false);
-    TCrossNet& selfnet = mmnet->GetCrossNetByName(TStr::Fmt("%d to %d", mid, mid));
+    
+    TStr CNName = TStr::Fmt("%d to %d", mid, mid);
+    mmnet->AddCrossNet(mid, mid, CNName, false);
+    TCrossNet& selfnet = mmnet->GetCrossNetByName(CNName);
     for(TUNGraph::TEdgeI EJ = temp->BegEI(); EJ < temp->EndEI(); EJ++) { selfnet.AddEdge(EJ.GetSrcNId(), EJ.GetDstNId()); }  
     count++;
   } 
@@ -1717,15 +1734,9 @@ static void makenetwork(const PGraph& metagraph, const TStr& filename) {
   count = 0;
   for(typename PGraph::TObj::TEdgeI EI = metagraph->BegEI(); EI < metagraph->EndEI(); EI++) {
     if (count % metagraph->GetEdges()/10 == 0) { std::cout << "." << std::flush; }
-    TStr name = TStr::Fmt("%d to %d", EI.GetSrcNId(), EI.GetDstNId());
-    TInt64 crossid = mmnet->AddCrossNet(EI.GetSrcNId(), EI.GetDstNId(), name, true);
-    TCrossNet& crossnet = mmnet->GetCrossNetById(crossid);
-    
-    for(int i = 0; i < kNNodesPerMode; i++) {
-      for(int j = 0; j < kNNodesPerMode; j++) {
-        if (coinflip(kCrossEdgeProb)) { crossnet.AddEdge(i, j); }
-      }
-    }
+    makecn(mmnet, EI.GetSrcNId(), EI.GetDstNId());
+    // If the source metagraph is undirected, repeat with a crossnet in the opposite direction
+    if (undirected) { makecn(mmnet, EI.GetDstNId(), EI.GetSrcNId()); }
     count++;
   }
   std::cout << " Done." << std::endl;
@@ -1742,16 +1753,15 @@ static void generate_networks() {
   srand(time(NULL));
 
   std::cout << "Generating sample networks..." << std::endl;
-  makenetwork(TSnap::GenFull<PNEANet>(3), "full");
-  // makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, 1, true), "1-circle");
-  // makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, kNGenModes/10, true), "many-circle");
-  // makenetwork(TSnap::GenGrid<PNEANet>((int64)sqrt(kNGenModes), (int64)sqrt(kNGenModes), false), "grid");
-  // makenetwork(TSnap::GenStar<PNEANet>(kNGenModes, true), "star");
-  // makenetwork(TSnap::GenTree<PNEANet>(3, 3, true, false), "3-tree");
-  // makenetwork(TSnap::GenPrefAttach(kNGenModes, 10), "prefattach");
-  // makenetwork(TSnap::GenForestFire(kNGenModes, 0.75, 0.25), "forestfire");
-  // makenetwork(TSnap::GenBaraHierar<PNEANet>(2, true), "barahierar");
-  // makenetwork(TSnap::GenRndDegK(kNGenModes, 2), "5-random");
+  makenetwork(TSnap::GenFull<PNEANet>(kNGenModes), "full");
+  makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, 1, true), "1-circle");
+  makenetwork(TSnap::GenCircle<PNEANet>(kNGenModes, kNGenModes/10, true), "many-circle");
+  makenetwork(TSnap::GenGrid<PNEANet>((int64)TMath::Sqrt(kNGenModes), (int64)TMath::Sqrt(kNGenModes), false), "grid");
+
+  makenetwork(TSnap::GenStar<PNEANet>(kNGenModes, true), "star");
+  makenetwork(TSnap::GenTree<PNEANet>(3, 3, true, false), "3-tree");
+  makenetwork(TSnap::GenPrefAttach(kNGenModes, 10), "prefattach", true);
+  makenetwork(TSnap::GenBaraHierar<PUNGraph>(2, true), "barahierar", true);
 }
 
 static void destroy_networks() {
@@ -1769,46 +1779,227 @@ static void destroy_networks() {
   std::cout << " Done." << std::endl;
 }
 
-static bool get_metagraph_euler_path(const PMMNet& mmnet, TInt64V& metapath) {
+
+// Equality check for modes
+static void check_reconstituted_modes(PMMNet orig, PMMNet copy, bool check_cn_names) {
+  EXPECT_EQ(orig->GetModeNets(), copy->GetModeNets());
+  EXPECT_EQ(orig->GetMxModeId(), copy->GetMxModeId());
+  TInt64V midv, midv_c;
+  orig->GetModeIdV(midv); copy->GetModeIdV(midv_c);
+  midv.Sort(); midv_c.Sort();
+  ASSERT_EQ(midv, midv_c);
+  for(int64 modepos = 0; modepos < midv.Len(); modepos++) {
+    TMMNet::TModeNetI mit = orig->GetModeNetI(midv[modepos]), mit_c = copy->GetModeNetI(midv[modepos]);
+
+    // Mode names, node counts identical
+    EXPECT_EQ(mit.GetModeName(), mit_c.GetModeName());
+    TModeNet& mode = mit.GetModeNet(), & mode_c = mit_c.GetModeNet();
+    EXPECT_EQ(mode.GetNodes(), mode_c.GetNodes());
+    EXPECT_EQ(mode.GetMxNId(), mode_c.GetMxNId());
+
+    // Adjacent crossnet names identical
+    TStr64V mode_cnnames, mode_cnnames_c;
+      mode.GetCrossNetNames(mode_cnnames);
+      mode_c.GetCrossNetNames(mode_cnnames_c);
+      mode_cnnames.Sort();
+      mode_cnnames_c.Sort();
+      if(check_cn_names) { EXPECT_EQ(mode_cnnames, mode_cnnames_c); }
+
+    // Other attribute names identical
+    TStr64V ianames, fanames, sanames, ianames_c, fanames_c, sanames_c;
+    mode.GetAttrNNames(ianames, fanames, sanames);
+    mode_c.GetAttrNNames(ianames_c, fanames_c, sanames_c);
+    ianames.Sort(); fanames.Sort(); sanames.Sort(); 
+    ianames_c.Sort(); fanames_c.Sort(); sanames_c.Sort(); 
+    EXPECT_EQ(ianames, ianames_c);
+    EXPECT_EQ(fanames, fanames_c);
+    EXPECT_EQ(sanames, sanames_c);
+
+    // Node ids, attribute values, crossnet neighbor lists identical
+    TInt64V nidv, nidv_c;
+    mode.GetNIdV(nidv); mode_c.GetNIdV(nidv_c);
+    nidv.Sort(); nidv_c.Sort();
+    ASSERT_EQ(nidv, nidv_c);
+    for(int64 pos = 0; pos < nidv.Len(); pos++) {
+      TModeNet::TNodeI nit = mode.GetMMNI(nidv[pos]), nit_c = mode_c.GetMMNI(nidv[pos]);
+      for(int64 i = 0; i < ianames.Len(); i++) { 
+        EXPECT_EQ(mode.GetIntAttrDatN(nit, ianames[i]), mode_c.GetIntAttrDatN(nit_c, ianames[i]));
+      }
+      for(int64 i = 0; i < fanames.Len(); i++) { 
+        EXPECT_EQ(mode.GetFltAttrDatN(nit, fanames[i]), mode_c.GetFltAttrDatN(nit_c, fanames[i]));
+      }
+      for(int64 i = 0; i < sanames.Len(); i++) { 
+        EXPECT_EQ(mode.GetStrAttrDatN(nit, sanames[i]), mode_c.GetStrAttrDatN(nit_c, sanames[i]));
+      }
+      for(int64 i = 0; i < mode_cnnames_c.Len(); i++) {
+        TInt64V neighbors, neighbors_c;
+        nit.GetNeighborsByCrossNet(mode_cnnames[i], neighbors);
+        nit.GetNeighborsByCrossNet(mode_cnnames[i], neighbors_c);
+        EXPECT_EQ(neighbors, neighbors_c);
+      }
+    }
+  }
+}
+
+// Equality check for crossnets
+static void check_reconstituted_crossnets(PMMNet orig, PMMNet copy) {
+  EXPECT_EQ(orig->GetCrossNets(), copy->GetCrossNets());
+  EXPECT_EQ(orig->GetMxCrossId(), copy->GetMxCrossId());
+  TInt64V cnidv, cnidv_c;
+  orig->GetCrossIdV(cnidv); copy->GetCrossIdV(cnidv_c);
+  cnidv.Sort(); cnidv_c.Sort();
+  ASSERT_EQ(cnidv, cnidv_c);
+  for(int cnpos = 0; cnpos < cnidv.Len(); cnpos++) {
+    TMMNet::TCrossNetI cnit = orig->GetCrossNetI(cnidv[cnpos]), cnit_c = copy->GetCrossNetI(cnidv[cnpos]);
+    
+    // crossnet names, directedness, mode ids equal
+    EXPECT_EQ(cnit.GetCrossName(), cnit_c.GetCrossName());
+    TCrossNet& cn = cnit.GetCrossNet(), & cn_c = cnit_c.GetCrossNet();
+    EXPECT_EQ(cn.GetEdges(), cn_c.GetEdges());
+    EXPECT_EQ(cn.GetMxEId(), cn_c.GetMxEId());
+    EXPECT_EQ(cn.IsDirected(), cn_c.IsDirected());
+    EXPECT_EQ(cn.GetMode1(), cn_c.GetMode1());
+    EXPECT_EQ(cn.GetMode2(), cn_c.GetMode2());
+
+    // Edge ids, src/dstnids, attributes names/values identical
+    TStr64V ianames, fanames, sanames, ianames_c, fanames_c, sanames_c;
+    TInt64V eidv, eidv_c;
+    cn.GetEIdV(eidv); cn_c.GetEIdV(eidv_c);
+    eidv.Sort(); eidv_c.Sort();
+    ASSERT_EQ(eidv, eidv_c);
+    for(int64 pos = 0; pos < eidv.Len(); pos++) {
+      TCrossNet::TCrossEdgeI eit = cn.GetEdgeI(eidv[pos]), eit_c = cn_c.GetEdgeI(eidv[pos]);
+      EXPECT_EQ(eit.GetSrcNId(), eit_c.GetSrcNId());
+      EXPECT_EQ(eit.GetDstNId(), eit_c.GetDstNId());
+      cn.IntAttrNameEI(eit.GetId(), ianames); cn.FltAttrNameEI(eit.GetId(), fanames); cn.StrAttrNameEI(eit.GetId(), sanames);
+      cn_c.IntAttrNameEI(eit.GetId(), ianames_c); cn_c.FltAttrNameEI(eit.GetId(), fanames_c); cn_c.StrAttrNameEI(eit.GetId(), sanames_c);
+      ianames.Sort(); fanames.Sort(); sanames.Sort(); 
+      ianames_c.Sort(); fanames_c.Sort(); sanames_c.Sort(); 
+      EXPECT_EQ(ianames, ianames_c);
+      EXPECT_EQ(fanames, fanames_c);
+      EXPECT_EQ(sanames, sanames_c);
+      for(int64 i = 0; i < ianames.Len(); i++) { 
+        EXPECT_EQ(cn.GetIntAttrDatE(eit, ianames[i]), cn_c.GetIntAttrDatE(eit_c, ianames[i]));
+      }
+      for(int64 i = 0; i < fanames.Len(); i++) { 
+        EXPECT_EQ(cn.GetFltAttrDatE(eit, fanames[i]), cn_c.GetFltAttrDatE(eit_c, fanames[i]));
+      }
+      for(int64 i = 0; i < sanames.Len(); i++) { 
+        EXPECT_EQ(cn.GetStrAttrDatE(eit, sanames[i]), cn_c.GetStrAttrDatE(eit_c, sanames[i]));
+      }
+    }
+  }
+}
+
+static void check_reconstituted(PMMNet orig, PMMNet copy) {  
+  check_reconstituted_modes(orig, copy, true);
+  check_reconstituted_crossnets(orig, copy);
+}
+
+static bool get_metagraph_euler_path(const PMMNet& mmnet, TInt64V& metapath, int64& startmodeid) {
   PNEANet metagraph = mmnet->GetMetagraph();
   if (!metagraph->GetEulerPath(metapath)) { return false; }
+  startmodeid = metagraph->GetEI(metapath[0]).GetSrcNId();
 
   // convert metagraph edge id's to crossnet id's
   for(int i = 0; i < metapath.Len(); i++) {
-    std::cout << std::setw(5) << metapath[i] << ": (" << metagraph->GetEI(metapath[i]).GetSrcNId()
-              << " -> " << metagraph->GetEI(metapath[i]).GetDstNId() << ")" << std::endl;
-
     TInt64 eid = metapath[i];
     if(!metagraph->GetIntAttrDatE(eid, "Directed")) { metapath[i] = MIN(eid, metagraph->GetIntAttrDatE(eid, "Reverse")); }
   }  
 
-  std::cout << "\n\n------------------\n\n" << std::endl;
   return true;
 }
 
-TEST(multimodal, lol) {
-  generate_networks();
-  TFIn input("multimodal/networks/full.graph");
-  PMMNet fullnet = TMMNet::Load(input);  
+static void eulerian_reconstitute(const TStr& filename) {
+  TFIn input(TStr::Fmt("%s/%s", outpathbase.CStr(), filename.CStr()));
+  PMMNet fullnet = TMMNet::Load(input);
   TInt64V metapath;
-  ASSERT_TRUE(get_metagraph_euler_path(fullnet, metapath));
-  
+  int64 StartModeId = -1;
+  ASSERT_TRUE(get_metagraph_euler_path(fullnet, metapath, StartModeId));
+
   int64 ncrossnetvisits = 0; // count each directed once, each undirected twice
   for(TMMNet::TCrossNetI cni = fullnet->BegCrossNetI(); cni < fullnet->EndCrossNetI(); cni++) {
     ncrossnetvisits += (cni.GetCrossNet().IsDirected() ? 1 : 2);
   }
   ASSERT_EQ(ncrossnetvisits, metapath.Len());
-  
-  TInt64 StartModeId = 0;
+
   TModeNet& Mode = fullnet->GetModeNetById(StartModeId);
   TInt64V StartNodeIds;
   for(TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
   TVec<TInt64V> Metapaths; 
   Metapaths.Add(metapath);
+  PMMNet copy = fullnet->GetSubgraphByCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths);
+  check_reconstituted(fullnet, copy);
+}
+
+
+static void visit(const PNGraph& tree, const PNEANet& metagraph, int64 nid, TInt64V& treepath, TVec<TInt64V>& metapaths) {
+  TNGraph::TNodeI currnode = tree->GetNI(nid);
+  ASSERT_LE(currnode.GetOutDeg(), metagraph->GetNI(nid).GetOutDeg());
+
+  if(currnode.GetOutDeg() == 0) { // path terminated; add metapath
+    metapaths.Add(treepath);
+  } else {
+    for(int64 i = 0; i < currnode.GetOutDeg(); i++) {
+      int64 outnid = currnode.GetOutNId(i);
+      int64 outeid;
+      ASSERT_TRUE(metagraph->IsEdge(nid, outnid, outeid, true)); // loads out edge id into outeid
+      treepath.Add(outeid);
+      visit(tree, metagraph, outnid, treepath, metapaths);
+      treepath.DelLast();
+    }
+  }
+}
+
+static bool get_tree_metapaths(const PMMNet& mmnet, TVec<TInt64V>& metapaths, int64 startmodeid) {
+  PNEANet metagraph = mmnet->GetMetagraph();
+
+  PNGraph tree = TSnap::GetBfsTree<PNEANet>(metagraph, startmodeid, true, false);
+  if (tree->GetNodes() < metagraph->GetNodes() || !TSnap::IsConnected<PNGraph>(tree)) { return false; }
   
-  PMMNet replica = fullnet->GetSubgraphByCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths);
-  EXPECT_EQ(fullnet->GetModeNets(), replica->GetModeNets());
-  EXPECT_EQ(fullnet->GetCrossNets(), replica->GetCrossNets());
-  
+  TInt64V currpath; 
+  visit(tree, metagraph, startmodeid, currpath, metapaths); // constructs set of metapaths
+
+  // convert metagraph edge id's to crossnet id's
+  for(int i = 0; i < metapaths.Len(); i++) {
+    for(int j = 0; j < metapaths[i].Len(); j++) {
+      TInt64 eid = metapaths[i][j];
+      if(!metagraph->GetIntAttrDatE(eid, "Directed")) { metapaths[i][j] = MIN(eid, metagraph->GetIntAttrDatE(eid, "Reverse")); }
+    }  
+  }
+
+  return true;
+}
+
+
+static void tree_reconstitute(const TStr& filename) {
+  TFIn input(TStr::Fmt("%s/%s", outpathbase.CStr(), filename.CStr()));
+  PMMNet fullnet = TMMNet::Load(input);
+  TInt64 StartModeId = 0;
+  TModeNet& Mode = fullnet->GetModeNetById(StartModeId);
+  TInt64V StartNodeIds;
+  for(TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
+  TVec<TInt64V> Metapaths;
+  ASSERT_TRUE(get_tree_metapaths(fullnet, Metapaths, StartModeId));
+  PMMNet copy = fullnet->GetSubgraphByCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths);
+
+  // Only check mode data, since BFS tree doesn't necessarily include all edges.
+  check_reconstituted_modes(fullnet, copy, false);  
+}
+
+
+TEST(multimodal, ReconstituteNetworks) {
+  generate_networks();  
+
+  eulerian_reconstitute("full.graph");
+  eulerian_reconstitute("1-circle.graph");
+  eulerian_reconstitute("many-circle.graph");
+  eulerian_reconstitute("grid.graph");  
+
+  tree_reconstitute("star.graph");
+  tree_reconstitute("3-tree.graph");
+  tree_reconstitute("prefattach.graph");
+  tree_reconstitute("barahierar.graph");
+
   destroy_networks();
 }

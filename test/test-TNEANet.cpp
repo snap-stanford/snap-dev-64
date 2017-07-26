@@ -1428,7 +1428,7 @@ TEST(TNEANet, GetEulerPath) {
   Full = TSnap::GenFull<PNEANet>(25);
   Circle = TSnap::GenCircle<PNEANet>(100, 1, true);
   DirGrid = TSnap::GenGrid<PNEANet>(1000, 1000, true);
-  UnDirGrid = TSnap::GenGrid<PNEANet>(1000, 1000, false);
+  UnDirGrid = TSnap::GenGrid<PNEANet>(100, 100, false);
   UnDirGridMinusOne = TSnap::GenGrid<PNEANet>(100, 100, false);
   UnDirGridMinusOne->DelEdge(UnDirGridMinusOne->GetRndEId());
   DirStar = TSnap::GenStar<PNEANet>(100, true);
@@ -1438,11 +1438,14 @@ TEST(TNEANet, GetEulerPath) {
   PNEANet euler[5] = {Full, Circle, UnDirGrid, UnDirGridMinusOne, UnDirStar};
   PNEANet noneuler[3] = {DirGrid, DirStar, DirBinTree};
 
-  for(int i = 2; i < 3; i++) {
-    std::cout << i << std::endl;
+  for(int i = 0; i < 5; i++) {
+    PNEANet graph = euler[i];
     TInt64V Path;
-    EXPECT_TRUE(euler[i]->GetEulerPath(Path));
-    EXPECT_EQ(euler[i]->GetEdges(), Path.Len());    
+    EXPECT_TRUE(graph->GetEulerPath(Path));
+    EXPECT_EQ(graph->GetEdges(), Path.Len());    
+    for(int j = 1; j < Path.Len(); j++) {
+      EXPECT_TRUE(graph->GetEI(Path[j]).GetSrcNId() == graph->GetEI(Path[j-1]).GetDstNId());
+    }
   }
 
   for(int i = 0; i < 3; i++) {

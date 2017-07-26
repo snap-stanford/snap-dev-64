@@ -330,6 +330,8 @@ public:
   TCrossEdgeI EndEdgeI() const { return TCrossEdgeI(CrossH.EndI(), this); }
   /// Deletes an edge by its id.
   int64 DelEdge(const int64& EId);
+  /// Gets a vector of ids of all edges in the crossnet.
+  void GetEIdV(TInt64V& EIdV) const;
   /// Gets the id of the src mode.
   int64 GetMode1() const { return Mode1; }
   /// Gets the id of the dst mode.
@@ -662,6 +664,11 @@ public:
   TModeNetI BegModeNetI() const { return TModeNetI(TModeNetH.BegI(), this); }
   TModeNetI EndModeNetI() const { return TModeNetI(TModeNetH.EndI(), this); }
 
+  /// Get vector of mode ids.
+  void GetModeIdV(TInt64V& ModeIds) { TModeNetH.GetKeyV(ModeIds); }
+  /// Get vector of crossnet ids.
+  void GetCrossIdV(TInt64V& CrossIds) { TCrossNetH.GetKeyV(CrossIds); }
+
   /// Returns the number of modes in the multimodal network.
   int64 GetModeNets() { return TModeNetH.Len(); }
   /// Returns the number of crossnets in the multimodal network.
@@ -688,7 +695,7 @@ public:
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the Mode/Cross Id -> vec of pairs (old att name, new attr name)
   PNEANet ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, THash<TInt64, TVec<TPair<TStr, TStr>, int64>,int64 >& EdgeAttrMap);
-  /// Constructs a metagraph representation of this multimodal network. #TMMNet::GetMetagraph
+  /// Constructs a metagraph representation of this multimodal network. ##TMMNet::GetMetagraph
   PNEANet GetMetagraph();
 
   #ifdef GCC_ATOMIC

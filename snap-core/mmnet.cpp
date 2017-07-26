@@ -1,6 +1,12 @@
 ////////////////////////////////////////////////
 // Mutimodal Network
 //#include <iostream> 
+
+// Timing metapaths. TODO (millimat): rm
+#include <iostream> 
+#include <ctime>
+static int64 nedges_visited = 0, nedges_added = 0;
+
 TStr TModeNet::GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const {
   TStr Cpy(CrossName);
   if (!isDir || !sameMode) { return Cpy; }
@@ -95,6 +101,14 @@ int64 TModeNet::AddNbrType(const TStr& CrossName, const bool sameMode, bool isDi
   if (NeighborTypes.IsKey(CrossName)) { return -1; } //Don't want to add nbr type multiple times
   bool hasSingleVector = (!isDir || !sameMode);
   NeighborTypes.AddDat(CrossName, hasSingleVector);
+  // add crossnet attr type
+  if(hasSingleVector) { 
+    AddIntVAttrN(CrossName);
+  } else { // directed and same mode, need :SRC and :DST distinction
+    AddIntVAttrN(CrossName + ":SRC");
+    AddIntVAttrN(CrossName + ":DST");
+  }
+
   return 0;
 }
 
@@ -355,6 +369,13 @@ int64 TCrossNet::DelEdge(const int64& EId) {
   }
   CrossH.DelKey(EId);
   return 0;
+}
+
+void TCrossNet::GetEIdV(TInt64V& EIdV) const {
+  EIdV.Gen(GetEdges(), 0);
+  for (int64 E=CrossH.FFirstKeyId(); CrossH.FNextKeyId(E); ) {
+    EIdV.Add(CrossH.GetKey(E));
+  }
 }
 
 void TCrossNet::SetParentPointer(TMMNet* parent) {
@@ -720,11 +741,13 @@ void TCrossNet::CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& T
   for(int64 i = 0; i < ToCopyIds.Len(); i++) {
     TInt64 EId = ToCopyIds[i];
     IAssertR(Src.IsEdge(EId), TStr::Fmt("No edge with id %d in source crossnet", EId.Val));
-    if (Dst.IsEdge(EId)) { continue; }
+    if (Dst.IsEdge(EId)) { nedges_added--; continue; } // TODO (millimat): rm nedges--
     TInt64 NId1 = Src.GetEdgeI(EId).GetSrcNId(), NId2 = Src.GetEdgeI(EId).GetDstNId();
     Dst.AddEdge(NId1, NId2, EId);
     NewlyAdded.Add(EId);
   }
+  nedges_added += ToCopyIds.Len(); // TODO (millimat): rm
+  nedges_visited += ToCopyIds.Len();
 
   // copy all attributes
   for(TStrIntPr64H::TIter it = Src.KeyToIndexTypeE.BegI(); it < Src.KeyToIndexTypeE.EndI(); it++) {
@@ -1040,14 +1063,6 @@ void TMMNet::ValidateCrossNetMetapaths(const TInt64& StartModeId, const TInt64V&
       IAssertR(CrossIdToNameH.IsKey(CNij_Id), TStr::Fmt("Crossnet with id %d does not exist", CNij_Id.Val));
       const TCrossNet& CNij = GetCrossNetById(CNij_Id);
 
-      std::cout << std::setw(5) << CNij_Id.Val << ": (" << CNij.GetMode1();
-      if(CNij.IsDirected()) { 
-        std::cout << " -> ";
-      } else {
-        std::cout << " <-> ";
-      }
-      std::cout << CNij.GetMode2() << ")" << std::endl;
-
       TBool predicate, orientation;
       TStr assertmsg;      
       if (CNij.IsDirected()) {
@@ -1099,10 +1114,14 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const T
   TVec<TBoolV> CrossOrientations(Metapaths.Len(), Metapaths.Len()); // for undirected edges. true = treat mode1 as src, false = treat mode2 as src. Must be true for directed.
   ValidateCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths, CrossOrientations);
 
+  nedges_visited = 0; // todo (millimat): rm
+  nedges_added = 0;
+  std::clock_t tick = std::clock();
+
   // Initialization: start with an active set of nodes in the start mode
   PMMNet Result = New();
   TMMNet::CopyModeWithoutNodes(this, Result, StartModeId);
-  TModeNet& StartMode = GetModeNetById(StartModeId), StartMode_Copy = Result->GetModeNetById(StartModeId);
+  TModeNet& StartMode = GetModeNetById(StartModeId), & StartMode_Copy = Result->GetModeNetById(StartModeId);
   TModeNet::CopyNodesWithoutNeighbors(StartMode, StartMode_Copy, StartNodeIds);
 
   // At each crossnet of each metapath, discover all new modes/nodes reachable from current via crossnet, and add to result
@@ -1132,9 +1151,13 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const T
         TInt64 SrcNId = *SrcNIt;
         TInt64V CNNeighboringEdges;
         SrcMode.GetNeighborsByCrossNet(SrcNId, CNName, CNNeighboringEdges, true);
-        for(TInt64V::TIter EdgeIt = CNNeighboringEdges.BegI(); EdgeIt < CNNeighboringEdges.EndI(); EdgeIt++) {
-          TInt64 DstNId = CN.GetEdge(*EdgeIt).GetDstNId();
-          NodesToAdd.AddKey(DstNId);          
+        for(TInt64V::TIter EdgeIt = CNNeighboringEdges.BegI(); EdgeIt < CNNeighboringEdges.EndI(); EdgeIt++) {          
+          const TCrossNet::TCrossEdge& edge = CN.GetEdge(*EdgeIt);
+          
+          // If the crossnet is undirected, this edge may have the current node as the src type or dst type.
+          // Therefore find the endpoint that matches SrcNId and visit the other endpoint.
+          TInt64 DstNId = (edge.GetSrcNId() == SrcNId ? edge.GetDstNId() : edge.GetSrcNId());
+          NodesToAdd.AddKey(DstNId);
           EdgesToAdd.Add(*EdgeIt);
         }
       }
@@ -1144,10 +1167,15 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const T
       NodesToAdd.GetKeyV(temp);
       TModeNet::CopyNodesWithoutNeighbors(DstMode, DstMode_Copy, temp);
       TCrossNet::CopyEdges(CN, CN_Copy, EdgesToAdd);
-      
       ActiveNodes = NodesToAdd;
     }
   }
+
+  std::clock_t tock = std::clock();
+  double nseconds = (tock - tick)/(double)CLOCKS_PER_SEC;
+  std::cout << nedges_visited << " edges visited, " << nedges_added << " edges added in " 
+            << nseconds << " seconds = " << nedges_visited * (int)(1/nseconds) << " visits/sec, "
+            << nedges_added * (int)(1/nseconds) << " additions/sec" << std::endl;
 
   return Result;
 }
@@ -1446,17 +1474,15 @@ PNEANet TMMNet::GetMetagraph() {
     Result->AddIntAttrDatE(NewEId, CrossId, "Reverse");
   }
 
-  Result->Dump();
   return Result;
 }
 
 
 void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxLen) const {
-
   int64 reminder = MxLen.Val % NumPartitions.Val;
   TInt64 PartitionSize = MxLen/NumPartitions;
   TInt64 CurrStart = 0;
-  bool done = false;
+  //  bool done = false;
   for  (int64 i=0; i < reminder; i++) {
     TInt64 CurrEnd = CurrStart + PartitionSize+ 1;
     Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
