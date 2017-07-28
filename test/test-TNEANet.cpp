@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include "Snap.h"
 
 // Test the default constructor
@@ -1438,17 +1437,17 @@ TEST(TNEANet, GetEulerPath) {
   PNEANet euler[5] = {Full, Circle, UnDirGrid, UnDirGridMinusOne, UnDirStar};
   PNEANet noneuler[3] = {DirGrid, DirStar, DirBinTree};
 
-  for(int i = 0; i < 5; i++) {
+  for (int i = 0; i < 5; i++) {
     PNEANet graph = euler[i];
     TInt64V Path;
     EXPECT_TRUE(graph->GetEulerPath(Path));
     EXPECT_EQ(graph->GetEdges(), Path.Len());    
-    for(int j = 1; j < Path.Len(); j++) {
+    for (int j = 1; j < Path.Len(); j++) {
       EXPECT_TRUE(graph->GetEI(Path[j]).GetSrcNId() == graph->GetEI(Path[j-1]).GetDstNId());
     }
   }
 
-  for(int i = 0; i < 3; i++) {
+  for (int i = 0; i < 3; i++) {
     TInt64V Path;
     EXPECT_FALSE(noneuler[i]->GetEulerPath(Path));
   }

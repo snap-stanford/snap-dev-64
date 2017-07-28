@@ -10,7 +10,7 @@
 #
 
 include ../Makefile.config
-CXXFLAGS = -std=c++98 -Wall -O3 -DNDEBUG -fopenmp $(CXXOPENMP) 
+CXXFLAGS = $(CXXOPENMP) 
 LIBS += -lgtest
 
 ## Main application file

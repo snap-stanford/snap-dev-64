@@ -1,10 +1,7 @@
 #ifndef MMNET_H
 #define MMNET_H
 
-
 class TMMNet;
-
-
 typedef TPt<TMMNet> PMMNet;
 
 ///A single mode in a multimodal directed attributed multigraph
@@ -12,7 +9,6 @@ class TModeNet;
 
 ///A single cross net in a multimodal directed attributed multigraph
 class TCrossNet;
-
 
 //#///////////////////////////////////////////////
 /// The nodes of one particular mode in a TMMNet, and their neighbor vectors as TIntV attributes ##TModeNet::Class
@@ -73,7 +69,7 @@ public:
   void GetCrossNetNames(TStr64V& Names) const { NeighborTypes.GetKeyV(Names); }
   /// For the given node, gets all the neighbors for the crossnet type. If this mode is both the source and dest type, use isOutEId to specify direction.
   void GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
-  /// Copy all nodes whose Ids are given from Src into Dst. ##TModeNet::CopyNodesWithoutNeighbors
+  /// Copies all nodes whose Ids are given from Src into Dst. ##TModeNet::CopyNodesWithoutNeighbors
   static void CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
   /// Returns an iterator referring to the first node in the graph.
   TNodeI BegMMNI() const { return TNodeI(NodeH.BegI(), this); }
@@ -105,7 +101,7 @@ private:
   int64 DelNeighbor(const int64& NId, const int64& EId, bool outEdge, const TStr& CrossName, const bool sameMode, bool isDir);
   int64 DelNeighbor(const int64& NId, const int64& EId, bool outEdge, const TInt64& linkId, const bool sameMode, bool isDir);
   TStr GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const;
-  /// Get names of all crossnet attributes for this mode; identical to GetCrossNetNames, except directed self crossnet names are replaced with [name]:SRC and [name]:DST
+  /// Gets names of all crossnet attributes for this mode; identical to GetCrossNetNames, except directed self crossnet names are replaced with [name]:SRC and [name]:DST
   void GetNeighborCrossNames(TStr64V& Names) const;
   void SetParentPointer(TMMNet* parent);
   int64 AddNbrType(const TStr& CrossName, const bool sameMode, bool isDir);
@@ -115,7 +111,7 @@ private:
   int64 DelNbrType(const TStr& CrossName);
   int64 GetAttrTypeN(const TStr& attr) const;
   void ClrNbr(const TStr& CrossNetName, const bool& outEdge, const bool& sameMode, bool& isDir);
-  /// Copy all sparse attributes for the given node Id and attribute type from one TModeNet to another.
+  /// Copies all sparse attributes for the given node Id and attribute type from one TModeNet to another.
   static void CopyAllSAttrN(TInt64 Id, const TAttrType& AttrType, const TModeNet& Src, TModeNet& Dst);
 public:
   friend class TMMNet;
@@ -498,7 +494,7 @@ public:
   // Returns edge attribute value, converted to Str type.
   TStr GetEdgeAttrValue(const int64& EId, const TStrIntPr64H::TIter& CrossHI) const;
 
-  /// Copy all edges whose Ids are given from Src into Dst. ##TCrossNet::CopyEdges
+  /// Copies all edges whose ids are given from Src into Dst. ##TCrossNet::CopyEdges
   static void CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& ToCopyIds);
 
   PBPGraph GetBipartiteGraph();
@@ -664,9 +660,9 @@ public:
   TModeNetI BegModeNetI() const { return TModeNetI(TModeNetH.BegI(), this); }
   TModeNetI EndModeNetI() const { return TModeNetI(TModeNetH.EndI(), this); }
 
-  /// Get vector of mode ids.
+  /// Gets vector of mode ids.
   void GetModeIdV(TInt64V& ModeIds) { TModeNetH.GetKeyV(ModeIds); }
-  /// Get vector of crossnet ids.
+  /// Gets vector of crossnet ids.
   void GetCrossIdV(TInt64V& CrossIds) { TCrossNetH.GetKeyV(CrossIds); }
 
   /// Returns the number of modes in the multimodal network.
@@ -680,13 +676,12 @@ public:
 
   /// Gets the induced subgraph given a vector of crossnet type names.
   PMMNet GetSubgraphByCrossNet(TStr64V& CrossNetTypes);
-
   /// Gets the induced subgraph given a vector of mode type names.
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
 
-  // Add to Dst a copy of the mode with given ID from Src, without any nodes. ##TMMNet::CopyModeWithoutNodes
+  /// Adds to Dst a copy of the mode with given ID from Src, without any nodes. ##TMMNet::CopyModeWithoutNodes
   static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
-  /// Add to Dst a copy of the crossnet with given ID from Src, without any edges; all edge attribute names and defaults are copied.
+  /// Adds to Dst a copy of the crossnet with given ID from Src, without any edges; all edge attribute names and defaults are copied.
   static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const TInt64& CrossId);
   /// Gets the subnetwork reachable a set of starting nodes in a single mode and a sequence of metapaths to traverse from the starting mode. ##TMMNet::GetSubgraphByCrossNetMetapaths
   PMMNet GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths);

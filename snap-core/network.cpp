@@ -847,17 +847,17 @@ bool TNEANet::IsEulerian(int64 *StartNId) {
   if (!TSnap::IsConnected(PNEANet(this))) { return false; }
   bool startfound = false, finishfound = false;
 
-  for(TNEANet::TNodeI NI = BegNI(); NI < EndNI(); NI++) {
+  for (TNEANet::TNodeI NI = BegNI(); NI < EndNI(); NI++) {
     int64 indeg = NI.GetInDeg(), outdeg = NI.GetOutDeg();
-    if(indeg != outdeg) {
-      if(indeg - outdeg == 1) { // must be destination of path
-        if(finishfound) {
+    if (indeg != outdeg) {
+      if (indeg - outdeg == 1) { // must be destination of path
+        if (finishfound) {
           return false; 
         } else {
           finishfound = true;
         }
-      } else if(outdeg - indeg == 1) { // must be source of path
-        if(startfound) { 
+      } else if (outdeg - indeg == 1) { // must be source of path
+        if (startfound) { 
           return false; 
         } else {
           if (StartNId) { *StartNId = NI.GetId(); }
@@ -869,10 +869,10 @@ bool TNEANet::IsEulerian(int64 *StartNId) {
     }
   }
 
-  if(!startfound && !finishfound) { // all nodes have equal indeg/outdeg
-    if(StartNId) { *StartNId = BegNI().GetId(); } // cycle can begin anywhere
+  if (!startfound && !finishfound) { // all nodes have equal indeg/outdeg
+    if (StartNId) { *StartNId = BegNI().GetId(); } // cycle can begin anywhere
     return true;
-  } else if(startfound && finishfound) { // exactly one start and finish node
+  } else if (startfound && finishfound) { // exactly one start and finish node
     return true;
   } else { // one start but no finish, or vice versa
     return false;
@@ -880,10 +880,10 @@ bool TNEANet::IsEulerian(int64 *StartNId) {
 }
 
 void TNEANet::AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath) {
-  for(int64 i = 0; i < ToAddPath.Len(); i++) {
+  for (int64 i = 0; i < ToAddPath.Len(); i++) {
     if (AllPaths.IsKey(CurrNId)) { // Pause traversing current path and recursively traverse paths reachable from here
       TVec<TInt64V>& PathsStartingHere = AllPaths.GetDat(CurrNId);
-      while(!PathsStartingHere.Empty()) {
+      while (!PathsStartingHere.Empty()) {
         TInt64V RecursivePathToAdd = PathsStartingHere.Last();
         PathsStartingHere.DelLast(); // so recursive calls embark on new paths
         AddPath(AllPaths, RecursivePathToAdd, CurrNId, ResultPath);
@@ -901,9 +901,9 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
   
   THash<TInt64, TInt64Set> OutboundEdges; // nodeid -> (list of outbound edges (id relative to node, not absolute eid))
   THash<TInt64, TInt64Set> SelfEdges; // nodeid -> (list of self edges (id relative to node))
-  for(TNodeI NI = BegNI(); NI < EndNI(); NI++) {
+  for (TNodeI NI = BegNI(); NI < EndNI(); NI++) {
     TInt64Set out, self;
-    for(int64 i = 0; i < NI.GetOutDeg(); i++) { 
+    for (int64 i = 0; i < NI.GetOutDeg(); i++) { 
       TEdgeI edge = GetEI(NI.GetOutEId(i));
       if (edge.GetDstNId() == edge.GetSrcNId()) { // self edge
         self.AddKey(i);
@@ -921,18 +921,18 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
   // 1. Create a set of edge-disjoint paths that span all edges of the graph.
   // All paths except possibly the first are cycles.
   bool firstpath = true;
-  while(!OutboundEdges.Empty()) { 
+  while (!OutboundEdges.Empty()) { 
     TInt64V currpath;
     TInt64 PathStartNId = (firstpath ? StartNId : OutboundEdges.BegI().GetKey().Val);
     firstpath = false;
     TNodeI currnode = GetNI(PathStartNId);
 
-    while(OutboundEdges.IsKey(currnode.GetId())) {
+    while (OutboundEdges.IsKey(currnode.GetId())) {
       TInt64Set& curroutbound = OutboundEdges.GetDat(currnode.GetId());
       TInt64Set& currself = SelfEdges.GetDat(currnode.GetId());
       
-      if(!currself.Empty()) { // First time visit; get self edges out of the way
-        for(int i = 0; i < currself.Len(); i++) { currpath.Add(currnode.GetOutEId(currself[i])); }
+      if (!currself.Empty()) { // First time visit; get self edges out of the way
+        for (int i = 0; i < currself.Len(); i++) { currpath.Add(currnode.GetOutEId(currself[i])); }
         currself.Clr();
       }
 
@@ -943,7 +943,7 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
       currpath.Add(outeid);
       // Delete the visited edge from the node's list. If the list is empty, delete the node from OutboundEdges.
       curroutbound.DelKey(outrelid);
-      if(curroutbound.Empty()) { OutboundEdges.DelKey(currnode.GetId()); }
+      if (curroutbound.Empty()) { OutboundEdges.DelKey(currnode.GetId()); }
       currnode = GetNI(outedge.GetDstNId());      
     }
     if (!Paths.IsKey(PathStartNId)) { Paths.AddKey(PathStartNId); }
@@ -1311,7 +1311,7 @@ int64 TNEANet::DelAttrDatE(const int64& EId, const TStr& attr) {
 }
 
 int64 TNEANet::DelAllAttrDatN() {
-  for(TStrIntPr64H::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
+  for (TStrIntPr64H::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
     TStr AttrName = it.GetKey();
     TInt64 vecType = it.GetDat().Val1;
     TInt64 AttrIndex = it.GetDat().Val2;
@@ -1332,7 +1332,7 @@ int64 TNEANet::DelAllAttrDatN() {
 }
 
 int64 TNEANet::DelAllAttrDatE() {
-  for(TStrIntPr64H::TIter it = KeyToIndexTypeE.BegI(); it < KeyToIndexTypeE.EndI(); it++) {
+  for (TStrIntPr64H::TIter it = KeyToIndexTypeE.BegI(); it < KeyToIndexTypeE.EndI(); it++) {
     TStr AttrName = it.GetKey();
     TInt64 vecType = it.GetDat().Val1;
     TInt64 AttrIndex = it.GetDat().Val2;
@@ -1567,7 +1567,7 @@ void TNEANet::GetAttrNNames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64
 }
 
 void TNEANet::GetIntVAttrNNames(TStr64V& IntVAttrNames) const {
-  for(TStrIntPr64H::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
+  for (TStrIntPr64H::TIter it = KeyToIndexTypeN.BegI(); it < KeyToIndexTypeN.EndI(); it++) {
     if (it.GetDat().GetVal1() == IntVType) {
       IntVAttrNames.Add(it.GetKey());
     }
@@ -1590,7 +1590,7 @@ void TNEANet::GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64
 }
 
 void TNEANet::GetIntVAttrENames(TStr64V& IntVAttrNames) const {
-  for(TStrIntPr64H::TIter it = KeyToIndexTypeE.BegI(); it < KeyToIndexTypeE.EndI(); it++) {
+  for (TStrIntPr64H::TIter it = KeyToIndexTypeE.BegI(); it < KeyToIndexTypeE.EndI(); it++) {
     if (it.GetDat().GetVal1() == IntVType) {
       IntVAttrNames.Add(it.GetKey());
     }
