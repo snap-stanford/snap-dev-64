@@ -612,7 +612,7 @@ public:
   int64 DelModeNet(const TStr& ModeName);
   /// Returns true if and only if there is a crossnet with the given id in the multimodal network.
   bool IsCrossNet(const int& CNId) { return TCrossNetH.IsKey(CNId); }
-    /// Adds a crossnet to the multimodal network. Specify modes by id or names; by default, crossnet is directed
+  /// Adds a crossnet to the multimodal network. Specify modes by id or names; by default, crossnet is directed
   int64 AddCrossNet(const TStr& ModeName1, const TStr& ModeName2, const TStr& CrossNetName, bool isDir=true);
   int64 AddCrossNet(const TInt64& ModeId1, const TInt64& ModeId2, const TStr& CrossNetName, bool isDir=true);
   /// Deletes a crossnet from the multimodal network.
