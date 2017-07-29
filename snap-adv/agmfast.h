@@ -9,7 +9,7 @@ private:
   PUNGraph G; //graph to fit
   TVec<TIntFltH> F; // membership for each user (Size: Nodes * Coms)
   TRnd Rnd; // random number generator
-  TIntV NIDV; // original node ID vector
+  TInt64V NIDV; // original node ID vector
   TFlt RegCoef; //Regularization coefficient when we fit for P_c +: L1, -: L2
   TFltV SumFV; // sum_u F_uc for each community c. Needed for efficient calculation
   TBool NodesOk; // Node ID is from 0 ~ N-1

@@ -191,8 +191,9 @@ void TAGMFit::NeighborComInit(const int InitComs) {
   TIntV ChosenNIDV(InitComs, 0); //FOR DEBUG
   TExeTm RunTm;
   //compute conductance of neighborhood community
-  TIntV NIdV;
-  G->GetNIdV(NIdV);
+  TInt64V NId64V;
+  G->GetNIdV(NId64V);
+  TIntV NIdV = TInt64VToTIntV(NId64V);
   for (int u = 0; u < NIdV.Len(); u++) {
     TIntSet NBCmty(G->GetNI(NIdV[u]).GetDeg() + 1);
     double Phi;
@@ -253,7 +254,9 @@ void TAGMFit::AddBaseCmty() {
   GetCmtyVV(CmtyVV);
   TIntV TmpV = CmtyVV[0];
   CmtyVV.Add(TmpV);
-  G->GetNIdV(CmtyVV[0]);
+  TInt64V NId64V;
+  NId64V = TIntVToTInt64V(CmtyVV[0]);
+  G->GetNIdV(NId64V);
   IAssert(CIDNSetV.Len() + 1 == CmtyVV.Len());
   SetCmtyVV(CmtyVV);
   InitNodeData();
@@ -376,7 +379,7 @@ void TAGMFit::RunMCMC(const int& MaxIter, const int& EvalLambdaIter, const TStr&
   int SwitchCnt = 0, LeaveCnt = 0, JoinCnt = 0, AcceptCnt = 0, ProbBinSz;
   int Nodes = G->GetNodes(), Edges = G->GetEdges();
   TExeTm PlotTm;
-  ProbBinSz = TMath::Mx(1000, G->GetNodes() / 10); //bin to compute probabilities
+  ProbBinSz = TMath::Mx<int64>(1000, G->GetNodes() / 10); //bin to compute probabilities
   IterLBV.Add(TIntFltPr(1, BestL));
 
   for (int iter = 0; iter < MaxIter; iter++) {
@@ -630,8 +633,9 @@ double TAGMFit::SelectLambdaSum(const TFltV& NewLambdaV, const TIntSet& ComK) {
 
 // Compute the empirical edge probability between a pair of nodes who share no community (epsilon), based on current community affiliations.
 double TAGMFit::CalcPNoComByCmtyVV(const int& SamplePairs) {
-  TIntV NIdV;
-  G->GetNIdV(NIdV);
+  TInt64V NId64V;
+  G->GetNIdV(NId64V);
+  TIntV NIdV = TInt64VToTIntV(NId64V);
   uint64 PairNoCom = 0, EdgesNoCom = 0;
   for (int u = 0; u < NIdV.Len(); u++) {
     for (int v = u + 1; v < NIdV.Len(); v++) {

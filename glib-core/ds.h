@@ -1622,6 +1622,7 @@ typedef TVec<TIntIntPrPr> TIntIntPrPrV;
 //#//////////////////////////////////////////////
 #ifndef TINT64V_TO_TINTV
 
+TInt64V TIntVToTInt64V(TIntV Vec);
 TIntV TInt64VToTIntV(TInt64V Vec);
 TIntPrV TIntPr64VToTIntPrV(TIntPr64V Vec);
 TIntFltKdV TIntFltKd64VToTIntFltKdV(TIntFltKd64V Vec);

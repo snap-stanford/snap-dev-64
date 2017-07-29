@@ -1,4 +1,13 @@
 #include <iostream>
+
+TInt64V TIntVToTInt64V(TIntV Vec) {
+  TInt64V NewVec;
+  for (int i = 0; i < Vec.Len(); i++) {
+    NewVec.Add(int(Vec[i]));
+  }
+  return NewVec;
+}
+
 TIntV TInt64VToTIntV(TInt64V Vec) {
   TIntV NewVec;
   int MaxLen = TInt::Mx;

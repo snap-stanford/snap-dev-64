@@ -126,15 +126,15 @@ void TAGMFast::SetCmtyVV(const TVec<TIntV>& CmtyVV) {
   F.Gen(G->GetNodes());
   SumFV.Gen(CmtyVV.Len());
   NumComs = CmtyVV.Len();
-  TIntH NIDIdxH(NIDV.Len());
+  TInt64H NIDIdxH(NIDV.Len());
   if (! NodesOk) {
-    for (int u = 0; u < NIDV.Len(); u++) {
+    for (int64 u = 0; u < NIDV.Len(); u++) {
       NIDIdxH.AddDat(NIDV[u], u);
     }
   }
-  for (int c = 0; c < CmtyVV.Len(); c++) {
-    for (int u = 0; u < CmtyVV[c].Len(); u++) {
-      int UID = CmtyVV[c][u];
+  for (int64 c = 0; c < CmtyVV.Len(); c++) {
+    for (int64 u = 0; u < CmtyVV[c].Len(); u++) {
+      int64 UID = CmtyVV[c][u];
       if (! NodesOk) { UID = NIDIdxH.GetDat(UID); }
       if (G->IsNode(UID)) { 
         AddCom(UID, c, 1.0);
@@ -147,9 +147,10 @@ void TAGMFast::SetGraph(const PUNGraph& GraphPt) {
   G = GraphPt;
   HOVIDSV.Gen(G->GetNodes());  
   NodesOk = true;
+
   GraphPt->GetNIdV(NIDV);
   // check that nodes IDs are {0,1,..,Nodes-1}
-  for (int nid = 0; nid < GraphPt->GetNodes(); nid++) {
+  for (int64 nid = 0; nid < GraphPt->GetNodes(); nid++) {
     if (! GraphPt->IsNode(nid)) { 
       NodesOk = false; 
       break; 
@@ -158,7 +159,7 @@ void TAGMFast::SetGraph(const PUNGraph& GraphPt) {
   if (! NodesOk) {
     printf("rearrage nodes\n");
     G = TSnap::GetSubGraph(GraphPt, NIDV, true);
-    for (int nid = 0; nid < G->GetNodes(); nid++) {
+    for (int64 nid = 0; nid < G->GetNodes(); nid++) {
       IAssert(G->IsNode(nid)); 
     }
   }
@@ -419,7 +420,7 @@ int TAGMFast::MLENewton(const double& Thres, const int& MaxIter, const TStr& Plo
   TIntFltPrV IterLV;
   double PrevL = TFlt::Mn, CurL;
   TUNGraph::TNodeI UI;
-  TIntV NIdxV;
+  TInt64V NIdxV;
   G->GetNIdV(NIdxV);
   int CID, UID, NewtonIter;
   double Fuc;
@@ -567,7 +568,7 @@ int TAGMFast::FindComsByCV(TIntV& ComsV, const double HOFrac, const int NumThrea
   TVec<TVec<TIntSet> > HoldOutSets(MaxIterCV);
   if (EdgeV.Len() > 50) { //if edges are many enough, use CV
     printf("generating hold out set\n");
-    TIntV NIdV1, NIdV2;
+    TInt64V NIdV1, NIdV2;
     G->GetNIdV(NIdV1);
     G->GetNIdV(NIdV2);
     for (int IterCV = 0; IterCV < MaxIterCV; IterCV++) {

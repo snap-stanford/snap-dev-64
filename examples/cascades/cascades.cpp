@@ -30,7 +30,7 @@ public:
   void SampleCascade(const PGraph& InfCasc, const PGraph& NetCasc, const TIntH& NIdInfTmH, const double& PStep=0.05, const int& NRuns=1, const bool& DivByM=true) {
     for (int Run=0; Run < NRuns; Run++) {
       for (double P = PStep; P <= 1.01; P += PStep) {
-        TIntV NIdV;
+        TInt64V NIdV;
         for (typename PGraph::TObj::TNodeI NI = InfCasc->BegNI(); NI < InfCasc->EndNI(); NI++) {
           if (TInt::Rnd.GetUniDev() < P) { NIdV.Add(NI.GetId()); } }
         PGraph InfG = TSnap::GetSubGraph(InfCasc, NIdV);
@@ -96,7 +96,7 @@ public:
     NIsoInf.AddDat(P).Add(i1/M); NIsoNet.AddDat(P).Add(i2/M); }
     // cascade depth
     { const double M1 = DivByM ? CcNet->GetNodes() : 1;  IAssert(M1>=1);
-    int Root=FindCascadeRoot(CcInf, NIdInfTmH);  TIntPrV HopCntV;
+    int64 Root=FindCascadeRoot(CcInf, NIdInfTmH);  TIntPr64V HopCntV;
     TSnap::GetNodesAtHops(CcInf, Root, HopCntV, true);
     int MxN=0, Lev=0, IncL=0;
     for (int i = 0; i < HopCntV.Len(); i++) {
@@ -140,7 +140,9 @@ int main(int argc, char* argv[]) {
   PUNGraph Graph;
   if (InFNm == "demo") { Graph = TSnap::GenRndGnm<PUNGraph>(100, 200); }
   else { Graph = TSnap::LoadEdgeList<PUNGraph>(InFNm); }
-  printf("nodes:%d  edges:%d\n", Graph->GetNodes(), Graph->GetEdges());
+  printf("nodes:%s  edges:%s\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
   
   // Simulate SI model
   Graph = TSnap::GetMxWcc(Graph);
@@ -239,8 +241,8 @@ PNGraph RunSICascade(PUNGraph G, const double& Beta, const int& CascSz, TIntH& N
   Casc->AddNode(StartId);
   NIdInfTmH.AddDat(StartId, NIdInfTmH.Len());
   for (int X = 0; X < 10*CascSz; X++) {
-    TIntV CascNIdV;  Casc->GetNIdV(CascNIdV);
-    for (int n = 0; n < CascNIdV.Len(); n++) {
+    TInt64V CascNIdV;  Casc->GetNIdV(CascNIdV);
+    for (int64 n = 0; n < CascNIdV.Len(); n++) {
       const TUNGraph::TNodeI NI = G->GetNI(CascNIdV[n]);
       for (int i = 0; i < NI.GetOutDeg(); i++) {
         if (Casc->IsNode(NI.GetOutNId(i))) { continue; }

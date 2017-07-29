@@ -27,7 +27,7 @@ int main(int argc,char* argv[]) {
   //Graph->Dump();
 
   // Sequential
-  TVec<TIntV> TopCascVV;
+  TVec<TInt64V, int64> TopCascVV;
   TSnap::CascFind(Graph,P,"Source","Dest","Start","Duration",TopCascVV,false);
   // Print statistics about top cascasdes
   int max = 0;
@@ -36,7 +36,8 @@ int main(int argc,char* argv[]) {
     if (TopCascVV[i].Len() > max) { max = TopCascVV[i].Len();}
     totalEvents += TopCascVV[i].Len();
   } 
-  printf("TotalCasc %d, TotalEvents %d, max %d\n",TopCascVV.Len(),totalEvents,max);
+  printf("TotalCasc %s, TotalEvents %d, max %d\n",
+          TInt64::GetStr(TopCascVV.Len()).CStr(), totalEvents, max);
   return 0;
 }
 

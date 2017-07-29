@@ -130,17 +130,22 @@ public:
         if(i<CIDV.Len()-1){NodeComLabel+=",";}
       }
       NodeComLabel += ")";
-      fprintf(F, "  %d [style=filled, shape=\"%s\" fillcolor=\"%s\" label=\"%s\"];\n", NI.GetId(), ShapeNm.CStr(),ColorNm.CStr(), NodeComLabel.CStr()); 
+      fprintf(F, "  %s [style=filled, shape=\"%s\" fillcolor=\"%s\" label=\"%s\"];\n",
+              TInt64::GetStr(NI.GetId()).CStr(),
+              ShapeNm.CStr(),ColorNm.CStr(), NodeComLabel.CStr()); 
     }
   
     // edges
     for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
       if (NI.GetOutDeg()==0 && NI.GetInDeg()==0  ) { 
-        fprintf(F, "%d;\n", NI.GetId()); }
-      else {
+        fprintf(F, "%s;\n", TInt64::GetStr(NI.GetId()).CStr());
+      } else {
         for (int e = 0; e < NI.GetOutDeg(); e++) {
           if (! IsDir && NI.GetId() > NI.GetOutNId(e)) { continue; }
-          fprintf(F, "  %d %s %d;\n", NI.GetId(), IsDir?"->":"--", NI.GetOutNId(e)); 
+          fprintf(F, "  %s %s %s;\n",
+                TInt64::GetStr(NI.GetId()).CStr(),
+                IsDir?"->":"--",
+                TInt64::GetStr(NI.GetOutNId(e)).CStr());
         }
       }
     }

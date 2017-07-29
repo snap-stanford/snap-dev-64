@@ -251,7 +251,7 @@ private:
   TVec<TFltV> W; // weight vector for logistic regression. w_ck = W[k][c] (Column vector)
   TInt Attrs; // number of attributes
   TRnd Rnd; // random number generator
-  TIntSet NIDToIdx; // original node ID vector NIDToIdx[i] = Node ID for index i, NIDToIdx.GetKey(NID) = index for NID
+  TInt64Set NIDToIdx; // original node ID vector NIDToIdx[i] = Node ID for index i, NIDToIdx.GetKey(NID) = index for NID
   TFlt RegCoef; //Regularization coefficient when we fit for P_c +: L1, -: L2
   TFltV SumFV; // sum_u F_uc for each community c. Needed for efficient calculation
   TInt NumComs; // number of communities
@@ -472,7 +472,8 @@ public:
       if (NodeNameH.Len() > 0) {
         printf("NID: %s\t Attrs: ", NodeNameH.GetKey(NIDToIdx[u]));
       } else {
-        printf("NID: %d\t Attrs: ", NIDToIdx[u].Val);
+        printf("NID: %s\t Attrs: ", TInt64::GetStr(NIDToIdx[u].Val).CStr());
+
       }
       for (int k = 0; k < X[u].Len(); k++) {
         printf("%d, ", X[u][k].Val);
