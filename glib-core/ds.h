@@ -451,18 +451,19 @@ public:
     IAssert(0<=_Vals); MxVals=Vals=_Vals;
     if (_Vals==0){ValT=NULL;} else {ValT=new TVal[_Vals];}}
   /// Constructs a vector (an array) of length \c _Vals, while reserving enough memory to store \c _MxVals elements.
-  TVec(const TSizeTy& _MxVals, const TSizeTy& _Vals){
+  TVec(const TSizeTy& _MxVals, const TSizeTy& _Vals) {
     IsShM = false;
     IAssert((0<=_Vals)&&(_Vals<=_MxVals)); MxVals=_MxVals; Vals=_Vals;
     if (_MxVals==0){ValT=NULL;} else {ValT=new TVal[_MxVals];}}
-  TVec(const TSizeTy& _MxVals, const TSizeTy& _Vals, TVal Dat){
-		MxVals = 0;
-		Vals = 0;
-		ValT = NULL;
-		IsShM = false;
-		Reserve(_MxVals);
-		for(TSizeTy i = 0; i < _Vals; i++ )
-			Add(Dat);
+  TVec(const TSizeTy& _MxVals, const TSizeTy& _Vals, TVal Dat) {
+    MxVals = 0;
+    Vals = 0;
+    ValT = NULL;
+    IsShM = false;
+    Reserve(_MxVals);
+    for (TSizeTy i = 0; i < _Vals; i++) {
+      Add(Dat);
+    }
   }
   /// Constructs a vector of \c _Vals elements of memory array \c _ValT. ##TVec::TVec
   explicit TVec(TVal *_ValT, const TSizeTy& _Vals):
@@ -643,17 +644,17 @@ public:
   /// Swaps the elements that iterators \c LVal and \c RVal point to.
   static void SwapI(TIter LVal, TIter RVal){const TVal Val=*LVal; *LVal=*RVal; *RVal=Val;}
 
-  TVec<TVal, int> Get32BitVector(){
-    	TVec<TVal, int> NewVec;
-    	int MaxLen = TInt::Mx;
-    	if (Vals < MaxLen)
-    		MaxLen = Vals;
-    	for (int i = 0; i < Vals; i++){
-    		NewVec.Add((*this)[i]);
-    	}
-    	return NewVec;
-
+  TVec<TVal, int> Get32BitVector() {
+    TVec<TVal, int> NewVec;
+    int MaxLen = TInt::Mx;
+    if (Vals < MaxLen) {
+      MaxLen = Vals;
     }
+    for (int i = 0; i < Vals; i++) {
+      NewVec.Add((*this)[i]);
+    }
+    return NewVec;
+  }
 
   /// Generates next permutation of the elements in the vector. ##TVec::NextPerm
   bool NextPerm();
