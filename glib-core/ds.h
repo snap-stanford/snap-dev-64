@@ -576,8 +576,12 @@ public:
   TVal& GetRndVal(TRnd& Rnd=TInt::Rnd) { return GetVal(Rnd.GetUniDevInt(Len())); }
   /// Returns an iterator pointing to the first element in the vector.
   TIter BegI() const {return ValT;}
+  /// Returns an iterator pointing to the first element in the vector.
+  TIter begin() const {return ValT;}
   /// Returns an iterator referring to the past-the-end element in the vector.
   TIter EndI() const {return ValT+Vals;}
+  /// Returns an iterator referring to the past-the-end element in the vector.
+  TIter end() const {return ValT+Vals;}
   /// Returns an iterator an element at position \c ValN.
   TIter GetI(const TSizeTy& ValN) const {return ValT+ValN;}
 

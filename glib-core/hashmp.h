@@ -48,9 +48,11 @@ private:
 public:
   THashMPKeyDatI(): KeyDatI(NULL), EndI(NULL){}
   THashMPKeyDatI(const THashMPKeyDatI& _HashKeyDatI):
-    KeyDatI(_HashKeyDatI.KeyDatI), EndI(_HashKeyDatI.EndI){}
+    KeyDatI(_HashKeyDatI.KeyDatI), EndI(_HashKeyDatI.EndI){
+      while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; }}
   THashMPKeyDatI(const TPHKeyDat* _KeyDatI, const TPHKeyDat* _EndI):
-    KeyDatI((TPHKeyDat*)_KeyDatI), EndI((TPHKeyDat*)_EndI){}
+    KeyDatI((TPHKeyDat*)_KeyDatI), EndI((TPHKeyDat*)_EndI){
+      while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; }}
 
   THashMPKeyDatI& operator=(const THashMPKeyDatI& HashKeyDatI){
     KeyDatI=HashKeyDatI.KeyDatI; EndI=HashKeyDatI.EndI; return *this;}
@@ -69,7 +71,7 @@ public:
   bool IsEmpty() const { return KeyDatI == NULL; }
   /// Tests whether the iterator is pointing to the past-end element.
   bool IsEnd() const { return EndI == KeyDatI; }
-  
+
   const TKey& GetKey() const {Assert((KeyDatI!=NULL)&&(KeyDatI->HashCd!=-1)); return KeyDatI->Key;}
   const TDat& GetDat() const {/*Assert((KeyDatI!=NULL)&&(KeyDatI->HashCd!=-1));*/ return KeyDatI->Dat;}
   TDat& GetDat() {Assert((KeyDatI!=NULL)&&(KeyDatI->HashCd!=-1)); return KeyDatI->Dat;}
@@ -264,9 +266,9 @@ TSizeTy THashMP<TKey, TDat, TSizeTy, THashFunc>::AddKey(const TKey& Key) {
   const TSizeTy HashCd=abs(Key.GetSecHashCd());
 
   TSizeTy TableN = BegTableN;
-  while (Table[TableN].HashCd != -1 || 
+  while (Table[TableN].HashCd != -1 ||
     (!__sync_bool_compare_and_swap(&Table[TableN].HashCd.Val, -1, HashCd))) {
-    TableN = (TableN + 1) % Table.Len();    
+    TableN = (TableN + 1) % Table.Len();
   }
   Table[TableN].Key = Key;
   __sync_fetch_and_add(&NumVals.Val, 1);
@@ -292,7 +294,7 @@ TSizeTy THashMP<TKey, TDat, TSizeTy, THashFunc>::AddKey11(const TSizeTy& BegTabl
     } else if (__sync_bool_compare_and_swap(&Table[TableN].HashCd.Val, -1, HashCd)) {
       break;
     }
-    
+
     TableN++;
     if (TableN >= Length) {
       TableN = 0;
@@ -412,7 +414,7 @@ TSizeTy THashMP<TKey, TDat, TSizeTy, THashFunc>::AddKey1(const TKey& Key, bool& 
       TableN = 0;
     }
     //(!__sync_bool_compare_and_swap(&Table[TableN].HashCd.Val, -1, HashCd))) {
-    //TableN = (TableN + 1) % Table.Len();    
+    //TableN = (TableN + 1) % Table.Len();
   }
 
   NumVals.Val++;
@@ -443,7 +445,7 @@ TSizeTy THashMP<TKey, TDat, TSizeTy, THashFunc>::AddKey2(const TSizeTy& BegTable
       TableN = 0;
     }
     //(!__sync_bool_compare_and_swap(&Table[TableN].HashCd.Val, -1, HashCd))) {
-    //TableN = (TableN + 1) % Table.Len();    
+    //TableN = (TableN + 1) % Table.Len();
   }
 
   //NumVals.Val++;

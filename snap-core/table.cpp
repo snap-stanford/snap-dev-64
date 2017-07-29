@@ -102,20 +102,20 @@ TBool TPredicate::Eval() {
 TBool TPredicate::EvalAtomicPredicate(const TAtomicPredicate& Atom) {
   switch (Atom.Type) {
     case atInt: {
-      if (Atom.IsConst) { 
-        return EvalAtom<TInt64>(IntVars.GetDat(Atom.Lvar), Atom.IntConst, Atom.Compare); 
+      if (Atom.IsConst) {
+        return EvalAtom<TInt64>(IntVars.GetDat(Atom.Lvar), Atom.IntConst, Atom.Compare);
       }
       return EvalAtom<TInt64>(IntVars.GetDat(Atom.Lvar), IntVars.GetDat(Atom.Rvar), Atom.Compare);
     }
     case atFlt: {
-      if (Atom.IsConst) { 
-        return EvalAtom<TFlt>(FltVars.GetDat(Atom.Lvar), Atom.FltConst, Atom.Compare); 
+      if (Atom.IsConst) {
+        return EvalAtom<TFlt>(FltVars.GetDat(Atom.Lvar), Atom.FltConst, Atom.Compare);
       }
       return EvalAtom<TFlt>(FltVars.GetDat(Atom.Lvar), FltVars.GetDat(Atom.Rvar), Atom.Compare);
     }
     case atStr: {
-      if (Atom.IsConst) { 
-        return EvalAtom<TStr>(StrVars.GetDat(Atom.Lvar), Atom.StrConst, Atom.Compare); 
+      if (Atom.IsConst) {
+        return EvalAtom<TStr>(StrVars.GetDat(Atom.Lvar), Atom.StrConst, Atom.Compare);
       }
       return EvalAtom<TStr>(StrVars.GetDat(Atom.Lvar), StrVars.GetDat(Atom.Rvar), Atom.Compare);
     }
@@ -305,7 +305,7 @@ TTable::TTable(): Context(new TTableContext), NumRows(0), NumValidRows(0),
 TTable::TTable(TTableContext* Context): Context(Context), NumRows(0),
   NumValidRows(0), FirstValidRow(0), LastValidRow(-1) {}
 
-TTable::TTable(const Schema& TableSchema, TTableContext* Context): Context(Context), 
+TTable::TTable(const Schema& TableSchema, TTableContext* Context): Context(Context),
   NumRows(0), NumValidRows(0), FirstValidRow(0), LastValidRow(-1), IsNextDirty(0) {
   TInt64 IntColCnt = 0;
   TInt64 FltColCnt = 0;
@@ -500,11 +500,11 @@ void TTable::GetSchema(const TStr& InFNm, Schema& S, const char& Separator) {
   for (int64 i = 1; i < SsNames.GetFlds(); i++) {attrV.Add(SsNames[i]);}
   for (TInt64 i = 0; i < numCols; i++) {
     S.Add(TPair<TStr,TAttrType>(attrV[i],colAttrV[i]));
-  } 
+  }
 }
 
 #ifdef GCC_ATOMIC
-void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols, 
+void TTable::LoadSSPar(PTable& T, const Schema& S, const TStr& InFNm, const TInt64V& RelevantCols,
                         const char& Separator, TBool HasTitleLine) {
   // preloaded necessary variables
   TInt64 RowLen = T->Sch.Len();
@@ -819,7 +819,7 @@ void TTable::SaveSS(const TStr& OutFNm) {
   fprintf(F, "# ");
   for (TInt i = 0; i < L-1; i++) {
     fprintf(F, "%s\t", DSch[i].Val1.CStr());
-  }  
+  }
   fprintf(F, "%s\n", DSch[L-1].Val1.CStr());
   // print table contents
   for (TRowIterator RowI = BegRI(); RowI < EndRI(); RowI++) {
@@ -893,7 +893,7 @@ void TTable::Dump(FILE *OutF) const {
   fprintf(OutF, "# ");
   for (TInt64 i = 0; i < L-1; i++) {
     fprintf(OutF, "%s\t", DSch[i].Val1.CStr());
-  }  
+  }
   fprintf(OutF, "%s\n", DSch[L-1].Val1.CStr());
   // print table contents
   for (TRowIterator RowI = BegRI(); RowI < EndRI(); RowI++) {
@@ -1102,7 +1102,7 @@ TStr64V TTable::GetEdgeStrAttrV() const {
 }
 
 void TTable::Rename(const TStr& column, const TStr& NewLabel) {
-  // This function is necessary, for example to take the union of two tables 
+  // This function is necessary, for example to take the union of two tables
   // where the attribute names don't match.
   if (!IsColName(column)) { TExcept::Throw("no such column " + column); }
   TPair<TAttrType,TInt64> ColVal = GetColTypeMap(column);
@@ -1128,7 +1128,9 @@ void TTable::RemoveFirstRow() {
   Next[Old] = TTable::Invalid;
   NumValidRows--;
   TInt64 IdColIdx = GetColIdx(GetIdColName());
-  RowIdMap.AddDat(IntCols[IdColIdx][Old], Invalid);
+  if (IdColIdx != -1) {
+    RowIdMap.AddDat(IntCols[IdColIdx][Old], Invalid);
+  }
 }
 
 void TTable::RemoveRow(TInt64 RowIdx, TInt64 PrevRowIdx) {
@@ -1145,7 +1147,9 @@ void TTable::RemoveRow(TInt64 RowIdx, TInt64 PrevRowIdx) {
   Next[RowIdx] = TTable::Invalid;
   NumValidRows--;
   TInt64 IdColIdx = GetColIdx(GetIdColName());
-  RowIdMap.AddDat(IntCols[IdColIdx][RowIdx], Invalid);
+  if (IdColIdx != -1) {
+    RowIdMap.AddDat(IntCols[IdColIdx][RowIdx], Invalid);
+  }
 }
 
 void TTable::KeepSortedRows(const TInt64V& KeepV) {
@@ -1176,9 +1180,9 @@ void TTable::KeepSortedRows(const TInt64V& KeepV) {
 void TTable::GetPartitionRanges(TIntPr64V& Partitions, TInt64 NumPartitions) const {
   TInt64 PartitionSize = NumValidRows / (NumPartitions);
   if (NumValidRows % NumPartitions != 0) PartitionSize++;
-  if (PartitionSize < 10) { 
+  if (PartitionSize < 10) {
     PartitionSize = 10;
-    NumPartitions = NumValidRows / PartitionSize; 
+    NumPartitions = NumValidRows / PartitionSize;
   }
   Partitions.Reserve(NumPartitions+1);
 
@@ -1229,7 +1233,7 @@ void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt64, TInt64V, int64
   TInt64 IdColIdx = GetColIdx(IdColName);
   TInt64 GroupByColIdx = GetColIdx(GroupBy);
   if(!UsePhysicalIds && IdColIdx < 0){
-  	TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
+    TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
   }
   //double startFn = omp_get_wtime();
   GroupingSanityCheck(GroupBy, atInt);
@@ -1243,13 +1247,14 @@ void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt64, TInt64V, int64
   //double endGen = omp_get_wtime();
   //printf("Gen time = %f\n", endGen-endPart);
   //printf("S\n");
-  #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) //num_threads(1)
+  // TODO crashes when enabled!
+  //#pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) //num_threads(1)
   for (int64 i = 0; i < Partitions.Len(); i++){
     TRowIterator RowI(Partitions[i].GetVal1(), this);
     TRowIterator EndI(Partitions[i].GetVal2(), this);
     while (RowI < EndI) {
       TInt64 idx = UsePhysicalIds ? RowI.GetRowIdx() : RowI.GetIntAttr(IdColIdx);
-      // printf("updating grouping with key = %d, row_id = %d\n", RowI.GetIntAttr(GroupBy).Val, idx.Val);
+      //printf("updating grouping with key = %d, row_id = %d\n", RowI.GetIntAttr(GroupBy).Val, idx.Val);
       UpdateGrouping<TInt64>(Grouping, RowI.GetIntAttr(GroupByColIdx), idx);
       RowI++;
     }
@@ -1281,7 +1286,7 @@ void TTable::Unique(const TStr& Col) {
         RemainingRows.Add(it->Dat[0]);
       }
       break;
-    } 
+    }
     case atStr: {
       TIntInt64V64H Grouping;
       GroupByStrCol(NCol, Grouping, TInt64V(), true, true);
@@ -1295,11 +1300,14 @@ void TTable::Unique(const TStr& Col) {
 }
 
 void TTable::Unique(const TStr64V& Cols, TBool Ordered) {
-  if(Cols.Len() == 1){ 
-  	Unique(Cols[0]);
-  	return;
+  if(Cols.Len() == 1){
+    Unique(Cols[0]);
+    return;
   }
   TStr64V NCols = NormalizeColNameV(Cols);
+  for (TStr NColNm : NCols) {
+      AssertR(ColTypeMap.IsKey(NColNm), "Unknown column " + NColNm);
+  }
   THash<TGroupKey, TPair<TInt64, TInt64V>, int64 > Grouping;
   TInt64V UniqueVec;
   GroupAux(NCols, Grouping, Ordered, "", true, UniqueVec, true);
@@ -1318,20 +1326,20 @@ void TTable::StoreGroupCol(const TStr& GroupColName, const TVec<TPair<TInt64, TI
 }
 
 // Core crouping logic.
-void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >& Grouping, 
+void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >& Grouping,
  TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TInt64V& UniqueVec, TBool UsePhysicalIds) {
   TInt64 IdColIdx = GetColIdx(IdColName);
   if(!UsePhysicalIds && IdColIdx < 0){
-  	TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
+    TExcept::Throw("Grouping: Either use physical row ids, or have an id column");
   }
   TInt64V IntGroupByCols;
   TInt64V FltGroupByCols;
   TInt64V StrGroupByCols;
   // get indices for each column type
   for (TInt64 c = 0; c < GroupBy.Len(); c++) {
-  	//printf("GroupBy col %d: %s\n", c.Val, GroupBy[c].CStr());
-    if (!IsColName(GroupBy[c])) { 
-      TExcept::Throw("no such column " + GroupBy[c]); 
+    //printf("GroupBy col %d: %s\n", c.Val, GroupBy[c].CStr());
+    if (!IsColName(GroupBy[c])) {
+      TExcept::Throw("no such column " + GroupBy[c]);
     }
 
     TPair<TAttrType, TInt64> ColType = GetColTypeMap(GroupBy[c]);
@@ -1347,7 +1355,7 @@ void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TIn
         break;
     }
   }
-  
+
   TInt64 IKLen = IntGroupByCols.Len();
   TInt64 FKLen = FltGroupByCols.Len();
   TInt64 SKLen = StrGroupByCols.Len();
@@ -1364,13 +1372,13 @@ void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TIn
 
     // find group key
     for (TInt64 c = 0; c < IKLen; c++) {
-      IKey.Add(it.GetIntAttr(IntGroupByCols[c])); 
+      IKey.Add(it.GetIntAttr(IntGroupByCols[c]));
     }
     for (TInt64 c = 0; c < FKLen; c++) {
-      FKey.Add(it.GetFltAttr(FltGroupByCols[c])); 
+      FKey.Add(it.GetFltAttr(FltGroupByCols[c]));
     }
     for (TInt64 c = 0; c < SKLen; c++) {
-      SKey.Add(it.GetStrMapById(StrGroupByCols[c])); 
+      SKey.Add(it.GetStrMapById(StrGroupByCols[c]));
     }
     if (!Ordered) {
       if (IKLen > 0) { IKey.ISort(0, IKey.Len()-1, true); }
@@ -1380,7 +1388,7 @@ void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TIn
     for (TInt64 c = 0; c < SKLen; c++) {
       IKey.Add(SKey[c]);
     }
-    
+
     // look for group matching the key
     TGroupKey GroupKey = TGroupKey(IKey, FKey);
 
@@ -1395,7 +1403,7 @@ void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TIn
       if (GroupColName != "") {
         GroupAndRowIds.Add(TPair<TInt64, TInt64>(GroupNum, RowIdx));
       }
-      if (KeepUnique) { 
+      if (KeepUnique) {
         UniqueVec.Add(idx);
       }
       GroupNum++;
@@ -1437,7 +1445,7 @@ void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TIn
 /*
 // Core grouping logic.
 #ifdef USE_OPENMP
-void TTable::GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TInt, TIntV> >& Grouping, 
+void TTable::GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TInt, TIntV> >& Grouping,
  TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TIntV& UniqueVec, TBool UsePhysicalIds) {
   //double startFn = omp_get_wtime();
   TIntV IntGroupByCols;
@@ -1445,8 +1453,8 @@ void TTable::GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TI
   TIntV StrGroupByCols;
   // get indices for each column type
   for (TInt c = 0; c < GroupBy.Len(); c++) {
-    if (!IsColName(GroupBy[c])) { 
-      TExcept::Throw("no such column " + GroupBy[c]); 
+    if (!IsColName(GroupBy[c])) {
+      TExcept::Throw("no such column " + GroupBy[c]);
     }
 
     TPair<TAttrType, TInt> ColType = GetColTypeMap(GroupBy[c]);
@@ -1483,13 +1491,13 @@ void TTable::GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TI
 
     // find group key
     for (TInt c = 0; c < IKLen; c++) {
-      IKey.Add(it.GetIntAttr(IntGroupByCols[c])); 
+      IKey.Add(it.GetIntAttr(IntGroupByCols[c]));
     }
     for (TInt c = 0; c < FKLen; c++) {
-      FKey.Add(it.GetFltAttr(FltGroupByCols[c])); 
+      FKey.Add(it.GetFltAttr(FltGroupByCols[c]));
     }
     for (TInt c = 0; c < SKLen; c++) {
-      SKey.Add(it.GetStrMapById(StrGroupByCols[c])); 
+      SKey.Add(it.GetStrMapById(StrGroupByCols[c]));
     }
     if (!Ordered) {
       if (IKLen > 0) { IKey.ISort(0, IKey.Len()-1, true); }
@@ -1509,13 +1517,13 @@ void TTable::GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TI
       TPair<TInt, TIntV> NewGroup;
       NewGroup.Val1 = GroupNum;
       if(IdColIdx > 0){
-      	NewGroup.Val2.Add(IntCols[IdColIdx][RowIdx]);
+        NewGroup.Val2.Add(IntCols[IdColIdx][RowIdx]);
       }
       Grouping.AddDat(GroupKey, NewGroup);
       if (GroupColName != "") {
         GroupAndRowIds.Add(TPair<TInt, TInt>(GroupNum, RowIdx));
       }
-      if (KeepUnique) { 
+      if (KeepUnique) {
         UniqueVec.Add(RowIdx);
       }
       GroupNum++;
@@ -1524,7 +1532,7 @@ void TTable::GroupAuxMP(const TStrV& GroupBy, THashGenericMP<TGroupKey, TPair<TI
       if (!KeepUnique) {
         TPair<TInt, TIntV>& NewGroup = Grouping.GetDat(GroupKey);
         if(IdColIdx > 0){
-        	NewGroup.Val2.Add(IntCols[IdColIdx][RowIdx]);
+          NewGroup.Val2.Add(IntCols[IdColIdx][RowIdx]);
         }
         if (GroupColName != "") {
           GroupAndRowIds.Add(TPair<TInt, TInt>(NewGroup.Val1, RowIdx));
@@ -1574,26 +1582,28 @@ void TTable::Group(const TStr64V& GroupBy, const TStr& GroupColName, TBool Order
 }
 
 void TTable::InvalidatePhysicalGroupings(){
-	//TODO
+  //TODO
 }
 
 void TTable::InvalidateAffectedGroupings(const TStr& Attr){
-	//TODO
+  //TODO
 }
 
 void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
  const TStr& ValAttr, const TStr& ResAttr, TBool Ordered) {
- 
-   for (TInt64 c = 0; c < GroupByAttrs.Len(); c++) {
-    if (!IsColName(GroupByAttrs[c])) { 
-      TExcept::Throw("no such column " + GroupByAttrs[c]); 
+
+  for (TInt64 c = 0; c < GroupByAttrs.Len(); c++) {
+    if (!IsColName(GroupByAttrs[c])) {
+      TExcept::Throw("no such column " + GroupByAttrs[c]);
     }
-   }
-    
+  }
+
+  if (GetNumValidRows() == 0) { return; }
+
   // double startFn = omp_get_wtime();
   TStr64V NGroupByAttrs = NormalizeColNameV(GroupByAttrs);
   TBool UsePhysicalIds = (GetColIdx(IdColName) < 0);
-  
+
   THash<TInt64,TInt64V, int64> GroupByIntMapping;
   THash<TFlt,TInt64V, int64> GroupByFltMapping;
   THash<TInt64,TInt64V, int64> GroupByStrMapping;
@@ -1609,73 +1619,70 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
   GroupStmt Stmt(NGroupByAttrs, Ordered, UsePhysicalIds);
   if (GroupMapping.IsKey(Stmt)) {
     Mapping = GroupMapping.GetDat(Stmt);
+    NumOfGroups = Mapping.Len();
   } else{
-  	if(NGroupByAttrs.Len() == 1){
-  		switch(GetColType(NGroupByAttrs[0])){
-  			case atInt:
+    if(NGroupByAttrs.Len() == 1){
+      switch(GetColType(NGroupByAttrs[0])){
+        case atInt:
 #ifdef GCC_ATOMIC
-  				if(GetMP()){
-  					GroupByIntColMP(NGroupByAttrs[0], GroupByIntMapping_MP, UsePhysicalIds);
-  					int64 x = 0;
-					for(THashMP<TInt64,TInt64V, int64>::TIter it = GroupByIntMapping_MP.BegI(); it < GroupByIntMapping_MP.EndI(); it++){
-						GroupByIntMPKeys[x] = it.GetKey();
-						x++;
-						
-						//printf("%d --> ", it.GetKey().Val);
-						//TIntV& V = it.GetDat();
-						//for(int i = 0; i < V.Len(); i++){
-						//	printf(" %d", V[i].Val); 
-						//}
-						//printf("\n");
-						
-					}
-  					NumOfGroups = x;
-  					GroupingCase = 4;
-  					//printf("Number of groups: %d\n", NumOfGroups.Val);
-  					break;
-  				}
+          if(GetMP()){
+            GroupByIntColMP(NGroupByAttrs[0], GroupByIntMapping_MP, UsePhysicalIds);
+            int64 x = 0;
+            for(THashMP<TInt64,TInt64V, int64>::TIter it = GroupByIntMapping_MP.BegI(); it < GroupByIntMapping_MP.EndI(); it++){
+                GroupByIntMPKeys[x] = it.GetKey();
+                x++;
+
+                //printf("%d --> ", it.GetKey().Val);
+                //TIntV& V = it.GetDat();
+                //for(int i = 0; i < V.Len(); i++){
+                //  printf(" %d", V[i].Val);
+                //}
+                //printf("\n");
+
+            }
+            NumOfGroups = x;
+            GroupingCase = 4;
+            //printf("Number of groups: %d\n", NumOfGroups.Val);
+            break;
+          }
 #endif // GCC_ATOMIC
-  				GroupByIntCol(NGroupByAttrs[0], GroupByIntMapping, TInt64V(), true, UsePhysicalIds);
-  				NumOfGroups = GroupByIntMapping.Len();
-  				GroupingCase = 1;
-  				break;
-  			case atFlt:
-  				GroupByFltCol(NGroupByAttrs[0], GroupByFltMapping, TInt64V(), true, UsePhysicalIds);
-  				NumOfGroups = GroupByFltMapping.Len();
-  				GroupingCase = 2;
-  				break;
-  			case atStr:
-  				GroupByStrCol(NGroupByAttrs[0], GroupByStrMapping, TInt64V(), true, UsePhysicalIds);
-  				NumOfGroups = GroupByStrMapping.Len();
-  				GroupingCase = 3;
-  				break;
-  		}
-  	}
-  	else{
-  		TInt64V UniqueVector;
-  		THash<TGroupKey, TPair<TInt64, TInt64V>, int64 > Mapping_aux;
-  		GroupAux(NGroupByAttrs, Mapping_aux, Ordered, "", false, UniqueVector, UsePhysicalIds);
-  		for(THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >::TIter it = Mapping_aux.BegI(); it < Mapping_aux.EndI(); it++){
-  			Mapping.AddDat(it.GetKey(), it.GetDat().Val2);
-  		}
-  		NumOfGroups = Mapping.Len();
-  	}
+          GroupByIntCol(NGroupByAttrs[0], GroupByIntMapping, TInt64V(), true, UsePhysicalIds);
+          NumOfGroups = GroupByIntMapping.Len();
+          GroupingCase = 1;
+          break;
+        case atFlt:
+          GroupByFltCol(NGroupByAttrs[0], GroupByFltMapping, TInt64V(), true, UsePhysicalIds);
+          NumOfGroups = GroupByFltMapping.Len();
+          GroupingCase = 2;
+          break;
+        case atStr:
+          GroupByStrCol(NGroupByAttrs[0], GroupByStrMapping, TInt64V(), true, UsePhysicalIds);
+          NumOfGroups = GroupByStrMapping.Len();
+          GroupingCase = 3;
+          break;
+      }
+    }
+    else{
+      TInt64V UniqueVector;
+      THash<TGroupKey, TPair<TInt64, TInt64V>, int64 > Mapping_aux;
+      GroupAux(NGroupByAttrs, Mapping_aux, Ordered, "", false, UniqueVector, UsePhysicalIds);
+      for(THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >::TIter it = Mapping_aux.BegI(); it < Mapping_aux.EndI(); it++){
+        Mapping.AddDat(it.GetKey(), it.GetDat().Val2);
+      }
+      NumOfGroups = Mapping.Len();
+    }
   }
-    
+
   // double endGroup = omp_get_wtime();
   // printf("Group time = %f\n", endGroup-startFn);
-
-  TAttrType T = GetColType(ValAttr);
+  TAttrType T = (AggOp == aaCount) ? atInt : GetColType(ValAttr);
 
   // add column corresponding to result attribute type
-  if (AggOp == aaCount) { AddIntCol(ResAttr); } 
+  if (T == atInt) { AddIntCol(ResAttr); }
+  else if (T == atFlt) { AddFltCol(ResAttr); }
   else {
-    if (T == atInt) { AddIntCol(ResAttr); }
-    else if (T == atFlt) { AddFltCol(ResAttr); }
-    else {
       // Count is the only aggregation operation handled for Str
       TExcept::Throw("Invalid aggregation for Str type!");
-    }
   }
   TInt64 ColIdx = GetColIdx(ResAttr);
   TInt64 AggrColIdx = GetColIdx(ValAttr);
@@ -1685,28 +1692,28 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
 
 #ifdef USE_OPENMP
   #pragma omp parallel for schedule(dynamic)
-#endif 
-  for (int64 g = 0; g < NumOfGroups; g++) {
-  	TInt64V* GroupRows = NULL;
-  	switch(GroupingCase){
-  		case 0:
-  			GroupRows = & Mapping.GetDat(Mapping.GetKey(g));
-  			break;
-  		case 1:
-  			GroupRows = & GroupByIntMapping.GetDat(GroupByIntMapping.GetKey(g));
-  			break;
-  		case 2:
-  			GroupRows = & GroupByIntMapping.GetDat(GroupByIntMapping.GetKey(g));
-  			break;
-  	    case 3:
-  			GroupRows = & GroupByStrMapping.GetDat(GroupByStrMapping.GetKey(g));
-  			break;
-  		case 4:
-#ifdef GCC_ATOMIC
-  			GroupRows = & GroupByIntMapping_MP.GetDat(GroupByIntMPKeys[g]);
 #endif
-  			break;
-  	}
+  for (int64 g = 0; g < NumOfGroups; g++) {
+    TInt64V* GroupRows = NULL;
+    switch(GroupingCase){
+      case 0:
+        GroupRows = & Mapping.GetDat(Mapping.GetKey(g));
+        break;
+      case 1:
+        GroupRows = & GroupByIntMapping.GetDat(GroupByIntMapping.GetKey(g));
+        break;
+      case 2:
+        GroupRows = & GroupByIntMapping.GetDat(GroupByIntMapping.GetKey(g));
+        break;
+        case 3:
+        GroupRows = & GroupByStrMapping.GetDat(GroupByStrMapping.GetKey(g));
+        break;
+      case 4:
+#ifdef GCC_ATOMIC
+        GroupRows = & GroupByIntMapping_MP.GetDat(GroupByIntMPKeys[g]);
+#endif
+        break;
+    }
 
     // find valid rows of group
     /*
@@ -1719,7 +1726,7 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
       if (RowId != Invalid) { ValidRows.Add(RowId); }
     }
     */
-	TInt64V& ValidRows = *GroupRows;
+    TInt64V& ValidRows = *GroupRows;
     TInt64 sz = ValidRows.Len();
     if (sz <= 0) continue;
     // Count is handled separately (other operations have aggregation policies defined in a template)
@@ -1733,7 +1740,7 @@ void TTable::Aggregate(const TStr64V& GroupByAttrs, TAttrAggr AggOp,
         TInt64 Res = AggregateVector<TInt64>(V, AggOp);
         if (AggOp == aaMean) { Res = Res / sz; }
         for (TInt64 i = 0; i < sz; i++) { IntCols[ColIdx][ValidRows[i]] = Res; }
-      } else {
+      } else if (T == atFlt) {
         TFlt64V V;
         for (TInt64 i = 0; i < sz; i++) { V.Add(FltCols[AggrColIdx][ValidRows[i]]); }
         TFlt Res = AggregateVector<TFlt>(V, AggOp);
@@ -1785,17 +1792,17 @@ void TTable::AggregateCols(const TStr64V& AggrAttrs, TAttrAggr AggOp, const TStr
 }
 
 void TTable::PrintGrouping(const THash<TGroupKey, TInt64V, int64>& Mapping) const{
-	for(THash<TGroupKey, TInt64V, int64>::TIter it = Mapping.BegI(); it < Mapping.EndI(); it++){
-  		TGroupKey gk = it.GetKey();
-  		TInt64V ik = gk.Val1;
-  		TFlt64V fk = gk.Val2;
-  		for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val).CStr());} 
-  		for(int64 i = 0; i < fk.Len(); i++){ printf("%f ",fk[i].Val);} 
-  		printf("-->");
-  		TInt64V v = it.GetDat();
-  		for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val).CStr());} 
-  		printf("\n");
-  	}
+  for(THash<TGroupKey, TInt64V, int64>::TIter it = Mapping.BegI(); it < Mapping.EndI(); it++){
+      TGroupKey gk = it.GetKey();
+      TInt64V ik = gk.Val1;
+      TFlt64V fk = gk.Val2;
+      for(int64 i = 0; i < ik.Len(); i++){ printf("%s ",TInt64::GetStr(ik[i].Val).CStr());}
+      for(int64 i = 0; i < fk.Len(); i++){ printf("%f ",fk[i].Val);}
+      printf("-->");
+      TInt64V v = it.GetDat();
+      for(int64 i = 0; i < v.Len(); i++){ printf("%s ",TInt64::GetStr(v[i].Val).CStr());}
+      printf("\n");
+    }
 }
 
 void TTable::Count(const TStr& CountColName, const TStr& Col) {
@@ -1816,6 +1823,7 @@ TVec<PTable, int64> TTable::SpliceByGroup(const TStr64V& GroupBy, TBool Ordered)
       NewSchema.Add(Sch[c]);
     }
   }
+  const bool UsePhysicalIds = GetIdColName().Empty();
 
   GroupAux(NGroupBy, Grouping, Ordered, "", false, UniqueVec);
 
@@ -1827,9 +1835,10 @@ TVec<PTable, int64> TTable::SpliceByGroup(const TStr64V& GroupBy, TBool Ordered)
     TVec<TPair<TAttrType, TInt64>, int64 > ColInfo;
     TInt64V V;
     for (TInt64 i = 0; i < Sch.Len(); i++) {
-      ColInfo.Add(GroupTable->GetColTypeMap(Sch[i].Val1));
-      if (Sch[i].Val1 == IdColName()) {
-        ColInfo[i].Val2 = -1;
+      if (Sch[i].Val1 == GetIdColName()) {
+        ColInfo.Add(TPair<TAttrType, TInt64>(atInt, -1));
+      } else {
+        ColInfo.Add(GroupTable->GetColTypeMap(Sch[i].Val1));
       }
       V.Add(GetColIdx(Sch[i].Val1));
     }
@@ -1839,7 +1848,7 @@ TVec<PTable, int64> TTable::SpliceByGroup(const TStr64V& GroupBy, TBool Ordered)
     // iterate over rows in group
     for (TInt64 i = 0; i < Rows.Len(); i++) {
       // convert from permanent ID to row ID
-      TInt64 RowIdx = RowIdMap.GetDat(Rows[i]);
+      TInt64 RowIdx = UsePhysicalIds ? Rows[i] : RowIdMap.GetDat(Rows[i]);
 
       // iterate over schema
       for (TInt64 c = 0; c < Sch.Len(); c++) {
@@ -1975,7 +1984,7 @@ void TTable::AddJointRow(const TTable& T1, const TTable& T2, TInt64 RowIdx1, TIn
   for (TInt64 i = 0; i < T2.StrColMaps.Len(); i++) {
     StrColMaps[i+StrOffset].Add(T2.StrColMaps[i][RowIdx2]);
   }
-  TInt64 IdOffset = IntOffset + T2.IntCols.Len(); 
+  TInt64 IdOffset = IntOffset + T2.IntCols.Len();
   NumRows++;
   NumValidRows++;
   if (!Next.Empty()) {
@@ -1987,121 +1996,121 @@ void TTable::AddJointRow(const TTable& T1, const TTable& T2, TInt64 RowIdx1, TIn
   IntCols[IdOffset].Add(NumRows-1);
 }
 
-/// Returns Similarity based join of two tables based on a given distance metric 
-/// and a given threshold. Records (r1, r2) that are returned satisfy the 
+/// Returns Similarity based join of two tables based on a given distance metric
+/// and a given threshold. Records (r1, r2) that are returned satisfy the
 /// criterion: d(r1, r2) <= Threshold
 PTable TTable::SimJoin(const TStr64V& Cols1, const TTable& Table, const TStr64V& Cols2, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold)
 {
-	Assert(Cols1.Len() == Cols2.Len());
+  Assert(Cols1.Len() == Cols2.Len());
 
-	if(Cols1.Len()!=Cols2.Len()){
-		TExcept::Throw("Column vectors must match in type and length");
-	}
-
-	for (TInt64 i = 0; i < Cols1.Len(); i++) {
-		if(!IsColName(Cols1[i]) || !Table.IsColName(Cols2[i])){
-			TExcept::Throw("Column not found in Table");
-		}
-
-		TAttrType Type1 = GetColType(Cols1[i]);
-		TAttrType Type2 = GetColType(Cols2[i]);
-
-		if(Type1!=Type2){
-			TExcept::Throw("Column types on the two tables must match.");
-		}
-
-		// When supporting more distance metrics, check if the types are supported for given metric. 
-		if((Type1!=atInt && Type1!=atFlt) || (Type2!=atInt && Type2!=atFlt)){
-			TExcept::Throw("Column type not supported. Only Flt and Int column types are supported.");
-		}
+  if(Cols1.Len()!=Cols2.Len()){
+    TExcept::Throw("Column vectors must match in type and length");
   }
 
-	// Initialize Join table and add the similarity column
+  for (TInt64 i = 0; i < Cols1.Len(); i++) {
+    if(!IsColName(Cols1[i]) || !Table.IsColName(Cols2[i])){
+      TExcept::Throw("Column not found in Table");
+    }
+
+    TAttrType Type1 = GetColType(Cols1[i]);
+    TAttrType Type2 = GetColType(Cols2[i]);
+
+    if(Type1!=Type2){
+      TExcept::Throw("Column types on the two tables must match.");
+    }
+
+    // When supporting more distance metrics, check if the types are supported for given metric.
+    if((Type1!=atInt && Type1!=atFlt) || (Type2!=atInt && Type2!=atFlt)){
+      TExcept::Throw("Column type not supported. Only Flt and Int column types are supported.");
+    }
+  }
+
+  // Initialize Join table and add the similarity column
   PTable JointTable = InitializeJointTable(Table);
-	TFlt64V DistanceV;
+  TFlt64V DistanceV;
 
-	// O(n^2): Parallelize 
-	for(TRowIterator RowI = this->BegRI(); RowI < this->EndRI(); RowI++) {
-		for(TRowIterator RowI2 = Table.BegRI(); RowI2 < Table.EndRI(); RowI2++) {
-			float distance = 0;
+  // O(n^2): Parallelize
+  for(TRowIterator RowI = this->BegRI(); RowI < this->EndRI(); RowI++) {
+    for(TRowIterator RowI2 = Table.BegRI(); RowI2 < Table.EndRI(); RowI2++) {
+      float distance = 0;
 
-			switch(SimType)
-			{
-				// Calculate the distance metric
-				case L2Norm:
-					for(TInt64 i = 0; i < Cols1.Len(); i++) {
-						float attrVal1, attrVal2;
-						attrVal1 = GetColType(Cols1[i])==atInt ? (float)RowI.GetIntAttr(Cols1[i]) : (float)RowI.GetFltAttr(Cols1[i]);
-						attrVal2 = Table.GetColType(Cols2[i])==atInt ? (float)RowI2.GetIntAttr(Cols2[i]) : (float)RowI2.GetFltAttr(Cols2[i]);
-						distance += pow(attrVal1 - attrVal2, 2);
-					}
-				
-					distance = sqrt(distance);
+      switch(SimType)
+      {
+        // Calculate the distance metric
+        case L2Norm:
+          for(TInt64 i = 0; i < Cols1.Len(); i++) {
+            float attrVal1, attrVal2;
+            attrVal1 = GetColType(Cols1[i])==atInt ? (float)RowI.GetIntAttr(Cols1[i]) : (float)RowI.GetFltAttr(Cols1[i]);
+            attrVal2 = Table.GetColType(Cols2[i])==atInt ? (float)RowI2.GetIntAttr(Cols2[i]) : (float)RowI2.GetFltAttr(Cols2[i]);
+            distance += pow(attrVal1 - attrVal2, 2);
+          }
 
-					if(distance<=Threshold){
-						JointTable->AddJointRow(*this, Table, RowI.GetRowIdx(), RowI2.GetRowIdx());
-						DistanceV.Add(distance);
-					}
+          distance = sqrt(distance);
 
-					// Add row to the joint table if distance <= Threshold
-					break;
-				// Haversine distance to calculate the distance between two points on Earth from latitude/longitude
-				case Haversine:
-					{
-						if(Cols1.Len()!=2){
-							TExcept::Throw("Haversine disance expects exactly two attributes - latitude and longitude - in that order.");
-						}
-						
-						// Block to prevent cross-initialization error from compiler
-						TFlt Radius = 6373; // km
-						float Latitude1  = GetColType(Cols1[0])==atInt ? (float)RowI.GetIntAttr(Cols1[0]) : (float)RowI.GetFltAttr(Cols1[0]);
-						float Latitude2 = Table.GetColType(Cols2[0])==atInt ? (float)RowI2.GetIntAttr(Cols2[0]) : (float)RowI2.GetFltAttr(Cols2[0]);
+          if(distance<=Threshold){
+            JointTable->AddJointRow(*this, Table, RowI.GetRowIdx(), RowI2.GetRowIdx());
+            DistanceV.Add(distance);
+          }
 
-						float Longitude1  = GetColType(Cols1[1])==atInt ? (float)RowI.GetIntAttr(Cols1[1]) : (float)RowI.GetFltAttr(Cols1[1]);
-						float Longitude2  = Table.GetColType(Cols2[1])==atInt ? (float)RowI2.GetIntAttr(Cols2[1]) : (float)RowI2.GetFltAttr(Cols2[1]);
+          // Add row to the joint table if distance <= Threshold
+          break;
+        // Haversine distance to calculate the distance between two points on Earth from latitude/longitude
+        case Haversine:
+          {
+            if(Cols1.Len()!=2){
+              TExcept::Throw("Haversine disance expects exactly two attributes - latitude and longitude - in that order.");
+            }
 
-						Latitude1 *= static_cast<float>(M_PI/180.0);
-						Latitude2 *= static_cast<float>(M_PI/180.0);
-						Longitude1 *= static_cast<float>(M_PI/180.0);
-						Longitude2 *= static_cast<float>(M_PI/180.0);
+            // Block to prevent cross-initialization error from compiler
+            TFlt Radius = 6373; // km
+            float Latitude1  = GetColType(Cols1[0])==atInt ? (float)RowI.GetIntAttr(Cols1[0]) : (float)RowI.GetFltAttr(Cols1[0]);
+            float Latitude2 = Table.GetColType(Cols2[0])==atInt ? (float)RowI2.GetIntAttr(Cols2[0]) : (float)RowI2.GetFltAttr(Cols2[0]);
 
-						float dlon = Longitude2 - Longitude1;
-						float dlat = Latitude2 - Latitude1;
-						float a = pow(sin(dlat/2), 2) + cos(Latitude1)*cos(Latitude2)*pow(sin(dlon/2), 2);
-						float c = 2*atan2(sqrt(a), sqrt(1-a));
-						distance = (static_cast<float>(Radius.Val))*c;
+            float Longitude1  = GetColType(Cols1[1])==atInt ? (float)RowI.GetIntAttr(Cols1[1]) : (float)RowI.GetFltAttr(Cols1[1]);
+            float Longitude2  = Table.GetColType(Cols2[1])==atInt ? (float)RowI2.GetIntAttr(Cols2[1]) : (float)RowI2.GetFltAttr(Cols2[1]);
 
-						if(distance<=Threshold){
-							JointTable->AddJointRow(*this, Table, RowI.GetRowIdx(), RowI2.GetRowIdx());
-							DistanceV.Add(distance);
-						}
-					}
-					break;
-				case L1Norm:
-				case Jaccard:
-					TExcept::Throw("This distance metric is not supported");
-			}
-		}	
-	}
+            Latitude1 *= static_cast<float>(M_PI/180.0);
+            Latitude2 *= static_cast<float>(M_PI/180.0);
+            Longitude1 *= static_cast<float>(M_PI/180.0);
+            Longitude2 *= static_cast<float>(M_PI/180.0);
 
-	// Add the value for the similarity column 
-	JointTable->StoreFltCol(DistanceColName, DistanceV);
-	JointTable->InitIds();
-	return JointTable;
+            float dlon = Longitude2 - Longitude1;
+            float dlat = Latitude2 - Latitude1;
+            float a = pow(sin(dlat/2), 2) + cos(Latitude1)*cos(Latitude2)*pow(sin(dlon/2), 2);
+            float c = 2*atan2(sqrt(a), sqrt(1-a));
+            distance = (static_cast<float>(Radius.Val))*c;
+
+            if(distance<=Threshold){
+              JointTable->AddJointRow(*this, Table, RowI.GetRowIdx(), RowI2.GetRowIdx());
+              DistanceV.Add(distance);
+            }
+          }
+          break;
+        case L1Norm:
+        case Jaccard:
+          TExcept::Throw("This distance metric is not supported");
+      }
+    }
+  }
+
+  // Add the value for the similarity column
+  JointTable->StoreFltCol(DistanceColName, DistanceV);
+  JointTable->InitIds();
+  return JointTable;
 }
 
-PTable TTable::SelfSimJoinPerGroup(const TStr& GroupAttr, const TStr& SimCol, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold) 
+PTable TTable::SelfSimJoinPerGroup(const TStr& GroupAttr, const TStr& SimCol, const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold)
 {
-	if(!IsColName(SimCol) || !IsColName(GroupAttr)){
-		TExcept::Throw("No such column found in table");
-	}
+  if(!IsColName(SimCol) || !IsColName(GroupAttr)){
+    TExcept::Throw("No such column found in table");
+  }
 
   PTable JointTable = New(Context);
-	// Initialize the joint table - (GroupId1, GroupId2, Similarity)
-	JointTable->IntCols = TVec<TInt64V, int64>(2);
-	JointTable->FltCols = TVec<TFlt64V, int64>(1);
+  // Initialize the joint table - (GroupId1, GroupId2, Similarity)
+  JointTable->IntCols = TVec<TInt64V, int64>(2);
+  JointTable->FltCols = TVec<TFlt64V, int64>(1);
 
-	for(TInt64 i=0;i<2;i++){
+  for(TInt64 i=0;i<2;i++){
     TInt64 Suffix = i+1;
     TStr CName = "GroupId_" + Suffix.GetStr();
     TPair<TAttrType, TInt64> Group(atInt, (int64)i);
@@ -2109,164 +2118,164 @@ PTable TTable::SelfSimJoinPerGroup(const TStr& GroupAttr, const TStr& SimCol, co
     JointTable->AddSchemaCol(CName, atInt);
   }
 
-	TPair<TAttrType, TInt64> Group(atFlt, 0);
-	JointTable->AddColType(DistanceColName, Group);
-	JointTable->AddSchemaCol(DistanceColName, atFlt);
+  TPair<TAttrType, TInt64> Group(atFlt, 0);
+  JointTable->AddColType(DistanceColName, Group);
+  JointTable->AddSchemaCol(DistanceColName, atFlt);
 
-	THash<TInt64, THash<TInt64, TInt64, int64>, int64 > TIntHH;
+  THash<TInt64, THash<TInt64, TInt64, int64>, int64 > TIntHH;
 
-	TAttrType attrType = GetColType(SimCol);
-	TInt64 GroupColIdx = GetColIdx(GroupAttr);
-	TInt64 SimColIdx = GetColIdx(SimCol);
+  TAttrType attrType = GetColType(SimCol);
+  TInt64 GroupColIdx = GetColIdx(GroupAttr);
+  TInt64 SimColIdx = GetColIdx(SimCol);
 
-	for (TRowIterator RowI = this->BegRI(); RowI < this->EndRI(); RowI++) {
-		TInt64 GroupId = IntCols[GroupColIdx][RowI.GetRowIdx()];
-	
-		if(attrType==atInt || attrType==atStr)
-		{
-			if(!TIntHH.IsKey(GroupId)){
-				THash<TInt64, TInt64, int64> TIntH;
-				TIntHH.AddDat(GroupId, TIntH);
-			}
+  for (TRowIterator RowI = this->BegRI(); RowI < this->EndRI(); RowI++) {
+    TInt64 GroupId = IntCols[GroupColIdx][RowI.GetRowIdx()];
 
-			THash<TInt64, TInt64, int64>& TIntH = TIntHH.GetDat(GroupId);
-			TInt64 SimAttrVal = (attrType==atInt ? IntCols[SimColIdx][RowI.GetRowIdx()] : StrColMaps[SimColIdx][RowI.GetRowIdx()]);
-			TIntH.AddDat(SimAttrVal, 0);
-		}
-		else
-		{
-			TExcept::Throw("Attribute type not supported.");
-		}
-	}
+    if(attrType==atInt || attrType==atStr)
+    {
+      if(!TIntHH.IsKey(GroupId)){
+        THash<TInt64, TInt64, int64> TIntH;
+        TIntHH.AddDat(GroupId, TIntH);
+      }
 
-	// Iterate through every pair of groups and calculate the distance
-	for (THash<TInt64, THash<TInt64, TInt64, int64>, int64 >::TIter it1 = TIntHH.BegI(); it1 < TIntHH.EndI(); it1++) {
-		THash<TInt64, TInt64, int64> Vals1H = it1.GetDat();
-		TInt64 GroupId1 = it1.GetKey();
+      THash<TInt64, TInt64, int64>& TIntH = TIntHH.GetDat(GroupId);
+      TInt64 SimAttrVal = (attrType==atInt ? IntCols[SimColIdx][RowI.GetRowIdx()] : StrColMaps[SimColIdx][RowI.GetRowIdx()]);
+      TIntH.AddDat(SimAttrVal, 0);
+    }
+    else
+    {
+      TExcept::Throw("Attribute type not supported.");
+    }
+  }
 
-		for (THash<TInt64, THash<TInt64, TInt64, int64>, int64 >::TIter it2 = TIntHH.BegI(); it2 < TIntHH.EndI(); it2++) {
-				int64 intersectionCount = 0;
-				TInt64 GroupId2 = it2.GetKey();
-				THash<TInt64, TInt64, int64> Vals2H = it2.GetDat();
+  // Iterate through every pair of groups and calculate the distance
+  for (THash<TInt64, THash<TInt64, TInt64, int64>, int64 >::TIter it1 = TIntHH.BegI(); it1 < TIntHH.EndI(); it1++) {
+    THash<TInt64, TInt64, int64> Vals1H = it1.GetDat();
+    TInt64 GroupId1 = it1.GetKey();
 
-				for(THash<TInt64, TInt64, int64>::TIter it = Vals1H.BegI(); it < Vals1H.EndI(); it++)
-				{
-					TInt64 Val = it.GetKey();
-					if(Vals2H.IsKey(Val)){
-						intersectionCount+=1;
-					}
-				}
+    for (THash<TInt64, THash<TInt64, TInt64, int64>, int64 >::TIter it2 = TIntHH.BegI(); it2 < TIntHH.EndI(); it2++) {
+        int64 intersectionCount = 0;
+        TInt64 GroupId2 = it2.GetKey();
+        THash<TInt64, TInt64, int64> Vals2H = it2.GetDat();
 
-				int64 unionCount = Vals1H.Len() + Vals2H.Len() - intersectionCount;
-				float distance = 1.0f - (float)intersectionCount/unionCount;
+        for(THash<TInt64, TInt64, int64>::TIter it = Vals1H.BegI(); it < Vals1H.EndI(); it++)
+        {
+          TInt64 Val = it.GetKey();
+          if(Vals2H.IsKey(Val)){
+            intersectionCount+=1;
+          }
+        }
 
-				// Add a new row to the JointTable
-				if(distance<=Threshold){
-						JointTable->IntCols[0].Add(GroupId1);
-						JointTable->IntCols[1].Add(GroupId2);
-						JointTable->FltCols[0].Add(distance);
-						JointTable->IncrementNext();
-			}
-		}
-	}
+        int64 unionCount = Vals1H.Len() + Vals2H.Len() - intersectionCount;
+        float distance = 1.0f - (float)intersectionCount/unionCount;
+
+        // Add a new row to the JointTable
+        if(distance<=Threshold){
+            JointTable->IntCols[0].Add(GroupId1);
+            JointTable->IntCols[1].Add(GroupId2);
+            JointTable->FltCols[0].Add(distance);
+            JointTable->IncrementNext();
+      }
+    }
+  }
 
   JointTable->InitIds();
-	return JointTable;
+  return JointTable;
 }
 
-/// SimJoinPerGroup performs SimJoin based on a set of attributes. Performs the grouping internally 
+/// SimJoinPerGroup performs SimJoin based on a set of attributes. Performs the grouping internally
 /// and returns a projection of the columns on which groupby was performed along with the similarity.
-PTable TTable::SelfSimJoinPerGroup(const TStr64V& GroupBy, const TStr& SimCol, 
+PTable TTable::SelfSimJoinPerGroup(const TStr64V& GroupBy, const TStr& SimCol,
  const TStr& DistanceColName, const TSimType& SimType, const TFlt& Threshold) {
   TStr64V NGroupBy = NormalizeColNameV(GroupBy);
-	TStr64V ProjectionV;
-	
-	// Only keep the GroupBy cols and the SimCol
-	for(TInt64 i=0; i<GroupBy.Len(); i++)
-	{
-		ProjectionV.Add(GroupBy[i]);
-	}
+  TStr64V ProjectionV;
 
-	ProjectionV.Add(SimCol);
-	ProjectInPlace(ProjectionV);
+  // Only keep the GroupBy cols and the SimCol
+  for(TInt64 i=0; i<GroupBy.Len(); i++)
+  {
+    ProjectionV.Add(GroupBy[i]);
+  }
 
-	TStr CName = "Group";
+  ProjectionV.Add(SimCol);
+  ProjectInPlace(ProjectionV);
+
+  TStr CName = "Group";
   TInt64V UniqueVec;
   THash<TGroupKey, TPair<TInt64, TInt64V>, int64 > Grouping;
   GroupAux(NGroupBy, Grouping, false, CName, false, UniqueVec);
-	PTable GroupJointTable = SelfSimJoinPerGroup(CName, SimCol, DistanceColName, SimType, Threshold);
-	PTable JointTable = InitializeJointTable(*this);
+  PTable GroupJointTable = SelfSimJoinPerGroup(CName, SimCol, DistanceColName, SimType, Threshold);
+  PTable JointTable = InitializeJointTable(*this);
 
-	// Hash of groupid to any arbitrary row of that group. Arbitrary because the GroupBy 
-	// columns within that group are the same, so we can choose any one. 
-	THash<TInt64, TInt64, int64> GroupIdH;
+  // Hash of groupid to any arbitrary row of that group. Arbitrary because the GroupBy
+  // columns within that group are the same, so we can choose any one.
+  THash<TInt64, TInt64, int64> GroupIdH;
 
-	for(THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >::TIter it=Grouping.BegI(); it<Grouping.EndI(); it++)
-	{
-		TPair<TInt64, TInt64V> group = it.GetDat();
-		TInt64 GroupNum = group.Val1;
-		TInt64V RowIds = group.Val2;
+  for(THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >::TIter it=Grouping.BegI(); it<Grouping.EndI(); it++)
+  {
+    TPair<TInt64, TInt64V> group = it.GetDat();
+    TInt64 GroupNum = group.Val1;
+    TInt64V RowIds = group.Val2;
 
-		if(!GroupIdH.IsKey(GroupNum))
-		{
-			TInt64 RandomRowId = RowIds[0];  // Arbitrarily select the 1st row. 
-			GroupIdH.AddDat(GroupNum, RandomRowId);
-		}
-	}
+    if(!GroupIdH.IsKey(GroupNum))
+    {
+      TInt64 RandomRowId = RowIds[0];  // Arbitrarily select the 1st row.
+      GroupIdH.AddDat(GroupNum, RandomRowId);
+    }
+  }
 
-	for(TRowIterator RowI = GroupJointTable->BegRI(); RowI < GroupJointTable->EndRI(); RowI++)
-	{
-		// The GroupJoinTable has a well defined structure - columns 0 and 1 are GroupIds
-		TInt64 GroupId1 = GroupJointTable->IntCols[0][RowI.GetRowIdx()];
-		TInt64 GroupId2 = GroupJointTable->IntCols[1][RowI.GetRowIdx()];
+  for(TRowIterator RowI = GroupJointTable->BegRI(); RowI < GroupJointTable->EndRI(); RowI++)
+  {
+    // The GroupJoinTable has a well defined structure - columns 0 and 1 are GroupIds
+    TInt64 GroupId1 = GroupJointTable->IntCols[0][RowI.GetRowIdx()];
+    TInt64 GroupId2 = GroupJointTable->IntCols[1][RowI.GetRowIdx()];
 
-		// Get the rows for groupid1 and groupid and arbitrary select one row
-		TInt64 RowId1 = GroupIdH.GetDat(GroupId1);
-		TInt64 RowId2 = GroupIdH.GetDat(GroupId2);
-		JointTable->AddJointRow(*this, *this, RowId1, RowId2);
-	} 
+    // Get the rows for groupid1 and groupid and arbitrary select one row
+    TInt64 RowId1 = GroupIdH.GetDat(GroupId1);
+    TInt64 RowId2 = GroupIdH.GetDat(GroupId2);
+    JointTable->AddJointRow(*this, *this, RowId1, RowId2);
+  }
 
-	// Add the simiarlity column from the GroupJointTable - GroupJointTable has a 
-	// well defined structure - The first float column is the similarity;
-	JointTable->StoreFltCol(DistanceColName, GroupJointTable->FltCols[0]);
-	ProjectionV.Clr();
-	ProjectionV.Add(DistanceColName);
+  // Add the simiarlity column from the GroupJointTable - GroupJointTable has a
+  // well defined structure - The first float column is the similarity;
+  JointTable->StoreFltCol(DistanceColName, GroupJointTable->FltCols[0]);
+  ProjectionV.Clr();
+  ProjectionV.Add(DistanceColName);
 
-	// Find the GroupBy columns in the JointTable by matching the Suffix of the Schema
-	// columns with the original GroupBy columns - Note that Join renames columns. 
-	for(TInt64 i=0; i<GroupBy.Len(); i++){
-		for(TInt64 j=0; j<JointTable->Sch.Len(); j++)
-		{
-			TStr ColName = JointTable->Sch[j].Val1;
-			if(ColName.IsStrIn(GroupBy[i]))
-			{
-				ProjectionV.Add(ColName);
-			}
-		}
-	}
+  // Find the GroupBy columns in the JointTable by matching the Suffix of the Schema
+  // columns with the original GroupBy columns - Note that Join renames columns.
+  for(TInt64 i=0; i<GroupBy.Len(); i++){
+    for(TInt64 j=0; j<JointTable->Sch.Len(); j++)
+    {
+      TStr ColName = JointTable->Sch[j].Val1;
+      if(ColName.IsStrIn(GroupBy[i]))
+      {
+        ProjectionV.Add(ColName);
+      }
+    }
+  }
 
-	JointTable->ProjectInPlace(ProjectionV);
-	JointTable->InitIds();
-	return JointTable;
+  JointTable->ProjectInPlace(ProjectionV);
+  JointTable->InitIds();
+  return JointTable;
 }
 
 // Increments the next vector and set last, NumRows and NumValidRows.
 void TTable::IncrementNext()
 {
-	// Advance the Next vector
-	NumRows++;
-	NumValidRows++;
-	if (!Next.Empty()) {
-		Next[Next.Len()-1] = NumValidRows-1;
-		LastValidRow = NumValidRows-1;
-	}
-	Next.Add(Last);
+  // Advance the Next vector
+  NumRows++;
+  NumValidRows++;
+  if (!Next.Empty()) {
+    Next[Next.Len()-1] = NumValidRows-1;
+    LastValidRow = NumValidRows-1;
+  }
+  Next.Add(Last);
 }
 
-// Q: Do we want to have any gurantees in terms of order of the 0t rows - i.e. 
+// Q: Do we want to have any gurantees in terms of order of the 0t rows - i.e.
 // ordered by "this" table row idx as primary key and "Table" row idx as secondary key
  // This means only keeping joint row indices (pairs of original row indices), sorting them
- // and adding all rows in the end. Sorting can be expensive, but we would be able to pre-allocate 
+ // and adding all rows in the end. Sorting can be expensive, but we would be able to pre-allocate
  // memory for the joint table..
 PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
   // double startFn = omp_get_wtime();
@@ -2296,7 +2305,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
   TInt64 ColBId = ThisIsSmaller ? Table.GetColIdx(ColB) : GetColIdx(ColB);
   // double endInit = omp_get_wtime();
   // printf("Init time = %f\n", endInit-startFn);
-  // iterate over the rows of the bigger table and check for "collisions" 
+  // iterate over the rows of the bigger table and check for "collisions"
   // with the group keys for the small table.
 #ifdef GCC_ATOMIC
   /*
@@ -2308,7 +2317,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
         TS.GroupByIntColMP(ColS, T, true);
         // double endGroup = omp_get_wtime();
         // printf("Group time = %f\n", endGroup-endInit);
-        
+
         TIntPr64V Partitions;
         TB.GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
         TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
@@ -2316,7 +2325,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
         // double endPart = omp_get_wtime();
         // printf("Partition time = %f\n", endPart-endGroup);
 
-        #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) 
+        #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
         for (int64 i = 0; i < Partitions.Len(); i++){
           //double start = omp_get_wtime();
           JointRowIDSet[i].Reserve(PartitionSize);
@@ -2342,7 +2351,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
         }
         // double endJoin = omp_get_wtime();
         // printf("Iterate time = %f\n", endJoin-endPart);
-        JointTable->AddNJointRowsMP(*this, Table, JointRowIDSet);      
+        JointTable->AddNJointRowsMP(*this, Table, JointRowIDSet);
         // double endAdd = omp_get_wtime();
         // printf("Add time = %f\n", endAdd-endJoin);
         break;
@@ -2357,7 +2366,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
         TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
         TVec<TIntPr64V, int64> JointRowIDSet(Partitions.Len());
 
-        #pragma omp parallel for schedule(dynamic) 
+        #pragma omp parallel for schedule(dynamic)
         for (int64 i = 0; i < Partitions.Len(); i++){
           JointRowIDSet[i].Reserve(PartitionSize);
           TRowIterator RowI(Partitions[i].GetVal1(), &TB);
@@ -2390,7 +2399,7 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
         TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
         TVec<TIntPr64V, int64> JointRowIDSet(Partitions.Len());
 
-        #pragma omp parallel for schedule(dynamic) 
+        #pragma omp parallel for schedule(dynamic)
         for (int64 i = 0; i < Partitions.Len(); i++){
           JointRowIDSet[i].Reserve(PartitionSize);
           TRowIterator RowI(Partitions[i].GetVal1(), &TB);
@@ -2476,10 +2485,10 @@ PTable TTable::Join(const TStr& Col1, const TTable& Table, const TStr& Col2) {
 #ifdef GCC_ATOMIC
   //}
 #endif
-  return JointTable; 
+  return JointTable;
 }
 
-void TTable::ThresholdJoinInputCorrectness(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table, 
+void TTable::ThresholdJoinInputCorrectness(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table,
   const TStr& KeyCol2, const TStr& JoinCol2){
   if (!IsColName(KeyCol1)) {
     printf("no such column %s\n", KeyCol1.CStr());
@@ -2507,8 +2516,8 @@ void TTable::ThresholdJoinInputCorrectness(const TStr& KeyCol1, const TStr& Join
   }
 }
 
-void TTable::ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS, 
-  const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS, 
+void TTable::ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS,
+  const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS,
   THash<TInt64Pr,TInt64Tr, int64>& Counters, TBool ThisIsSmaller, TAttrType JoinColType, TAttrType KeyType){
     // iterate over big table and count / record joint tuples
     for (TRowIterator RowI = TB.BegRI(); RowI < TB.EndRI(); RowI++) {
@@ -2527,7 +2536,7 @@ void TTable::ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS,
           KeyB = RowI.GetStrMapById(KeyColIdxB);
         } else{
           KeyB = RowI.GetIntAttr(KeyColIdxB);
-        } 
+        }
         // read row ids from small table with join attribute value of JVal
         const TInt64V& RelevantRows = T.GetDat(JVal);
         for(int64 i = 0; i < RelevantRows.Len(); i++){
@@ -2545,7 +2554,7 @@ void TTable::ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS,
             TInt64Tr& V = Counters.GetDat(Keys);
             V.Val3 = V.Val3 + 1;
           } else{
-            // if the key pair hasn't been seen before - add it with value of 
+            // if the key pair hasn't been seen before - add it with value of
             // row indices that create a joint record with this key pair
             if(ThisIsSmaller){
               Counters.AddDat(Keys, TInt64Tr(RelevantRows[i], RowI.GetRowIdx(),1));
@@ -2553,13 +2562,13 @@ void TTable::ThresholdJoinCountCollisions(const TTable& TB, const TTable& TS,
               Counters.AddDat(Keys, TInt64Tr(RowI.GetRowIdx(), RelevantRows[i],1));
             }
           }
-        }	// end of for loop
-      }	// end of if statement
+        }  // end of for loop
+      }  // end of if statement
     } // end of for loop
 }
 
-void TTable::ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTable& TS, 
-  const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS, 
+void TTable::ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTable& TS,
+  const TIntInt64V64H& T, TInt64 JoinColIdxB, TInt64 KeyColIdxB, TInt64 KeyColIdxS,
   THash<TInt64Tr,TInt64Tr, int64>& Counters, TBool ThisIsSmaller, TAttrType JoinColType, TAttrType KeyType){
     for (TRowIterator RowI = TB.BegRI(); RowI < TB.EndRI(); RowI++) {
       // value to join on from big table
@@ -2577,7 +2586,7 @@ void TTable::ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTab
           KeyB = RowI.GetStrMapById(KeyColIdxB);
         } else{
           KeyB = RowI.GetIntAttr(KeyColIdxB);
-        } 
+        }
         // read row ids from small table with join attribute value of JVal
         const TInt64V& RelevantRows = T.GetDat(JVal);
         for(int64 i = 0; i < RelevantRows.Len(); i++){
@@ -2588,15 +2597,15 @@ void TTable::ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTab
           } else{
             KeyS = TS.IntCols[KeyColIdxS][RelevantRows[i]];
           }
-        	// create a pair of keys - serves as a key in Counters
-        	TInt64Pr Keys = ThisIsSmaller ? TInt64Pr(KeyS, KeyB) : TInt64Pr(KeyB, KeyS);
-        	TInt64Tr K(Keys.Val1,Keys.Val2,JVal);
+          // create a pair of keys - serves as a key in Counters
+          TInt64Pr Keys = ThisIsSmaller ? TInt64Pr(KeyS, KeyB) : TInt64Pr(KeyB, KeyS);
+          TInt64Tr K(Keys.Val1,Keys.Val2,JVal);
           if(Counters.IsKey(K)){
             // if the key pair has been seen before - increment its counter by 1
             TInt64Tr& V = Counters.GetDat(K);
             V.Val3 = V.Val3 + 1;
           } else{
-            // if the key pair hasn't been seen before - add it with value of 
+            // if the key pair hasn't been seen before - add it with value of
             // row indices that create a joint record with this key pair
             if(ThisIsSmaller){
               Counters.AddDat(K, TInt64Tr(RelevantRows[i], RowI.GetRowIdx(),1));
@@ -2604,8 +2613,8 @@ void TTable::ThresholdJoinCountPerJoinKeyCollisions(const TTable& TB, const TTab
               Counters.AddDat(K, TInt64Tr(RowI.GetRowIdx(), RelevantRows[i],1));
             }
           }
-        }	// end of for loop
-      }	// end of if statement
+        }  // end of for loop
+      }  // end of if statement
     } // end of for loop
   }
 
@@ -2642,10 +2651,10 @@ PTable TTable::ThresholdJoinPerJoinKeyOutputTable(const THash<TInt64Tr,TInt64Tr,
 
 
 // expected output: one joint tuple (R1,R2) with:
-// (1) R1[KeyCol1] = K1 and R2[KeyCol2] = K2 
-// for every pair of keys (K1,K2) such that the number of joint tuples 
+// (1) R1[KeyCol1] = K1 and R2[KeyCol2] = K2
+// for every pair of keys (K1,K2) such that the number of joint tuples
 // (joint on R1[JoinCol1] = R2[JointCol2]) that hold property (1) is at least Threshold
-PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table, 
+PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TTable& Table,
   const TStr& KeyCol2, const TStr& JoinCol2, TInt64 Threshold, TBool PerJoinKey){
   // test input correctness
   ThresholdJoinInputCorrectness(KeyCol1, JoinCol1, Table, KeyCol2, JoinCol2);
@@ -2663,17 +2672,17 @@ PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TT
   TInt64 KeyColIdxS = GetColIdx(KeyCol1);
   TInt64 KeyColIdxB = GetColIdx(KeyCol2);
   if(!ThisIsSmaller){
-  	JoinColS = JoinCol2;
+    JoinColS = JoinCol2;
     JoinColIdxB = GetColIdx(JoinCol1);
-  	KeyColIdxS = GetColIdx(KeyCol2);
+    KeyColIdxS = GetColIdx(KeyCol2);
     KeyColIdxB = GetColIdx(KeyCol1);
   }
-  
+
   // debug print
-  //printf("JoinColS = %d, JoinColIdxB = %d, KeyColIdxS = %d, KeyColIdxB = %d\n", 
-  	//GetColIdx(JoinColS).Val, JoinColIdxB.Val, KeyColIdxS.Val, KeyColIdxB.Val);
+  //printf("JoinColS = %d, JoinColIdxB = %d, KeyColIdxS = %d, KeyColIdxB = %d\n",
+    //GetColIdx(JoinColS).Val, JoinColIdxB.Val, KeyColIdxS.Val, KeyColIdxB.Val);
   //printf("starting switch-case\n");
-  
+
   if(KeyType != atInt && KeyType != atStr){
     printf("ThresholdJoin only supports integer or string key attributes\n");
     TExcept::Throw("ThresholdJoin only supports integer or string key attributes");
@@ -2691,8 +2700,8 @@ PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TT
     TS.GroupByStrCol(JoinColS, T, TInt64V(), true);
   } else{
     TExcept::Throw("ThresholdJoin only supports integer or string join attributes");
-  } 
-  
+  }
+
  /*
   for(THash<TInt,TIntV>::TIter it = T.BegI(); it < T.EndI(); it++){
     if(JoinColType == atStr){
@@ -2707,8 +2716,8 @@ PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TT
     printf("\n");
   }
   */
-  
-  // Counters: (K1,K2) --> (RowIdx1,RowIdx2, count) where K1 is a key from KeyCol1, 
+
+  // Counters: (K1,K2) --> (RowIdx1,RowIdx2, count) where K1 is a key from KeyCol1,
   // K2 is a key from Table's KeyCol2; RowIdx1 and RowIdx2 are physical row ids
   // that participates in a joint tuple that satisfies (1).
   // count is the count of joint records that satisfy (1).
@@ -2724,7 +2733,7 @@ PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TT
       if(KeyType == atStr){
         printf("%s %s --> %d %d %d\n", Context->StringVals.GetKey(K.Val1), Context->StringVals.GetKey(K.Val2), V.Val1.Val, V.Val2.Val, V.Val3.Val);
       } else{
-        printf("%d %d --> %d %d %d\n", K.Val1.Val, K.Val2.Val, V.Val1.Val, V.Val2.Val, V.Val3.Val); 
+        printf("%d %d --> %d %d %d\n", K.Val1.Val, K.Val2.Val, V.Val1.Val, V.Val2.Val, V.Val3.Val);
       }
     }
     */
@@ -2741,7 +2750,7 @@ PTable TTable::ThresholdJoin(const TStr& KeyCol1, const TStr& JoinCol1, const TT
       if(KeyType == atStr){
         printf("%s %s --> %d %d %d\n", Context->StringVals.GetKey(K.Val1), Context->StringVals.GetKey(K.Val2), V.Val1.Val, V.Val2.Val, V.Val3.Val);
       } else{
-        printf("%d %d --> %d %d %d\n", K.Val1.Val, K.Val2.Val, V.Val1.Val, V.Val2.Val, V.Val3.Val); 
+        printf("%d %d --> %d %d %d\n", K.Val1.Val, K.Val2.Val, V.Val1.Val, V.Val2.Val, V.Val3.Val);
       }
     }
     */
@@ -2761,8 +2770,8 @@ void TTable::Select(TPredicate& Predicate, TInt64V& SelectedRows, TBool Remove) 
   for (TInt64 i = 0; i < NumRelevantCols; i++) {
     ColTypes[i] = GetColType(RelevantCols[i]);
     ColIndices[i] = GetColIdx(RelevantCols[i]);
-  } 
-  
+  }
+
   if (Remove) {
     TRowIteratorWithRemove RowI = BegRIWR();
     while (RowI.GetNextRowIdx() != Last) {
@@ -2780,7 +2789,7 @@ void TTable::Select(TPredicate& Predicate, TInt64V& SelectedRows, TBool Remove) 
           break;
         }
       }
-      if (!Predicate.Eval()) { 
+      if (!Predicate.Eval()) {
         RowI.RemoveNext();
       } else {
         RowI++;
@@ -2840,8 +2849,8 @@ void TTable::SelectAtomic(const TStr& Col1, const TStr& Col2, TPredComp Cmp, TIn
           Result = TPredicate::EvalStrAtom(RowI.GetNextStrAttr(ColIdx1), RowI.GetNextStrAttr(ColIdx2), Cmp);
           break;
       }
-			
-      if (!Result) { 
+
+      if (!Result) {
         RowI.RemoveNext();
       } else {
         RowI++;
@@ -2874,15 +2883,15 @@ void TTable::ClassifyAtomic(const TStr& Col1, const TStr& Col2, TPredComp Cmp,
   ClassifyAux(SelectedRows, LabelName, PositiveLabel, NegativeLabel);
 }
 
-void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp Cmp, 
+void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp Cmp,
   TInt64V& SelectedRows, PTable& SelectedTable, TBool Remove, TBool Table) {
   //double startFn = omp_get_wtime();
   TStr ValTStr(Val.GetStr());
   TAttrType Type = GetColType(Col);
   TInt64 ColIdx = GetColIdx(Col);
 
-  if (Type != Val.GetType()) { 
-    TExcept::Throw("SelectAtomicConst: coltype does not match const type"); 
+  if (Type != Val.GetType()) {
+    TExcept::Throw("SelectAtomicConst: coltype does not match const type");
   }
 
   if(Remove){
@@ -2898,7 +2907,7 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
       //printf("Partition time = %f\n", endPart-endInit);
 
       TIntPr64V Bounds(Partitions.Len());
-    
+
       // #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) reduction(+:RemoveCount) shared(Val)
       #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) reduction(+:RemoveCount)
       for (int64 i = 0; i < Partitions.Len(); i++){
@@ -2920,10 +2929,10 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
           if(!Result) {
             Next[CurrRowIdx] = TTable::Invalid;
             RemoveCount++;
-          } else { 
-            if (First) { FirstRowIdx = CurrRowIdx; First = false; } 
+          } else {
+            if (First) { FirstRowIdx = CurrRowIdx; First = false; }
             else { Next[LastRowIdx] = CurrRowIdx; }
-            LastRowIdx = CurrRowIdx; 
+            LastRowIdx = CurrRowIdx;
           }
         }
         Bounds[i] = TInt64Pr(FirstRowIdx, LastRowIdx);
@@ -2932,7 +2941,7 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
       }
       //double endIter = omp_get_wtime();
       //printf("Iter time = %f\n", endIter-endPart);
-      
+
       // repair the next vector
       TInt64 CurrBound = 0;
       while (CurrBound < Bounds.Len() && Bounds[CurrBound].Val1 == TTable::Invalid) {
@@ -2994,11 +3003,11 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
         TRowIterator EndI(Partitions[i].GetVal2(), this);
         while (RowI < EndI) {
           if (Type != atStr) {
-            if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) { 
+            if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) {
               TotalSelectedRows++;
             }
           } else {
-            if (RowI.CompareAtomicConstTStr(ColIdx, ValTStr, Cmp)) { 
+            if (RowI.CompareAtomicConstTStr(ColIdx, ValTStr, Cmp)) {
               TotalSelectedRows++;
             }
           }
@@ -3016,7 +3025,7 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
         // printf("Select: Empty output!\n");
         return;
       }
-    
+
       #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
       for (int64 i = 0; i < Partitions.Len(); i++){
         TInt64V LocalSelectedRows;
@@ -3025,11 +3034,11 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
         TRowIterator EndI(Partitions[i].GetVal2(), this);
         while (RowI < EndI) {
           if (Type != atStr) {
-            if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) { 
+            if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) {
               LocalSelectedRows.Add(RowI.GetRowIdx());
             }
           } else {
-            if (RowI.CompareAtomicConstTStr(ColIdx, ValTStr, Cmp)) { 
+            if (RowI.CompareAtomicConstTStr(ColIdx, ValTStr, Cmp)) {
               LocalSelectedRows.Add(RowI.GetRowIdx());
             }
           }
@@ -3044,12 +3053,12 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
 
       //SelectedTable->ResizeTable(SelectedTable->GetNumValidRows());
       //double endResize2 = omp_get_wtime();
-      //printf("Resize2 time = %f\n", endResize2-endIter);      
+      //printf("Resize2 time = %f\n", endResize2-endIter);
       SelectedTable->SetFirstValidRow();
     } else {
 #endif
       for(TRowIterator RowI = BegRI(); RowI < EndRI(); RowI++){
-        if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) { 
+        if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) {
           SelectedTable->AddRow(RowI);
         }
       }
@@ -3058,7 +3067,7 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
 #endif
   } else {
     for(TRowIterator RowI = BegRI(); RowI < EndRI(); RowI++){
-      if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) { 
+      if (RowI.CompareAtomicConst(ColIdx, Val, Cmp)) {
         SelectedRows.Add(RowI.GetRowIdx());
       }
     }
@@ -3300,7 +3309,7 @@ void TTable::Order(const TStr64V& OrderBy, TStr OrderColName, TBool ResetRankByM
     if (ResetRankByMSC) {
       for (TInt64 i = 1; i < NumValidRows; i++) {
         TStr GroupName = OrderBy[0];
-        if (GetStrVal(GroupName, ValidRows[i]) != GetStrVal(GroupName, ValidRows[i-1])) { 
+        if (GetStrVal(GroupName, ValidRows[i]) != GetStrVal(GroupName, ValidRows[i-1])) {
           RankCol[ValidRows[i]] = 0;
         } else {
           RankCol[ValidRows[i]] = RankCol[ValidRows[i-1]] + 1;
@@ -3320,14 +3329,14 @@ void TTable::Defrag() {
   TInt64 IdColIdx = GetColIdx(IdColName);
 
   for (TInt64 i = 0; i < Next.Len(); i++) {
-    if (Next[i] != TTable::Invalid) {  
+    if (Next[i] != TTable::Invalid) {
       // "first row" properly set beforehand
       if (FreeIndex == 0) {
         Assert (i == FirstValidRow);
         FirstValidRow = 0;
       }
- 
-      if (Next[i] != Last) { 
+
+      if (Next[i] != Last) {
         Next[FreeIndex] = FreeIndex + 1;
         Mapping.Add(FreeIndex);
       } else {
@@ -3448,12 +3457,12 @@ inline void TTable::AddNodeAttributes(TInt64 NId, TStr64V NodeAttrV, TInt64 RowI
 // a PNEANet, with each row as an edge between SrcCol and DstCol.
 PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
   PNEANet Graph = TNEANet::New();
-  
+
   const TAttrType NodeType = GetColType(SrcCol);
   Assert(NodeType == GetColType(DstCol));
   const TInt64 SrcColIdx = GetColIdx(SrcCol);
   const TInt64 DstColIdx = GetColIdx(DstCol);
-  
+
   // node values - i.e. the unique values of src/dst col
   //THashSet<TInt> IntNodeVals; // for both int and string node attr types.
   THash<TFlt, TInt64, int64> FltNodeVals;
@@ -3488,14 +3497,14 @@ PNEANet TTable::BuildGraph(const TInt64V& RowIds, TAttrAggr AggrPolicy) {
       if (!Graph->IsNode(DVal)) { Graph->AddNode(DVal); }
       //CheckAndAddIntNode(Graph, IntNodeVals, SVal);
       //CheckAndAddIntNode(Graph, IntNodeVals, DVal);
-    } 
+    }
 
-    // add edge and edge attributes 
+    // add edge and edge attributes
     Graph->AddEdge(SVal, DVal, CurrRowIdx);
     if (EdgeAttrV.Len() > 0) { AddEdgeAttributes(Graph, CurrRowIdx); }
 
     // get src and dst node attributes into hashmaps
-    if (SrcNodeAttrV.Len() > 0) { 
+    if (SrcNodeAttrV.Len() > 0) {
       AddNodeAttributes(SVal, SrcNodeAttrV, CurrRowIdx, NodeIntAttrs, NodeFltAttrs, NodeStrAttrs);
     }
     if (DstNodeAttrV.Len() > 0) {
@@ -3556,7 +3565,7 @@ void TTable::FillBucketsByWindow(TStr SplitAttr, TInt64 JumpSize, TInt64 WindowS
     TInt64 MinValue = TInt64::Mx;
     TInt64 MaxValue = TInt64::Mn;
     for (TInt64 i = 0; i < Next.Len(); i++) {
-      if (Next[i] != Invalid) { 
+      if (Next[i] != Invalid) {
         if (MinValue > IntCols[SplitColId][i]) {
           MinValue = IntCols[SplitColId][i];
         }
@@ -3588,11 +3597,11 @@ void TTable::FillBucketsByWindow(TStr SplitAttr, TInt64 JumpSize, TInt64 WindowS
       MinBucket = RowVal/WindowSize;
       MaxBucket = NumBuckets-1;
     } else if (JumpSize == WindowSize) { // disjoint windows
-      MinBucket = MaxBucket = RowVal/JumpSize;  
+      MinBucket = MaxBucket = RowVal/JumpSize;
     } else { // sliding windows
       if (RowVal < WindowSize) { MinBucket = 0; }
       else { MinBucket = (RowVal-WindowSize)/JumpSize + 1; }
-      MaxBucket = RowVal/JumpSize;  
+      MaxBucket = RowVal/JumpSize;
     }
     for (TInt64 j = MinBucket; j <= MaxBucket; j++) { RowIdBuckets[j].Add(i); }
   }
@@ -3607,7 +3616,7 @@ void TTable::FillBucketsByInterval(TStr SplitAttr, TIntPr64V SplitIntervals) {
   for (TInt64 i = 0; i < Next.Len(); i++) {
     if (Next[i] == Invalid) { continue; }
     int64 SplitVal = IntCols[SplitColId][i];
-    for (TInt64 j = 0; j < SplitIntervals.Len(); j++) { 
+    for (TInt64 j = 0; j < SplitIntervals.Len(); j++) {
       if (SplitVal >= SplitIntervals[j].Val1 && SplitVal < SplitIntervals[j].Val2) {
         RowIdBuckets[j].Add(i);
       }
@@ -3648,12 +3657,12 @@ PNEANet TTable::GetNextGraphFromSequence() {
 // Setting JumpSize > WindowSize will drop certain rows (currently not supported)
 // Setting JumpSize = 0 will give expanding windows (i.e. starting at 0 and ending at i*WindowSize)
 // To set the range of values of SplitAttr to be considered, use StartVal and EndVal (inclusive)
-// If StartVal == TInt.Mn, then the buckets will start from the min value of SplitAttr in the table. 
-// If EndVal == TInt.Mx, then the buckets will end at the max value of SplitAttr in the table. 
+// If StartVal == TInt.Mn, then the buckets will start from the min value of SplitAttr in the table.
+// If EndVal == TInt.Mx, then the buckets will end at the max value of SplitAttr in the table.
 TVec<PNEANet, int64> TTable::ToGraphSequence(TStr SplitAttr, TAttrAggr AggrPolicy, TInt64 WindowSize, TInt64 JumpSize, TInt64 StartVal, TInt64 EndVal) {
   FillBucketsByWindow(SplitAttr, JumpSize, WindowSize, StartVal, EndVal);
   printf("buckets filled\n");
-  return GetGraphsFromSequence(AggrPolicy);  
+  return GetGraphsFromSequence(AggrPolicy);
 }
 
 TVec<PNEANet, int64> TTable::ToVarGraphSequence(TStr SplitAttr, TAttrAggr AggrPolicy, TIntPr64V SplitIntervals) {
@@ -3667,7 +3676,7 @@ TVec<PNEANet, int64> TTable::ToGraphPerGroup(TStr GroupAttr, TAttrAggr AggrPolic
 
 PNEANet TTable::ToGraphSequenceIterator(TStr SplitAttr, TAttrAggr AggrPolicy, TInt64 WindowSize, TInt64 JumpSize, TInt64 StartVal, TInt64 EndVal) {
   FillBucketsByWindow(SplitAttr, JumpSize, WindowSize, StartVal, EndVal);
-  return GetFirstGraphFromSequence(AggrPolicy);  
+  return GetFirstGraphFromSequence(AggrPolicy);
 }
 
 PNEANet TTable::ToVarGraphSequenceIterator(TStr SplitAttr, TAttrAggr AggrPolicy, TIntPr64V SplitIntervals) {
@@ -3852,8 +3861,8 @@ PTable TTable::GetEdgeTablePN(const PNGraphMP& Network, TTableContext* Context){
 }
 
 #endif // GCC_ATOMIC
-PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property, 
- const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName, 
+PTable TTable::GetFltNodePropertyTable(const PNEANet& Network, const TIntFlt64H& Property,
+ const TStr& NodeAttrName, const TAttrType& NodeAttrType, const TStr& PropertyAttrName,
  TTableContext* Context) {
   Schema SR;
   // Determine type of node id
@@ -3930,26 +3939,26 @@ PTable TTable::IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, cons
 }
 
 void TTable::PrintSize(){
-	printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val).CStr());
-	printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val).CStr());
-	printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()).CStr());
-	printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()).CStr());
-	printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()).CStr());
-	TSize MemUsed = GetMemUsedKB();
-	printf("Approximate table size is %s KB\n", TUInt64::GetStr(MemUsed).CStr());
+  printf("Total number of rows: %s\n", TInt64::GetStr(NumRows.Val).CStr());
+  printf("Number of valid rows: %s\n", TInt64::GetStr(NumValidRows.Val).CStr());
+  printf("Number of Int columns: %s\n", TInt64::GetStr(IntCols.Len()).CStr());
+  printf("Number of Flt columns: %s\n", TInt64::GetStr(FltCols.Len()).CStr());
+  printf("Number of Str columns: %s\n", TInt64::GetStr(StrColMaps.Len()).CStr());
+  TSize MemUsed = GetMemUsedKB();
+  printf("Approximate table size is %s KB\n", TUInt64::GetStr(MemUsed).CStr());
 }
 
 TSize TTable::GetMemUsedKB() {
   TSize ApproxSize = 0;
   ApproxSize += Next.GetMemUsed()/1000;  // Next vector
   for(int64 i = 0; i < IntCols.Len(); i++){
-  	ApproxSize += IntCols[i].GetMemUsed()/1000;
+    ApproxSize += IntCols[i].GetMemUsed()/1000;
   }
   for(int64 i = 0; i < FltCols.Len(); i++){
-  	ApproxSize += FltCols[i].GetMemUsed()/1000;
+    ApproxSize += FltCols[i].GetMemUsed()/1000;
   }
   for(int64 i = 0; i < StrColMaps.Len(); i++){
-  	ApproxSize += StrColMaps[i].GetMemUsed()/1000;
+    ApproxSize += StrColMaps[i].GetMemUsed()/1000;
   }
   ApproxSize += RowIdMap.GetMemUsed()/1000;
   ApproxSize += GroupIDMapping.GetMemUsed()/1000;
@@ -3959,19 +3968,19 @@ TSize TTable::GetMemUsedKB() {
 }
 
 void TTable::PrintContextSize(){
-	printf("Number of strings in pool: ");
-	printf("%s\n", TInt64::GetStr(Context->StringVals.Len()).CStr());
-	printf("Number of entries in hash table: ");
-	printf("%s\n", TInt64::GetStr(Context->StringVals.Reserved()).CStr());
-	TSize MemUsed = GetContextMemUsedKB();
-	printf("Approximate context size is %s KB\n",
+  printf("Number of strings in pool: ");
+  printf("%s\n", TInt64::GetStr(Context->StringVals.Len()).CStr());
+  printf("Number of entries in hash table: ");
+  printf("%s\n", TInt64::GetStr(Context->StringVals.Reserved()).CStr());
+  TSize MemUsed = GetContextMemUsedKB();
+  printf("Approximate context size is %s KB\n",
           TUInt64::GetStr(MemUsed).CStr());
 }
 
 TSize TTable::GetContextMemUsedKB(){
-	TSize ApproxSize = 0;
-	ApproxSize += Context->StringVals.GetMemUsed();
-	return ApproxSize;
+  TSize ApproxSize = 0;
+  ApproxSize += Context->StringVals.GetMemUsed();
+  return ApproxSize;
 }
 
 void TTable::AddTable(const TTable& T) {
@@ -3983,7 +3992,7 @@ void TTable::AddTable(const TTable& T) {
     TInt64 ColIdx = GetColIdx(ColName);
     TInt64 TColIdx = ColName == IdColName ? T.GetColIdx(T.IdColName) : T.GetColIdx(ColName);
     if (TColIdx < 0) { TExcept::Throw("when adding a table, it must contain all columns of source table!"); }
-    switch (GetColType(ColName)) { 
+    switch (GetColType(ColName)) {
     case atInt:
        IntCols[ColIdx].AddV(T.IntCols[TColIdx]);
        break;
@@ -4005,7 +4014,7 @@ void TTable::AddTable(const TTable& T) {
     FirstValidRow = T.FirstValidRow;
   }
   Next.AddV(TNext);
-  // checks if table is empty 
+  // checks if table is empty
   if (LastValidRow >= 0) {
     Next[LastValidRow] = NumRows + T.FirstValidRow;
   }
@@ -4037,7 +4046,7 @@ void TTable::GetCollidingRows(const TTable& Table, THashSet<TInt64, int64>& Coll
       continue;
     }
     if (Sch[c] != Table.Sch[c]) {
-      printf("(%s,%d) != (%s,%d)\n", Sch[c].Val1.CStr(), Sch[c].Val2, Table.Sch[c].Val1.CStr(), Table.Sch[c].Val2); 
+      printf("(%s,%d) != (%s,%d)\n", Sch[c].Val1.CStr(), Sch[c].Val2, Table.Sch[c].Val1.CStr(), Table.Sch[c].Val2);
       TExcept::Throw("GetCollidingRows: schemas do not match!");
     }
     GroupBy.Add(NormalizeColName(Sch[c].Val1));
@@ -4070,13 +4079,13 @@ void TTable::GetCollidingRows(const TTable& Table, THashSet<TInt64, int64>& Coll
 
     // find group key
     for (TInt64 c = 0; c < IKLen; c++) {
-      IKey.Add(it.GetIntAttr(IntGroupByCols[c])); 
+      IKey.Add(it.GetIntAttr(IntGroupByCols[c]));
     }
     for (TInt64 c = 0; c < FKLen; c++) {
-      FKey.Add(it.GetFltAttr(FltGroupByCols[c])); 
+      FKey.Add(it.GetFltAttr(FltGroupByCols[c]));
     }
     for (TInt64 c = 0; c < SKLen; c++) {
-      IKey.Add(it.GetStrMapById(StrGroupByCols[c])); 
+      IKey.Add(it.GetStrMapById(StrGroupByCols[c]));
     }
     // look for group matching the key
     TGroupKey GroupKey = TGroupKey(IKey, FKey);
@@ -4156,18 +4165,18 @@ void TTable::UpdateTableForNewRow() {
 #ifdef GCC_ATOMIC
 void TTable::SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal){
     if(!GetMP()){ TExcept::Throw("Not Using MP!");}
-	TIntPr64V Partitions;
-	GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-	TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
-	#pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
-	for (int64 i = 0; i < Partitions.Len(); i++){
-		TRowIterator RowI(Partitions[i].GetVal1(), this);
-		TRowIterator EndI(Partitions[i].GetVal2(), this);
-		while(RowI < EndI){
-			FltCols[UpdateColIdx][RowI.GetRowIdx()] = DefaultFltVal;
-			RowI++;
-		}
-	}
+  TIntPr64V Partitions;
+  GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
+  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
+  for (int64 i = 0; i < Partitions.Len(); i++){
+    TRowIterator RowI(Partitions[i].GetVal1(), this);
+    TRowIterator EndI(Partitions[i].GetVal2(), this);
+    while(RowI < EndI){
+      FltCols[UpdateColIdx][RowI.GetRowIdx()] = DefaultFltVal;
+      RowI++;
+    }
+  }
 }
 
 // OP RS 2016/06/30: this wrapper function is required
@@ -4179,7 +4188,7 @@ int64 sync_bool_compare_and_swap(int64 *lock) {
 void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
     const TTable& Table, const TStr& FKeyAttr, const TStr& ReadAttr,
     TFlt DefaultFltVal) {
-	if (!GetMP()) {
+  if (!GetMP()) {
     TExcept::Throw("Not Using MP!");
   }
 
@@ -4199,12 +4208,12 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
 
   // TODO: this should be a generic vector operation
   SetFltColToConstMP(UpdateColIdx, DefaultFltVal);
-  		
-	TIntPr64V Partitions;
-	Table.GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-	TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
-	TInt64V Locks(NumRows);
-	Locks.PutAll(0);	// need to parallelize this...
+
+  TIntPr64V Partitions;
+  Table.GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
+  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  TInt64V Locks(NumRows);
+  Locks.PutAll(0);  // need to parallelize this...
 
   switch (KeyType) {
     // TODO: add support for other cases of KeyType
@@ -4213,10 +4222,10 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
         // must use physical row ids
         GroupByIntColMP(NKeyAttr, Grouping, true);
         #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) // num_threads(1)
-			  for (int64 i = 0; i < Partitions.Len(); i++) {
-				  TRowIterator RowI(Partitions[i].GetVal1(), &Table);
-				  TRowIterator EndI(Partitions[i].GetVal2(), &Table);
-				  while (RowI < EndI) {
+        for (int64 i = 0; i < Partitions.Len(); i++) {
+          TRowIterator RowI(Partitions[i].GetVal1(), &Table);
+          TRowIterator EndI(Partitions[i].GetVal2(), &Table);
+          while (RowI < EndI) {
             TInt64 K = RowI.GetIntAttr(FKeyColIdx);
             if (Grouping.IsKey(K)) {
               TInt64V& UpdateRows = Grouping.GetDat(K);
@@ -4229,35 +4238,35 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
                   continue;
                 }
                 //printf("key = %d, row = %d, old_score = %f\n", K.Val, j, UpdateRows[j].Val, FltCols[UpdateColIdx][UpdateRows[j]].Val);
-  							  FltCols[UpdateColIdx][UpdateRows[j]] = RowI.GetFltAttr(ReadColIdx);
-  							  //printf("key = %d, new_score = %f\n", K.Val, j, FltCols[UpdateColIdx][UpdateRows[j]].Val);
+                  FltCols[UpdateColIdx][UpdateRows[j]] = RowI.GetFltAttr(ReadColIdx);
+                  //printf("key = %d, new_score = %f\n", K.Val, j, FltCols[UpdateColIdx][UpdateRows[j]].Val);
               } // end of for loop
             } // end of if statement
             RowI++;
           } // end of while loop
-        }	// end of for loop
+        }  // end of for loop
       } // end of case atInt
       break;
     default:
       break;
   } // end of outer switch statement
 }
-#endif	// GCC_ATOMIC
+#endif  // GCC_ATOMIC
 
-void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table, 
+void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, const TTable& Table,
   const TStr& FKeyAttr, const TStr& ReadAttr, TFlt DefaultFltVal){
   if(!IsColName(KeyAttr)){ TExcept::Throw("Bad KeyAttr parameter");}
   if(!IsColName(UpdateAttr)){ TExcept::Throw("Bad UpdateAttr parameter");}
   if(!Table.IsColName(FKeyAttr)){ TExcept::Throw("Bad FKeyAttr parameter");}
   if(!Table.IsColName(ReadAttr)){ TExcept::Throw("Bad ReadAttr parameter");}
-  
+
 #ifdef GCC_ATOMIC
   if(GetMP()){
     UpdateFltFromTableMP(KeyAttr, UpdateAttr,Table, FKeyAttr, ReadAttr, DefaultFltVal);
     return;
   }
-#endif	// GCC_ATOMIC
-  	
+#endif  // GCC_ATOMIC
+
   TAttrType KeyType = GetColType(KeyAttr);
   TAttrType FKeyType = Table.GetColType(FKeyAttr);
   if(KeyType != FKeyType){TExcept::Throw("Key Type Mismatch");}
@@ -4269,11 +4278,11 @@ void TTable::UpdateFltFromTable(const TStr& KeyAttr, const TStr& UpdateAttr, con
   TStr NFKeyAttr = Table.NormalizeColName(FKeyAttr);
   TStr NReadAttr = Table.NormalizeColName(ReadAttr);
   TInt64 UpdateColIdx = GetColIdx(UpdateAttr);
-  	
+
   for(TRowIterator iter = BegRI(); iter < EndRI(); iter++){
     FltCols[UpdateColIdx][iter.GetRowIdx()] = DefaultFltVal;
   }
-  	
+
   switch(KeyType) {
     // TODO: add support for other cases of KeyType
     case atInt: {
@@ -4348,13 +4357,13 @@ void TTable::ResizeTable(int64 RowCount) {
 #endif
     for (int64 i = 0; i < TotalCols+1; i++) {
       if (i < FltOffset) {
-        IntCols[i].Reserve(RowCount, RowCount); 
+        IntCols[i].Reserve(RowCount, RowCount);
       } else if (i < StrOffset) {
         FltCols[i-FltOffset].Reserve(RowCount, RowCount);
       } else if (i < TotalCols) {
-        StrColMaps[i-StrOffset].Reserve(RowCount, RowCount);  
+        StrColMaps[i-StrOffset].Reserve(RowCount, RowCount);
       } else {
-        Next.Reserve(RowCount, RowCount);    
+        Next.Reserve(RowCount, RowCount);
       }
     }
   } else if (Next.Len() > RowCount) {
@@ -4366,13 +4375,13 @@ void TTable::ResizeTable(int64 RowCount) {
 #endif
     for (int64 i = 0; i < TotalCols+1; i++) {
       if (i < FltOffset) {
-        IntCols[i].Trunc(RowCount); 
+        IntCols[i].Trunc(RowCount);
       } else if (i < StrOffset) {
-        FltCols[i-FltOffset].Trunc(RowCount); 
+        FltCols[i-FltOffset].Trunc(RowCount);
       } else if (i < TotalCols) {
-        StrColMaps[i-StrOffset].Trunc(RowCount); 
+        StrColMaps[i-StrOffset].Trunc(RowCount);
       } else {
-        Next.Trunc(RowCount); 
+        Next.Trunc(RowCount);
       }
     }
   }
@@ -4387,7 +4396,7 @@ int64 TTable::GetEmptyRowsStart(int64 NewRows) {
     start = NumRows;
     NumRows += NewRows;
     NumValidRows += NewRows;
-    // To make this function thread-safe, the following call must be done before the 
+    // To make this function thread-safe, the following call must be done before the
     // code enters parallel region.
     // ResizeTable(NumRows);
     Assert(NumRows <= Next.Len());
@@ -4421,7 +4430,7 @@ void TTable::AddSelectedRows(const TTable& Table, const TInt64V& RowIDs) {
   for (TInt64 r = 0; r < NewRows-1; r++) {
     Next[start+r] = start+r+1;
   }
-}  
+}
 
 void TTable::AddNRows(int64 NewRows, const TVec<TInt64V, int64>& IntColsP, const TVec<TFlt64V, int64>& FltColsP, const TVec<TInt64V, int64>& StrColMapsP) {
   if (NewRows == 0) { return; }
@@ -4474,14 +4483,14 @@ void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TInt
     RowIdMap.AddDat(IdCnt, IdCnt);
   }
 
-  #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD) 
+  #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
   for (int64 j = 0; j < JointRowIDSet.Len(); j++) {
     const TIntPr64V& RowIDs = JointRowIDSet[j];
     int64 start = StartOffsets[j];
     int64 NewRows = RowIDs.Len();
     if (NewRows == 0) {continue;}
     for (TInt64 r = 0; r < NewRows; r++){
-      TInt64Pr CurrRowIdPr = RowIDs[r]; 
+      TInt64Pr CurrRowIdPr = RowIDs[r];
       for(TInt64 i = 0; i < T1.IntCols.Len(); i++){
         IntCols[i][start+r] = T1.IntCols[i][CurrRowIdPr.GetVal1()];
       }
@@ -4505,7 +4514,7 @@ void TTable::AddNJointRowsMP(const TTable& T1, const TTable& T2, const TVec<TInt
     for(TInt64 r = 0; r < NewRows; r++){
       Next[start+r] = start+r+1;
     }
-  }      
+  }
   LastValidRow = JointTableSize-1;
   Next[LastValidRow] = Last;
   //double endIterate = omp_get_wtime();
@@ -4545,9 +4554,9 @@ PTable TTable::Union(const TTable& Table) {
     }
   }
   PTable result = TTable::New(NewSchema, Context);
-  
-  GetCollidingRows(Table, Collisions); 
-  
+
+  GetCollidingRows(Table, Collisions);
+
   result->AddTable(*this);
 
   result->Unique(ColNames);
@@ -4559,9 +4568,9 @@ PTable TTable::Union(const TTable& Table) {
     }
   }
 
-  // printf("this: %d %d, table: %d %d, result: %d %d\n", 
+  // printf("this: %d %d, table: %d %d, result: %d %d\n",
   //   this->GetNumRows().Val, this->GetNumValidRows().Val,
-  //   Table.GetNumRows().Val, Table.GetNumValidRows().Val, 
+  //   Table.GetNumRows().Val, Table.GetNumValidRows().Val,
   //   result->GetNumRows().Val, result->GetNumValidRows().Val);
 
   result->InitIds();
@@ -4636,8 +4645,8 @@ TBool TTable::IsAttr(const TStr& Attr) {
 
 TStr TTable::RenumberColName(const TStr& ColName) const {
   TStr NColName = ColName;
-  if (NColName.GetCh(NColName.Len()-2) == '-') { 
-    NColName = NColName.GetSubStr(0,NColName.Len()-3); 
+  if (NColName.GetCh(NColName.Len()-2) == '-') {
+    NColName = NColName.GetSubStr(0,NColName.Len()-3);
   }
   TInt64 Conflicts = 0;
   for (TInt64 i = 0; i < Sch.Len(); i++) {
@@ -4654,8 +4663,8 @@ TStr TTable::DenormalizeColName(const TStr& ColName) const {
   TStr DColName = ColName;
   if (DColName.Len() == 0) { return DColName; }
   if (DColName.GetCh(0) == '_') { return DColName; }
-  if (DColName.GetCh(DColName.Len()-2) == '-') { 
-    DColName = DColName.GetSubStr(0,DColName.Len()-3); 
+  if (DColName.GetCh(DColName.Len()-2) == '-') {
+    DColName = DColName.GetSubStr(0,DColName.Len()-3);
   }
   TInt64 Conflicts = 0;
   for (TInt64 i = 0; i < Sch.Len(); i++) {
@@ -4663,7 +4672,7 @@ TStr TTable::DenormalizeColName(const TStr& ColName) const {
       Conflicts++;
     }
   }
-  if (Conflicts > 1) { return ColName; } 
+  if (Conflicts > 1) { return ColName; }
   else { return DColName; }
 }
 
@@ -4711,42 +4720,42 @@ void TTable::ClassifyAux(const TInt64V& SelectedRows, const TStr& LabelName, con
 
 #ifdef USE_OPENMP
 void TTable::ColGenericOpMP(TInt64 ArgColIdx1, TInt64 ArgColIdx2, TAttrType ArgType1, TAttrType ArgType2, TInt64 ResColIdx, TArithOp op){
-	TAttrType ResType = atFlt;
-	if(ArgType1 == atInt && ArgType2 == atInt){ ResType = atInt;}
-	TIntPr64V Partitions;
-	GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-	TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
-	#pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
-	for (int64 i = 0; i < Partitions.Len(); i++){
-		TRowIterator RowI(Partitions[i].GetVal1(), this);
-		TRowIterator EndI(Partitions[i].GetVal2(), this);
-		while(RowI < EndI){
-			if(ResType == atInt){
-				TInt64 V1 = RowI.GetIntAttr(ArgColIdx1);
-				TInt64 V2 = RowI.GetIntAttr(ArgColIdx2);
-				if (op == aoAdd) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 + V2; }
-      			if (op == aoSub) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 - V2; }
-      			if (op == aoMul) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 * V2; }
-      			if (op == aoDiv) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 / V2; }
-      			if (op == aoMod) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 % V2; }
-      			if (op == aoMin) { IntCols[ResColIdx][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
-      			if (op == aoMax) { IntCols[ResColIdx][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
-			} else{
-			    TFlt V1 = (ArgType1 == atInt) ? (TFlt)RowI.GetIntAttr(ArgColIdx1) : RowI.GetFltAttr(ArgColIdx1);
-			    TFlt V2 = (ArgType2 == atInt) ? (TFlt)RowI.GetIntAttr(ArgColIdx2) : RowI.GetFltAttr(ArgColIdx2);
-				if (op == aoAdd) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 + V2; }
-      			if (op == aoSub) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 - V2; }
-      			if (op == aoMul) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 * V2; }
-      			if (op == aoDiv) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 / V2; }
-      			if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns");  }
-      			if (op == aoMin) { FltCols[ResColIdx][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
-      			if (op == aoMax) { FltCols[ResColIdx][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
-			}
-			RowI++;
-		}
-	}
+  TAttrType ResType = atFlt;
+  if(ArgType1 == atInt && ArgType2 == atInt){ ResType = atInt;}
+  TIntPr64V Partitions;
+  GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
+  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
+  for (int64 i = 0; i < Partitions.Len(); i++){
+    TRowIterator RowI(Partitions[i].GetVal1(), this);
+    TRowIterator EndI(Partitions[i].GetVal2(), this);
+    while(RowI < EndI){
+      if(ResType == atInt){
+        TInt64 V1 = RowI.GetIntAttr(ArgColIdx1);
+        TInt64 V2 = RowI.GetIntAttr(ArgColIdx2);
+        if (op == aoAdd) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 + V2; }
+            if (op == aoSub) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 - V2; }
+            if (op == aoMul) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 * V2; }
+            if (op == aoDiv) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 / V2; }
+            if (op == aoMod) { IntCols[ResColIdx][RowI.GetRowIdx()] = V1 % V2; }
+            if (op == aoMin) { IntCols[ResColIdx][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
+            if (op == aoMax) { IntCols[ResColIdx][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
+      } else{
+          TFlt V1 = (ArgType1 == atInt) ? (TFlt)RowI.GetIntAttr(ArgColIdx1) : RowI.GetFltAttr(ArgColIdx1);
+          TFlt V2 = (ArgType2 == atInt) ? (TFlt)RowI.GetIntAttr(ArgColIdx2) : RowI.GetFltAttr(ArgColIdx2);
+        if (op == aoAdd) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 + V2; }
+            if (op == aoSub) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 - V2; }
+            if (op == aoMul) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 * V2; }
+            if (op == aoDiv) { FltCols[ResColIdx][RowI.GetRowIdx()] = V1 / V2; }
+            if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns");  }
+            if (op == aoMin) { FltCols[ResColIdx][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
+            if (op == aoMax) { FltCols[ResColIdx][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
+      }
+      RowI++;
+    }
+  }
 }
-#endif	// USE_OPENMP
+#endif  // USE_OPENMP
 
 /* Performs generic operations on two numeric attributes
  * Operation can be +, -, *, /, %, min or max
@@ -4766,12 +4775,12 @@ void TTable::ColGenericOp(const TStr& Attr1, const TStr& Attr2, const TStr& ResA
     TExcept::Throw("Only numeric columns supported in arithmetic operations.");
   }
   if(Arg1Type == atInt && Arg2Type == atFlt && ResAttr == ""){
-  	TExcept::Throw("Trying to write float values to an existing int-typed column");
+    TExcept::Throw("Trying to write float values to an existing int-typed column");
   }
   // source column indices
   TInt64 ColIdx1 = Info1.Val2;
   TInt64 ColIdx2 = Info2.Val2;
-  
+
   // destination column index
   TInt64 ColIdx3 = ColIdx1;
   // Create empty result column with type that of first attribute
@@ -4786,35 +4795,35 @@ void TTable::ColGenericOp(const TStr& Attr1, const TStr& Attr2, const TStr& ResA
   }
 #ifdef USE_OPENMP
   if(GetMP()){
-  	ColGenericOpMP(ColIdx1, ColIdx2, Arg1Type, Arg2Type, ColIdx3, op);
-  	return;
+    ColGenericOpMP(ColIdx1, ColIdx2, Arg1Type, Arg2Type, ColIdx3, op);
+    return;
   }
-#endif	//USE_OPENMP
+#endif  //USE_OPENMP
   TAttrType ResType = atFlt;
   if(Arg1Type == atInt && Arg2Type == atInt){ printf("hooray!\n"); ResType = atInt;}
   for (TRowIterator RowI = BegRI(); RowI < EndRI(); RowI++) {
-  	//printf("%d %d %d %d\n", ColIdx1.Val, ColIdx2.Val, ColIdx3.Val, RowI.GetRowIdx().Val);
-		if(ResType == atInt){
-			TInt64 V1 = RowI.GetIntAttr(ColIdx1);
-			TInt64 V2 = RowI.GetIntAttr(ColIdx2);
-			if (op == aoAdd) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 + V2; }
-      		if (op == aoSub) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 - V2; }
-      		if (op == aoMul) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 * V2; }
-      		if (op == aoDiv) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 / V2; }
-      		if (op == aoMod) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 % V2; }
-      		if (op == aoMin) { IntCols[ColIdx3][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
-      		if (op == aoMax) { IntCols[ColIdx3][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
-		} else{
-			TFlt V1 = (Arg1Type == atInt) ? (TFlt)RowI.GetIntAttr(ColIdx1) : RowI.GetFltAttr(ColIdx1);
-			TFlt V2 = (Arg2Type == atInt) ? (TFlt)RowI.GetIntAttr(ColIdx2) : RowI.GetFltAttr(ColIdx2);
-			if (op == aoAdd) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 + V2; }
-      		if (op == aoSub) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 - V2; }
-      		if (op == aoMul) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 * V2; }
-      		if (op == aoDiv) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 / V2; }
-      		if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns");  }
-      		if (op == aoMin) { FltCols[ColIdx3][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
-      		if (op == aoMax) { FltCols[ColIdx3][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
-		}
+    //printf("%d %d %d %d\n", ColIdx1.Val, ColIdx2.Val, ColIdx3.Val, RowI.GetRowIdx().Val);
+    if(ResType == atInt){
+      TInt64 V1 = RowI.GetIntAttr(ColIdx1);
+      TInt64 V2 = RowI.GetIntAttr(ColIdx2);
+      if (op == aoAdd) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 + V2; }
+          if (op == aoSub) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 - V2; }
+          if (op == aoMul) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 * V2; }
+          if (op == aoDiv) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 / V2; }
+          if (op == aoMod) { IntCols[ColIdx3][RowI.GetRowIdx()] = V1 % V2; }
+          if (op == aoMin) { IntCols[ColIdx3][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
+          if (op == aoMax) { IntCols[ColIdx3][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
+    } else{
+      TFlt V1 = (Arg1Type == atInt) ? (TFlt)RowI.GetIntAttr(ColIdx1) : RowI.GetFltAttr(ColIdx1);
+      TFlt V2 = (Arg2Type == atInt) ? (TFlt)RowI.GetIntAttr(ColIdx2) : RowI.GetFltAttr(ColIdx2);
+      if (op == aoAdd) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 + V2; }
+          if (op == aoSub) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 - V2; }
+          if (op == aoMul) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 * V2; }
+          if (op == aoDiv) { FltCols[ColIdx3][RowI.GetRowIdx()] = V1 / V2; }
+          if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns");  }
+          if (op == aoMin) { FltCols[ColIdx3][RowI.GetRowIdx()] = (V1 < V2) ? V1 : V2;}
+          if (op == aoMax) { FltCols[ColIdx3][RowI.GetRowIdx()] = (V1 > V2) ? V1 : V2;}
+    }
   }
 }
 
@@ -4864,7 +4873,7 @@ void TTable::ColGenericOp(const TStr& Attr1, TTable& Table, const TStr& Attr2, c
     TExcept::Throw("Only numeric columns supported in arithmetic operations.");
   }
   if(Arg1Type == atInt && Arg2Type == atFlt && ResAttr == ""){
-  	TExcept::Throw("Trying to write float values to an existing int-typed column");
+    TExcept::Throw("Trying to write float values to an existing int-typed column");
   }
   // source column indices
   TInt64 ColIdx1 = Info1.Val2;
@@ -4892,16 +4901,16 @@ void TTable::ColGenericOp(const TStr& Attr1, TTable& Table, const TStr& Attr2, c
       ColIdx3 = Table.GetColIdx(ResAttr);
     }
   }
-  
+
   /*
   #ifdef USE_OPENMP
   if(GetMP()){
-  	ColGenericOpMP(Table, AddToFirstTable, ColIdx1, ColIdx2, Arg1Type, Arg2Type, ColIdx3, op);
-  	return;
+    ColGenericOpMP(Table, AddToFirstTable, ColIdx1, ColIdx2, Arg1Type, Arg2Type, ColIdx3, op);
+    return;
   }
-  #endif	//USE_OPENMP
+  #endif  //USE_OPENMP
   */
-	
+
   TRowIterator RI1, RI2;
   RI1 = BegRI();
   RI2 = Table.BegRI();
@@ -4909,38 +4918,38 @@ void TTable::ColGenericOp(const TStr& Attr1, TTable& Table, const TStr& Attr2, c
   if(Arg1Type == atInt && Arg2Type == atInt){ ResType = atInt;}
   while (RI1 < EndRI() && RI2 < Table.EndRI()) {
     if (ResType == atInt) {
-		TInt64 V1 = RI1.GetIntAttr(ColIdx1);
-		TInt64 V2 = RI2.GetIntAttr(ColIdx2);
+    TInt64 V1 = RI1.GetIntAttr(ColIdx1);
+    TInt64 V2 = RI2.GetIntAttr(ColIdx2);
         if (AddToFirstTable) {
-        	if (op == aoAdd) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 + V2; }
-        	if (op == aoSub) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 - V2; }
-        	if (op == aoMul) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 * V2; }
-        	if (op == aoDiv) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 / V2; }
-       		if (op == aoMod) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 % V2; }
-      	}
-      	else {
-        	if (op == aoAdd) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 + V2; }
-        	if (op == aoSub) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 - V2; }
-        	if (op == aoMul) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 * V2; }
-        	if (op == aoDiv) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 / V2; }
-        	if (op == aoMod) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 % V2; }
-      	}
+          if (op == aoAdd) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 + V2; }
+          if (op == aoSub) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 - V2; }
+          if (op == aoMul) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 * V2; }
+          if (op == aoDiv) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 / V2; }
+           if (op == aoMod) { IntCols[ColIdx3][RI1.GetRowIdx()] = V1 % V2; }
+        }
+        else {
+          if (op == aoAdd) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 + V2; }
+          if (op == aoSub) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 - V2; }
+          if (op == aoMul) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 * V2; }
+          if (op == aoDiv) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 / V2; }
+          if (op == aoMod) { Table.IntCols[ColIdx3][RI2.GetRowIdx()] = V1 % V2; }
+        }
     } else {
-	  	TFlt V1 = (Arg1Type == atInt) ? (TFlt)RI1.GetIntAttr(ColIdx1) : RI2.GetFltAttr(ColIdx1);
-		TFlt V2 = (Arg2Type == atInt) ? (TFlt)RI1.GetIntAttr(ColIdx2) : RI2.GetFltAttr(ColIdx2);
-      	if (AddToFirstTable) {
-        	if (op == aoAdd) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 + V2; }
-        	if (op == aoSub) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 - V2; }
-        	if (op == aoMul) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 * V2; }
-       	 	if (op == aoDiv) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 / V2; }
-        	if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns"); }
-      	} else {
-        	if (op == aoAdd) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 + V2; }
-        	if (op == aoSub) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 - V2; }
-        	if (op == aoMul) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 * V2; }
-        	if (op == aoDiv) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 / V2; }
-        	if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns"); }
-      	}
+      TFlt V1 = (Arg1Type == atInt) ? (TFlt)RI1.GetIntAttr(ColIdx1) : RI2.GetFltAttr(ColIdx1);
+    TFlt V2 = (Arg2Type == atInt) ? (TFlt)RI1.GetIntAttr(ColIdx2) : RI2.GetFltAttr(ColIdx2);
+        if (AddToFirstTable) {
+          if (op == aoAdd) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 + V2; }
+          if (op == aoSub) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 - V2; }
+          if (op == aoMul) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 * V2; }
+            if (op == aoDiv) { FltCols[ColIdx3][RI1.GetRowIdx()] = V1 / V2; }
+          if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns"); }
+        } else {
+          if (op == aoAdd) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 + V2; }
+          if (op == aoSub) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 - V2; }
+          if (op == aoMul) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 * V2; }
+          if (op == aoDiv) { Table.FltCols[ColIdx3][RI2.GetRowIdx()] = V1 / V2; }
+          if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns"); }
+        }
     }
     RI1++;
     RI2++;
@@ -4951,27 +4960,27 @@ void TTable::ColGenericOp(const TStr& Attr1, TTable& Table, const TStr& Attr2, c
   }
 }
 
-void TTable::ColAdd(const TStr& Attr1, TTable& Table, const TStr& Attr2, 
+void TTable::ColAdd(const TStr& Attr1, TTable& Table, const TStr& Attr2,
  const TStr& ResultAttrName, TBool AddToFirstTable) {
   ColGenericOp(Attr1, Table, Attr2, ResultAttrName, aoAdd, AddToFirstTable);
 }
 
-void TTable::ColSub(const TStr& Attr1, TTable& Table, const TStr& Attr2, 
+void TTable::ColSub(const TStr& Attr1, TTable& Table, const TStr& Attr2,
  const TStr& ResultAttrName, TBool AddToFirstTable) {
   ColGenericOp(Attr1, Table, Attr2, ResultAttrName, aoSub, AddToFirstTable);
 }
 
-void TTable::ColMul(const TStr& Attr1, TTable& Table, const TStr& Attr2, 
+void TTable::ColMul(const TStr& Attr1, TTable& Table, const TStr& Attr2,
  const TStr& ResultAttrName, TBool AddToFirstTable) {
   ColGenericOp(Attr1, Table, Attr2, ResultAttrName, aoMul, AddToFirstTable);
 }
 
-void TTable::ColDiv(const TStr& Attr1, TTable& Table, const TStr& Attr2, 
+void TTable::ColDiv(const TStr& Attr1, TTable& Table, const TStr& Attr2,
  const TStr& ResultAttrName, TBool AddToFirstTable) {
   ColGenericOp(Attr1, Table, Attr2, ResultAttrName, aoDiv, AddToFirstTable);
 }
 
-void TTable::ColMod(const TStr& Attr1, TTable& Table, const TStr& Attr2, 
+void TTable::ColMod(const TStr& Attr1, TTable& Table, const TStr& Attr2,
  const TStr& ResultAttrName, TBool AddToFirstTable) {
   ColGenericOp(Attr1, Table, Attr2, ResultAttrName, aoMod, AddToFirstTable);
 }
@@ -5004,14 +5013,14 @@ void TTable::ColGenericOp(const TStr& Attr1, const TFlt& Num, const TStr& ResAtt
     // Cannot change type of existing attribute
     shouldCast = false;
   }
-  
+
   #ifdef USE_OPENMP
   if(GetMP()){
-  	ColGenericOpMP(ColIdx1, ColIdx2, ArgType, Num, op, shouldCast);
-  	return;
+    ColGenericOpMP(ColIdx1, ColIdx2, ArgType, Num, op, shouldCast);
+    return;
   }
   #endif  //USE_OPENMP
-	
+
   for (TRowIterator RowI = BegRI(); RowI < EndRI(); RowI++) {
     if ((ArgType == atInt) && !shouldCast) {
       TInt64 CurVal = RowI.GetIntAttr(ColIdx1);
@@ -5035,33 +5044,33 @@ void TTable::ColGenericOp(const TStr& Attr1, const TFlt& Num, const TStr& ResAtt
 
 #ifdef USE_OPENMP
 void TTable::ColGenericOpMP(const TInt64& ColIdx1, const TInt64& ColIdx2, TAttrType ArgType, const TFlt& Num, TArithOp op, TBool ShouldCast){
-	TIntPr64V Partitions;
-	GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-	TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
-	#pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
-	for (int64 i = 0; i < Partitions.Len(); i++){
-		TRowIterator RowI(Partitions[i].GetVal1(), this);
-		TRowIterator EndI(Partitions[i].GetVal2(), this);
-		while(RowI < EndI){
-			if ((ArgType == atInt) && !ShouldCast) {
-      			TInt64 CurVal = RowI.GetIntAttr(ColIdx1);
-      			TInt64 Val = static_cast<int64>(Num);
-      			if (op == aoAdd) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal + Val; }
-      			if (op == aoSub) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal - Val; }
-      			if (op == aoMul) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal * Val; }
-      			if (op == aoDiv) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal / Val; }
-      			if (op == aoMod) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal % Val; }
-    		} else {
-     			TFlt CurVal = (ArgType == atFlt) ? RowI.GetFltAttr(ColIdx1) : (TFlt) RowI.GetIntAttr(ColIdx1);
-      			if (op == aoAdd) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal + Num; }
-      			if (op == aoSub) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal - Num; }
-      			if (op == aoMul) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal * Num; }
-      			if (op == aoDiv) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal / Num; }
-      			if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns"); }
-    		}
-    		RowI++;
-		}
-	}
+  TIntPr64V Partitions;
+  GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
+  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
+  for (int64 i = 0; i < Partitions.Len(); i++){
+    TRowIterator RowI(Partitions[i].GetVal1(), this);
+    TRowIterator EndI(Partitions[i].GetVal2(), this);
+    while(RowI < EndI){
+      if ((ArgType == atInt) && !ShouldCast) {
+            TInt64 CurVal = RowI.GetIntAttr(ColIdx1);
+            TInt64 Val = static_cast<int64>(Num);
+            if (op == aoAdd) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal + Val; }
+            if (op == aoSub) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal - Val; }
+            if (op == aoMul) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal * Val; }
+            if (op == aoDiv) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal / Val; }
+            if (op == aoMod) { IntCols[ColIdx2][RowI.GetRowIdx()] = CurVal % Val; }
+        } else {
+           TFlt CurVal = (ArgType == atFlt) ? RowI.GetFltAttr(ColIdx1) : (TFlt) RowI.GetIntAttr(ColIdx1);
+            if (op == aoAdd) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal + Num; }
+            if (op == aoSub) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal - Num; }
+            if (op == aoMul) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal * Num; }
+            if (op == aoDiv) { FltCols[ColIdx2][RowI.GetRowIdx()] = CurVal / Num; }
+            if (op == aoMod) { TExcept::Throw("Cannot find modulo for float columns"); }
+        }
+        RowI++;
+    }
+  }
 }
 #endif
 
@@ -5119,7 +5128,7 @@ void TTable::ColConcat(const TStr& Attr1, const TStr& Attr2, const TStr& Sep, co
   }
 }
 
-void TTable::ColConcat(const TStr& Attr1, TTable& Table, const TStr& Attr2, const TStr& Sep, 
+void TTable::ColConcat(const TStr& Attr1, TTable& Table, const TStr& Attr2, const TStr& Sep,
  const TStr& ResAttr, TBool AddToFirstTable) {
   // check if attributes are valid
   if (!IsAttr(Attr1)) { TExcept::Throw("No attribute present: " + Attr1); }
@@ -5211,7 +5220,7 @@ void TTable::ColConcatConst(const TStr& Attr1, const TStr& Val, const TStr& Sep,
     TStr NewVal = CurVal + Sep + Val;
     TInt64 Key = TInt64(Context->StringVals.AddKey(NewVal));
     StrColMaps[ColIdx2][RowI.GetRowIdx()] = Key;
-  }  
+  }
 }
 
 void TTable::ReadIntCol(const TStr& ColName, TInt64V& Result) const{
@@ -5300,7 +5309,7 @@ void TTable::ProjectInPlace(const TStr64V& ProjectCols) {
 }
 
 TInt64 TTable::CompareKeyVal(const TInt64& K1, const TInt64& V1, const TInt64& K2, const TInt64& V2) {
-  // if (K1 == K2) { 
+  // if (K1 == K2) {
   //   if (V1 < V2) { return -1; }
   //   else if (V1 > V2) { return 1; }
   //   else return 0;
@@ -5386,11 +5395,11 @@ void TTable::QSortKeyVal(TInt64V& Key, TInt64V& Val, TInt64 Start, TInt64 End) {
   TInt64 L = End-Start;
   if (L <= 0) { return; }
   if (CheckSortedKeyVal(Key, Val, Start, End) == 0) { return; }
-  
+
   if (L <= 20) { ISortKeyVal(Key, Val, Start, End); }
   else {
     TInt64 Pivot = PartitionKeyVal(Key, Val, Start, End);
-    
+
     if (Pivot > End) { return; }
     if (L <= 500000) {
       QSortKeyVal(Key, Val, Start, Pivot-1);
@@ -5402,7 +5411,7 @@ void TTable::QSortKeyVal(TInt64V& Key, TInt64V& Val, TInt64 Start, TInt64 End) {
 #endif
 #endif
       { QSortKeyVal(Key, Val, Start, Pivot-1); }
-        
+
 #ifdef USE_OPENMP
 #ifndef GLib_WIN32
       #pragma omp task untied shared(Key, Val)
@@ -5495,7 +5504,7 @@ TInt64 TTable::RequestIndexInt(const TStr& ColName) {
       NewIndex.AddDat(ValAtRow, New_V);
     }
   }
-  IntColIndexes.AddDat(ColName, NewIndex); 
+  IntColIndexes.AddDat(ColName, NewIndex);
   return 0;
 }
 TInt64 TTable::RequestIndexFlt(const TStr& ColName) {
@@ -5514,7 +5523,7 @@ TInt64 TTable::RequestIndexFlt(const TStr& ColName) {
       NewIndex.AddDat(ValAtRow, New_V);
     }
   }
-  FltColIndexes.AddDat(ColName, NewIndex); 
+  FltColIndexes.AddDat(ColName, NewIndex);
   return 0;
 }
 TInt64 TTable::RequestIndexStrMap(const TStr& ColName) {
@@ -5532,6 +5541,6 @@ TInt64 TTable::RequestIndexStrMap(const TStr& ColName) {
       NewIndex.AddDat(MapAtRow, New_V);
     }
   }
-  StrMapColIndexes.AddDat(ColName, NewIndex); 
+  StrMapColIndexes.AddDat(ColName, NewIndex);
   return 0;
 }

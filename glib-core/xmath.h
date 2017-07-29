@@ -7,12 +7,14 @@ public:
   static double E;
   static double Pi;
   static double LogOf2;
+  static double LogOf10;
 
   static double Inv(const double& x){IAssert(x!=0.0); return (1.0/x);}
   static double Sqr(const double& x){return x*x;}
   static double Sqrt(const double& x){IAssert(!(x<0.0)); return sqrt(x);}
   static double Log(const double& Val){return log(Val);}
   static double Log2(const double& Val){return log(Val)/LogOf2;}
+  static double Log10(const double& Val){return log(Val)/LogOf10;}
   static double Round(const double& Val){
     return (Val>0)?floor(Val+0.5):ceil(Val-0.5);}
   static double Round(const double & Val, int64 Decs){
@@ -473,7 +475,7 @@ public:
 	double GetBucketMn(const int& BucketN) const { return MnVal + BucketN * BucketSize; }
 	double GetBucketMx(const int& BucketN) const { return MnVal + (BucketN + 1) * BucketSize; }
 	int GetBucketVal(const int& BucketN) const { return BucketV[BucketN]; }
-	double GetBucketValPerc(const int& BucketN) const { 
+	double GetBucketValPerc(const int& BucketN) const {
 		return (Vals > 0) ? (double(BucketV[BucketN]) / double(Vals)) : 0.0; }
 
     void SaveStat(const TStr& ValNm, TSOut& FOut) const;

@@ -161,7 +161,7 @@ PSs TSs::LoadTxt(
       }
       // add value to spreadsheet
       if (AllowedColNV.Empty()||AllowedColNV.IsIn(X)){
-        Ss->CellStrVV[Y]->V.Add(ChA); 
+        Ss->CellStrVV[Y]->V.Add(ChA);
       }
       // process delimiters
       if (SIn->Eof()){
@@ -348,7 +348,7 @@ TStr TSs::GetSsFmtNmVStr(){
 
 //#//////////////////////////////////////////////
 // Fast-Spread-Sheet-Parser
-TSsParser::TSsParser(const TStr& FNm, const TSsFmt _SsFmt, const bool& _SkipLeadBlanks, const bool& _SkipCmt, const bool& _SkipEmptyFld) : SsFmt(_SsFmt), 
+TSsParser::TSsParser(const TStr& FNm, const TSsFmt _SsFmt, const bool& _SkipLeadBlanks, const bool& _SkipCmt, const bool& _SkipEmptyFld) : SsFmt(_SsFmt),
  SkipLeadBlanks(_SkipLeadBlanks), SkipCmt(_SkipCmt), SkipEmptyFld(_SkipEmptyFld), LineCnt(0), /*Bf(NULL),*/ SplitCh('\t'), LineStr(), FldV(), FInPt(NULL) {
   if (TZipIn::IsZipExt(FNm.GetFExt())) { FInPt = TZipIn::New(FNm); }
   else { FInPt = TFIn::New(FNm); }
@@ -364,7 +364,7 @@ TSsParser::TSsParser(const TStr& FNm, const TSsFmt _SsFmt, const bool& _SkipLead
   }
 }
 
-TSsParser::TSsParser(const TStr& FNm, const char& Separator, const bool& _SkipLeadBlanks, const bool& _SkipCmt, const bool& _SkipEmptyFld) : SsFmt(ssfSpaceSep), 
+TSsParser::TSsParser(const TStr& FNm, const char& Separator, const bool& _SkipLeadBlanks, const bool& _SkipCmt, const bool& _SkipEmptyFld) : SsFmt(ssfSpaceSep),
  SkipLeadBlanks(_SkipLeadBlanks), SkipCmt(_SkipCmt), SkipEmptyFld(_SkipEmptyFld), LineCnt(0), /*Bf(NULL),*/ SplitCh('\t'), LineStr(), FldV(), FInPt(NULL) {
   if (TZipIn::IsZipExt(FNm.GetFExt())) { FInPt = TZipIn::New(FNm); }
   else { FInPt = TFIn::New(FNm); }
@@ -393,7 +393,7 @@ bool TSsParser::NextSlow() { // split on SplitCh
   }
   char *last = cur;
   while (*cur) {
-    if (SsFmt == ssfWhiteSep) { while (*cur && ! TCh::IsWs(*cur)) { cur++; } } 
+    if (SsFmt == ssfWhiteSep) { while (*cur && ! TCh::IsWs(*cur)) { cur++; } }
     else { while (*cur && *cur!=SplitCh) { cur++; } }
     if (*cur == 0) { break; }
     *cur = 0;  cur++;
@@ -404,7 +404,7 @@ bool TSsParser::NextSlow() { // split on SplitCh
   if (*last != 0) { FldV.Add(last); }  // add last field
   if (SkipEmptyFld && FldV.Empty()) { return NextSlow(); } // skip empty lines
 
-  return true; 
+  return true;
 }
 
 // Gets and parses the next line, quick version, works with buffers, not chars.
@@ -423,7 +423,7 @@ bool TSsParser::Next() { // split on SplitCh
   }
   char *last = cur;
   while (*cur) {
-    if (SsFmt == ssfWhiteSep) { while (*cur && ! TCh::IsWs(*cur)) { cur++; } } 
+    if (SsFmt == ssfWhiteSep) { while (*cur && ! TCh::IsWs(*cur)) { cur++; } }
     else { while (*cur && *cur!=SplitCh) { cur++; } }
     if (*cur == 0) { break; }
     *cur = 0;  cur++;
@@ -431,10 +431,10 @@ bool TSsParser::Next() { // split on SplitCh
     if (SkipEmptyFld && strlen(FldV.Last())==0) { FldV.DelLast(); } // skip empty fields
   }
 
-  if (*last != 0) { FldV.Add(last); }  // add last field
+  if (!SkipEmptyFld || *last != 0) { FldV.Add(last); }  // add last field if we don't skip or not empty
   if (SkipEmptyFld && FldV.Empty()) { return Next(); } // skip empty lines
 
-  return true; 
+  return true;
 }
 
 void TSsParser::ToLc() {
@@ -454,9 +454,9 @@ bool TSsParser::GetInt(const int& FldN, int& Val) const {
   if (*c=='-') { Minus=true; c++; }
   if (! TCh::IsNum(*c)) { return false; }
   _Val = TCh::GetNum(*c);  c++;
-  while (TCh::IsNum(*c)){ 
-    _Val = 10 * _Val + TCh::GetNum(*c); 
-    c++; 
+  while (TCh::IsNum(*c)){
+    _Val = 10 * _Val + TCh::GetNum(*c);
+    c++;
   }
   if (Minus) { _Val = -_Val; }
   if (*c != 0) { return false; }
@@ -474,9 +474,9 @@ bool TSsParser::GetInt64(const int64& FldN, int64& Val) const {
   if (*c=='-') { Minus=true; c++; }
   if (! TCh::IsNum(*c)) { return false; }
   _Val = TCh::GetNum(*c);  c++;
-  while (TCh::IsNum(*c)){ 
-    _Val = 10 * _Val + TCh::GetNum(*c); 
-    c++; 
+  while (TCh::IsNum(*c)){
+    _Val = 10 * _Val + TCh::GetNum(*c);
+    c++;
   }
   if (Minus) { _Val = -_Val; }
   if (*c != 0) { return false; }
@@ -533,4 +533,3 @@ const char* TSsParser::DumpStr() const {
   }
   return ChA.CStr();
 }
-
