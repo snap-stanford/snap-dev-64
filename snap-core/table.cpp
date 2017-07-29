@@ -1300,14 +1300,14 @@ void TTable::Unique(const TStr& Col) {
 }
 
 void TTable::Unique(const TStr64V& Cols, TBool Ordered) {
-  if(Cols.Len() == 1){
+  if (Cols.Len() == 1) {
     Unique(Cols[0]);
     return;
   }
   TStr64V NCols = NormalizeColNameV(Cols);
-  for (TStr NColNm : NCols) {
-      AssertR(ColTypeMap.IsKey(NColNm), "Unknown column " + NColNm);
-  }
+  //for (TStr NColNm : NCols) {
+  //    AssertR(ColTypeMap.IsKey(NColNm), "Unknown column " + NColNm);
+  //}
   THash<TGroupKey, TPair<TInt64, TInt64V>, int64 > Grouping;
   TInt64V UniqueVec;
   GroupAux(NCols, Grouping, Ordered, "", true, UniqueVec, true);
@@ -1325,7 +1325,7 @@ void TTable::StoreGroupCol(const TStr& GroupColName, const TVec<TPair<TInt64, TI
   }
 }
 
-// Core crouping logic.
+// Core grouping logic.
 void TTable::GroupAux(const TStr64V& GroupBy, THash<TGroupKey, TPair<TInt64, TInt64V>, int64 >& Grouping,
  TBool Ordered, const TStr& GroupColName, TBool KeepUnique, TInt64V& UniqueVec, TBool UsePhysicalIds) {
   TInt64 IdColIdx = GetColIdx(IdColName);
