@@ -17,7 +17,9 @@ void PrintGraph(const char s[], const PGraph& Graph) {
 template <class TNet>
 void PrintNet(const char s[], const TNet& Net) {
   printf("---- %s -----\n",s);
-  printf("nodes: %d, edges: %d\n", Net->GetNodes(), Net->GetEdges());
+  printf("nodes: %s, edges: %s\n",
+        TUInt64::GetStr(Net->GetNodes()).CStr(),
+        TUInt64::GetStr(Net->GetEdges()).CStr());
   printf("\n");
 }
 
@@ -28,8 +30,8 @@ void TestSubTUNGraphs() {
   PUNGraph Graph2;
   PUNGraph Graph3;
   int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Graph = GetTestTUNGraph();
   PrintGraph("TUNGraph", Graph);
@@ -59,8 +61,8 @@ void TestSubTNGraphs() {
   PNGraph Graph2;
   PNGraph Graph3;
   int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Graph = GetTestTNGraph();
   PrintGraph("TNGraph", Graph);
@@ -90,9 +92,9 @@ void TestSubTNEGraphs() {
   PNEGraph Graph2;
   PNEGraph Graph3;
   int i;
-  TIntV NIdV;
-  TIntV NIdV1;
-  TIntV EIdV;
+  TInt64V NIdV;
+  TInt64V NIdV1;
+  TInt64V EIdV;
 
   Graph = GetTestTNEGraph();
   PrintGraph("TNEGraph", Graph);
@@ -127,8 +129,8 @@ void TestEDatSubNets() {
   TPt <TNodeEDatNet<TInt, TInt> > Net3;
   TPt <TNodeEDatNet<TInt, TInt> > Net4;
   int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Net = GetTestTNodeEDatNet();
   PrintNet("TestEDatSubNets", Net);
@@ -162,8 +164,8 @@ void TestEdgeSubNets() {
   TPt <TNodeEdgeNet<TInt, TInt> > Net3;
   TPt <TNodeEdgeNet<TInt, TInt> > Net4;
   int i;
-  TIntV NIdV;
-  TIntV NIdV1;
+  TInt64V NIdV;
+  TInt64V NIdV1;
 
   Net = GetTestTNodeEdgeNet();
   PrintNet("TestEdgeSubNets", Net);
@@ -219,7 +221,7 @@ void TestConvertSubGraphs() {
   PUNGraph UNGraph;
   int N1, N2, N3;
   int E1, E2, E3;
-  TIntV NIdV;
+  TInt64V NIdV;
   int i;
 
   NGraph = GetTestTNGraph();
@@ -251,8 +253,8 @@ void TestConvertESubGraphs() {
   PNGraph NGraph;
   int N1, N2, N3;
   int E1, E2, E3;
-  TIntV NIdV;
-  TIntV EIdV;
+  TInt64V NIdV;
+  TInt64V EIdV;
   int i;
 
   NGraph = GetTestTNGraph();

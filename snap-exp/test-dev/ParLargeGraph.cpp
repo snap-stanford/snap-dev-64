@@ -91,9 +91,8 @@ int main(int argc, char** argv){
     NI++;
   }
 
-  printf("Nodes      = %d\n",Graph->GetNodes());
-  unsigned long long ss = Graph->GetEdges64();
-  printf("Edges      = %llu\n", ss);
+  printf("Nodes      = %s\n", TUInt64::GetStr(Graph->GetNodes()).CStr());
+  printf("Edges      = %s\n", TUInt64::GetStr(Graph->GetEdges()).CStr());
 
   //printf("IsOk       = %d\n",Graph->IsOk());
   printf("IsEmpty    = %d\n",Graph->Empty());

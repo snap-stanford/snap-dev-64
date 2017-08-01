@@ -27,22 +27,25 @@ int main(int argc, char* argv[]) {
   //G->Dump();
   // delete
   PGraph::TObj::TNodeI NI = G->GetNI(0);
-  printf("Delete edge %d -- %d\n", NI.GetId(), NI.GetOutNId(0));
+  printf("Delete edge %s -- %s\n", TInt64::GetStr(NI.GetId()).CStr(),
+          TInt64::GetStr(NI.GetOutNId(0)).CStr());
   G->DelEdge(NI.GetId(), NI.GetOutNId(0));
   const int RndNId = G->GetRndNId();
   printf("Delete node %d\n", RndNId);
   G->DelNode(RndNId);
   IAssert(G->IsOk());
   // dump the graph
-  printf("Graph (%d, %d)\n", G->GetNodes(), G->GetEdges());
+  printf("Graph (%s, %s)\n", TUInt64::GetStr(G->GetNodes()).CStr(),
+                TUInt64::GetStr(G->GetEdges()).CStr());
   for (PGraph::TObj::TNodeI NI = G->BegNI(); NI < G->EndNI(); NI++) {
-    printf("  %d: ", NI.GetId());
+    printf("  %s: ", TInt64::GetStr(NI.GetId()).CStr());
     for (int e = 0; e < NI.GetDeg(); e++) {
-      printf(" %d", NI.GetNbrNId(e)); }
+      printf(" %s", TInt64::GetStr(NI.GetNbrNId(e)).CStr());
+    }
     printf("\n");
   }
   // dump subgraph
-  TIntV NIdV;
+  TInt64V NIdV;
   for (PGraph::TObj::TNodeI NI = G->BegNI(); NI < G->EndNI(); NI++) {
     if (NIdV.Len() < G->GetNodes()/2) { NIdV.Add(NI.GetId()); }
   }

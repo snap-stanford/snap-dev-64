@@ -31,14 +31,14 @@ int main(int argc, char* argv[]) {
 	  
 	  printf("\n*** MAG generating... ");
 	  Graph = SimMAG.GenMAG(AttrVV, false, Seed);
-	  printf("%d edges created...\n", Graph->GetEdges());
+	  printf("%s edges created...\n", TUInt64::GetStr(Graph->GetEdges()).CStr());
 
   } else {  // general MAG with Bernoulli node attributes
 	  TMAGParam<TMAGNodeBern> MAG(Nodes, InFNm);
 	  
 	  printf("\n*** MAG generating... ");
 	  Graph = MAG.GenMAG(AttrVV, false, Seed);
-	  printf("%d edges created...\n", Graph->GetEdges());
+	  printf("%s edges created...\n", TUInt64::GetStr(Graph->GetEdges()).CStr());
   }
   
   // save edge list

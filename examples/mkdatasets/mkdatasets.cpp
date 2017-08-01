@@ -3,30 +3,38 @@
 void PrintGraphStat(const PNGraph& G) {
   PNGraph WCC = TSnap::GetMxWcc(G);
   PNGraph SCC = TSnap::GetMxScc(G);
-  TFltPrV DegCCfV;
+  TFltPr64V DegCCfV;
   int64 ClosedTriads, OpenTriads;
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam;
-  printf("Nodes\t%d\n", G->GetNodes());
-  printf("Edges\t%d\n", G->GetEdges());
-  printf("Nodes in largest WCC\t%d (%.3f)\n", WCC->GetNodes(), WCC->GetNodes()/double(G->GetNodes()));
-  printf("Edges in largest WCC\t%d (%.3f)\n", WCC->GetEdges(), WCC->GetEdges()/double(G->GetEdges()));
-  printf("Nodes in largest SCC\t%d (%.3f)\n", SCC->GetNodes(), SCC->GetNodes()/double(G->GetNodes()));
-  printf("Edges in largest SCC\t%d (%.3f)\n", SCC->GetEdges(), SCC->GetEdges()/double(G->GetEdges()));
+  printf("Nodes\t%s\n", TUInt64::GetStr(G->GetNodes()).CStr());
+  printf("Edges\t%s\n", TUInt64::GetStr(G->GetEdges()).CStr());
+  printf("Nodes in largest WCC\t%s (%.3f)\n",
+        TUInt64::GetStr(WCC->GetNodes()).CStr(),
+        WCC->GetNodes()/double(G->GetNodes()));
+  printf("Edges in largest WCC\t%s (%.3f)\n",
+        TUInt64::GetStr(WCC->GetEdges()).CStr(),
+        WCC->GetEdges()/double(G->GetEdges()));
+  printf("Nodes in largest SCC\t%s (%.3f)\n",
+        TUInt64::GetStr(SCC->GetNodes()).CStr(),
+        SCC->GetNodes()/double(G->GetNodes()));
+  printf("Edges in largest SCC\t%s (%.3f)\n",
+        TUInt64::GetStr(SCC->GetEdges()).CStr(),
+        SCC->GetEdges()/double(G->GetEdges()));
   const double CCF = TSnap::GetClustCf(G, DegCCfV, ClosedTriads, OpenTriads);
   printf("Average clustering coefficient\t%.4f\n", CCF);
   printf("Number of triangles\t%s\n", TUInt64(ClosedTriads).GetStr().CStr());
   printf("Fraction of closed triangles\t%.4g\n", ClosedTriads/double(ClosedTriads+OpenTriads));
   TSnap::GetBfsEffDiam(G, 1000, false, EffDiam, FullDiam);
-  printf("Diameter (longest shortest path)\t%d\n", FullDiam);
+  printf("Diameter (longest shortest path)\t%s\n", TInt64::GetStr(FullDiam).CStr());
   printf("90-percentile effective diameter\t%.2g\n", EffDiam);
 }
 
 template<class PGraph> 
 void PrintGraphStatTable(const PGraph& G, TStr OutFNm, TStr Desc="") {
-  TFltPrV DegCCfV;
+  TFltPr64V DegCCfV;
   int64 ClosedTriads, OpenTriads;
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam;
   TSnap::PrintInfo(G, OutFNm);
   TExeTm ExeTm; printf("C");
@@ -43,16 +51,27 @@ void PrintGraphStatTable(const PGraph& G, TStr OutFNm, TStr Desc="") {
   fprintf(F, "\n");
   fprintf(F, "<table id=\"datatab\" summary=\"Dataset statistics\">\n");
   fprintf(F, "  <tr> <th colspan=\"2\">Dataset statistics</th> </tr>\n");
-  fprintf(F, "  <tr><td>Nodes</td> <td>%d</td></tr>\n", G->GetNodes());
-  fprintf(F, "  <tr><td>Edges</td> <td>%d</td></tr>\n", G->GetEdges());
-  fprintf(F, "  <tr><td>Nodes in largest WCC</td> <td>%d (%.3f)</td></tr>\n", WCC->GetNodes(), WCC->GetNodes()/double(G->GetNodes()));
-  fprintf(F, "  <tr><td>Edges in largest WCC</td> <td>%d (%.3f)</td></tr>\n", WCC->GetEdges(), WCC->GetEdges()/double(G->GetEdges()));
-  fprintf(F, "  <tr><td>Nodes in largest SCC</td> <td>%d (%.3f)</td></tr>\n", SCC->GetNodes(), SCC->GetNodes()/double(G->GetNodes()));
-  fprintf(F, "  <tr><td>Edges in largest SCC</td> <td>%d (%.3f)</td></tr>\n", SCC->GetEdges(), SCC->GetEdges()/double(G->GetEdges()));
+  fprintf(F, "  <tr><td>Nodes</td> <td>%s</td></tr>\n",
+        TUInt64::GetStr(G->GetNodes()).CStr());
+  fprintf(F, "  <tr><td>Edges</td> <td>%s</td></tr>\n",
+        TUInt64::GetStr(G->GetEdges()).CStr());
+  fprintf(F, "  <tr><td>Nodes in largest WCC</td> <td>%s (%.3f)</td></tr>\n",
+        TUInt64::GetStr(WCC->GetNodes()).CStr(),
+        WCC->GetNodes()/double(G->GetNodes()));
+  fprintf(F, "  <tr><td>Edges in largest WCC</td> <td>%s (%.3f)</td></tr>\n",
+        TUInt64::GetStr(WCC->GetEdges()).CStr(),
+        WCC->GetEdges()/double(G->GetEdges()));
+  fprintf(F, "  <tr><td>Nodes in largest SCC</td> <td>%s (%.3f)</td></tr>\n",
+        TUInt64::GetStr(SCC->GetNodes()).CStr(),
+        SCC->GetNodes()/double(G->GetNodes()));
+  fprintf(F, "  <tr><td>Edges in largest SCC</td> <td>%s (%.3f)</td></tr>\n",
+        TUInt64::GetStr(SCC->GetEdges()).CStr(),
+        SCC->GetEdges()/double(G->GetEdges()));
   fprintf(F, "  <tr><td>Average clustering coefficient</td> <td>%.4f</td></tr>\n", CCF);
   fprintf(F, "  <tr><td>Number of triangles</td> <td>%s</td></tr>\n", TUInt64(ClosedTriads).GetStr().CStr());
   fprintf(F, "  <tr><td>Fraction of closed triangles</td> <td>%.4g</td></tr>\n", ClosedTriads/double(ClosedTriads+OpenTriads));
-  fprintf(F, "  <tr><td>Diameter (longest shortest path)</td> <td>%d</td></tr>\n", FullDiam);
+  fprintf(F, "  <tr><td>Diameter (longest shortest path)</td> <td>%s</td></tr>\n",
+        TInt64::GetStr(FullDiam).CStr());
   fprintf(F, "  <tr><td>90-percentile effective diameter</td> <td>%.2g</td></tr>\n", EffDiam);
   fprintf(F, "</table>\n");
   fprintf(F, "<br>\n");
@@ -230,10 +249,15 @@ void MakeSlashdotSignNet(const TStr InFNm, TStr OutFNm, TStr Desc, THashSet<TChA
   fprintf(F, "# Directed graph: %s\n", OutFNm.CStr());
   if (! Desc.Empty()) 
     fprintf(F, "# %s\n", (Desc).CStr());
-    fprintf(F, "# Nodes: %d Edges: %d\n", Net->GetNodes(), Net->GetEdges());
+    fprintf(F, "# Nodes: %s Edges: %s\n",
+        TUInt64::GetStr(Net->GetNodes()).CStr(),
+        TUInt64::GetStr(Net->GetEdges()).CStr());
     fprintf(F, "# UserId\tGroupId\tSign\n"); 
   for (TNodeEDatNet<TInt,TInt>::TEdgeI ei = Net->BegEI(); ei < Net->EndEI(); ei++) {
-      fprintf(F, "%d\t%d\t%d\n", ei.GetSrcNId(), ei.GetDstNId(), ei()());
+      fprintf(F, "%s\t%s\t%d\n",
+          TInt64::GetStr(ei.GetSrcNId()).CStr(),
+          TInt64::GetStr(ei.GetDstNId()).CStr(),
+          ei()());
   }
   fclose(F);
   
@@ -388,10 +412,15 @@ void MakeSignEpinions() {
   fprintf(F, "# Directed graph: %s\n", OutFNm.CStr());
   if (! Desc.Empty()) 
     fprintf(F, "# %s\n", (Desc).CStr());
-  fprintf(F, "# Nodes: %d Edges: %d\n", Net->GetNodes(), Net->GetEdges());
+  fprintf(F, "# Nodes: %s Edges: %s\n",
+        TUInt64::GetStr(Net->GetNodes()).CStr(),
+        TUInt64::GetStr(Net->GetEdges()).CStr());
   fprintf(F, "# FromNodeId\tToNodeId\tSign\n"); 
   for (TNodeEDatNet<TInt,TInt>::TEdgeI ei = Net->BegEI(); ei < Net->EndEI(); ei++) {
-      fprintf(F, "%d\t%d\t%d\n", ei.GetSrcNId(), ei.GetDstNId(), ei()());
+      fprintf(F, "%s\t%s\t%d\n",
+                    TInt64::GetStr(ei.GetSrcNId()).CStr(),
+                    TInt64::GetStr(ei.GetDstNId()).CStr(),
+                    ei()());
   }
   fclose(F);
   

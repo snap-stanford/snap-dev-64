@@ -10,7 +10,7 @@ private:
   TVec<TIntFltH> F; // outdegree membership for each user (Size: Nodes * Coms)
   TVec<TIntFltH> H; // in-degree membership for each user (Size: Nodes * Coms) A ~ F * H'
   TRnd Rnd; // random number generator
-  TIntV NIDV; // original node ID vector
+  TInt64V NIDV; // original node ID vector
   TFlt RegCoef; //Regularization coefficient when we fit for P_c +: L1, -: L2
   TFltV SumFV; // sum_u F_uc for each community c. Needed for efficient calculation
   TFltV SumHV; // sum_u H_uc for each community c. Needed for efficient calculation
@@ -204,7 +204,10 @@ public:
   TCodaAnalyzer() { G = TNGraph::New(); }
   TCodaAnalyzer(TCoda& Coda, const double MemThres = -1.0) {
     G = Coda.GetGraphRawNID();
-    printf("graph copied (%d nodes %d edges)\n", G->GetNodes(), G->GetEdges());
+    printf("graph copied (%s nodes %s edges)\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
+
     TIntV CIdV;
     Coda.GetTopCIDs(CIdV, Coda.GetNumComs());
     double Delta = MemThres == -1.0 ? sqrt(Coda.PNoCom): MemThres;
@@ -300,15 +303,18 @@ public:
       }
     }
     //PNGraph Wcc = TSnap::GetMxWcc(ComG);
-    TIntV NIDV;
+    TInt64V NIDV;
     ComG->GetNIdV(NIDV);
-    for (int u = 0; u < NIDV.Len(); u++) {
-      int NID = NIDV[u];
+    for (int64 u = 0; u < NIDV.Len(); u++) {
+      int64 NID = NIDV[u];
       TNGraph::TNodeI NI = ComG->GetNI(NID);
       if (NI.GetDeg() == 0) { ComG->DelNode(NID); }
       if (NI.GetInDeg() == 1 && NI.GetOutDeg() == 1 && NI.GetOutNId(0) == NID) { ComG->DelNode(NID); }
     }
-    printf("Community graph made (Jaccard similarity for edges: %f, %d nodes, %d edges)\n", JacEdge, ComG->GetNodes(), ComG->GetEdges());
+    printf("Community graph made (Jaccard similarity for edges: %f, %s nodes, %s edges)\n", JacEdge,
+        TUInt64::GetStr(ComG->GetNodes()).CStr(),
+        TUInt64::GetStr(ComG->GetEdges()).CStr());
+
     return ComG;
   }
 
@@ -368,7 +374,10 @@ public:
       }
     }
 
-    PNGraph SG = TSnap::GetSubGraph(G, CmtyVAll);
+    TInt64V Cmty64VAll;
+    Cmty64VAll = TIntVToTInt64V(CmtyVAll);
+
+    PNGraph SG = TSnap::GetSubGraph(G, Cmty64VAll);
     /// Plot bipartite graph for the 2-mode community
     if (CmtyVAll.Len() == 0) { return; }
     double OXMin = 0.1, YMin = 0.1, OXMax = 2500.00, YMax = 1000.0, IXMin = 0.1, IXMax = 2500.00;
@@ -415,12 +424,15 @@ public:
     }
     fprintf(F, "\t\t</nodes>\n");
     //plot edges
-    int EID = 0;
+    int64 EID = 0;
     fprintf(F, "\t\t<edges>\n");
     for (TNGraph::TNodeI NI = SG->BegNI(); NI < SG->EndNI(); NI++) {
       if (NI.GetOutDeg() == 0 && NI.GetInDeg() == 0  ) { continue; }
       for (int e = 0; e < NI.GetOutDeg(); e++) {
-        fprintf(F, "\t\t\t<edge id='%d' source='%d' target='%d'/>\n", EID++, NI.GetId(), NI.GetOutNId(e));
+        fprintf(F, "\t\t\t<edge id='%s' source='%s' target='%s'/>\n",
+                TInt64::GetStr(EID).CStr(),
+                TInt64::GetStr(NI.GetId()).CStr(),
+                TInt64::GetStr(NI.GetOutNId(e)).CStr());
       }
     }
     fprintf(F, "\t\t</edges>\n");

@@ -110,7 +110,10 @@ void TUniCodec::TestUtf8(bool decode, size_t expectedRetVal, bool expectedThrow,
 		if (f) {
 			fprintf(f, "\n -> dest:    "); for (int i = 0; i < dest.Len(); i++) fprintf(f, (decode ? " %x" :  " %02x"), uint(dest[i]));
 			fprintf(f, "\n    expDest  "); for (int i = 0; i < expectedDest.Len(); i++) fprintf(f, (decode ? " %x" :  " %02x"), uint(expectedDest[i]));
-			fprintf(f, "\n    retVal = %llu (expected %llu)\n", static_cast<long long unsigned int> (retVal), static_cast<long long unsigned int> (expectedRetVal)); }
+			fprintf(f, "\n    retVal = %s (expected %s)\n",
+          TInt64::GetStr(static_cast<int64>(retVal)).CStr(),
+          TInt64::GetStr(static_cast<int64>(expectedRetVal)).CStr());
+    }
 		if (retVal != expectedRetVal)
 			printf("!!!");
 		IAssert(retVal == expectedRetVal); IAssert(! expectedThrow);
@@ -313,7 +316,10 @@ void TUniCodec::TestUtf16(bool decode, size_t expectedRetVal, bool expectedThrow
 			if (f) {
 				fprintf(f, "\n -> dest:    "); for (int i = 0; i < dest.Len(); i++) fprintf(f, (decode ? " %x" :  fmt), uint(dest[i]));
 				fprintf(f, "\n    expDest  "); for (int i = 0; i < ed.Len(); i++) fprintf(f, (decode ? " %x" :  fmt), uint(ed[i]));
-				fprintf(f, "\n    retVal = %llu (expected %llu)\n", static_cast<long long unsigned int> (retVal), static_cast<long long unsigned int> (expectedRetVal)); }
+			  fprintf(f, "\n    retVal = %s (expected %s)\n",
+            TInt64::GetStr(static_cast<int64>(retVal)).CStr(),
+            TInt64::GetStr(static_cast<int64>(expectedRetVal)).CStr());
+      }
 			bool ok = true;
 			if (retVal != expectedRetVal) ok = false;
 			if (dest.Len() != ed.Len()) ok = false;

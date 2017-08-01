@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     PNGraph G = TSnap::GenRndGnm<PNGraph>(NNodes, MinEdges+TInt::Rnd.GetUniDevInt(MaxEdges-MinEdges));
     GHash.AddDat(G)++;
   }
-  printf("%d graphs in the hash table\n", GHash.Len());
+  printf("%s graphs in the hash table\n", TInt64::GetStr(GHash.Len()).CStr());
   
   // re-generate those same 100 random graphs on 5 nodes and at least 3 edges and 
   // make sure that exist in the hash table
@@ -27,30 +27,35 @@ int main(int argc, char* argv[]) {
     PNGraph G = TSnap::GenRndGnm<PNGraph>(NNodes, MinEdges+TInt::Rnd.GetUniDevInt(MaxEdges-MinEdges));
     IAssert(GHash.IsKey(G));
   }
-  printf("%d graphs in the hash table\n", GHash.Len());
+  printf("%s graphs in the hash table\n", TInt64::GetStr(GHash.Len()).CStr());
   
   // generate another 10k random graphs and add them to the hash table
   for (int gn = 0; gn < 10000; gn++) {
     PNGraph G = TSnap::GenRndGnm<PNGraph>(NNodes, MinEdges+TInt::Rnd.GetUniDevInt(MaxEdges-MinEdges));
     GHash.AddDat(G)++;
   }
-  printf("%d graphs in the hash table\n", GHash.Len());
+  printf("%s graphs in the hash table\n", TInt64::GetStr(GHash.Len()).CStr());
 
   // draw top 10 most frequent graphs and show statistics for top 100.
   int PlotCnt = 0;
-  TIntV KeyIdV;
+  TInt64V KeyIdV;
   GHash.GetKeyIdByDat(KeyIdV, false);
   printf("Rank\tKeyId\tNodes\tEdges\tCount\n");
-  for (int i = 0; i < TMath::Mn(100, KeyIdV.Len()); i++) {
+  int64 Iter = (KeyIdV.Len() < 100) ? KeyIdV.Len() : 100;
+  for (int i = 0; i < Iter; i++) {
     const TGraphKey& Key = GHash.GetKey(KeyIdV[i]);
-    printf("%d\t%d\t%d\t%d\t%s\n", i+1, KeyIdV[i](), Key.GetNodes(), Key.GetEdges(), GHash.GetDatId(KeyIdV[i]).GetStr().CStr());
+    printf("%d\t%s\t%s\t%s\t%s\n", i+1,
+              TInt64::GetStr(KeyIdV[i]()).CStr(),
+              TInt64::GetStr(Key.GetNodes()).CStr(),
+              TInt64::GetStr(Key.GetEdges()).CStr(),
+              GHash.GetDatId(KeyIdV[i]).GetStr().CStr());
     if (PlotCnt++ < 10) {  // draw the graph
       GHash.DrawGViz(KeyIdV[i], TStr::Fmt("ghash%02d", PlotCnt), "gif", TStr::Fmt("Count: %d", GHash.GetDatId(KeyIdV[i]).Val));
     }
   }
   // plot graph frequency distributions
   TIntH EdgesCntH, EdgesFreqH, FreqCntH;
-  for (int keyid = GHash.FFirstKeyId(); GHash.FNextKeyId(keyid); ) {
+  for (int64 keyid = GHash.FFirstKeyId(); GHash.FNextKeyId(keyid); ) {
     FreqCntH.AddDat(GHash[keyid])++;
     EdgesFreqH.AddDat(GHash.GetKey(keyid).GetEdges()) += GHash[keyid];
     EdgesCntH.AddDat(GHash.GetKey(keyid).GetEdges())++;

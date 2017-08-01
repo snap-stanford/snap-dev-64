@@ -26,9 +26,13 @@ int main(int argc, char* argv[]) {
     TLocClust::DrawWhiskers(Graph, OutFNm, DrawWhisk);
   }
   if (TakeCore) {
-    printf("Take bi-connected core: (%d, %d)  -->", Graph->GetNodes(), Graph->GetEdges());
+    printf("Take bi-connected core: (%s, %s)  -->",
+                TUInt64::GetStr(Graph->GetNodes()).CStr(),
+                TUInt64::GetStr(Graph->GetEdges()).CStr());
     Graph = TSnap::GetMxBiCon(Graph);
-    printf("  (%d, %d)\n", Graph->GetNodes(), Graph->GetEdges());
+    printf("  (%s, %s)\n",
+                TUInt64::GetStr(Graph->GetNodes()).CStr(),
+                TUInt64::GetStr(Graph->GetEdges()).CStr());
   }
   printf("*** Plotting network community profile (NCP)\n");
   //TLocClust::PlotNCP(Graph, OutFNm, , DoWhisk, DoRewire, KMin, KMax, Coverage, SaveInfo);

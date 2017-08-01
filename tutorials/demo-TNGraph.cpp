@@ -2,9 +2,10 @@
 
 // Print graph statistics
 void PrintGStats(const char s[], PNGraph Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph->GetNodes(), Graph->GetEdges(),
-      Graph->Empty() ? "yes" : "no");
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+            TUInt64::GetStr(Graph->GetNodes()).CStr(),
+            TUInt64::GetStr(Graph->GetEdges()).CStr(),
+            Graph->Empty() ? "yes" : "no");
 }
 
 // Test the default constructor
@@ -26,9 +27,9 @@ void ManipulateNodesEdges() {
   PNGraph Graph2;
   int i;
   int n;
-  int NCount;
-  int ECount1;
-  int ECount2;
+  int64 NCount;
+  int64 ECount1;
+  int64 ECount2;
   int x,y;
   bool t;
 
@@ -61,8 +62,10 @@ void ManipulateNodesEdges() {
   for (TNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     NCount++;
     // get the node ID and its in- and out-degree
-    printf("node id %d has in-degree %d and out-degree %d\n",
-          NI.GetId(), NI.GetInDeg(), NI.GetOutDeg());
+    printf("node id %s has in-degree %s and out-degree %s\n",
+            TInt64::GetStr(NI.GetId()).CStr(),
+            TInt64::GetStr(NI.GetInDeg()).CStr(),
+            TInt64::GetStr(NI.GetOutDeg()).CStr());
   }
 
   // traverse all the in-edges of all the nodes, count them
@@ -71,11 +74,15 @@ void ManipulateNodesEdges() {
     for (int e = 0; e < NI.GetInDeg(); e++) {
       ECount1++;
       // get the node ID and its in-neighbour
-      printf("node id %d has in-neighbor %d\n", NI.GetId(), NI.GetInNId(e));
+      printf("node id %s has in-neighbor %s\n",
+                TInt64::GetStr(NI.GetId()).CStr(),
+                TInt64::GetStr(NI.GetInNId(e)).CStr());
     }
     for (int e = 0; e < NI.GetOutDeg(); e++) {
       // get the node ID and its out-neighbour
-      printf("node id %d has out-neighbor %d\n", NI.GetId(), NI.GetOutNId(e));
+      printf("node id %s has out-neighbor %s\n",
+                TInt64::GetStr(NI.GetId()).CStr(),
+                TInt64::GetStr(NI.GetOutNId(e)).CStr());
     }
   }
 
@@ -84,11 +91,14 @@ void ManipulateNodesEdges() {
   for (TNGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     ECount2++;
     // get the source and the destination nodes of the edge
-    printf("edge from source node %d to destination node %d\n",
-          EI.GetSrcNId(), EI.GetDstNId());
+    printf("edge from source node %s to destination node %s\n",
+              TInt64::GetStr(EI.GetSrcNId()).CStr(),
+              TInt64::GetStr(EI.GetDstNId()).CStr());
   }
-  printf("ManipulateNodesEdges:Graph, nodes %d, edges1 %d, edges2 %d\n",
-      NCount, ECount1, ECount2);
+  printf("ManipulateNodesEdges:Graph, nodes %s, edges1 %s, edges2 %s\n",
+              TInt64::GetStr(NCount).CStr(),
+              TInt64::GetStr(ECount1).CStr(),
+              TInt64::GetStr(ECount2).CStr());
 
   // assignment
   Graph1 = TNGraph::New();

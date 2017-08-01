@@ -389,7 +389,7 @@ void TMAGFitBern::SetGraph(const PNGraph& GraphPt) {
 	for (int nid = 0; nid < Graph->GetNodes(); nid++) {
 	if (! Graph->IsNode(nid)) { NodesOk=false; break; } }
 	if (! NodesOk) {
-	TIntV NIdV;  GraphPt->GetNIdV(NIdV);
+	TInt64V NIdV;  GraphPt->GetNIdV(NIdV);
 	Graph = TSnap::GetSubGraph(GraphPt, NIdV, true);
 	for (int nid = 0; nid < Graph->GetNodes(); nid++) {
 	  IAssert(Graph->IsNode(nid)); }
@@ -1745,7 +1745,8 @@ void TMAGFitBern::PlotProperties(const TStr& FNm) {
 	}
 	PNGraph MAG = MAGGen.GenMAG(AttrVV, true, 10000);
 //	PNGraph MAG = MAGGen.GenAttrMAG(AttrVV, true, 10000);
-	printf("%d edges created for MAG...\n", MAG->GetEdges());
+	printf("%s edges created for MAG...\n",
+        TUInt64::GetStr(MAG->GetEdges()).CStr());
 	
 	TSnap::DelZeroDegNodes(TrG);
 	TSnap::DelZeroDegNodes(MAG);
@@ -1784,14 +1785,14 @@ void TMAGFitBern::PlotProperties(const TStr& FNm) {
 	GS.Add(MAG, TSecTm(2), "MAG");
 
 	TFltPrV InDegV, OutDegV, SvalV, SvecV, HopV, WccV, CcfV, TriadV;
-	for(int i = 0; i < GS.Len(); i++) {
-		MakeCCDF(GS.At(i)->GetDistr(gsdInDeg), InDegV);
-		MakeCCDF(GS.At(i)->GetDistr(gsdOutDeg), OutDegV);
-		SvalV = GS.At(i)->GetDistr(gsdSngVal);
-		SvecV = GS.At(i)->GetDistr(gsdSngVec);
-		MakeCCDF(GS.At(i)->GetDistr(gsdClustCf), CcfV);
-		HopV = GS.At(i)->GetDistr(gsdHops);
-		MakeCCDF(GS.At(i)->GetDistr(gsdTriadPart), TriadV);
+	for(int64 i = 0; i < GS.Len(); i++) {
+		MakeCCDF(TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdInDeg)), InDegV);
+		MakeCCDF(TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdOutDeg)), OutDegV);
+		SvalV = TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdSngVal));
+		SvecV = TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdSngVec));
+		MakeCCDF(TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdClustCf)), CcfV);
+		HopV = TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdHops));
+		MakeCCDF(TFltPr64VToTFltPrV(GS.At(i)->GetDistr(gsdTriadPart)), TriadV);
 
 		InDegP.AddPlot(InDegV, gpwLines, Name[i], Style[i]);
 		OutDegP.AddPlot(OutDegV, gpwLines, Name[i], Style[i]);

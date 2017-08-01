@@ -32,13 +32,15 @@ int main(int argc, char* argv[]) {
   } else {
 	  Graph = TSnap::LoadEdgeList<PNGraph>(InFNm, 0, 1);
   }
-  TIntV NIdV;  Graph->GetNIdV(NIdV);
+  TInt64V NIdV;  Graph->GetNIdV(NIdV);
   Graph = TSnap::GetSubGraph(Graph, NIdV, true);
   // const int Nodes = Graph->GetNodes();
 
   ExeTm.Tick();
   printf("\n*** MAGfit starting... \n");
-  printf("%d nodes %d edges ...\n", Graph->GetNodes(), Graph->GetEdges());
+  printf("%s nodes %s edges ...\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
 	  
   TMAGFitBern MAGFit(Graph, ParamFNm);
   TMAGNodeBern::Rnd.PutSeed(Seed);

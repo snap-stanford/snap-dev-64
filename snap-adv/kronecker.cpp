@@ -341,7 +341,9 @@ PNGraph TKronMtx::GenKronecker(const TKronMtx& SeedMtx, const int& NIter, const 
       if (node1 % 1000 == 0) printf("\r...%dk, %dk", node1/1000, edges/1000);
     }
   }
-  printf("\r             %d edges [%s]\n", Graph->GetEdges(), ExeTm.GetTmStr());
+  printf("\r             %s edges [%s]\n",
+                TUInt64::GetStr(Graph->GetEdges()).CStr(),
+                ExeTm.GetTmStr());
   return Graph;
 }
 
@@ -562,10 +564,19 @@ void TKronMtx::PlotCmpGraphs(const TVec<TKronMtx>& SeedMtxV, const PNGraph& Grap
   for (int m = 0; m < SeedMtxV.Len(); m++) {
     const int KronIters = SeedMtxV[m].GetKronIter(Graph->GetNodes());
     PNGraph KronG1 = TKronMtx::GenFastKronecker(SeedMtxV[m], KronIters, true, 0);
-    printf("*** K(%d, %d) n0=%d\n", KronG1->GetNodes(), KronG1->GetEdges(), SeedMtxV[m].GetDim());
+    printf("*** K(%s, %s) n0=%d\n",
+            TInt64::GetStr(KronG1->GetNodes()).CStr(),
+            TInt64::GetStr(KronG1->GetEdges()).CStr(),
+            SeedMtxV[m].GetDim());
     TSnap::DelZeroDegNodes(KronG1);
-    printf(" del zero deg K(%d, %d) n0=%d\n", KronG1->GetNodes(), KronG1->GetEdges(), m);
-    GS.Add(KronG1, TSecTm(m+2), TStr::Fmt("K(%d, %d) n0^k=%d n0=%d", KronG1->GetNodes(), KronG1->GetEdges(), SeedMtxV[m].GetNZeroK(Graph), SeedMtxV[m].GetDim()));
+    printf(" del zero deg K(%s, %s) n0=%d\n",
+            TInt64::GetStr(KronG1->GetNodes()).CStr(),
+            TInt64::GetStr(KronG1->GetEdges()).CStr(),
+            m);
+    GS.Add(KronG1, TSecTm(m+2), TStr::Fmt("K(%s, %s) n0^k=%d n0=%d",
+            TInt64::GetStr(KronG1->GetNodes()).CStr(),
+            TInt64::GetStr(KronG1->GetEdges()).CStr(),
+            SeedMtxV[m].GetNZeroK(Graph), SeedMtxV[m].GetDim()));
     // plot after each Kronecker is done
     const TStr Style = "linewidth 1 pointtype 6 pointsize 1";
     GS.ImposeDistr(gsdInDeg, FNmPref, Desc1, false, false, gpwLines, Style);
@@ -883,12 +894,12 @@ void TKroneckerLL::SetGraph(const PNGraph& GraphPt) {
   Graph = GraphPt;
   bool NodesOk = true;
   // check that nodes IDs are {0,1,..,Nodes-1}
-  for (int nid = 0; nid < Graph->GetNodes(); nid++) {
+  for (int64 nid = 0; nid < Graph->GetNodes(); nid++) {
     if (! Graph->IsNode(nid)) { NodesOk=false; break; } }
   if (! NodesOk) {
-    TIntV NIdV;  GraphPt->GetNIdV(NIdV);
+    TInt64V NIdV;  GraphPt->GetNIdV(NIdV);
     Graph = TSnap::GetSubGraph(GraphPt, NIdV, true);
-    for (int nid = 0; nid < Graph->GetNodes(); nid++) {
+    for (int64 nid = 0; nid < Graph->GetNodes(); nid++) {
       IAssert(Graph->IsNode(nid)); }
   }
   Nodes = Graph->GetNodes();
@@ -1298,7 +1309,9 @@ void TKroneckerLL::SampleGradient(const int& WarmUp, const int& NSamples, double
 
 double TKroneckerLL::GradDescent(const int& NIter, const double& LrnRate, double MnStep, double MxStep, const int& WarmUp, const int& NSamples) {
   printf("\n----------------------------------------------------------------------\n");
-  printf("Fitting graph on %d nodes, %d edges\n", Graph->GetNodes(), Graph->GetEdges());
+  printf("Fitting graph on %s nodes, %s edges\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
   printf("Kron iters:  %d (== %d nodes)\n\n", KronIters(), ProbMtx.GetNodes(KronIters()));
   TExeTm IterTm, TotalTm;
   double OldLL=-1e10, CurLL=0;
@@ -1330,8 +1343,10 @@ double TKroneckerLL::GradDescent(const int& NIter, const double& LrnRate, double
       if (NewProbMtx.At(p) > 0.9999) { NewProbMtx.At(p)=0.9999; }
       if (NewProbMtx.At(p) < 0.0001) { NewProbMtx.At(p)=0.0001; }
     }
-    printf("  trueE0: %.2f (%d),  estE0: %.2f (%d),  ERR: %f\n", EZero, Graph->GetEdges(),
-      ProbMtx.GetMtxSum(), ProbMtx.GetEdges(KronIters), fabs(EZero-ProbMtx.GetMtxSum()));
+    printf("  trueE0: %.2f (%s),  estE0: %.2f (%s),  ERR: %f\n",
+        EZero, TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        ProbMtx.GetMtxSum(), TInt64::GetStr(ProbMtx.GetEdges(KronIters)).CStr(),
+        fabs(EZero-ProbMtx.GetMtxSum()));
     printf("  currLL: %.4f, deltaLL: %.4f\n", CurLL, CurLL-OldLL); // positive is good
     for (int p = 0; p < GetParams(); p++) {
       printf("    %d]  %f  <--  %f + %9f   Grad: %9.1f   Rate: %g\n", p, NewProbMtx.At(p),
@@ -1355,7 +1370,9 @@ double TKroneckerLL::GradDescent(const int& NIter, const double& LrnRate, double
 double TKroneckerLL::GradDescent2(const int& NIter, const double& LrnRate, double MnStep, double MxStep, const int& WarmUp, const int& NSamples) {
   printf("\n----------------------------------------------------------------------\n");
   printf("GradDescent2\n");
-  printf("Fitting graph on %d nodes, %d edges\n", Graph->GetNodes(), Graph->GetEdges());
+  printf("Fitting graph on %s nodes, %s edges\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
   printf("Skip moves that make likelihood smaller\n");
   printf("Kron iters:  %d (== %d nodes)\n\n", KronIters(), ProbMtx.GetNodes(KronIters()));
   TExeTm IterTm, TotalTm;
@@ -1384,8 +1401,10 @@ double TKroneckerLL::GradDescent2(const int& NIter, const double& LrnRate, doubl
     SampleGradient(WarmUp, NSamples, NewLL, NewGradV);
     if (NewLL > CurLL) { // accept the move
       printf("== Good move:\n");
-      printf("  trueE0: %.2f (%d),  estE0: %.2f (%d),  ERR: %f\n", EZero, Graph->GetEdges(),
-        ProbMtx.GetMtxSum(), ProbMtx.GetEdges(KronIters), fabs(EZero-ProbMtx.GetMtxSum()));
+      printf("  trueE0: %.2f (%s),  estE0: %.2f (%s),  ERR: %f\n",
+        EZero, TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        ProbMtx.GetMtxSum(), TInt64::GetStr(ProbMtx.GetEdges(KronIters)).CStr(),
+        fabs(EZero-ProbMtx.GetMtxSum()));
       printf("  currLL: %.4f  deltaLL: %.4f\n", CurLL, NewLL-CurLL); // positive is good
       for (int p = 0; p < GetParams(); p++) {
         printf("    %d]  %f  <--  %f + %9f   Grad: %9.1f   Rate: %g\n", p, NewProbMtx.At(p),
@@ -1395,8 +1414,11 @@ double TKroneckerLL::GradDescent2(const int& NIter, const double& LrnRate, doubl
       GoodMove = true;
     } else {
       printf("** BAD move:\n");
-      printf("  *trueE0: %.2f (%d),  estE0: %.2f (%d),  ERR: %f\n", EZero, Graph->GetEdges(),
-        ProbMtx.GetMtxSum(), ProbMtx.GetEdges(KronIters), fabs(EZero-ProbMtx.GetMtxSum()));
+      printf("  *trueE0: %.2f (%s),  estE0: %.2f (%s),  ERR: %f\n",
+        EZero, TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        ProbMtx.GetMtxSum(),
+        TUInt64::GetStr(ProbMtx.GetEdges(KronIters)).CStr(),
+        fabs(EZero-ProbMtx.GetMtxSum()));
       printf("  *curLL:  %.4f  deltaLL: %.4f\n", CurLL, NewLL-CurLL); // positive is good
       for (int p = 0; p < GetParams(); p++) {
         printf("   b%d]  %f  <--  %f + %9f   Grad: %9.1f   Rate: %g\n", p, NewProbMtx.At(p),
@@ -1637,7 +1659,11 @@ double TKroneckerLL::RunMStep(const TFltV& LLV, const TVec<TFltV>& DLLV, const i
 			if (NewProbMtx.At(p) < 0.0001) { NewProbMtx.At(p)=0.0001; }
 			LearnRateV[p] *= 0.95;
 		}
-		printf("  trueE0: %.2f (%u from %u),  estE0: %.2f (%u from %u),  ERR: %f\n", EZero, RealEdges(), RealNodes(), ProbMtx.GetMtxSum(), Graph->GetEdges(), Graph->GetNodes(), fabs(EZero-ProbMtx.GetMtxSum()));
+		printf("  trueE0: %.2f (%u from %u),  estE0: %.2f (%s from %s),  ERR: %f\n",
+            EZero, RealEdges(), RealNodes(), ProbMtx.GetMtxSum(),
+            TUInt64::GetStr(Graph->GetNodes()).CStr(),
+            TUInt64::GetStr(Graph->GetEdges()).CStr(),
+            fabs(EZero-ProbMtx.GetMtxSum()));
 		printf("      currLL: %.4f, deltaLL: %.4f\n", CurLL, CurLL-OldLL); // positive is good
 		for (int p = 0; p < GetParams(); p++) {
 			printf("      %d]  %f  <--  %f + %9f   Grad: %9.1f   Rate: %g\n", p, NewProbMtx.At(p),
@@ -2205,7 +2231,7 @@ int TKronNoise::RemoveNodeNoise(PNGraph& Graph, const int& NNodes, const bool Ra
 	IAssert(NNodes > 0 && NNodes < (Graph->GetNodes() / 2));
 
 	int i = 0;
-	TIntV ShufflePerm;
+	TInt64V ShufflePerm;
 	Graph->GetNIdV(ShufflePerm);
 	if(Random) {
 		ShufflePerm.Shuffle(TKronMtx::Rnd);
@@ -2233,7 +2259,7 @@ int TKronNoise::FlipEdgeNoise(PNGraph& Graph, const int& NEdges, const bool Rand
 	const int Edges = Graph->GetEdges();
 	int Src, Dst;
 
-	TIntV NIdV, TempV;
+	TInt64V NIdV, TempV;
 	TIntPrV ToAdd, ToDel;
 	Graph->GetNIdV(NIdV);
 

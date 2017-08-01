@@ -74,7 +74,9 @@ int main(int argc, char* argv[]) {
   // TFOut OutFile(OutFNm);
   // Net->Save(OutFile);
   // --- calculate flows
-  printf("PNEANet Nodes: %d, Edges: %d\n\n", Net->GetNodes(), Net->GetEdges());
+  printf("PNEANet Nodes: %s, Edges: %s\n\n",
+              TUInt64::GetStr(Net->GetNodes()).CStr(),
+              TUInt64::GetStr(Net->GetEdges()).CStr());
   #pragma omp parallel for reduction(+:NetEKTimeSum,NetPRTimeSum,NumWins) schedule(static, 1)
   for (int t = 0; t < Threads; t++) {
     TRnd Random(t);

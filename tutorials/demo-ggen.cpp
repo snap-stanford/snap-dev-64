@@ -2,29 +2,34 @@
 
 // Print undirected graph statistics
 void PrintGStats(const char s[], PUNGraph Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph->GetNodes(), Graph->GetEdges(),
-      Graph->Empty() ? "yes" : "no");
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        Graph->Empty() ? "yes" : "no");
 }
 
 // Print direct graph statistics
 void PrintGStats(const char s[], PNGraph Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-         s, Graph->GetNodes(), Graph->GetEdges(),
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
          Graph->Empty() ? "yes" : "no");
 }
 
 // Print bipartite graph statistics
 void PrintGStats(const char s[], PBPGraph Graph) {
-  printf("graph %s, right nodes %d, left nodes %d, edges %d, empty %s\n",
-         s, Graph->GetRNodes(), Graph->GetLNodes(),
-         Graph->GetEdges(), Graph->Empty() ? "yes" : "no");
+  printf("graph %s, right nodes %s, left nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetRNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetLNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        Graph->Empty() ? "yes" : "no");
 }
 
 template <class PGraph>
 void PrintGStats(const char s[], PGraph Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-         s, Graph->GetNodes(), Graph->GetEdges(),
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
          Graph->Empty() ? "yes" : "no");
 }
 
@@ -181,7 +186,7 @@ void GenerateDegSeqGraph() {
   const int NNodes = 15;
   
   PUNGraph UNGraph;
-  TIntV DegSeqV;
+  TInt64V DegSeqV;
   TInt::Rnd.PutSeed(0);
       
   // Generate Deg Sequence vector randomly, populate long tail of 1's

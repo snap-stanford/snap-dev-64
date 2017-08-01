@@ -86,8 +86,8 @@ void AddLocalFeatures(const PUNGraph Graph, TIntFtrH& Features) {
 
 void AddEgonetFeatures(const PUNGraph Graph, TIntFtrH& Features) {
   for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    int NId = NI.GetId();
-    int ArndEdges;
+    int64 NId = NI.GetId();
+    int64 ArndEdges;
     PUNGraph Egonet = TSnap::GetEgonet(Graph, NId, ArndEdges);
     Features.GetDat(NId).Add(Egonet->GetEdges());
     Features.GetDat(NId).Add(ArndEdges);
@@ -179,7 +179,7 @@ TIntFtrH SummarizeConnectedComponents(const PUNGraph FeatureGraph,
     const TIntFtrH& Features, const TIntFtrH& NewFeatures) {
   TCnComV Wcc;
   TSnap::GetWccs(FeatureGraph, Wcc);
-  TVec<TInt> RetainedIdx;
+  TInt64V RetainedIdx;
   for (int i = 0; i < Wcc.Len(); ++i) {
     RetainedIdx.Add(Wcc[i][0]);
   }
@@ -415,7 +415,7 @@ TIntIntH FindRoles(const TFltVV& G, const TIntIntH& NodeIdMtxIdxH) {
 void PlotRoles(const PUNGraph Graph, const TIntIntH& Roles) {
   TStr RoleToColor[10] = { "white", "black", "red", "green", "blue",
       "yellow", "gold", "cyan", "magenta", "brown" };
-  TIntStrH Color;
+  TIntStr64H Color;
   for (TIntIntH::TIter HI = Roles.BegI(); HI < Roles.EndI(); HI++) {
     Color.AddDat(HI.GetKey(), RoleToColor[HI.GetDat()].CStr());
   }

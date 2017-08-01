@@ -255,9 +255,11 @@ template <class PGraph> void TestAnf() {
     TGraphAnf<PGraph> Anf(Graph, 128, 5, t+1);
     TIntFltKd64V DistToNbrsV;
     Anf.GetGraphAnf(DistToNbrsV, 5, true);
-    printf("\n--seed: %d---------------------\n", t+1);
+    printf("\n--seed: %s---------------------\n", TInt64::GetStr(t+1).CStr());
     for (int64 i = 0; i < DistToNbrsV.Len(); i++) {
-      printf("dist: %d\t hops:%f\n", DistToNbrsV[i].Key(), DistToNbrsV[i].Dat());
+      printf("dist: %s\t hops:%f\n",
+            TInt64::GetStr(DistToNbrsV[i].Key()).CStr(),
+            DistToNbrsV[i].Dat());
     }
     AnfV.Add(DistToNbrsV.Last().Dat);
   }
