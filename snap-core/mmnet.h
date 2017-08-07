@@ -674,6 +674,10 @@ public:
   /// Returns the max crossnet id.
   int64 GetMxCrossId() { return MxCrossNetId; }
 
+  /// Divides the given crossnet into many: one for each unique string value stored with the given attribute name. ##TMMNet::SplitCrossNetByStrAttr
+  int64 SplitCrossNetByStrAttr(const TInt64& CrossId, const TStr& AttrName, TStrV& NewCrossNames);
+  int64 SplitCrossNetByStrAttr(const TStr& CrossName, const TStr& AttrName, TStrV& NewCrossNames) { return SplitCrossNetByStrAttr(GetCrossId(CrossName), AttrName, NewCrossNames); }
+
   /// Gets the induced subgraph given a vector of crossnet type names.
   PMMNet GetSubgraphByCrossNet(TStr64V& CrossNetTypes);
   /// Gets the induced subgraph given a vector of mode type names.

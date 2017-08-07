@@ -22,6 +22,12 @@ Represents a multimodal network. A mutimodal network is represented by composing
 TMMNet contains methods to create TModeNets and TCrossNets by name, and returns pointers to them. All operations more granular than this, like adding nodes and edges, are run directly using methods provided in the ModeNets and CrossNets.
 ///
 
+/// TMMNet::SplitCrossNetByStrAttr
+The original crossnet is destroyed, but all its edges are distributed amongst the new crossnets. Edges copied from the old to one of the new crossnets keep the same ids. 
+All attribute data from the original crossnet is copied to the edges of the new crossnets.
+///
+
+
 /// TMMNet::CopyModeWithoutNodes
 All node attribute names and defaults are copied except those which denote crossnets incident to Src. All edge attribute names and defaults are deleted, as intra-mode edges should be represented by self-crossnets.
 ///

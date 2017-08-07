@@ -2000,3 +2000,46 @@ TEST(multimodal, ReconstituteNetworks) {
 
   destroy_networks();
 }
+
+TEST(multimodal, SplitCrossNetByStrAttr) {
+  PMMNet mmnet = TMMNet::New();
+  mmnet->AddModeNet("One");
+  mmnet->AddModeNet("Two");
+
+  for (int i = 0; i < 100; i++) { 
+    mmnet->GetModeNetByName("One").AddNode(i);
+    mmnet->GetModeNetByName("Two").AddNode(i);
+  }
+
+  int64 crossid = mmnet->AddCrossNet("One", "Two", "Cross");
+  TCrossNet& CN = mmnet->GetCrossNetById(crossid);
+  CN.AddStrAttrE("eid_mod_7");
+  for (int i = 0; i < 100; i++) {
+    for (int j = 0; j < 100; j++) {
+      int eid = 100 * i + j;
+      CN.AddEdge(i, j, eid);
+      CN.AddStrAttrDatE(eid, TStr::Fmt("%d", eid % 7), "eid_mod_7");      
+    }
+  }
+
+  TStrV NewCrossNames;
+  mmnet->SplitCrossNetByStrAttr(crossid, "eid_mod_7", NewCrossNames);
+  EXPECT_EQ(-1, mmnet->GetCrossId("Cross"));
+  for (int i = 0; i < 7; i++) {    
+    EXPECT_NE(-1, mmnet->GetCrossId(TStr::Fmt("%d", i)));
+  }
+
+  for (int i = 0; i < 100; i++) {
+    for (int j = 0; j < 100; j++) {
+      int eid = 100 * i + j;
+      int eidmod7 = eid % 7;
+      TStr CrossName = TStr::Fmt("%d", eidmod7);
+      TCrossNet & CN_New = mmnet->GetCrossNetByName(CrossName);
+      EXPECT_TRUE(CN_New.IsEdge(eid));
+      TCrossNet::TCrossEdgeI EI = CN_New.GetEdgeI(eid);      
+      EXPECT_EQ(i, EI.GetSrcNId()); 
+      EXPECT_EQ(j, EI.GetDstNId());
+      EXPECT_EQ(CrossName, CN_New.GetStrAttrDatE(EI, "eid_mod_7"));
+    }
+  }
+}

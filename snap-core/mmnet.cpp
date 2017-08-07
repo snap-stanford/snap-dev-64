@@ -969,6 +969,41 @@ void TMMNet::ClrNbr(const TInt64& ModeId, const TInt64& CrossNetId, const bool& 
   TModeNetH[ModeId].ClrNbr(CrossNetName, outEdge, sameMode, isDir);
 }
 
+int64 TMMNet::SplitCrossNetByStrAttr(const TInt64& CrossId, const TStr& AttrName, TStrV& NewCrossNames) {
+  if (!TCrossNetH.IsKey(CrossId)) { return -1; } // crossnet to split doesn't exist
+  TCrossNet& CN = GetCrossNetById(CrossId);
+  if (!CN.KeyToIndexTypeE.IsKey(AttrName)) { return -2; } // attr to split on doesn't exist
+
+  THash<TStr, TInt64V> NewNets; // attr val -> all eids with this attr value
+  for (TCrossNet::TCrossEdgeI EI = CN.BegEdgeI(); EI < CN.EndEdgeI(); EI++) {
+    TStr Label = CN.GetStrAttrDatE(EI, AttrName);
+    if (CrossNameToIdH.IsKey(Label)) { return -3; } // creating new crossnet with label value would interfere with existing crossnet name    
+    if (!NewNets.IsKey(Label)) { NewNets.AddDat(Label, TInt64V()); }
+    NewNets.GetDat(Label).Add(EI.GetId());
+  }
+
+  int64 mid1 = CN.GetMode1(), mid2 = CN.GetMode2();
+  bool directed = CN.IsDirected();
+  for (THash<TStr, TInt64V>::TIter it = NewNets.BegI(); it < NewNets.EndI(); it++) {
+    TStr Label = it.GetKey();
+    TCrossNet& NewNet = GetCrossNetById(AddCrossNet(mid1, mid2, Label, directed));
+
+    // copy all attr indexing and default info to new CN without any edges
+    NewNet.KeyToIndexTypeE = CN.KeyToIndexTypeE; 
+    NewNet.IntDefaultsE = CN.IntDefaultsE; NewNet.FltDefaultsE = CN.FltDefaultsE; NewNet.StrDefaultsE = CN.StrDefaultsE;
+    NewNet.VecOfIntVecsE = CN.VecOfIntVecsE; NewNet.VecOfFltVecsE = CN.VecOfFltVecsE; NewNet.VecOfStrVecsE = CN.VecOfStrVecsE;
+    NewNet.DelAllAttrDatE();
+
+    // copy relevant edges to new crossnet with same attr data
+    TInt64V& ToCopyEIds = it.GetDat();
+    TCrossNet::CopyEdges(CN, NewNet, ToCopyEIds);
+  }
+
+  DelCrossNet(CrossId);
+  NewNets.GetKeyV(NewCrossNames);
+  return 0;
+}
+
 PMMNet TMMNet::GetSubgraphByCrossNet(TStr64V& CrossNetTypes) {
   PMMNet Result = New();
   TInt64 MxMode = 0;
