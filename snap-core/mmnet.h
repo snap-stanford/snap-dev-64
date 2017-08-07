@@ -604,14 +604,14 @@ public:
     }
   }
   /// Returns true if and only if there is a mode with the given id in the multimodal network.
-  bool IsModeNet(const int& MId) { return TModeNetH.IsKey(MId); }
+  bool IsModeNet(const int64& MId) { return TModeNetH.IsKey(MId); }
   /// Adds a mode to the multimodal network.
   int64 AddModeNet(const TStr& ModeName);
   /// Deletes a mode from the multimodal network.
   int64 DelModeNet(const TInt64& ModeId); 
   int64 DelModeNet(const TStr& ModeName);
   /// Returns true if and only if there is a crossnet with the given id in the multimodal network.
-  bool IsCrossNet(const int& CNId) { return TCrossNetH.IsKey(CNId); }
+  bool IsCrossNet(const int64& CNId) { return TCrossNetH.IsKey(CNId); }
   /// Adds a crossnet to the multimodal network. Specify modes by id or names; by default, crossnet is directed
   int64 AddCrossNet(const TStr& ModeName1, const TStr& ModeName2, const TStr& CrossNetName, bool isDir=true);
   int64 AddCrossNet(const TInt64& ModeId1, const TInt64& ModeId2, const TStr& CrossNetName, bool isDir=true);
@@ -675,7 +675,7 @@ public:
   int64 GetMxCrossId() { return MxCrossNetId; }
 
   /// Divides the given crossnet into many: one for each unique string value stored with the given attribute name. ##TMMNet::SplitCrossNetByStrAttr
-  int64 SplitCrossNetByStrAttr(const TInt64& CrossId, const TStr& AttrName, TStrV& NewCrossNames);
+  int64 SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStrV& NewCrossNames);
   int64 SplitCrossNetByStrAttr(const TStr& CrossName, const TStr& AttrName, TStrV& NewCrossNames) { return SplitCrossNetByStrAttr(GetCrossId(CrossName), AttrName, NewCrossNames); }
 
   /// Gets the induced subgraph given a vector of crossnet type names.
@@ -684,11 +684,11 @@ public:
   PMMNet GetSubgraphByModeNet(TStr64V& ModeNetTypes);
 
   /// Adds to Dst a copy of the mode with given ID from Src, without any nodes. ##TMMNet::CopyModeWithoutNodes
-  static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const TInt64& ModeId);
+  static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const int64& ModeId);
   /// Adds to Dst a copy of the crossnet with given ID from Src, without any edges; all edge attribute names and defaults are copied.
-  static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const TInt64& CrossId);
+  static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const int64& CrossId);
   /// Gets the subnetwork reachable a set of starting nodes in a single mode and a sequence of metapaths to traverse from the starting mode. ##TMMNet::GetSubgraphByCrossNetMetapaths
-  PMMNet GetSubgraphByCrossNetMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths);
+  PMMNet GetSubgraphByCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths);
   
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the (Mode/Cross Id, old att name, new attr name)
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);
@@ -709,7 +709,7 @@ private:
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);
   void GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxVal) const;
   /// Ensures the parameters of GetSubgraphByCrossNetMetapaths are valid as described in its documentation; sets orientations of undirected crossnets in CrossOrientations.
-  void ValidateCrossNetMetapaths(const TInt64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations); 
+  void ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations); 
 };
 
 // set flags
