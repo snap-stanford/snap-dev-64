@@ -3,6 +3,7 @@
 double TMath::E=2.71828182845904523536;
 double TMath::Pi=3.14159265358979323846;
 double TMath::LogOf2=log(double(2));
+double TMath::LogOf10=log(double(10));
 
 /////////////////////////////////////////////////
 // Special-Functions
@@ -253,12 +254,12 @@ void TSpecFunc::EntropyFracDim(const TIntV& ValV, TFltV& EntropyV) {
   TFltV NewValV(ValV.Len());
   for (int64 i = 0; i < ValV.Len(); i++) {
     IAssert(ValV[i]==1 || ValV[i] == 0);
-    NewValV[i] = ValV[i]; 
+    NewValV[i] = ValV[i];
   }
   EntropyFracDim(NewValV, EntropyV);
 }
 
-// Entropy fractal dimension. Input is a vector {0,1}^n. 
+// Entropy fractal dimension. Input is a vector {0,1}^n.
 // Where 0 means the event did not occur, and 1 means it occured.
 // Works exactly as Mengzi Wang's code.
 void TSpecFunc::EntropyFracDim(const TFltV& ValV, TFltV& EntropyV) {
@@ -366,7 +367,7 @@ void TMom::Def(){
     double CurSumW = 0;
     for (int ValN=0; ValN<ValWgtV.Len(); ValN++){
       CurSumW += ValWgtV[ValN].Val2;
-      if (CurSumW > 0.5*SumW) { 
+      if (CurSumW > 0.5*SumW) {
         Median = ValWgtV[ValN].Val1; break; }
       else if (CurSumW == 0.5*SumW) {
         Median = 0.5 * (ValWgtV[ValN].Val1+ValWgtV[ValN+1].Val1); break; }
@@ -379,7 +380,7 @@ void TMom::Def(){
       if (Quart1==TFlt::Mn) {
         if (CurSumW > 0.25*SumW) {  Quart1 = ValWgtV[ValN].Val1; }
         //else if (CurSumW == 0.25*SumW) { Quart1 = 0.5 * (ValWgtV[ValN].Val1+ValWgtV[ValN+1].Val1); }
-      } 
+      }
       if (Quart3==TFlt::Mn) {
         if (CurSumW > 0.75*SumW) { Quart3 = ValWgtV[ValN].Val1; }
         //else if (CurSumW == 0.75*SumW) { Quart3 = 0.5 * (ValWgtV[ValN].Val1+ValWgtV[ValN+1].Val1); }
@@ -401,7 +402,7 @@ void TMom::Def(){
     PercentileV[0]=Mn; PercentileV[100]=Mx;
     for (int ValN=0; ValN<ValWgtV.Len(); ValN++){
       CurSumW += ValWgtV[ValN].Val2;
-      if (CurSumW > SumW*DecileN*0.1) { 
+      if (CurSumW > SumW*DecileN*0.1) {
         DecileV[DecileN] = ValWgtV[ValN].Val1;  DecileN++; }
       if (CurSumW > SumW*PercentileN*0.01) {
         PercentileV[PercentileN] = ValWgtV[ValN].Val1;  PercentileN++; }
@@ -1228,7 +1229,7 @@ void TSvd::GetCfUncerV(TFltV& CfUncerV){
   }
 }
 
-// all vectors (matrices) start with 0 
+// all vectors (matrices) start with 0
 void TSvd::Svd(const TFltVV& InMtx, TFltVV& LSingV, TFltV& SingValV, TFltVV& RSingV) {
   //LSingV = InMtx;
   LSingV.Gen(InMtx.GetYDim()+1, InMtx.GetYDim()+1);
@@ -1281,7 +1282,7 @@ void TSvd::Wr() const {
 void THist::Add(const double& Val, const bool& OnlyInP) {
 	// get bucket number
     const int BucketN = int(floor((Val - MnVal) / BucketSize));
-	if (OnlyInP) { 
+	if (OnlyInP) {
 		// value should be inside
 		EAssert(MnVal <= Val && Val <= MxVal);
 		BucketV[BucketN]++;
@@ -1311,4 +1312,3 @@ void THist::SaveStat(const TStr& ValNm, TSOut& FOut) const {
     }
 
 }
-

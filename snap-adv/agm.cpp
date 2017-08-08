@@ -69,7 +69,9 @@ PUNGraph TAGM::GenAGM(TVec<TIntV>& CmtyVV, const TFltV& CProbV, TRnd& Rnd, const
     NIDS.GetKeyV(NIDV);
     RndConnectInsideCommunity(G,NIDV,PNoCom,Rnd);
   }
-  printf("AGM completed (%d nodes %d edges)\n",G->GetNodes(),G->GetEdges());
+  printf("AGM completed (%s nodes %s edges)\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
   G->Defrag();
   return G;
 }
@@ -103,8 +105,10 @@ void TAGMUtil::GenCmtyVVFromPL(TVec<TIntV>& CmtyVV, const PUNGraph& Graph, const
     CmtyVV.Clr();
     return;
   }
-  TIntV NIDV;
-  Graph->GetNIdV(NIDV);
+  TInt64V NID64V;
+  Graph->GetNIdV(NID64V);
+
+  TIntV NIDV = TInt64VToTIntV(NID64V);
   GenCmtyVVFromPL(CmtyVV, NIDV, Nodes, Coms, ComSzAlpha, MemAlpha, MinSz, MaxSz, MinK, MaxK, Rnd);
 }
 
@@ -471,10 +475,13 @@ void TAGMUtil::SaveGephi(const TStr& OutFNm, const PUNGraph& G, const TVec<TIntV
   }
   fprintf(F, "\t\t</nodes>\n");
   //plot edges
-  int EID = 0;
+  int64 EID = 0;
   fprintf(F, "\t\t<edges>\n");
   for (TUNGraph::TEdgeI EI = G->BegEI(); EI < G->EndEI(); EI++) {
-    fprintf(F, "\t\t\t<edge id='%d' source='%d' target='%d'/>\n", EID++, EI.GetSrcNId(), EI.GetDstNId());
+    fprintf(F, "\t\t\t<edge id='%s' source='%s' target='%s'/>\n",
+        TInt64::GetStr(EID).CStr(),
+        TInt64::GetStr(EI.GetSrcNId()).CStr(),
+        TInt64::GetStr(EI.GetDstNId()).CStr());
   }
   fprintf(F, "\t\t</edges>\n");
   fprintf(F, "\t</graph>\n");

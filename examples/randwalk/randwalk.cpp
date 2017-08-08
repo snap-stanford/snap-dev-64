@@ -4,7 +4,7 @@ void BasicUsage(const PNGraph& Graph) {
   printf("\nRandom Walk with Restart (Personalized PageRank) from node 1 to node 3: %g\n",
          TSnap::GetRndWalkRestartBidirectional(Graph, 0.2, 1, 3));
   printf("Personalized PageRank from start uniformly sampled from [1, 3] to node 6: %g\n",
-         TSnap::GetPersonalizedPageRankBidirectional(Graph, 0.2, TIntV::GetV(1, 3), 6));
+         TSnap::GetPersonalizedPageRankBidirectional(Graph, 0.2, TInt64V::GetV(1, 3), 6));
 }
 
 void ShowForwardReverseTimeForTuning(const PNGraph& Graph) {
@@ -16,7 +16,7 @@ void ShowForwardReverseTimeForTuning(const PNGraph& Graph) {
     int startId = Graph->GetRndNId();
     int targetId = Graph->GetRndNId();
     printf("PPR from node %d to node %d: %g\n", startId, targetId,
-           TSnap::GetPersonalizedPageRankBidirectional(Graph, 0.2, TIntV::GetV(startId), targetId, 0.1f, 4.0f / Graph->GetNodes(), false, true));
+           TSnap::GetPersonalizedPageRankBidirectional(Graph, 0.2, TInt64V::GetV(startId), targetId, 0.1f, 4.0f / Graph->GetNodes(), false, true));
   }
   printf("Total time for %d pairs: %g\n", pairCount, w.GetSec());
 }

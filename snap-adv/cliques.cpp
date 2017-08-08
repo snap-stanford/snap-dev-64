@@ -231,7 +231,9 @@ void TCliqueOverlap::GetCPMCommunities(const PUNGraph& G, int MinMaxCliqueSize, 
   // printf("...%d cliques found\n");
   // get clique overlap matrix (graph)
   PUNGraph OverlapGraph = TCliqueOverlap::CalculateOverlapMtx(MaxCliques, MinMaxCliqueSize-1);
-  printf("...overlap matrix (%d, %d)\n", G->GetNodes(), G->GetEdges());
+  printf("...overlap matrix (%s, %s)\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
   // connected components are communities
   TCnComV CnComV;
   TSnap::GetWccs(OverlapGraph, CnComV);

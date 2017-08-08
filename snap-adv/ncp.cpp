@@ -145,7 +145,7 @@ void TLocClust::SavePajek(const TStr& OutFNm) const {
   for (int a = 0; a < BestCutNodes(); a++) {
     ClustSet.AddDat(NIdV[a], (a+1)/BucketSz);
   }
-  fprintf(F, "*Vertices %d\n", Graph->GetNodes());
+  fprintf(F, "*Vertices %s\n", TUInt64::GetStr(Graph->GetNodes()).CStr());
   int i = 0;
   for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     const int NId = NI.GetId();
@@ -159,7 +159,7 @@ void TLocClust::SavePajek(const TStr& OutFNm) const {
     NIdToIdH.AddDat(NId, i+1);
     i++;
   }
-  fprintf(F, "*Arcs %d\n", Graph->GetEdges()); // arcs are directed, edges are undirected
+  fprintf(F, "*Arcs %s\n", TUInt64::GetStr(Graph->GetEdges()).CStr()); // arcs are directed, edges are undirected
   for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     const int NId = NIdToIdH.GetDat(NI.GetId());
     for (int e = 0; e < NI.GetOutDeg(); e++) {
@@ -179,13 +179,17 @@ void TLocClust::DrawWhiskers(const PUNGraph& Graph, TStr FNmPref, const int& Plo
     Graph->GetEdges()), "Whisker size (Maximal component connected with a bridge edge)", "Count", gpsLog10XY, false); }
   // draw them
   int BrNodeId = -1;
-  for (int c = 0; c < TMath::Mn(CnComV.Len(), PlotN); c++) {
+  int Iter = (CnComV.Len() < PlotN) ? CnComV.Len() : PlotN;
+  for (int c = 0; c < Iter; c++) {
     const PUNGraph BrClust = TSnap::GetSubGraph(Graph, CnComV[c].NIdV);
     for (TUNGraph::TNodeI NI = BrClust->BegNI(); NI < BrClust->EndNI(); NI++) {
       if (NI.GetOutDeg() != Graph->GetNI(NI.GetId()).GetOutDeg()) { BrNodeId=NI.GetId(); break; } }
-    TIntStrH ClrH;  ClrH.AddDat(BrNodeId, "red");
+    TIntStr64H ClrH;  ClrH.AddDat(BrNodeId, "red");
     TSnap::DrawGViz(BrClust, gvlNeato, TStr::Fmt("whisk-%s-%02d.gif", FNmPref.CStr(), c+1),
-      TStr::Fmt("Bridge node id: %d, n=%d, e=%d", BrNodeId, BrClust->GetNodes(), BrClust->GetEdges()), false, ClrH);
+      TStr::Fmt("Bridge node id: %d, n=%s, e=%s", BrNodeId,
+        TUInt64::GetStr(BrClust->GetNodes()).CStr(),
+        TUInt64::GetStr(BrClust->GetEdges()).CStr()),
+        false, ClrH);
   }
 }
 
@@ -651,7 +655,8 @@ void TLocClustStat::PlotPhiInOut(const TStr& OutFNm, TStr Desc) const {
   while (curIdx <= BestCutH.Len()) {
     const TCutInfo& CutInfo = BestCutH[curIdx-1];
     if (CutInfo.GetNodes() > 1) {
-      PUNGraph ClustG = TSnap::GetSubGraph(Graph, CutInfo.CutNIdV);
+      TInt64V CutNId64V = TIntVToTInt64V(CutInfo.CutNIdV);
+      PUNGraph ClustG = TSnap::GetSubGraph(Graph, CutNId64V);
       ClustStat2.Run(ClustG);
       const TCutInfo& InCut = ClustStat2.FindBestCut(-1);
       PhiInV.Add(TFltPr(CutInfo.GetNodes(), InCut.GetPhi()));
@@ -905,14 +910,14 @@ void TLocClustStat::BagOfWhiskers(const PUNGraph& Graph, TFltPrV& SizePhiV, TFlt
   int MxSize=0;
   if (Cn1ComV.Empty()) { printf("** No bridges\n"); SizePhiV.Clr();  return; }
   //  Graph->SaveEdgeList("g-vol.txt");  TGraphViz::Plot(Graph, gvlNeato, "g-vol.gif");  Fail; } IAssert(vol <= sz*(sz-1));
-  printf("  1-connected components: %d\n", Cn1ComV.Len());
+  printf("  1-connected components: %s\n", TInt64::GetStr(Cn1ComV.Len()).CStr());
   MaxWhisk = TFltPr(1,1);
   for (int c = 0; c < Cn1ComV.Len(); c++) {
-    const TIntV& NIdV = Cn1ComV[c].NIdV;
-    const int sz = NIdV.Len();
+    const TInt64V& NIdV = Cn1ComV[c].NIdV;
+    const int64 sz = NIdV.Len();
     if (sz < 2) { continue; }
     int vol = 0; // volume is the size of degrees
-    for (int n = 0; n < sz; n++) {
+    for (int64 n = 0; n < sz; n++) {
       vol += Graph->GetNI(NIdV[n]).GetOutDeg(); }
     SzVolV.Add(TIntPr(sz, vol));
     MxSize += sz;
@@ -980,13 +985,13 @@ void TLocClustStat::BagOfWhiskers2(const PUNGraph& Graph, TFltPrV& SizePhiV) {
   TIntPrV SzVolV;
   int MxSize=0, TotVol=0;
   if (Cn1ComV.Empty()) { printf("** No bridges\n");  SizePhiV.Clr();  return; }
-  printf("  1-connected components: %d\n", Cn1ComV.Len());
-  for (int c = 0; c < Cn1ComV.Len(); c++) {
-    const TIntV& NIdV = Cn1ComV[c].NIdV;
-    const int sz = NIdV.Len();
+  printf("  1-connected components: %s\n", TInt64::GetStr(Cn1ComV.Len()).CStr());
+  for (int64 c = 0; c < Cn1ComV.Len(); c++) {
+    const TInt64V& NIdV = Cn1ComV[c].NIdV;
+    const int64 sz = NIdV.Len();
     if (sz < 2) { continue; }
     int vol = 0; // volume is the size of degrees
-    for (int n = 0; n < sz; n++) {
+    for (int64 n = 0; n < sz; n++) {
       vol += Graph->GetNI(NIdV[n]).GetOutDeg(); }
     SzVolV.Add(TIntPr(sz, vol));
     MxSize += sz;  TotVol += vol;

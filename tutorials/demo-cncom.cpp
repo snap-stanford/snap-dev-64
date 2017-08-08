@@ -22,22 +22,25 @@ void GetCnComFull() {
   printf("IsWeaklyConnected(G) = %d\n", IsWeaklyConn(G));
   
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
-  printf("CnCom.Len() = %d\n", CnCom.Len());
+  printf("CnCom.Len() = %s\n", TInt64::GetStr(CnCom.Len()).CStr());
   
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
   for (int i = 0; i < WccSzCnt.Len(); i++) {
-    printf("WccSzCnt[%d] = (%d, %d)\n", i, WccSzCnt[i].Val1.Val, WccSzCnt[i].Val2.Val);
+    printf("WccSzCnt[%d] = (%s, %s)\n", i,
+                TInt64::GetStr(WccSzCnt[i].Val1.Val).CStr(),
+                TInt64::GetStr(WccSzCnt[i].Val2.Val).CStr());
   }
   
   // Get weakly connected components
   TCnComV WCnComV;
   GetWccs(G, WCnComV);
   for (int i = 0; i < WCnComV.Len(); i++) {
-    printf("WCnComV[%d].Len() = %d\n", i, WCnComV[i].Len());
+    printf("WCnComV[%d].Len() = %s\n", i,
+                TInt64::GetStr(WCnComV[i].Len()).CStr());
   }
   
   // Get strongly connected fraction -- should be 1.0
@@ -46,19 +49,23 @@ void GetCnComFull() {
   
   // Get graph with largest SCC
   PGraph GMx = GetMxWcc(G);
-  printf("GMx->GetNodes() = %d, GMx->GetEdges() = %d\n", GMx->GetNodes(), GMx->GetEdges());
+  printf("GMx->GetNodes() = %s, GMx->GetEdges() = %s\n",
+            TUInt64::GetStr(GMx->GetNodes()).CStr(),
+            TUInt64::GetStr(GMx->GetEdges()).CStr());
   
   // Get strongly connected components
   TCnComV SCnComV;
   GetSccs(G, SCnComV);
   for (int i = 0; i < SCnComV.Len(); i++) {
-    printf("SCnComV[%d].Len() = %d\n", i, SCnComV[i].Len());
+    printf("SCnComV[%d].Len() = %s\n", i,
+              TInt64::GetStr(SCnComV[i].Len()).CStr());
   }
   
   // Get largest bi-connected component
   PGraph GMxBi = GetMxBiCon(G);
-  printf("GMxBi->GetNodes() = %d, GMxBi->GetEdges() = %d\n", GMxBi->GetNodes(), GMxBi->GetEdges());
-  
+  printf("GMxBi->GetNodes() = %s, GMxBi->GetEdges() = %s\n",
+            TUInt64::GetStr(GMxBi->GetNodes()).CStr(),
+            TUInt64::GetStr(GMxBi->GetEdges()).CStr());
 }
 
 // Get connected components on undirected graph that is not fully connected
@@ -72,7 +79,7 @@ void GetCnComUndirectedDisconnected() {
   const int NNodes = 30;
   G = GenRndPowerLaw(NNodes, 2.5);
   
-  TIntStrH NodeLabelH;
+  TIntStr64H NodeLabelH;
   for (int i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
@@ -82,23 +89,27 @@ void GetCnComUndirectedDisconnected() {
   printf("IsWeaklyConnected(G) = %d\n", IsWeaklyConn(G));
   
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
   for (int i = 0; i < WccSzCnt.Len(); i++) {
-    printf("WccSzCnt[%d] = (%d, %d)\n", i, WccSzCnt[i].Val1.Val, WccSzCnt[i].Val2.Val);
+    printf("WccSzCnt[%d] = (%s, %s)\n", i,
+              TInt64::GetStr(WccSzCnt[i].Val1.Val).CStr(),
+              TInt64::GetStr(WccSzCnt[i].Val2.Val).CStr());
   }
   
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
-  printf("CnCom.Len() = %d\n", CnCom.Len());
+  printf("CnCom.Len() = %s\n", TInt64::GetStr(CnCom.Len()).CStr());
   
   TCnComV WCnComV;
   GetWccs(G, WCnComV);
   for (int i = 0; i < WCnComV.Len(); i++) {
-    printf("WCnComV[%d].Len() = %d\n", i, WCnComV[i].Len());
+    printf("WCnComV[%d].Len() = %s\n", i,
+              TInt64::GetStr(WCnComV[i].Len()).CStr());
     for (int j = 0; j < WCnComV[i].Len(); j++) {
-      printf("WCnComV[%d][%d] = %d\n", i, j, WCnComV[i][j].Val);
+      printf("WCnComV[%d][%d] = %s\n", i, j,
+              TInt64::GetStr(WCnComV[i][j].Val).CStr());
     }
   }
   
@@ -107,62 +118,75 @@ void GetCnComUndirectedDisconnected() {
   
   // Get graph with largest SCC
   PUNGraph GMx = GetMxWcc(G);
-  printf("GMx->GetNodes() = %d, GMx->GetEdges() = %d\n", GMx->GetNodes(), GMx->GetEdges());
+  printf("GMx->GetNodes() = %s, GMx->GetEdges() = %s\n",
+              TInt64::GetStr(GMx->GetNodes()).CStr(),
+              TInt64::GetStr(GMx->GetEdges()).CStr());
   
   // Get strongly connected components
   TCnComV SCnComV;
   GetSccs(G, SCnComV);
   for (int i = 0; i < SCnComV.Len(); i++) {
-    printf("SCnComV[%d].Len() = %d\n", i, SCnComV[i].Len());
+    printf("SCnComV[%d].Len() = %s\n", i,
+            TInt64::GetStr(SCnComV[i].Len()).CStr());
   }
   
   // Get largest bi-connected component
   PUNGraph GMxBi = GetMxBiCon(G);
-  printf("GMxBi->GetNodes() = %d, GMxBi->GetEdges() = %d\n", GMxBi->GetNodes(), GMxBi->GetEdges());
+  printf("GMxBi->GetNodes() = %s, GMxBi->GetEdges() = %s\n",
+              TInt64::GetStr(GMxBi->GetNodes()).CStr(),
+              TInt64::GetStr(GMxBi->GetEdges()).CStr());
   
   // Get bi-connected size components counts
-  TIntPrV SzCntV;
+  TIntPr64V SzCntV;
   GetBiConSzCnt(G, SzCntV);
   for (int i = 0; i < SzCntV.Len(); i++) {
-    printf("SzCntV[%d] = (%d, %d)\n", i, SzCntV[i].Val1.Val, SzCntV[i].Val2.Val);
+    printf("SzCntV[%d] = (%s, %s)\n", i,
+              TInt64::GetStr(SzCntV[i].Val1.Val).CStr(),
+              TInt64::GetStr(SzCntV[i].Val2.Val).CStr());
   }
   
   // Get bi-connected components
   TCnComV BiCnComV;
   GetBiCon(G, BiCnComV);
   for (int i = 0; i < BiCnComV.Len(); i++) {
-    printf("BiCnComV[%d].Len() = %d\n", i, BiCnComV[i].Len());
+    printf("BiCnComV[%d].Len() = %s\n", i,
+              TInt64::GetStr(BiCnComV[i].Len()).CStr());
   }
   
   // Get articulation points of a graph
-  TIntV ArtNIdV;
+  TInt64V ArtNIdV;
   GetArtPoints(G, ArtNIdV);
-  printf("ArtNIdV.Len() = %d\n", ArtNIdV.Len());
+  printf("ArtNIdV.Len() = %s\n", TInt64::GetStr(ArtNIdV.Len()).CStr());
   for (int i = 0; i < ArtNIdV.Len(); i++) {
-    printf("ArtNIdV[%d] = %d\n", i, ArtNIdV[i].Val);
+    printf("ArtNIdV[%d] = %s\n", i, TInt64::GetStr(ArtNIdV[i].Val).CStr());
   }
   
   // Get edge bridges of a graph
-  TIntPrV EdgeV;
+  TIntPr64V EdgeV;
   GetEdgeBridges(G, EdgeV);
-  printf("EdgeV.Len() = %d\n", EdgeV.Len());
+  printf("EdgeV.Len() = %s\n", TInt64::GetStr(EdgeV.Len()).CStr());
   for (int i = 0; i < EdgeV.Len(); i++) {
-    printf("EdgeV[%d] = (%d, %d)\n", i, EdgeV[i].Val1.Val, EdgeV[i].Val2.Val);
+    printf("EdgeV[%d] = (%s, %s)\n", i,
+            TInt64::GetStr(EdgeV[i].Val1.Val).CStr(),
+            TInt64::GetStr(EdgeV[i].Val2.Val).CStr());
   }
   
   // Get 1-components counts
-  TIntPrV SzCnt1ComV;
+  TIntPr64V SzCnt1ComV;
   Get1CnComSzCnt(G, SzCnt1ComV);
-  printf("SzCnt1ComV.Len() = %d\n", SzCnt1ComV.Len());
+  printf("SzCnt1ComV.Len() = %s\n", TInt64::GetStr(SzCnt1ComV.Len()).CStr());
   for (int i = 0; i < SzCnt1ComV.Len(); i++) {
-    printf("SzCnt1ComV[%d] = (%d, %d)\n", i, SzCnt1ComV[i].Val1.Val, SzCnt1ComV[i].Val2.Val);
+    printf("SzCnt1ComV[%d] = (%s, %s)\n", i,
+              TInt64::GetStr(SzCnt1ComV[i].Val1.Val).CStr(),
+              TInt64::GetStr(SzCnt1ComV[i].Val2.Val).CStr());
   }
   
   // Get 1-components
   TCnComV Cn1ComV;
   Get1CnCom(G, Cn1ComV);
   for (int i = 0; i < Cn1ComV.Len(); i++) {
-    printf("Cn1ComV[%d].Len() = %d\n", i, Cn1ComV[i].Len());
+    printf("Cn1ComV[%d].Len() = %s\n", i,
+              TInt64::GetStr(Cn1ComV[i].Len()).CStr());
   }
   
 }
@@ -196,9 +220,11 @@ void GetCnComDirectedDisconnected() {
   G->AddEdge(NNodes+1, NNodes+2);
   G->AddEdge(NNodes+2, NNodes+1);
 
-  printf("Nodes = %d, Edges = %d\n", G->GetNodes(), G->GetEdges());
+  printf("Nodes = %s, Edges = %s\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
 
-  TIntStrH NodeLabelH;
+  TIntStr64H NodeLabelH;
   for (int i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
@@ -208,23 +234,27 @@ void GetCnComDirectedDisconnected() {
   printf("IsWeaklyConnected(G) = %d\n", IsWeaklyConn(G));
   
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
   for (int i = 0; i < WccSzCnt.Len(); i++) {
-    printf("WccSzCnt[%d] = (%d, %d)\n", i, WccSzCnt[i].Val1.Val, WccSzCnt[i].Val2.Val);
+    printf("WccSzCnt[%d] = (%s, %s)\n", i,
+              TInt64::GetStr(WccSzCnt[i].Val1.Val).CStr(),
+              TInt64::GetStr(WccSzCnt[i].Val2.Val).CStr());
   }
   
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
-  printf("CnCom.Len() = %d\n", CnCom.Len());
+  printf("CnCom.Len() = %s\n", TInt64::GetStr(CnCom.Len()).CStr());
   
   TCnComV WCnComV;
   GetWccs(G, WCnComV);
   for (int i = 0; i < WCnComV.Len(); i++) {
-    printf("WCnComV[%d].Len() = %d\n", i, WCnComV[i].Len());
+    printf("WCnComV[%d].Len() = %s\n", i,
+                TInt64::GetStr(WCnComV[i].Len()).CStr());
     for (int j = 0; j < WCnComV[i].Len(); j++) {
-      printf("WCnComV[%d][%d] = %d\n", i, j, WCnComV[i][j].Val);
+      printf("WCnComV[%d][%d] = %s\n", i, j,
+                TInt64::GetStr(WCnComV[i][j].Val).CStr());
     }
   }
   
@@ -233,13 +263,16 @@ void GetCnComDirectedDisconnected() {
   
   // Get graph with largest WCC
   PNGraph GWMx = GetMxWcc(G);
-  printf("GWMx->GetNodes() = %d, GWMx->GetEdges() = %d\n", GWMx->GetNodes(), GWMx->GetEdges());
+  printf("GWMx->GetNodes() = %s, GWMx->GetEdges() = %s\n",
+        TUInt64::GetStr(GWMx->GetNodes()).CStr(),
+        TUInt64::GetStr(GWMx->GetEdges()).CStr());
   
   // Get strongly connected components
   TCnComV SCnComV;
   GetSccs(G, SCnComV);
   for (int i = 0; i < SCnComV.Len(); i++) {
-    printf("SCnComV[%d].Len() = %d\n", i, SCnComV[i].Len());
+    printf("SCnComV[%d].Len() = %s\n", i,
+                TInt64::GetStr(SCnComV[i].Len()).CStr());
   }
   
   double MxSccSz = GetMxSccSz(G);
@@ -247,12 +280,15 @@ void GetCnComDirectedDisconnected() {
   
   // Get graph with largest SCC
   PNGraph GSMx = GetMxScc(G);
-  printf("GSMx->GetNodes() = %d, GSMx->GetEdges() = %d\n", GSMx->GetNodes(), GSMx->GetEdges());
-  
+  printf("GSMx->GetNodes() = %s, GSMx->GetEdges() = %s\n",
+        TUInt64::GetStr(GSMx->GetNodes()).CStr(),
+        TUInt64::GetStr(GSMx->GetEdges()).CStr());
+
   // Get largest bi-connected component
   PNGraph GMxBi = GetMxBiCon(G);
-  printf("GMxBi->GetNodes() = %d, GMxBi->GetEdges() = %d\n", GMxBi->GetNodes(), GMxBi->GetEdges());
-  
+  printf("GMxBi->GetNodes() = %s, GMxBi->GetEdges() = %s\n",
+        TUInt64::GetStr(GMxBi->GetNodes()).CStr(),
+        TUInt64::GetStr(GMxBi->GetEdges()).CStr());
 }
 
 // Get connected components on full graph
@@ -270,38 +306,38 @@ void GetCnComCompleteGraph() {
   PUNGraph G = GenFull<PUNGraph>(NNodes);
   
   // Get bi-connected size components counts
-  TIntPrV SzCntV;
+  TIntPr64V SzCntV;
   GetBiConSzCnt(G, SzCntV);
-  printf("SzCntV.Len() = %d\n", SzCntV.Len());
-  printf("SzCntV[0] = (%d, %d)\n", SzCntV[0].Val1.Val, SzCntV[0].Val2.Val);
+  printf("SzCntV.Len() = %s\n", TInt64::GetStr(SzCntV.Len()).CStr());
+  printf("SzCntV[0] = (%s, %s)\n",
+            TInt64::GetStr(SzCntV[0].Val1.Val).CStr(),
+            TInt64::GetStr(SzCntV[0].Val2.Val).CStr());
   
   // Get bi-connected components
   TCnComV BiCnComV;
   GetBiCon(G, BiCnComV);
-  printf("BiCnComV[0].Len() = %d\n", BiCnComV[0].Len());
-  printf("BiCnComV.Len() = %d\n", BiCnComV.Len());
+  printf("BiCnComV[0].Len() = %s\n", TInt64::GetStr(BiCnComV[0].Len()).CStr());
+  printf("BiCnComV.Len() = %s\n", TInt64::GetStr(BiCnComV.Len()).CStr());
   
   // Get articulation points of a graph
-  TIntV ArtNIdV;
+  TInt64V ArtNIdV;
   GetArtPoints(G, ArtNIdV);
-  printf("ArtNIdV.Len() = %d\n", ArtNIdV.Len());
+  printf("ArtNIdV.Len() = %s\n", TInt64::GetStr(ArtNIdV.Len()).CStr());
 
   // Get edge bridges of a graph
-  TIntPrV EdgeV;
+  TIntPr64V EdgeV;
   GetEdgeBridges(G, EdgeV);
-  printf("EdgeV.Len() == %d\n", EdgeV.Len());
-  
+  printf("EdgeV.Len() == %s\n", TInt64::GetStr(EdgeV.Len()).CStr());
+
   // Get 1-components counts
-  TIntPrV SzCnt1ComV;
+  TIntPr64V SzCnt1ComV;
   Get1CnComSzCnt(G, SzCnt1ComV);
-  printf("SzCnt1ComV.Len() == %d\n", SzCnt1ComV.Len());
+  printf("SzCnt1ComV.Len() == %s\n", TInt64::GetStr(SzCnt1ComV.Len()).CStr());
   
   // Get 1-components
   TCnComV Cn1ComV;
   Get1CnCom(G, Cn1ComV);
-  printf("Cn1ComV.Len() == %d\n", Cn1ComV.Len());
-  
-  
+  printf("Cn1ComV.Len() == %s\n", TInt64::GetStr(Cn1ComV.Len()).CStr());
 }
 
 int main(int argc, char* argv[]) {

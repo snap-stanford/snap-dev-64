@@ -675,7 +675,8 @@ void TBigNet<TNodeData, IsDir>::Rewire(TRnd& Rnd) {
     if (Len > 0 && V[Len-1]==NI.GetId()) { V[Len-1] = DelNId;  NDup++; }
     if (cnt % Mega(10) == 0) { printf(".");  fflush(stdout); }
   }
-  printf("\n    %llu duplicate edges removed [%s]\n", NDup, ExeTm.GetStr());
+  printf("\n    %s duplicate edges removed [%s]\n",
+              TInt64::GetStr(NDup).CStr(), ExeTm.GetStr());
   if (OnlySources()) { return; }
   // resolve one way edges
   printf("  resolving one way edges...\n"); cnt=0; fflush(stdout);
@@ -699,7 +700,8 @@ void TBigNet<TNodeData, IsDir>::Rewire(TRnd& Rnd) {
     }
     if (cnt % Mega(10) == 0) { printf(".");  fflush(stdout); }
   }
-  printf("\n    %llu resolved edges [%s]\n", NResolve, ExeTm.GetStr());
+  printf("\n    %s resolved edges [%s]\n",
+            TInt64::GetStr(NResolve).CStr(), ExeTm.GetStr());
   // check if there are two nodes that still have space and are not yet connected and connect them
   printf("  filling empty edge slots...\n");
   TIntPrV SlotNIdV;
@@ -744,7 +746,8 @@ void TBigNet<TNodeData, IsDir>::Rewire(TRnd& Rnd) {
     }
     if (ni1 % Mega(1) == 0) { printf(".");  fflush(stdout); }
   }
-  printf("    %llu edges added.\nDONE. TOTAL REWIRE TIME [%s]\n\n", NAddit, ExeTm.GetStr());
+  printf("    %s edges added.\nDONE. TOTAL REWIRE TIME [%s]\n\n",
+                  TInt64::GetStr(NAddit).CStr(), ExeTm.GetStr());
 }
 
 template <class TNodeData, bool IsDir>

@@ -2,9 +2,10 @@
 
 // Print graph statistics
 void PrintGStats(const char s[], PNEGraph Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph->GetNodes(), Graph->GetEdges(),
-      Graph->Empty() ? "yes" : "no");
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        Graph->Empty() ? "yes" : "no");
 }
 
 // Test the default constructor
@@ -26,9 +27,9 @@ void ManipulateNodesEdges() {
   PNEGraph Graph2;
   int i;
   int n;
-  int NCount;
-  int ECount1;
-  int ECount2;
+  int64 NCount;
+  int64 ECount1;
+  int64 ECount2;
   int x,y;
   bool t;
 
@@ -71,8 +72,10 @@ void ManipulateNodesEdges() {
   for (TNEGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     ECount2++;
   }
-  printf("graph ManipulateNodesEdges:Graph, nodes %d, edges1 %d, edges2 %d\n",
-      NCount, ECount1, ECount2);
+  printf("graph ManipulateNodesEdges:Graph, nodes %s, edges1 %s, edges2 %s\n",
+              TInt64::GetStr(NCount).CStr(),
+              TInt64::GetStr(ECount1).CStr(),
+              TInt64::GetStr(ECount2).CStr());
 
   // assignment
   Graph1 = TNEGraph::New();

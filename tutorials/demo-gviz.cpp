@@ -79,7 +79,7 @@ void DrawGVizColorDemo() {
   Colors.AddDat("cyan");
   Colors.AddDat("magenta");
 
-  TIntStrH NIdColorH;
+  TIntStr64H NIdColorH;
   
   for (TUNGraph::TNodeI NI = UNGraph1->BegNI(); NI < UNGraph1->EndNI(); NI++) {
     int RVal = TInt::Rnd.GetUniDevInt(0, Colors.Len()-1);

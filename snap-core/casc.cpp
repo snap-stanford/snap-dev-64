@@ -180,7 +180,12 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
         int64 PDest = P->GetIntValAtRowIdx(DIdx,PIdx).Val;
         int64 PStart = P->GetIntValAtRowIdx(StIdx,PIdx).Val;
         int64 PDur = P->GetIntValAtRowIdx(DuIdx,PIdx).Val;
-        printf("%d\t%d\t%d\t%d\t%d\n",PIdx,PSource,PDest,PStart,PDur);
+        printf("%s\t%s\t%s\t%s\t%s\n",
+                  TInt64::GetStr(PIdx).CStr(),
+                  TInt64::GetStr(PSource).CStr(),
+                  TInt64::GetStr(PDest).CStr(),
+                  TInt64::GetStr(PStart).CStr(),
+                  TInt64::GetStr(PDur).CStr());
       }   
     }
     if (ToAddV.Len() > 1) {

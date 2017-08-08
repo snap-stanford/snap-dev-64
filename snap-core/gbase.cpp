@@ -53,7 +53,9 @@ void TUnionFind::Union(const int64& Key1, const int64& Key2) {
 void TUnionFind::Dump() {
   printf("  key\tset\n");
   for (int64 i = 0; i < KIdSetH.Len(); i++) {
-    printf("  %d\t%d\n", int64(KIdSetH.GetKey(i)), Find(KIdSetH.GetKey(i)));
+    printf("  %s\t%s\n",
+      TInt64::GetStr(int64(KIdSetH.GetKey(i))).CStr(),
+      TInt64::GetStr(int64(Find(KIdSetH.GetKey(i)))).CStr());
   }
   printf("\n");
 }

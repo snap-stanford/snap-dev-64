@@ -100,8 +100,9 @@ void TCesna::SetGraph(const PUNGraph& GraphPt, const THash<TInt, TIntV>& NIDAttr
   HOVIDSV.Gen(GraphPt->GetNodes());  
   HOKIDSV.Gen(GraphPt->GetNodes());  
   X.Gen(GraphPt->GetNodes());
-  TIntV NIDV;
+  TInt64V NIDV;
   GraphPt->GetNIdV(NIDV);
+  //TIntV NIDV = TInt64VToTIntV(NID64V);
   NIDToIdx.Gen(NIDV.Len());
   NIDToIdx.AddKeyV(NIDV);
   // check that nodes IDs are {0,1,..,Nodes-1}
@@ -333,11 +334,14 @@ void TCesna::GetCmtyVVUnSorted(TVec<TIntV>& CmtyVV) {
 void TCesna::GetCmtyVVUnSorted(TVec<TIntV>& CmtyVV, const double Thres, const int MinSz) {
   CmtyVV.Gen(NumComs, 0);
   for (int c = 0; c < NumComs; c++) {
-    TIntV CmtyV;
+    TInt64V CmtyV;
     for (int u = 0; u < G->GetNodes(); u++) {
       if (GetCom(u, c) > Thres) { CmtyV.Add(NIDToIdx[u]); }
     }
-    if (CmtyV.Len() >= MinSz) { CmtyVV.Add(CmtyV); }
+    if (CmtyV.Len() >= MinSz) {
+      TIntV Cmty32V = TInt64VToTIntV(CmtyV);
+      CmtyVV.Add(Cmty32V);
+    }
   }
   if ( NumComs != CmtyVV.Len()) {
     printf("Community vector generated. %d communities are ommitted\n", NumComs.Val - CmtyVV.Len());
@@ -371,7 +375,7 @@ int TCesna::FindComs(TIntV& ComsV, const bool UseBIC, const double HOFrac, const
   TCesnaUtil::GetNIdPhiV<PUNGraph>(G, NIdPhiV);
   if (! UseBIC) { //if edges are many enough, use CV
     //printf("generating hold out set\n");
-    TIntV NIdV1, NIdV2;
+    TInt64V NIdV1, NIdV2;
     G->GetNIdV(NIdV1);
     G->GetNIdV(NIdV2);
     for (int IterCV = 0; IterCV < MaxIterCV; IterCV++) {

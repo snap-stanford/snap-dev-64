@@ -19,11 +19,11 @@ TempMotifCounter::TempMotifCounter(const TStr& filename) {
 
   // Load the temporal graph
   PTable data_ptr = TTable::LoadSS(temp_graph_schema, filename, &context, ' ');
-  TInt src_idx = data_ptr->GetColIdx("source");
-  TInt dst_idx = data_ptr->GetColIdx("destination");
-  TInt tim_idx = data_ptr->GetColIdx("time");
+  TInt64 src_idx = data_ptr->GetColIdx("source");
+  TInt64 dst_idx = data_ptr->GetColIdx("destination");
+  TInt64 tim_idx = data_ptr->GetColIdx("time");
   for (TRowIterator RI = data_ptr->BegRI(); RI < data_ptr->EndRI(); RI++) {
-    TInt row_idx = RI.GetRowIdx();
+    TInt64 row_idx = RI.GetRowIdx();
     int src = data_ptr->GetIntValAtRowIdx(src_idx, row_idx).Val;
     int dst = data_ptr->GetIntValAtRowIdx(dst_idx, row_idx).Val;
     int tim = data_ptr->GetIntValAtRowIdx(tim_idx, row_idx).Val;

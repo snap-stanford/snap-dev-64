@@ -46,7 +46,9 @@ int main(int argc, char* argv[]) {
   else {
     G = TAGMUtil::LoadEdgeListStr<PUNGraph>(InFNm, NIDNameH);
   }
-  printf("Graph: %d Nodes %d Edges\n", G->GetNodes(), G->GetEdges());
+  printf("Graph: %s Nodes %s Edges\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
 
   int MaxIter = 50 * G->GetNodes() * G->GetNodes();
   if (MaxIter < 0) { MaxIter = TInt::Mx; }

@@ -215,7 +215,7 @@ int main(int argc, char* argv[]) {
 
   NIBs.Init(Steps);
 
-  TIntV NIds; TStrV NIdsStr;
+  TInt64V NIds; TStrV NIdsStr;
   if (NodeIdx.EqI("-1")) { NIBs.Network.GetNIdV(NIds); }
   else {
     NodeIdx.SplitOnAllCh('-', NIdsStr);

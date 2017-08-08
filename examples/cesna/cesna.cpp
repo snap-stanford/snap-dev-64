@@ -50,11 +50,13 @@ int main(int argc, char* argv[]) {
       if (Ss.Len() > 0) { NIDNameH.AddDat(Ss.GetInt(0), Ss.GetFld(1)); }
     }
   }
-  printf("Graph: %d Nodes %d Edges\n", G->GetNodes(), G->GetEdges());
+  printf("Graph: %s Nodes %s Edges\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
 
   //load attribute
-  TIntV NIDV;
-  G->GetNIdV(NIDV);
+  TInt64V NID64V;
+  G->GetNIdV(NID64V);
   THash<TInt, TIntV> RawNIDAttrH, NIDAttrH;
   TIntStrH RawFeatNameH, FeatNameH;
   if (ANameFNm.Len() > 0) {
@@ -64,6 +66,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  TIntV NIDV;
+  NIDV = TInt64VToTIntV(NID64V);
   TCesnaUtil::LoadNIDAttrHFromNIDKH(NIDV, AttrFNm, RawNIDAttrH, NodeNameH);
   TCesnaUtil::FilterLowEntropy(RawNIDAttrH, NIDAttrH, RawFeatNameH, FeatNameH, MinFeatFrac);
 

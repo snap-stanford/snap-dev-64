@@ -2,8 +2,9 @@
 
 // Print graph statistics
 void PrintGStats(const char s[], PUNGraph Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph->GetNodes(), Graph->GetEdges(),
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+      TUInt64::GetStr(Graph->GetNodes()).CStr(),
+      TUInt64::GetStr(Graph->GetEdges()).CStr(),
       Graph->Empty() ? "yes" : "no");
 }
 
@@ -26,9 +27,9 @@ void ManipulateNodesEdges() {
   PUNGraph Graph2;
   int i;
   int n;
-  int NCount;
-  int ECount1;
-  int ECount2;
+  int64 NCount;
+  int64 ECount1;
+  int64 ECount2;
   int x,y;
   bool t;
 
@@ -61,7 +62,8 @@ void ManipulateNodesEdges() {
   for (TUNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     NCount++;
     // get the node ID and its degree
-    printf("node id %d has degree %d\n", NI.GetId(), NI.GetDeg());
+    printf("node id %s has degree %s\n", TInt64::GetStr(NI.GetId()).CStr(),
+          TInt64::GetStr(NI.GetDeg()).CStr());
   }
 
   // traverse all the in-edges of all the nodes, count them
@@ -70,7 +72,9 @@ void ManipulateNodesEdges() {
     for (int e = 0; e < NI.GetOutDeg(); e++) {
       ECount1++;
       // get the node ID and its neighbour
-      printf("node id %d has neighbor %d\n", NI.GetId(), NI.GetInNId(e));
+      printf("node id %s has neighbor %s\n",
+              TInt64::GetStr(NI.GetId()).CStr(),
+              TInt64::GetStr(NI.GetInNId(e)).CStr());
     }
   }
   ECount1 /= 2;
@@ -80,11 +84,14 @@ void ManipulateNodesEdges() {
   for (TUNGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     ECount2++;
     // get the nodes of the edge
-    printf("edge between node %d and node %d\n",
-           EI.GetSrcNId(), EI.GetDstNId());
+    printf("edge between node %s and node %s\n",
+            TInt64::GetStr(EI.GetSrcNId()).CStr(),
+            TInt64::GetStr(EI.GetDstNId()).CStr());
   }
-  printf("graph ManipulateNodesEdges:Graph, nodes %d, edges1 %d, edges2 %d\n",
-      NCount, ECount1, ECount2);
+  printf("graph ManipulateNodesEdges:Graph, nodes %s, edges1 %s, edges2 %s\n",
+              TInt64::GetStr(NCount).CStr(),
+              TInt64::GetStr(ECount1).CStr(),
+              TInt64::GetStr(ECount2).CStr());
 
   // assignment
   Graph1 = TUNGraph::New();

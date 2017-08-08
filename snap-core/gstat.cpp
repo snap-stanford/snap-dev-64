@@ -102,15 +102,23 @@ void TGStat::GetDistr(const TGStatDistr& Distr, TFltPr64V& FltPrV) const {
   FltPrV = GetDistr(Distr);
 }
 
-void TGStat::TakeStat(const PNGraph& Graph, const TSecTm& _Time, TFSet StatFSet, const TStr& GraphName) {
-  printf("\n===TakeStat:  G(%u, %u) at %s\n", Graph->GetNodes(), Graph->GetEdges(), _Time.IsDef()?_Time.GetStr().CStr():"");
+void TGStat::TakeStat(const PNGraph& Graph, const TSecTm& _Time,
+                      TFSet StatFSet, const TStr& GraphName) {
+  printf("\n===TakeStat:  G(%s, %s) at %s\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        _Time.IsDef()?_Time.GetStr().CStr():"");
   TExeTm ExeTm, FullTm;
   Time = _Time;
   GraphNm = GraphName;
   if (StatFSet.In(gsvNone)) { return; }
   TakeBasicStat(Graph, false);
   TakeDiam(Graph, StatFSet, false);
-  if (StatFSet.In(gsdWcc) || StatFSet.In(gsdWccHops) || StatFSet.In(gsvFullDiam) || StatFSet.In(gsvEffWccDiam) || StatFSet.In(gsvWccNodes) || StatFSet.In(gsvWccSrcNodes) || StatFSet.In(gsvWccDstNodes) || StatFSet.In(gsvWccEdges) || StatFSet.In(gsvWccUniqEdges) || StatFSet.In(gsvWccBiDirEdges)) {
+  if (StatFSet.In(gsdWcc) || StatFSet.In(gsdWccHops) ||
+      StatFSet.In(gsvFullDiam) || StatFSet.In(gsvEffWccDiam) ||
+      StatFSet.In(gsvWccNodes) || StatFSet.In(gsvWccSrcNodes) ||
+      StatFSet.In(gsvWccDstNodes) || StatFSet.In(gsvWccEdges) ||
+      StatFSet.In(gsvWccUniqEdges) || StatFSet.In(gsvWccBiDirEdges)) {
     PNGraph WccGraph = TSnap::GetMxWcc(Graph);
     TakeBasicStat(WccGraph, true);
     TakeDiam(WccGraph, StatFSet, true);
@@ -134,15 +142,23 @@ void TGStat::TakeStat(const PNGraph& Graph, const TSecTm& _Time, TFSet StatFSet,
   printf("**[%s]\n", FullTm.GetTmStr());
 }
 
-void TGStat::TakeStat(const PUNGraph& Graph, const TSecTm& _Time, TFSet StatFSet, const TStr& GraphName) {
-  printf("\n===TakeStat:  UG(%u, %u) at %s\n", Graph->GetNodes(), Graph->GetEdges(), _Time.IsDef()?_Time.GetStr().CStr():"");
+void TGStat::TakeStat(const PUNGraph& Graph, const TSecTm& _Time,
+                      TFSet StatFSet, const TStr& GraphName) {
+  printf("\n===TakeStat:  G(%s, %s) at %s\n",
+          TUInt64::GetStr(Graph->GetNodes()).CStr(),
+          TUInt64::GetStr(Graph->GetEdges()).CStr(),
+          _Time.IsDef()?_Time.GetStr().CStr():"");
   TExeTm ExeTm, FullTm;
   Time = _Time;
   GraphNm = GraphName;
   if (StatFSet.In(gsvNone)) { return; }
   TakeBasicStat(Graph, false);
   TakeDiam(Graph, StatFSet, false);
-  if (StatFSet.In(gsdWcc) || StatFSet.In(gsdWccHops) || StatFSet.In(gsvFullDiam) || StatFSet.In(gsvEffWccDiam) || StatFSet.In(gsvWccNodes) || StatFSet.In(gsvWccSrcNodes) || StatFSet.In(gsvWccDstNodes) || StatFSet.In(gsvWccEdges) || StatFSet.In(gsvWccUniqEdges) || StatFSet.In(gsvWccBiDirEdges)) {
+  if (StatFSet.In(gsdWcc) || StatFSet.In(gsdWccHops) ||
+      StatFSet.In(gsvFullDiam) || StatFSet.In(gsvEffWccDiam) ||
+      StatFSet.In(gsvWccNodes) || StatFSet.In(gsvWccSrcNodes) ||
+      StatFSet.In(gsvWccDstNodes) || StatFSet.In(gsvWccEdges) ||
+      StatFSet.In(gsvWccUniqEdges) || StatFSet.In(gsvWccBiDirEdges)) {
     PUNGraph WccGraph = TSnap::GetMxWcc(Graph);
     TakeBasicStat(WccGraph, true);
     TakeDiam(WccGraph, StatFSet, true);
@@ -459,7 +475,8 @@ PGStat TGStatVec::Add(const TSecTm& Time, const TStr& GraphNm) {
 
 void TGStatVec::Add(const PNGraph& Graph, const TSecTm& Time, const TStr& GraphNm) {
   if (Graph->GetNodes() < (int64) TGStatVec::MinNodesEdges) {
-    printf(" ** TGStatVec::Add: graph too small (%d nodes).SKIP\n", Graph->GetNodes());
+    printf(" ** TGStatVec::Add: graph too small (%s nodes).SKIP\n",
+              TUInt64::GetStr(Graph->GetNodes()).CStr());
     return;
   }
   Add(TGStat::New(Graph, Time, StatFSet, GraphNm));
@@ -467,7 +484,8 @@ void TGStatVec::Add(const PNGraph& Graph, const TSecTm& Time, const TStr& GraphN
 
 void TGStatVec::Add(const PUNGraph& Graph, const TSecTm& Time, const TStr& GraphNm) {
   if (Graph->GetNodes() < (int64) TGStatVec::MinNodesEdges) {
-    printf(" ** TGStatVec::Add: graph too small (%d nodes).SKIP\n", Graph->GetNodes());
+    printf(" ** TGStatVec::Add: graph too small (%s nodes).SKIP\n",
+              TUInt64::GetStr(Graph->GetNodes()).CStr());
     return;
   }
   Add(TGStat::New(Graph, Time, StatFSet, GraphNm));
@@ -475,7 +493,8 @@ void TGStatVec::Add(const PUNGraph& Graph, const TSecTm& Time, const TStr& Graph
 
 void TGStatVec::Add(const PNEGraph& Graph, const TSecTm& Time, const TStr& GraphNm) {
   if (Graph->GetNodes() < (int64) TGStatVec::MinNodesEdges) {
-    printf(" ** TGStatVec::Add: graph too small (%d nodes).SKIP\n", Graph->GetNodes());
+    printf(" ** TGStatVec::Add: graph too small (%s nodes).SKIP\n",
+              TUInt64::GetStr(Graph->GetNodes()).CStr());
     return;
   }
   Add(TGStat::New(Graph, Time, StatFSet, GraphNm));

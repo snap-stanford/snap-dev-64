@@ -57,7 +57,9 @@ void TNIBs::LoadGroundTruthTxt(TSIn& SIn) {
     }
   }
 
-  printf("groundtruth nodes:%d edges:%d\n", Network.GetNodes(), Network.GetEdges());
+  printf("groundtruth nodes:%s edges:%s\n",
+          TInt64::GetStr(Network.GetNodes()).CStr(),
+          TInt64::GetStr(Network.GetEdges()).CStr());
 }
 
 void TNIBs::LoadGroundTruthNodesTxt(TSIn& SIn) {
@@ -77,7 +79,7 @@ void TNIBs::LoadGroundTruthNodesTxt(TSIn& SIn) {
     }
   }
 
-  printf("groundtruth nodes:%d\n", Network.GetNodes());
+  printf("groundtruth nodes:%s\n", TInt64::GetStr(Network.GetNodes()).CStr());
 }
 
 void TNIBs::LoadInferredTxt(TSIn& SIn) {
@@ -122,7 +124,9 @@ void TNIBs::LoadInferredTxt(TSIn& SIn) {
     }
   }
 
-  printf("inferred nodes:%d edges:%d\n", InferredNetwork.GetNodes(), InferredNetwork.GetEdges());
+  printf("inferred nodes:%s edges:%s\n",
+          TInt64::GetStr(InferredNetwork.GetNodes()).CStr(),
+          TInt64::GetStr(InferredNetwork.GetEdges()).CStr());
 }
 
 void TNIBs::LoadInferredNodesTxt(TSIn& SIn) {
@@ -141,7 +145,7 @@ void TNIBs::LoadInferredNodesTxt(TSIn& SIn) {
     if (!DomainsIdH.IsKey(NIdV[1])) { DomainsIdH.AddDat(NIdV[1]) = NIdV[0].GetInt(); }
   }
 
-  printf("Nodes:%d\n", InferredNetwork.GetNodes());
+  printf("Nodes:%s\n", TInt64::GetStr(InferredNetwork.GetNodes()).CStr());
 }
 
 void TNIBs::AddCasc(const TStr& CascStr, const TModel& Model) {
@@ -506,7 +510,8 @@ void TNIBs::BSG(const int& NId, const int& Iters, const TFltV& Steps, const int&
 
   Reset();
 
-  printf("Node %d (|A|: %d)\n", NId, InferredNetwork.GetNodes());
+  printf("Node %d (|A|: %s)\n", NId,
+          TInt64::GetStr(InferredNetwork.GetNodes()).CStr());
 
   // traverse through all times (except 0.0; we use 0.0 to compute mse/mae since the inference is delayed)
   for (int t=1; t<Steps.Len(); t++) {
@@ -633,7 +638,8 @@ void TNIBs::FG(const int& NId, const int& Iters, const TFltV& Steps) {
   
   Reset();
 
-  printf("Node %d (|A|: %d)\n", NId, InferredNetwork.GetNodes());
+  printf("Node %d (|A|: %s)\n", NId,
+          TInt64::GetStr(InferredNetwork.GetNodes()).CStr());
 
   // traverse through all times
   for (int t=1; t<Steps.Len(); t++) {

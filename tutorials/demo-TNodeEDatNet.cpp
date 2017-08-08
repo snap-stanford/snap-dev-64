@@ -2,8 +2,9 @@
 
 // Print network statistics
 void PrintNStats(const char s[], TPt <TNodeEDatNet<TInt, TInt> > Net) {
-  printf("network %s, nodes %d, edges %d, empty %s\n",
-      s, Net->GetNodes(), Net->GetEdges(),
+  printf("network %s, nodes %s, edges %s, empty %s\n", s,
+      TUInt64::GetStr(Net->GetNodes()).CStr(),
+      TUInt64::GetStr(Net->GetEdges()).CStr(),
       Net->Empty() ? "yes" : "no");
 }
 
@@ -26,9 +27,9 @@ void ManipulateNodesEdges() {
   TPt <TNodeEDatNet<TInt, TInt> > Net2;
   int i;
   int n;
-  int NCount;
-  int ECount1;
-  int ECount2;
+  int64 NCount;
+  int64 ECount1;
+  int64 ECount2;
   int x,y;
   bool t;
 
@@ -75,8 +76,10 @@ void ManipulateNodesEdges() {
   for (TNodeEDatNet<TInt, TInt>::TEdgeI EI = Net->BegEI(); EI < Net->EndEI(); EI++) {
     ECount2++;
   }
-  printf("network ManipulateNodesEdges:Net, nodes %d, edges1 %d, edges2 %d\n",
-      NCount, ECount1, ECount2);
+  printf("network ManipulateNodesEdges:Net, nodes %s, edges1 %s, edges2 %s\n",
+              TInt64::GetStr(NCount).CStr(),
+              TInt64::GetStr(ECount1).CStr(),
+              TInt64::GetStr(ECount2).CStr());
 
   // assignment
   Net1 = TNodeEDatNet<TInt, TInt>::New();

@@ -92,7 +92,9 @@ void TNetInfBs::LoadGroundTruthTxt(TSIn& SIn) {
     else { Alphas.AddDat(TIntPr(NIdV[0].GetInt(), NIdV[1].GetInt())) = 1.0; }
   }
 
-  printf("groundtruth nodes:%d edges:%d\n", GroundTruth->GetNodes(), GroundTruth->GetEdges());
+  printf("groundtruth nodes:%s edges:%s\n",
+            TInt64::GetStr(GroundTruth->GetNodes()).CStr(),
+            TInt64::GetStr(GroundTruth->GetEdges()).CStr());
 }
 
 void TNetInfBs::AddCasc(const TStr& CascStr, const int& Model, const double& alpha) {
@@ -447,7 +449,9 @@ void TNetInfBs::SavePajek(const TStr& OutFNm) {
     }
     fprintf(F, "*Arcs\r\n");
     for (TNGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
-      fprintf(F, "%d %d 1\r\n", EI.GetSrcNId(), EI.GetDstNId());
+      fprintf(F, "%s %s 1\r\n",
+                TInt64::GetStr(EI.GetSrcNId()).CStr(),
+                TInt64::GetStr(EI.GetDstNId()).CStr());
     }
     fclose(F);
 }
@@ -462,7 +466,9 @@ void TNetInfBs::SavePlaneTextNet(const TStr& OutFNm) {
   fprintf(F, "\r\n");
 
   for (TNGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
-    fprintf(F, "%d,%d\r\n", EI.GetSrcNId(), EI.GetDstNId());
+    fprintf(F, "%s,%s\r\n",
+                TInt64::GetStr(EI.GetSrcNId()).CStr(),
+                TInt64::GetStr(EI.GetDstNId()).CStr());
   }
   fclose(F);
 }

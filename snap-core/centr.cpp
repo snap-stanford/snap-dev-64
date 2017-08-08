@@ -212,7 +212,7 @@ TInt64H MaxCPGreedyBetter(const PUNGraph& Graph, const int64 k) {
     } else {
       br = k;
     }
-    printf("%i,",br);
+    printf("%s,", TInt64::GetStr(br).CStr());
   }
 
   // gcFinal = GetGroupDegreeCentr(Graph, GroupNodes);
@@ -311,7 +311,7 @@ TInt64H MaxCPGreedyBetter2(const PUNGraph& Graph, const int64 k) {
     } else {
       br = k;
     }
-    printf("%i,",br);
+    printf("%s,", TInt64::GetStr(br).CStr());
   }
 
   // gcFinal = GetGroupDegreeCentr(Graph, GroupNodes);
@@ -384,7 +384,7 @@ TInt64H MaxCPGreedyBetter3(const PUNGraph& Graph, const int64 k) {
     } else {
       br = k;
     }
-    printf("%i,",br);
+    printf("%s,", TInt64::GetStr(br).CStr());
   }
 
   delete NNodes;

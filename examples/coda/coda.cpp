@@ -53,7 +53,10 @@ int main(int argc, char* argv[]) {
       if (Ss.Len() > 0) { NIDNameH.AddDat(Ss.GetInt(0), Ss.GetFld(1)); }
     }
   }
-  printf("Graph: %d Nodes %d Edges\n", G->GetNodes(), G->GetEdges());
+  printf("Graph: %s Nodes %s Edges\n",
+        TUInt64::GetStr(G->GetNodes()).CStr(),
+        TUInt64::GetStr(G->GetEdges()).CStr());
+
   
   TVec<TIntV> EstCmtyVVIn, EstCmtyVVOut;
   TExeTm RunTm;

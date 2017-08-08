@@ -20,16 +20,18 @@ void PrintIntValue(const char Desc[],
 
 // Print TIntPrV values
 void PrintTIntPrVValues(const char Desc[],
-                        const TIntPrV& Value) {
+                        const TIntPr64V& Value) {
   printf("---- %s -----\n", Desc);
   for (int i = 0; i < Value.Len(); i++) {
-    printf("Key: %d, Value: %d\n", Value[i].Val1.Val, Value[i].Val2.Val);
+    printf("Key: %s, Value: %s\n",
+              TInt64::GetStr(Value[i].Val1.Val).CStr(),
+              TInt64::GetStr(Value[i].Val2.Val).CStr());
   }
 }
 
 // Print TFltPrV values
 void PrintTFltPrVValues(const char Desc[],
-                        const TFltPrV& Value) {
+                        const TFltPr64V& Value) {
   printf("---- %s -----\n", Desc);
   for (int i = 0; i < Value.Len(); i++) {
     printf("Key: %f, Value: %f\n", Value[i].Val1.Val, Value[i].Val2.Val);
@@ -38,10 +40,10 @@ void PrintTFltPrVValues(const char Desc[],
 
 // Print TIntV values
 void PrintTIntVValues(const char Desc[],
-                      const TIntV& Value) {
+                      const TInt64V& Value) {
   printf("---- %s -----\n", Desc);
   for (int i = 0; i < Value.Len(); i++) {
-    printf("Value: %d\n", Value[i].Val);
+    printf("Value: %s\n", TInt64::GetStr(Value[i].Val).CStr());
   }
 }
 
@@ -122,7 +124,7 @@ void PrintCntEdgesToSet() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntSet NodeKeysV;
+  TInt64Set NodeKeysV;
   NodeKeysV.AddKey(0);
   NodeKeysV.AddKey(1);
   NodeKeysV.AddKey(2);
@@ -184,7 +186,7 @@ void PrintGetInDegCntInt() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntPrV TNInDegCntLoopGraph;
+  TIntPr64V TNInDegCntLoopGraph;
   TSnap::GetInDegCnt(Graph, TNInDegCntLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -202,7 +204,7 @@ void PrintGetInDegCntFlt() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TFltPrV TNInDegCntLoopGraph;
+  TFltPr64V TNInDegCntLoopGraph;
   TSnap::GetInDegCnt(Graph, TNInDegCntLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -219,7 +221,7 @@ void PrintGetOutDegCntInt() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntPrV TNOutDegCntLoopGraph;
+  TIntPr64V TNOutDegCntLoopGraph;
   TSnap::GetOutDegCnt(Graph, TNOutDegCntLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -236,7 +238,7 @@ void PrintGetOutDegCntFlt() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TFltPrV TNOutDegCntLoopGraph;
+  TFltPr64V TNOutDegCntLoopGraph;
   TSnap::GetOutDegCnt(Graph, TNOutDegCntLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -253,7 +255,7 @@ void PrintGetDegCntInt() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntPrV TNDegCntLoopGraph;
+  TIntPr64V TNDegCntLoopGraph;
   TSnap::GetDegCnt(Graph, TNDegCntLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -270,7 +272,7 @@ void PrintGetDegCntFlt() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TFltPrV TNDegCntLoopGraph;
+  TFltPr64V TNDegCntLoopGraph;
   TSnap::GetDegCnt(Graph, TNDegCntLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -287,7 +289,7 @@ void PrintGetDegSeqV() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntV TNDegSeqVLoopGraph;
+  TInt64V TNDegSeqVLoopGraph;
   TSnap::GetDegSeqV(Graph, TNDegSeqVLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -304,8 +306,8 @@ void PrintGetDegSeqVWithInOutDegV() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntV TNInDegVLoopGraph;
-  TIntV TNOutDegVLoopGraph;
+  TInt64V TNInDegVLoopGraph;
+  TInt64V TNOutDegVLoopGraph;
   TSnap::GetDegSeqV(Graph, TNInDegVLoopGraph, TNOutDegVLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -324,7 +326,7 @@ void PrintGetNodeInDegV() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntPrV TNInDegVLoopGraph;
+  TIntPr64V TNInDegVLoopGraph;
   TSnap::GetNodeInDegV(Graph, TNInDegVLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -341,7 +343,7 @@ void PrintGetNodeOutDegV() {
 
   PNGraph Graph = GetTNLoopGraph();
 
-  TIntPrV TNOutDegVLoopGraph;
+  TIntPr64V TNOutDegVLoopGraph;
   TSnap::GetNodeOutDegV(Graph, TNOutDegVLoopGraph);
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
@@ -475,7 +477,7 @@ void PrintDelNodes() {
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
 
-  TIntV TNDelNodes;
+  TInt64V TNDelNodes;
   TNDelNodes.Add(0);
 
   TSnap::DelNodes(Graph, TNDelNodes);
@@ -520,7 +522,7 @@ void PrintIsTree() {
   PrintMethodHeader("IsTree");
 
   PNGraph Graph = GetTNLoopGraph();
-  int RootNId;
+  int64 RootNId;
 
   PrintGraph("TNGraph of loop of nodes (with two edges from 4 to 0)", Graph);
   PrintIntValue("Calling IsTree on TNLoopGraph", TSnap::IsTree(Graph, RootNId));

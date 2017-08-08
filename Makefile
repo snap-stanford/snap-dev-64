@@ -8,7 +8,7 @@ test: TestAll
 
 MakeAll:
 	$(MAKE) -C snap-core
-#	$(MAKE) -C examples #TODO 64
+	$(MAKE) -C examples
 
 TestAll:
 	$(MAKE) run -C test

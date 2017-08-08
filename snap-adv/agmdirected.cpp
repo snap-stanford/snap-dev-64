@@ -152,13 +152,13 @@ void TCoda::NeighborComInit(TFltIntPrV& NIdPhiV, const int InitComs) {
 
 void TCoda::GetNonEdgePairScores(TFltIntIntTrV& ScoreV) {
   ScoreV.Gen(G->GetNodes() * G->GetNodes(), 0);
-  TIntV NIDV;
+  TInt64V NIDV;
   G->GetNIdV(NIDV);
   TIntSet Cuv;
-  for (int u = 0; u < NIDV.Len(); u++) {
-    int UID = NIDV[u];
-    for (int v = 0; v < NIDV.Len(); v++) {
-      int VID = NIDV[v];
+  for (int64 u = 0; u < NIDV.Len(); u++) {
+    int64 UID = NIDV[u];
+    for (int64 v = 0; v < NIDV.Len(); v++) {
+      int64 VID = NIDV[v];
       if (UID == VID) { continue; }
       if (! G->IsEdge(UID, VID)) {
         double Val = 1.0 - Prediction(UID, VID);
@@ -175,7 +175,7 @@ void TCoda::SetCmtyVV(const TVec<TIntV>& CmtyVVOut, const TVec<TIntV>& CmtyVVIn)
   SumFV.Gen(CmtyVVOut.Len());
   SumHV.Gen(CmtyVVIn.Len());
   NumComs = CmtyVVOut.Len();
-  TIntH NIDIdxH(NIDV.Len());
+  TInt64H NIDIdxH(NIDV.Len());
   if (! NodesOk) {
     for (int u = 0; u < NIDV.Len(); u++) {
       NIDIdxH.AddDat(NIDV[u], u);
@@ -563,11 +563,14 @@ void TCoda::GetCmtyVV(const bool IsOut, TVec<TIntV>& CmtyVV, const double Thres,
 void TCoda::GetCmtyVVUnSorted(const bool IsOut, TVec<TIntV>& CmtyVV, const double Thres, const int MinSz) {
   CmtyVV.Gen(NumComs, 0);
   for (int c = 0; c < NumComs; c++) {
-    TIntV CmtyV((int) (GetSumVal(IsOut, c) * 10), 0);
+    TInt64V CmtyV((int) (GetSumVal(IsOut, c) * 10), 0);
     for (int u = 0; u < G->GetNodes(); u++) {
       if (GetCom(IsOut, u, c) > Thres) { CmtyV.Add(NIDV[u]); }
     }
-    if (CmtyV.Len() >= MinSz) { CmtyVV.Add(CmtyV); }
+    if (CmtyV.Len() >= MinSz) {
+      TIntV Cmty32V = TInt64VToTIntV(CmtyV);
+      CmtyVV.Add(Cmty32V);
+    }
   }
   if ( NumComs != CmtyVV.Len()) {
     printf("Community vector generated. %d communities are ommitted\n", NumComs.Val - CmtyVV.Len());
@@ -600,13 +603,13 @@ void TCoda::GetNIDValH(TIntFltH& NIdValInOutH, TIntFltH& NIdValOutH, TIntFltH& N
   if (GetSumVal(true, CID) < Thres && GetSumVal(false, CID) < Thres) { return; }
   for (int u = 0; u < NIDV.Len(); u++) {
     if (GetCom(true, u, CID) >= Thres && GetCom(false, u, CID) >= Thres) {
-      NIdValInOutH.AddDat(NIDV[u], GetCom(true, u, CID) + GetCom(false, u, CID));
+      NIdValInOutH.AddDat(static_cast<int>(NIDV[u]), GetCom(true, u, CID) + GetCom(false, u, CID));
     }
     if (GetCom(true, u, CID) >= Thres) {
-      NIdValOutH.AddDat(NIDV[u], GetCom(true, u, CID));
+      NIdValOutH.AddDat(static_cast<int>(NIDV[u]), GetCom(true, u, CID));
     }
     if (GetCom(false, u, CID) >= Thres) {
-      NIdValInH.AddDat(NIDV[u], GetCom(false, u, CID));
+      NIdValInH.AddDat(static_cast<int>(NIDV[u]), GetCom(false, u, CID));
     }
   }
   NIdValInH.SortByDat(false);
@@ -757,7 +760,7 @@ int TCoda::FindComsByCV(TIntV& ComsV, const double HOFrac, const int NumThreads,
 
   if (G->GetEdges() > EdgesForCV) { //if edges are many enough, use CV
     printf("generating hold out set\n");
-    TIntV NIdV1, NIdV2;
+    TInt64V NIdV1, NIdV2;
     G->GetNIdV(NIdV1);
     G->GetNIdV(NIdV2);
     for (int IterCV = 0; IterCV < MaxIterCV; IterCV++) {

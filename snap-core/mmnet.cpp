@@ -760,13 +760,15 @@ void TCrossNet::CopyEdges(const TCrossNet& Src, TCrossNet& Dst, const TInt64V& T
   }
 }
 
-PBPGraph TCrossNet::GetBipartiteGraph(){
+PBPGraph TCrossNet::GetBipartiteGraph() {
   PBPGraph Graph = TBPGraph::New();
-  for (TCrossEdgeI EI = BegEdgeI(); EI != EndEdgeI(); EI++){
-    if (!Graph->IsLNode(EI.GetSrcNId()))
+  for (TCrossEdgeI EI = BegEdgeI(); EI != EndEdgeI(); EI++) {
+    if (!Graph->IsLNode(EI.GetSrcNId())) {
       Graph->AddNode(EI.GetSrcNId(), true);
-    if (!Graph->IsRNode(EI.GetDstNId()))
+    }
+    if (!Graph->IsRNode(EI.GetDstNId())) {
       Graph->AddNode(EI.GetDstNId(), false);
+    }
     Graph->AddEdge(EI.GetSrcNId(), EI.GetDstNId());
   }
   return Graph;
@@ -1495,23 +1497,21 @@ PNEANet TMMNet::GetMetagraph() {
   return Result;
 }
 
-
 void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxLen) const {
   int64 reminder = MxLen.Val % NumPartitions.Val;
   TInt64 PartitionSize = MxLen/NumPartitions;
   TInt64 CurrStart = 0;
   //  bool done = false;
-  for  (int64 i=0; i < reminder; i++) {
+  for (int64 i=0; i < reminder; i++) {
     TInt64 CurrEnd = CurrStart + PartitionSize+ 1;
     Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
     CurrStart = CurrEnd;
   }
-  for  (int64 i=0; i < NumPartitions.Val - reminder; i++) {
+  for (int64 i=0; i < NumPartitions.Val - reminder; i++) {
     TInt64 CurrEnd = CurrStart + PartitionSize;
     Partitions.Add(TInt64Pr(CurrStart, CurrEnd));
     CurrStart = CurrEnd;
   }
-
 }
 
 #ifdef GCC_ATOMIC
@@ -1524,7 +1524,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
   //TVec<TCrossNet> CrossNets;
   //std::cerr<<"here 0\n";
   for (int64 i=0; i < CrossNetNames.Len(); i++) {
-    //	CrossNets.Add(GetCrossNetByName(CrossNetNames[i]));
+    //  CrossNets.Add(GetCrossNetByName(CrossNetNames[i]));
     CrossNetStart.AddDat(CrossNetNames[i], offset);
     TCrossNet& CrossNet = GetCrossNetByName(CrossNetNames[i]);
     int64 factor = CrossNet.IsDirected() ? 1 : 2;
@@ -1565,7 +1565,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
       TInt64 CurrEnd = NodePartitions[i].GetVal2();
       curr_nid = offset + CurrStart;
       for (int64 idx = CurrStart; idx < CurrEnd ; idx++) {
-	
+  
         int64 n_i = KeyIds[idx];
         if (ModeNet.IsNode(n_i)) {
           //Collect neighbors
@@ -1616,7 +1616,7 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
             }
             //std::cerr<<"DOne \""<<CrossNetNames[j].GetCStr()<<"\"\n";
           }
-	  //std::cerr<<"Done for all crossnets\n";
+          //std::cerr<<"Done for all crossnets\n";
           NewNet->AddNodeWithEdges(curr_nid, InNbrs, OutNbrs);
           TInt64Pr NodeKey(MI.GetKey(), n_i);
           NodeMap.AddDat(NodeKey, curr_nid);

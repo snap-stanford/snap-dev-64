@@ -1,29 +1,33 @@
 #include "Snap.h"
 
 // Print graph statistics
-void PrintMMNetStats(const char s[], PMMNet Graph) {
-  printf("graph %s, modes %d, crossnets %d\n",
-      s, Graph->GetModeNets(), Graph->GetCrossNets());
+void PrintMMNetStats(const char s[], PMMNet Net) {
+  printf("network %s, modes %s, crossnets %s\n", s,
+            TInt64::GetStr(Net->GetModeNets()).CStr(),
+            TInt64::GetStr(Net->GetCrossNets()).CStr());
+}
+
+
+// Print graph statistics
+void PrintGStats(const char s[], TModeNet Net) {
+  printf("network %s, nodes %s, edges %s, empty %s\n", s,
+      TUInt64::GetStr(Net.GetNodes()).CStr(),
+      TUInt64::GetStr(Net.GetEdges()).CStr(),
+      Net.Empty() ? "yes" : "no");
 }
 
 // Print graph statistics
-void PrintGStats(const char s[], TModeNet Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph.GetNodes(), Graph.GetEdges(),
-      Graph.Empty() ? "yes" : "no");
+void PrintGStats(const char s[], TCrossNet Net) {
+  printf("network %s, edges %s\n", s,
+        TUInt64::GetStr(Net.GetEdges()).CStr());
 }
 
 // Print graph statistics
-void PrintGStats(const char s[], TCrossNet Graph) {
-  printf("graph %s, edges %d\n",
-      s, Graph.GetEdges());
-}
-
-// Print graph statistics
-void PrintGStats(const char s[], PNEANet Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph->GetNodes(), Graph->GetEdges(),
-      Graph->Empty() ? "yes" : "no");
+void PrintGStats(const char s[], PNEANet Net) {
+  printf("network %s, nodes %s, edges %s, empty %s\n", s,
+      TUInt64::GetStr(Net->GetNodes()).CStr(),
+      TUInt64::GetStr(Net->GetEdges()).CStr(),
+      Net->Empty() ? "yes" : "no");
 }
 
 // Test the default constructor
@@ -106,29 +110,29 @@ void ManipulateMMNet() {
   }
 
   // Get subgraph
-  TStrV CrossNets;
+  TStr64V CrossNets;
   CrossNets.Add(TestCross1);
   PMMNet Subgraph = Graph->GetSubgraphByCrossNet(CrossNets);
   PrintMMNetStats("Subgraph", Subgraph);
   TModeNet& M1 = Subgraph->GetModeNetByName(TestMode1);
   PrintGStats("M1", M1);
   // Get neighbor types
-  TStrV M1Names;
+  TStr64V M1Names;
   M1.GetCrossNetNames(M1Names);
-  printf("Num neighbor types %d\n", M1Names.Len());
+  printf("Num neighbor types %s\n", TInt64::GetStr(M1Names.Len()).CStr());
   // Get Neighbors for node 0
-  TIntV Neighbors;
+  TInt64V Neighbors;
   M1.GetNeighborsByCrossNet(0, TestCross1, Neighbors);
-  printf("Num Neighbors %d\n", Neighbors.Len());
+  printf("Num Neighbors %s\n", TInt64::GetStr(Neighbors.Len()).CStr());
 
   // Convert to TNEANet
-  TIntV CrossNetIds;
+  TInt64V CrossNetIds;
   CrossNetIds.Add(TestCrossId1);
   CrossNetIds.Add(TestCrossId2);
   CrossNetIds.Add(TestCrossId3);
   CrossNetIds.Add(TestCrossId4);
-  TVec<TTriple<TInt, TStr, TStr> > NodeAttrMapping; //Triples of (ModeId, OldAttrName, NewAttrName)
-  TVec<TTriple<TInt, TStr, TStr> > EdgeAttrMapping; //Triples of (CrossId, OldAttrName, NewAttrName)
+  TIntStrStrTr64V NodeAttrMapping; //Triples of (ModeId, OldAttrName, NewAttrName)
+  TIntStrStrTr64V EdgeAttrMapping; //Triples of (CrossId, OldAttrName, NewAttrName)
   PNEANet Net = Graph->ToNetwork(CrossNetIds, NodeAttrMapping, EdgeAttrMapping);
   PrintGStats("TNEANet", Net);
 }

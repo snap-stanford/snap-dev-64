@@ -30,18 +30,24 @@ int main(int argc, char* argv[]) {
 
   FILE *F = fopen(OutFNm.CStr(), "wt");
   fprintf(F, "# Input: %s\n", InFNm.CStr());
-  fprintf(F, "# Nodes: %d    Edges: %d\n", Graph->GetNodes(), Graph->GetEdges());
+  fprintf(F, "# Nodes: %s    Edges: %s\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
+
   fprintf(F, "# Algoritm: %s\n", CmtyAlgStr.CStr());
   if (CmtyAlg!=3) {
     fprintf(F, "# Modularity: %f\n", Q);
   } else {
     fprintf(F, "# Average code length: %f\n", Q);
   }
-  fprintf(F, "# Communities: %d\n", CmtyV.Len());
+  fprintf(F, "# Communities: %s\n", TInt64::GetStr(CmtyV.Len()).CStr());
+
   fprintf(F, "# NId\tCommunityId\n");
-  for (int c = 0; c < CmtyV.Len(); c++) {
-    for (int i = 0; i < CmtyV[c].Len(); i++) {
-      fprintf(F, "%d\t%d\n", CmtyV[c][i].Val, c);
+  for (int64 c = 0; c < CmtyV.Len(); c++) {
+    for (int64 i = 0; i < CmtyV[c].Len(); i++) {
+      fprintf(F, "%s\t%s\n",
+                TInt64::GetStr(CmtyV[c][i].Val).CStr(),
+                TInt64::GetStr(c).CStr());
     }
   }
   fclose(F);

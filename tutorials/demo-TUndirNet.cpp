@@ -1,10 +1,11 @@
 #include "Snap.h"
 
 // Print graph statistics
-void PrintGStats(const char s[], PUndirNet Graph) {
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-      s, Graph->GetNodes(), Graph->GetEdges(),
-      Graph->Empty() ? "yes" : "no");
+void PrintGStats(const char s[], PUndirNet Net) {
+  printf("network %s, nodes %s, edges %s, empty %s\n", s,
+      TUInt64::GetStr(Net->GetNodes()).CStr(),
+      TUInt64::GetStr(Net->GetEdges()).CStr(),
+      Net->Empty() ? "yes" : "no");
 }
 
 // Test the default constructor
@@ -118,19 +119,22 @@ void ManipulateNodeSparseAttributes() {
 
   // Add mappings for three node attributes
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrN(IntAttr, atInt, IntId);
-  printf("Added attribute %s with id %d\n", IntAttr.CStr(), IntId.Val);
+  printf("Added attribute %s with id %s\n", IntAttr.CStr(),
+        TInt64::GetStr(IntId.Val).CStr());
 
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrN(FltAttr, atFlt, FltId);
-  printf("Added attribute %s with id %d\n", FltAttr.CStr(), FltId.Val);
+  printf("Added attribute %s with id %s\n", FltAttr.CStr(),
+        TInt64::GetStr(FltId.Val).CStr());
 
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrN(StrAttr, atStr, StrId);
-  printf("Added attribute %s with id %d\n", StrAttr.CStr(), StrId.Val);
+  printf("Added attribute %s with id %s\n", StrAttr.CStr(),
+        TInt64::GetStr(StrId.Val).CStr());
 
   // Add values for attributes to node with id NId.
   TInt NId(0);
@@ -143,25 +147,31 @@ void ManipulateNodeSparseAttributes() {
 
 
   // Get values for the attributes for node with id NId.
-  TInt IntVal2;
+  TInt64 IntVal2;
   Graph->GetSAttrDatN(NId, IntId, IntVal2);
-  printf("Node %d has attribute, with id %d, with value %d.\n", NId.Val, IntId.Val, IntVal2.Val);
+  printf("Node %d has attribute, with id %s, with value %s.\n", NId.Val,
+              TInt64::GetStr(IntId.Val).CStr(),
+              TInt64::GetStr(IntVal2.Val).CStr());
   TFlt FltVal2;
   Graph->GetSAttrDatN(NId, FltAttr, FltVal2);
-  printf("Node %d has attribute, with id %d, with value %f.\n", NId.Val, FltId.Val, FltVal2.Val);
+  printf("Node %d has attribute, with id %s, with value %f.\n", NId.Val,
+              TInt64::GetStr(FltId.Val).CStr(), FltVal2.Val);
   TStr StrVal2;
   Graph->GetSAttrDatN(NId, StrId, StrVal2);
-  printf("Node %d has attribute, with id %d, with value %s.\n", NId.Val, StrId.Val, StrVal2.CStr());
-
+  printf("Node %d has attribute, with id %s, with value %s.\n", NId.Val,
+              TInt64::GetStr(StrId.Val).CStr(), StrVal2.CStr());
 
   // Get list of attributes for node with id NId.
   TAttrPrV AttrV;
   Graph->GetSAttrVN(NId, atInt, AttrV);
-  printf("Node with id %d has %d int attributes.\n", NId.Val, AttrV.Len());
+  printf("Node with id %d has %s int attributes.\n", NId.Val,
+            TInt64::GetStr(AttrV.Len()).CStr());
   Graph->GetSAttrVN(NId, atFlt, AttrV);
-  printf("Node with id %d has %d flt attributes.\n", NId.Val, AttrV.Len());
+  printf("Node with id %d has %s flt attributes.\n", NId.Val,
+            TInt64::GetStr(AttrV.Len()).CStr());
   Graph->GetSAttrVN(NId, atStr, AttrV);
-  printf("Node with id %d has %d str attributes.\n", NId.Val, AttrV.Len());
+  printf("Node with id %d has %s str attributes.\n", NId.Val,
+            TInt64::GetStr(AttrV.Len()).CStr());
   //Graph->GetSAttrVN(NId, atAny, AttrV);
   //printf("Node with id %d has %d attributes.\n", NId.Val, AttrV.Len());
 
@@ -181,15 +191,18 @@ void ManipulateNodeSparseAttributes() {
   }
   Graph->AddSAttrDatN(NId, StrId, StrVal);
 
-  TIntV IdV;
+  TInt64V IdV;
   Graph->GetIdVSAttrN(IntAttr, IdV);
-  printf("%d nodes have attribute with name %s\n", IdV.Len(), IntAttr.CStr());
+  printf("%s nodes have attribute with name %s\n",
+          TInt64::GetStr(IdV.Len()).CStr(), IntAttr.CStr());
 
   Graph->GetIdVSAttrN(FltAttr, IdV);
-  printf("%d nodes have attribute with name %s\n", IdV.Len(), FltAttr.CStr());
+  printf("%s nodes have attribute with name %s\n",
+          TInt64::GetStr(IdV.Len()).CStr(), FltAttr.CStr());
 
   Graph->GetIdVSAttrN(StrAttr, IdV);
-  printf("%d nodes have attribute with name %s\n", IdV.Len(), StrAttr.CStr());
+  printf("%s nodes have attribute with name %s\n",
+          TInt64::GetStr(IdV.Len()).CStr(), StrAttr.CStr());
 }
 
 // Test edge sparse attribute functionality
@@ -204,19 +217,22 @@ void ManipulateEdgeSparseAttributes() {
 
   // Add mappings for three edge attributes
   TStr IntAttr("TestInt");
-  TInt IntId;
+  TInt64 IntId;
   Graph->AddSAttrE(IntAttr, atInt, IntId);
-  printf("Added attribute %s with id %d\n", IntAttr.CStr(), IntId.Val);
+  printf("Added attribute %s with id %s\n", IntAttr.CStr(),
+              TInt64::GetStr(IntId.Val).CStr());
 
   TStr FltAttr("TestFlt");
-  TInt FltId;
+  TInt64 FltId;
   Graph->AddSAttrE(FltAttr, atFlt, FltId);
-  printf("Added attribute %s with id %d\n", FltAttr.CStr(), FltId.Val);
+  printf("Added attribute %s with id %s\n", FltAttr.CStr(),
+              TInt64::GetStr(FltId.Val).CStr());
 
   TStr StrAttr("TestStr");
-  TInt StrId;
+  TInt64 StrId;
   Graph->AddSAttrE(StrAttr, atStr, StrId);
-  printf("Added attribute %s with id %d\n", StrAttr.CStr(), StrId.Val);
+  printf("Added attribute %s with id %s\n", StrAttr.CStr(),
+              TInt64::GetStr(StrId.Val).CStr());
 
   // Add values for attributes to edge with id (SrcNId, DstNId).
   TInt IntVal(5);
@@ -228,25 +244,36 @@ void ManipulateEdgeSparseAttributes() {
 
 
   // Get values for the attributes for edge with id (SrcNId, DstNId).
-  TInt IntVal2;
+  TInt64 IntVal2;
   Graph->GetSAttrDatE(SrcNId, DstNId, IntId, IntVal2);
-  printf("Edge %d->%d has attribute, with id %d, with value %d.\n", SrcNId, DstNId, IntId.Val, IntVal2.Val);
+  printf("Edge %d->%d has attribute, with id %s, with value %s.\n",
+              SrcNId, DstNId,
+              TInt64::GetStr(IntId.Val).CStr(),
+              TInt64::GetStr(IntVal2.Val).CStr());
   TFlt FltVal2;
   Graph->GetSAttrDatE(SrcNId, DstNId, FltAttr, FltVal2);
-  printf("Edge %d->%d has attribute, with id %d, with value %f.\n", SrcNId, DstNId, FltId.Val, FltVal2.Val);
+  printf("Edge %d->%d has attribute, with id %s, with value %f.\n",
+              SrcNId, DstNId,
+              TInt64::GetStr(FltId.Val).CStr(),
+              FltVal2.Val);
   TStr StrVal2;
   Graph->GetSAttrDatE(SrcNId, DstNId, StrId, StrVal2);
-  printf("Edge %d->%d has attribute, with id %d, with value %s.\n", SrcNId, DstNId, StrId.Val, StrVal2.CStr());
-
+  printf("Edge %d->%d has attribute, with id %s, with value %s.\n",
+              SrcNId, DstNId,
+              TInt64::GetStr(StrId.Val).CStr(),
+              StrVal2.CStr());
 
   // Get list of attributes for edge with id (SrcNId, DstNId).
   TAttrPrV AttrV;
   Graph->GetSAttrVE(SrcNId, DstNId, atInt, AttrV);
-  printf("Edge %d->%d has %d int attributes.\n", SrcNId, DstNId, AttrV.Len());
+  printf("Edge %d->%d has %s int attributes.\n", SrcNId, DstNId,
+            TInt64::GetStr(AttrV.Len()).CStr());
   Graph->GetSAttrVE(SrcNId, DstNId, atFlt, AttrV);
-  printf("Edge %d->%d has %d flt attributes.\n", SrcNId, DstNId, AttrV.Len());
+  printf("Edge %d->%d has %s flt attributes.\n", SrcNId, DstNId,
+            TInt64::GetStr(AttrV.Len()).CStr());
   Graph->GetSAttrVE(SrcNId, DstNId, atStr, AttrV);
-  printf("Edge %d->%d has %d str attributes.\n", SrcNId, DstNId, AttrV.Len());
+  printf("Edge %d->%d has %s str attributes.\n", SrcNId, DstNId,
+            TInt64::GetStr(AttrV.Len()).CStr());
   //Graph->GetSAttrVE(SrcNId, DstNId, atAny, AttrV);
   //printf("Edge %d->%d has %d attributes.\n", SrcNId, DstNId, AttrV.Len());
 
@@ -266,15 +293,18 @@ void ManipulateEdgeSparseAttributes() {
   }
   Graph->AddSAttrDatE(SrcNId, DstNId, StrId, StrVal);
 
-  TIntPrV IdV;
+  TIntPr64V IdV;
   Graph->GetIdVSAttrE(IntAttr, IdV);
-  printf("%d edges have attribute with name %s\n", IdV.Len(), IntAttr.CStr());
+  printf("%s edges have attribute with name %s\n",
+            TInt64::GetStr(IdV.Len()).CStr(), IntAttr.CStr());
 
   Graph->GetIdVSAttrE(FltAttr, IdV);
-  printf("%d edges have attribute with name %s\n", IdV.Len(), FltAttr.CStr());
+  printf("%s edges have attribute with name %s\n",
+            TInt64::GetStr(IdV.Len()).CStr(), FltAttr.CStr());
 
   Graph->GetIdVSAttrE(StrAttr, IdV);
-  printf("%d edges have attribute with name %s\n", IdV.Len(), StrAttr.CStr());
+  printf("%s edges have attribute with name %s\n",
+            TInt64::GetStr(IdV.Len()).CStr(), StrAttr.CStr());
 }
 
 // Test small graph

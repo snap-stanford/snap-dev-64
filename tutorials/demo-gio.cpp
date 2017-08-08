@@ -4,18 +4,21 @@
 template <class PGraph>
 void PrintGStats(const char s[], PGraph Graph) {
 
-  printf("graph %s, nodes %d, edges %d, empty %s\n",
-         s, Graph->GetNodes(), Graph->GetEdges(),
-         Graph->Empty() ? "yes" : "no");
+  printf("graph %s, nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        Graph->Empty() ? "yes" : "no");
 
 }
 
 // Print bipartite graph statistics
 void PrintGStats(const char s[], PBPGraph Graph) {
 
-  printf("graph %s, right nodes %d, left nodes %d, edges %d, empty %s\n",
-         s, Graph->GetRNodes(), Graph->GetLNodes(),
-         Graph->GetEdges(), Graph->Empty() ? "yes" : "no");
+  printf("graph %s, right nodes %s, left nodes %s, edges %s, empty %s\n", s,
+        TUInt64::GetStr(Graph->GetRNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetLNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr(),
+        Graph->Empty() ? "yes" : "no");
 }
 
 using namespace TSnap;
@@ -99,7 +102,7 @@ void IOEdgeListStr() {
   fclose(F);
   
   // Load edge list of strings
-  TStrHash<TInt> InStrToNIdH;
+  TStrHash<TInt64, TStrPool, int64> InStrToNIdH;
   GIn = LoadEdgeListStr<PNEGraph>(FName, 0, 1, InStrToNIdH);
 
   PrintGStats<PNEGraph>("EdgeListStr - Out", GOut);
@@ -136,9 +139,9 @@ void IOConnList() {
   // Create graph file
   FILE *F = fopen(FName, "w");
   for (TNEGraph::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
-    fprintf(F, "%d", NI.GetId());
+    fprintf(F, "%s", TInt64::GetStr(NI.GetId()).CStr());
     for (int i = 0; i < NI.GetOutDeg(); i++) {
-      fprintf(F, " %d", NI.GetOutNId(i));
+      fprintf(F, " %s", TInt64::GetStr(NI.GetOutNId(i)).CStr());
     }
     fprintf(F, "\n");
   }
@@ -193,7 +196,7 @@ void IOConnListStr() {
   }
   fclose(F);
   
-  TStrHash<TInt> InStrToNIdH;
+  TStrHash<TInt64, TStrPool, int64> InStrToNIdH;
   GIn = LoadConnListStr<PUNGraph>(FName, InStrToNIdH);
   
   PrintGStats("ConnListStr - Out", GOut);
@@ -221,7 +224,7 @@ void IOPajek() {
   GIn = LoadPajek<PNEGraph>(FName);
   
   // Verify all nodes exist in input and output graphs (and no more)
-  TIntV OutNIdV, InNIdV;
+  TInt64V OutNIdV, InNIdV;
   GOut->GetNIdV(OutNIdV);
   
   // Pajek graphs start with node IDs of 1, so add 1 to SNAP graph
@@ -300,7 +303,7 @@ void IOGViz() {
   SaveGViz(GOut, FName1);
   
   // Output node IDs as numbers
-  TIntStrH NIdLabelH;
+  TIntStr64H NIdLabelH;
   
   // Generate labels for random graph
   for (TNGraph::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {

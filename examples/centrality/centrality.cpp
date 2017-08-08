@@ -11,9 +11,15 @@ int main(int argc, char* argv[]) {
   PNGraph Graph = TSnap::LoadEdgeList<PNGraph>(InFNm);
   //PNGraph Graph = TSnap::GenRndGnm<PNGraph>(10, 10);
   //TGraphViz::Plot(Graph, gvlNeato, InFNm+".gif", InFNm, true);
-  printf("nodes:%d  edges:%d\n", Graph->GetNodes(), Graph->GetEdges());
+  printf("nodes:%s  edges:%s\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
   PUNGraph UGraph = TSnap::ConvertGraph<PUNGraph>(Graph); // undirected version of the graph
-  TIntFltH BtwH, EigH, PRankH, CcfH, CloseH, HubH, AuthH;
+  TIntFlt64H BtwH, EigH;
+  TIntFlt64H PRankH;
+  TIntFlt64H HubH, AuthH;
+  TIntFlt64H CcfH;
+  TIntFlt64H CloseH;
   //printf("Computing...\n");
   printf("Treat graph as DIRECTED: ");
   printf(" PageRank... ");             TSnap::GetPageRank(Graph, PRankH, 0.85);
@@ -31,7 +37,9 @@ int main(int argc, char* argv[]) {
   printf("\nDONE! saving...");
   FILE *F = fopen(OutFNm.CStr(), "wt");
   fprintf(F,"#Network: %s\n", InFNm.CStr());
-  fprintf(F,"#Nodes: %d\tEdges: %d\n", Graph->GetNodes(), Graph->GetEdges());
+  fprintf(F,"#Nodes: %s\tEdges: %s\n",
+        TUInt64::GetStr(Graph->GetNodes()).CStr(),
+        TUInt64::GetStr(Graph->GetEdges()).CStr());
   fprintf(F,"#NodeId\tDegree\tCloseness\tBetweennes\tEigenVector\tNetworkConstraint\tClusteringCoefficient\tPageRank\tHubScore\tAuthorityScore\n");
   for (TUNGraph::TNodeI NI = UGraph->BegNI(); NI < UGraph->EndNI(); NI++) {
     const int NId = NI.GetId();

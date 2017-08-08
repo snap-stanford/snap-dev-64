@@ -124,7 +124,11 @@ public:
     TCutInfo(const int& ClustNodes, const int& EdgesInside, const int& CutSize, const TIntV& NIdV) :
       Nodes(ClustNodes), Edges(EdgesInside), CutSz(CutSize), CutNIdV(NIdV) { }
     TCutInfo(const PUNGraph& G, const TIntV& ClustNIdV, bool TakeNIdV=false) : Nodes(ClustNIdV.Len()) {
-      TSnap::GetEdgesInOut(G, ClustNIdV, Edges.Val, CutSz.Val); if(TakeNIdV){CutNIdV=ClustNIdV;} }
+      TInt64V ClustNId64V;
+      ClustNId64V = TIntVToTInt64V(ClustNIdV);
+      int64 Edges64 = Edges.Val;
+      int64 CutSz64 = CutSz.Val;
+      TSnap::GetEdgesInOut(G, ClustNId64V, Edges64, CutSz64); if(TakeNIdV){CutNIdV=ClustNIdV;} }
     TCutInfo(const TCutInfo& CS) : Nodes(CS.Nodes), Edges(CS.Edges), CutSz(CS.CutSz), CutNIdV(CS.CutNIdV) { }
     int GetNodes() const { return Nodes; }
     int GetEdges() const { return Edges; }
