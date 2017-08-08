@@ -2262,6 +2262,15 @@ public:
   /// Print the graph in a human readable form to an output stream OutF.
   void Dump(FILE *OutF=stdout) const;
 
+  /// Returns whether the graph has an Eulerian path. ##TNEANet::IsEulerian
+  bool IsEulerian(int64 *StartNId=NULL);
+ private:
+  /// Recursive path addition function for construction of Euler tour in GetEulerPath.
+  void AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath);
+ public:
+  /// If graph is Eulerian, returns true and fetches an Euler path; else returns false. ##TNEANet::GetEulerPath
+  bool GetEulerPath(TInt64V& Path);
+
   /// Attribute based add function for attr to Int value. ##TNEANet::AddIntAttrDatN
   int64 AddIntAttrDatN(const TNodeI& NodeI, const TInt64& value, const TStr& attr) { return AddIntAttrDatN(NodeI.GetId(), value, attr); }
   int64 AddIntAttrDatN(const int64& NId, const TInt64& value, const TStr& attr);
@@ -2368,6 +2377,10 @@ public:
   /// Deletes the edge attribute for NodeI.
   int64 DelAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return DelAttrDatE(EdgeI.GetId(), attr); } 
   int64 DelAttrDatE(const int64& EId, const TStr& attr); 
+  /// Deletes attribute values for all nodes, including sparse attributes. Labels and defaults for dense attributes are preserved.
+  int64 DelAllAttrDatN();
+  /// Deletes attribute values for all edges, including sparse attributes. Labels and defaults for dense attributes are preserved.
+  int64 DelAllAttrDatE();
 
   /// Adds a new Int node attribute to the hashmap.
   int64 AddIntAttrN(const TStr& attr, TInt64 defaultValue=TInt64::Mn);
@@ -2444,11 +2457,21 @@ public:
   /// Gets the sum of the weights of all the outgoing edges of the node.
   TFlt GetWeightOutEdges(const TNodeI& NI, const TStr& attr);
   /// Checks if there is an edge attribute with name attr.
+  bool IsFltAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsStrAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntVAttrN(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
   bool IsFltAttrE(const TStr& attr);
   /// Checks if there is an edge attribute with name attr.
   bool IsIntAttrE(const TStr& attr);
   /// Checks if there is an edge attribute with name attr.
   bool IsStrAttrE(const TStr& attr);
+  /// Checks if there is an edge attribute with name attr.
+  bool IsIntVAttrE(const TStr& attr);
   /// Gets Vector for the Flt Attribute attr.
   TVec<TFlt, int64>& GetFltAttrVecE(const TStr& attr);
   /// Gets keyid for edge with id EId.
@@ -2458,9 +2481,12 @@ public:
   void GetWeightOutEdgesV(TFlt64V& OutWeights, const TFlt64V& AttrVal) ;
   /// Fills each of the vectors with the names of node attributes of the given type.
   void GetAttrNNames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
+  /// Fills vector with names of node attributes of type TIntV.
+  void GetIntVAttrNNames(TStr64V& IntVAttrNames) const;
   /// Fills each of the vectors with the names of edge attributes of the given type.
   void GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
-
+  /// Fills vector with names of edge attributes of type TIntV.
+  void GetIntVAttrENames(TStr64V& IntVAttrNames) const;
 
   /// Adds Int sparse attribute with name \c AttrName to the given node with id \c NId.
   int64 AddSAttrDatN(const TInt64& NId, const TStr& AttrName, const TInt64& Val);

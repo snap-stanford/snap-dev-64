@@ -10,21 +10,22 @@
 #
 
 include ../Makefile.config
-CXXFLAGS += $(CXXOPENMP)
+CXXFLAGS += $(CXXOPENMP) 
 LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
-TEST_SRCS = 	test-helper.cpp \
+TEST_SRCS = test-multimodal.cpp \
+	test-TNEANet.cpp \
+	test-helper.cpp \
 	test-TUNGraph.cpp test-TNGraph.cpp \
-	test-TNEGraph.cpp test-TNEANet.cpp \
+	test-TNEGraph.cpp \
 	test-TNodeNet.cpp test-TNodeEDatNet.cpp test-TNodeEdgeNet.cpp \
 	test-TTable.cpp \
 	test-TUndirNet.cpp test-TDirNet.cpp \
 	test-TMMNet.cpp \
 	test-TModeNet.cpp \
 	test-TCrossNet.cpp \
-	test-multimodal.cpp \
 	test-subgraph.cpp \
 	test-TStrPool.cpp \
 	test-TSysTm.cpp \
@@ -40,7 +41,7 @@ TEST_SRCS = 	test-helper.cpp \
 	test-flow.cpp \
 	test-randwalk.cpp \
 	test-priority-queue.cpp \
-	test-triad.cpp 
+	test-triad.cpp \
 
 #	test-THash64.cpp \
 #	test-TNGraph64.cpp \

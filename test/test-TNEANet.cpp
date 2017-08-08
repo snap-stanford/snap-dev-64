@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-
 #include "Snap.h"
 
 // Test the default constructor
@@ -1420,5 +1419,36 @@ TEST(TNEANet, AddEdgeAttributeError) {
     ASSERT_EQ(Graph->GetFltAttrDatE(j, FltAttr), TFlt(j));
     TInt64 Val(j);
     ASSERT_EQ(Graph->GetStrAttrDatE(j, StrAttr), Val.GetStr());
+  }
+}
+
+TEST(TNEANet, GetEulerPath) {
+  PNEANet Full, Circle, DirGrid, UnDirGrid, UnDirGridMinusOne, DirStar, UnDirStar, DirBinTree;
+  Full = TSnap::GenFull<PNEANet>(25);
+  Circle = TSnap::GenCircle<PNEANet>(100, 1, true);
+  DirGrid = TSnap::GenGrid<PNEANet>(1000, 1000, true);
+  UnDirGrid = TSnap::GenGrid<PNEANet>(100, 100, false);
+  UnDirGridMinusOne = TSnap::GenGrid<PNEANet>(100, 100, false);
+  UnDirGridMinusOne->DelEdge(UnDirGridMinusOne->GetRndEId());
+  DirStar = TSnap::GenStar<PNEANet>(100, true);
+  UnDirStar = TSnap::GenStar<PNEANet>(100, false);
+  DirBinTree = TSnap::GenTree<PNEANet>(2, 6, true, false);
+
+  PNEANet euler[5] = {Full, Circle, UnDirGrid, UnDirGridMinusOne, UnDirStar};
+  PNEANet noneuler[3] = {DirGrid, DirStar, DirBinTree};
+
+  for (int i = 0; i < 5; i++) {
+    PNEANet graph = euler[i];
+    TInt64V Path;
+    EXPECT_TRUE(graph->GetEulerPath(Path));
+    EXPECT_EQ(graph->GetEdges(), Path.Len());    
+    for (int j = 1; j < Path.Len(); j++) {
+      EXPECT_TRUE(graph->GetEI(Path[j]).GetSrcNId() == graph->GetEI(Path[j-1]).GetDstNId());
+    }
+  }
+
+  for (int i = 0; i < 3; i++) {
+    TInt64V Path;
+    EXPECT_FALSE(noneuler[i]->GetEulerPath(Path));
   }
 }
