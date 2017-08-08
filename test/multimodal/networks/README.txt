@@ -1,0 +1,1 @@
+When test-multimodal is run, this folder is temporarily populated with sample multimodal networks used to exercise TMMNet::GetSubgraphByCrossNetMetapaths. When the test is complete, the files are deleted.
