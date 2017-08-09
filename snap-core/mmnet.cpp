@@ -603,15 +603,15 @@ int64 TCrossNet::AddFltAttrDatE(const int64& EId, const TFlt& value, const TStr&
   return 0;
 }
 
-TInt64 TCrossNet::GetIntAttrDatE(const int64& EId, const TStr& attr) {
+TInt64 TCrossNet::GetIntAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfIntVecsE[KeyToIndexTypeE.GetDat(attr).Val2][CrossH.GetKeyId(EId)];
 }
 
-TStr TCrossNet::GetStrAttrDatE(const int64& EId, const TStr& attr) {
+TStr TCrossNet::GetStrAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfStrVecsE[KeyToIndexTypeE.GetDat(attr).Val2][CrossH.GetKeyId(EId)];
 }
 
-TFlt TCrossNet::GetFltAttrDatE(const int64& EId, const TStr& attr) {
+TFlt TCrossNet::GetFltAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfFltVecsE[KeyToIndexTypeE.GetDat(attr).Val2][CrossH.GetKeyId(EId)];
 }
 
@@ -971,34 +971,38 @@ void TMMNet::ClrNbr(const TInt64& ModeId, const TInt64& CrossNetId, const bool& 
   TModeNetH[ModeId].ClrNbr(CrossNetName, outEdge, sameMode, isDir);
 }
 
-int64 TMMNet::SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStrV& NewCrossNames) {
+int64 TMMNet::SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStr64V& NewCrossNames) {
   if (!TCrossNetH.IsKey(CrossId)) { return -1; } // crossnet to split doesn't exist
-  TCrossNet& CN = GetCrossNetById(CrossId);
+  const TCrossNet& CN = GetCrossNetById(CrossId);
   if (!CN.KeyToIndexTypeE.IsKey(AttrName)) { return -2; } // attr to split on doesn't exist
 
-  THash<TStr, TInt64V> NewNets; // attr val -> all eids with this attr value
+  THash<TStr, TInt64V, int64> NewNets; // attr val -> all eids with this attr value
   for (TCrossNet::TCrossEdgeI EI = CN.BegEdgeI(); EI < CN.EndEdgeI(); EI++) {
     TStr Label = CN.GetStrAttrDatE(EI, AttrName);
-    if (CrossNameToIdH.IsKey(Label)) { return -3; } // creating new crossnet with label value would interfere with existing crossnet name    
-    if (!NewNets.IsKey(Label)) { NewNets.AddDat(Label, TInt64V()); }
-    NewNets.GetDat(Label).Add(EI.GetId());
+    TStr NewCrossName = TStr::Fmt("%s.%s.%s", GetCrossName(CrossId).CStr(), AttrName.CStr(), Label.CStr());
+    if (CrossNameToIdH.IsKey(NewCrossName)) { return -3; } // creating new crossnet with label value would interfere with existing crossnet name    
+    if (!NewNets.IsKey(NewCrossName)) { NewNets.AddDat(NewCrossName, TInt64V()); }
+    NewNets.GetDat(NewCrossName).Add(EI.GetId());
   }
 
   int64 mid1 = CN.GetMode1(), mid2 = CN.GetMode2();
   bool directed = CN.IsDirected();
-  for (THash<TStr, TInt64V>::TIter it = NewNets.BegI(); it < NewNets.EndI(); it++) {
-    TStr Label = it.GetKey();
-    TCrossNet& NewNet = GetCrossNetById(AddCrossNet(mid1, mid2, Label, directed));
+  for (THash<TStr, TInt64V, int64>::TIter it = NewNets.BegI(); it < NewNets.EndI(); it++) {
+    TStr NewCrossName = it.GetKey();
+    TCrossNet& NewNet = GetCrossNetById(AddCrossNet(mid1, mid2, NewCrossName, directed));
 
-    // copy all attr indexing and default info to new CN without any edges
-    NewNet.KeyToIndexTypeE = CN.KeyToIndexTypeE; 
-    NewNet.IntDefaultsE = CN.IntDefaultsE; NewNet.FltDefaultsE = CN.FltDefaultsE; NewNet.StrDefaultsE = CN.StrDefaultsE;
-    NewNet.VecOfIntVecsE = CN.VecOfIntVecsE; NewNet.VecOfFltVecsE = CN.VecOfFltVecsE; NewNet.VecOfStrVecsE = CN.VecOfStrVecsE;
+    // Creation of NewNet may have led to resizing of this->TCrossNetH, which would make previous CN ref garbage. Get a new reference.
+    TCrossNet& DN = GetCrossNetById(CrossId); 
+
+    // copy all attr indexing and default info to NewNet without any edges
+    NewNet.KeyToIndexTypeE = DN.KeyToIndexTypeE; 
+    NewNet.IntDefaultsE = DN.IntDefaultsE; NewNet.FltDefaultsE = DN.FltDefaultsE; NewNet.StrDefaultsE = DN.StrDefaultsE;
+    NewNet.VecOfIntVecsE = DN.VecOfIntVecsE; NewNet.VecOfFltVecsE = DN.VecOfFltVecsE; NewNet.VecOfStrVecsE = DN.VecOfStrVecsE;
     NewNet.DelAllAttrDatE();
 
     // copy relevant edges to new crossnet with same attr data
     TInt64V& ToCopyEIds = it.GetDat();
-    TCrossNet::CopyEdges(CN, NewNet, ToCopyEIds);
+    TCrossNet::CopyEdges(DN, NewNet, ToCopyEIds);
   }
 
   DelCrossNet(CrossId);

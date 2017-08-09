@@ -1205,7 +1205,7 @@ int64 TNEANet::GetFltKeyIdE(const int64& EId) {
   return EdgeH.GetKeyId(EId);
 }
 
-TInt64 TNEANet::GetIntAttrDatN(const int64& NId, const TStr& attr) {
+TInt64 TNEANet::GetIntAttrDatN(const int64& NId, const TStr& attr) const {
   return VecOfIntVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
 }
 
@@ -1213,67 +1213,67 @@ TInt64V TNEANet::GetIntVAttrDatN(const int64& NId, const TStr& attr) const {
   return VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
 }
 
-TStr TNEANet::GetStrAttrDatN(const int64& NId, const TStr& attr) {
+TStr TNEANet::GetStrAttrDatN(const int64& NId, const TStr& attr) const {
   return VecOfStrVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
 }
 
-TFlt TNEANet::GetFltAttrDatN(const int64& NId, const TStr& attr) {
+TFlt TNEANet::GetFltAttrDatN(const int64& NId, const TStr& attr) const {
   return VecOfFltVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
 }
 
-TInt64 TNEANet::GetIntAttrIndDatN(const int64& NId, const int64& index) {
+TInt64 TNEANet::GetIntAttrIndDatN(const int64& NId, const int64& index) const {
   return VecOfIntVecsN[index][NodeH.GetKeyId(NId)];
 }
 
-TStr TNEANet::GetStrAttrIndDatN(const int64& NId, const int64& index) {
+TStr TNEANet::GetStrAttrIndDatN(const int64& NId, const int64& index) const {
   return VecOfStrVecsN[index][NodeH.GetKeyId(NId)];
 }
 
-TFlt TNEANet::GetFltAttrIndDatN(const int64& NId, const int64& index) {
+TFlt TNEANet::GetFltAttrIndDatN(const int64& NId, const int64& index) const {
   return VecOfFltVecsN[index][NodeH.GetKeyId(NId)];
 }
 
-int64 TNEANet::GetIntAttrIndN(const TStr& attr) {
+int64 TNEANet::GetIntAttrIndN(const TStr& attr) const {
   return KeyToIndexTypeN.GetDat(attr).Val2.Val;
 }
 
-int64 TNEANet::GetAttrIndN(const TStr& attr) {
+int64 TNEANet::GetAttrIndN(const TStr& attr) const {
   return KeyToIndexTypeN.GetDat(attr).Val2.Val;
 }
 
-TInt64 TNEANet::GetIntAttrDatE(const int64& EId, const TStr& attr) {
+TInt64 TNEANet::GetIntAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfIntVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
 }
 
-TInt64V TNEANet::GetIntVAttrDatE(const int64& EId, const TStr& attr) {
+TInt64V TNEANet::GetIntVAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
 }
 
-TStr TNEANet::GetStrAttrDatE(const int64& EId, const TStr& attr) {
+TStr TNEANet::GetStrAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfStrVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
 }
 
-TFlt TNEANet::GetFltAttrDatE(const int64& EId, const TStr& attr) {
+TFlt TNEANet::GetFltAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfFltVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
 }
 
-TInt64 TNEANet::GetIntAttrIndDatE(const int64& EId, const int64& index) {
+TInt64 TNEANet::GetIntAttrIndDatE(const int64& EId, const int64& index) const {
   return VecOfIntVecsE[index][EdgeH.GetKeyId(EId)];
 }
 
-TStr TNEANet::GetStrAttrIndDatE(const int64& EId, const int64& index) {
+TStr TNEANet::GetStrAttrIndDatE(const int64& EId, const int64& index) const {
   return VecOfStrVecsE[index][EdgeH.GetKeyId(EId)];
 }
 
-TFlt TNEANet::GetFltAttrIndDatE(const int64& EId, const int64& index) {
+TFlt TNEANet::GetFltAttrIndDatE(const int64& EId, const int64& index) const {
   return VecOfFltVecsE[index][EdgeH.GetKeyId(EId)];
 }
 
-int64 TNEANet::GetIntAttrIndE(const TStr& attr) {
+int64 TNEANet::GetIntAttrIndE(const TStr& attr) const {
   return KeyToIndexTypeE.GetDat(attr).Val2.Val;
 }
 
-int64 TNEANet::GetAttrIndE(const TStr& attr) {
+int64 TNEANet::GetAttrIndE(const TStr& attr) const {
   return KeyToIndexTypeE.GetDat(attr).Val2.Val;
 }
 

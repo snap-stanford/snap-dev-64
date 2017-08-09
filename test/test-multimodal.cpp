@@ -2022,24 +2022,24 @@ TEST(multimodal, SplitCrossNetByStrAttr) {
     }
   }
 
-  TStrV NewCrossNames;
+  TStr64V NewCrossNames;
   mmnet->SplitCrossNetByStrAttr(crossid, "eid_mod_7", NewCrossNames);
   EXPECT_EQ(-1, mmnet->GetCrossId("Cross"));
   for (int i = 0; i < 7; i++) {    
-    EXPECT_NE(-1, mmnet->GetCrossId(TStr::Fmt("%d", i)));
+    EXPECT_NE(-1, mmnet->GetCrossId(TStr::Fmt("Cross.eid_mod_7.%d", i)));
   }
 
   for (int i = 0; i < 100; i++) {
     for (int j = 0; j < 100; j++) {
       int eid = 100 * i + j;
       int eidmod7 = eid % 7;
-      TStr CrossName = TStr::Fmt("%d", eidmod7);
+      TStr CrossName = TStr::Fmt("Cross.eid_mod_7.%d", eidmod7);
       TCrossNet & CN_New = mmnet->GetCrossNetByName(CrossName);
       EXPECT_TRUE(CN_New.IsEdge(eid));
       TCrossNet::TCrossEdgeI EI = CN_New.GetEdgeI(eid);      
       EXPECT_EQ(i, EI.GetSrcNId()); 
       EXPECT_EQ(j, EI.GetDstNId());
-      EXPECT_EQ(CrossName, CN_New.GetStrAttrDatE(EI, "eid_mod_7"));
+      EXPECT_EQ(TStr::Fmt("%d", eidmod7), CN_New.GetStrAttrDatE(EI, "eid_mod_7"));
     }
   }
 }

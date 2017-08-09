@@ -24,7 +24,7 @@ TMMNet contains methods to create TModeNets and TCrossNets by name, and returns 
 
 /// TMMNet::SplitCrossNetByStrAttr
 The original crossnet is destroyed, but all its edges are distributed amongst the new crossnets. Edges copied from the old to one of the new crossnets keep the same ids. 
-All attribute data from the original crossnet is copied to the edges of the new crossnets.
+All attribute data from the original crossnet is copied to the edges of the new crossnets. The new crossnets have names of the form \c OLD_CROSSNAME.AttrName.ATTR_VALUE, where \c OLD_CROSSNAME is the name of the input crossnet and \c ATTR_VALUE is one of the values under the attribute used to split. These new crossnet names are stored in \c NewCrossNames.
 ///
 
 

@@ -403,14 +403,14 @@ public:
   int64 AddFltAttrDatE(const int64& EId, const TFlt& value, const TStr& attr);
 
   /// Gets the value of int attr from the edge attr value vector.
-  TInt64 GetIntAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) { return GetIntAttrDatE(EdgeI.GetId(), attr); }
-  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr);
+  TInt64 GetIntAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) const { return GetIntAttrDatE(EdgeI.GetId(), attr); }
+  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of str attr from the edge attr value vector.
-  TStr GetStrAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) { return GetStrAttrDatE(EdgeI.GetId(), attr); }
-  TStr GetStrAttrDatE(const int64& EId, const TStr& attr);
+  TStr GetStrAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) const { return GetStrAttrDatE(EdgeI.GetId(), attr); }
+  TStr GetStrAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of flt attr from the edge attr value vector.
-  TFlt GetFltAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) { return GetFltAttrDatE(EdgeI.GetId(), attr); }
-  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr);
+  TFlt GetFltAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) const { return GetFltAttrDatE(EdgeI.GetId(), attr); }
+  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr) const;
 
   /// Returns an iterator referring to the first edge's int attribute.
   TAIntI BegEAIntI(const TStr& attr) const {
@@ -675,8 +675,8 @@ public:
   int64 GetMxCrossId() { return MxCrossNetId; }
 
   /// Divides the given crossnet into many: one for each unique string value stored with the given attribute name. ##TMMNet::SplitCrossNetByStrAttr
-  int64 SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStrV& NewCrossNames);
-  int64 SplitCrossNetByStrAttr(const TStr& CrossName, const TStr& AttrName, TStrV& NewCrossNames) { return SplitCrossNetByStrAttr(GetCrossId(CrossName), AttrName, NewCrossNames); }
+  int64 SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStr64V& NewCrossNames);
+  int64 SplitCrossNetByStrAttr(const TStr& CrossName, const TStr& AttrName, TStr64V& NewCrossNames) { return SplitCrossNetByStrAttr(GetCrossId(CrossName), AttrName, NewCrossNames); }
 
   /// Gets the induced subgraph given a vector of crossnet type names.
   PMMNet GetSubgraphByCrossNet(TStr64V& CrossNetTypes);
