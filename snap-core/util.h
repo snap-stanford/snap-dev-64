@@ -30,7 +30,7 @@ public:
 };
 
 //#//////////////////////////////////////////////
-/// String helper functions and utilities. Quick and ditry!
+/// String helper functions and utilities. Quick and dirty!
 class TStrUtil {
 public:
   static TChA& GetXmlTagVal(TXmlLx& XmlLx, const TChA& TagNm);
@@ -120,6 +120,18 @@ public:
   /// Returns the minimum time of all experiments
   double Min(const TExperiment Exp) const;
 };
+
+//#//////////////////////////////////////////////////
+/// Conversions of various integer types to C strings for printing
+
+extern const char *ToCStr(const int i);
+extern const char *ToCStr(const uint i);
+extern const char *ToCStr(const int64 i);
+extern const char *ToCStr(const uint64 i);
+extern const char *ToCStr(const TInt i);
+extern const char *ToCStr(const TUInt i);
+extern const char *ToCStr(const TInt64 i);
+extern const char *ToCStr(const TUInt64 i);
 
 //#//////////////////////////////////////////////
 /// Snapworld supporting functions

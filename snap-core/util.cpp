@@ -749,6 +749,41 @@ double TStopwatch::Min(const TExperiment Exp) const {
   return Mins[Exp];
 }
 
+////////////////////////////////////////////////////
+/// Conversions of various integer types to C strings for printing
+
+const char *ToCStr(const int i) {
+  return TInt::GetStr(i).CStr();
+}
+
+const char *ToCStr(const uint i) {
+  return TUInt::GetStr(i).CStr();
+}
+
+const char *ToCStr(const int64 i) {
+  return TInt64::GetStr(i).CStr();
+}
+
+const char *ToCStr(const uint64 i) {
+  return TUInt64::GetStr(i).CStr();
+}
+
+const char *ToCStr(const TInt i) {
+  return i.GetStr().CStr();
+}
+
+const char *ToCStr(const TUInt i) {
+  return i.GetStr().CStr();
+}
+
+const char *ToCStr(const TInt64 i) {
+  return i.GetStr().CStr();
+}
+
+const char *ToCStr(const TUInt64 i) {
+  return i.GetStr().CStr();
+}
+
 /////////////////////////////////////////////////
 /// Snapworld supporting functions
 

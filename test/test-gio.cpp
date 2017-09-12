@@ -178,9 +178,9 @@ void TestConnList() {
   // Create graph file
   FILE *F = fopen(FName, "w");
   for (typename PGraph::TObj::TNodeI NI = GOut->BegNI(); NI < GOut->EndNI(); NI++) {
-    fprintf(F, "%d", NI.GetId());
+    fprintf(F, "%s", TInt64::GetStr(NI.GetId()).CStr());
     for (int64 i = 0; i < NI.GetOutDeg(); i++) {
-      fprintf(F, " %d", NI.GetOutNId(i));
+      fprintf(F, " %s", TInt64::GetStr(NI.GetOutNId(i)).CStr());
     }
     fprintf(F, "\n");
   }
@@ -545,7 +545,8 @@ TEST(GIOTest, LoadDyNet) {
   for (TNGraph::TEdgeI EI = GOut->BegEI(); EI < GOut->EndEI(); EI++) {
     TInt64 Src = EI.GetSrcNId();
     TInt64 Dst = EI.GetDstNId();
-    fprintf(F, "\t<link source=\"%d\" target=\"%d\"/>\n", Src.Val, Dst.Val);
+    fprintf(F, "\t<link source=\"%s\" target=\"%s\"/>\n",
+            TInt64::GetStr(Src.Val).CStr(), TInt64::GetStr(Dst.Val).CStr());
   }
   fprintf(F, "</network>\n");
   fclose(F);

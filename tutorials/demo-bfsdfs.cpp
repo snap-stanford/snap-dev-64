@@ -13,44 +13,44 @@ void DemoFullBfsDfs() {
   
   PGraph G = GenFull<PGraph>(NNodes);
   PNGraph GOut;
-  int TreeSz, TreeDepth;
+  int64 TreeSz, TreeDepth;
   
   // Get BFS tree from first node without following links (demos different options)
   GOut = GetBfsTree(G, 1, false, false);
   GetSubTreeSz(G, 1, false, false, TreeSz, TreeDepth);
-  printf("FollowOut=false, FollowIn=false, GOut->GetNodes() == %d, GOut->GetEdges() = %d\n", 
-        GOut->GetNodes(), G->GetEdges());
-  printf("TreeSz == %d, TreeDepth = %d\n", TreeSz, TreeDepth);
+  printf("FollowOut=false, FollowIn=false, GOut->GetNodes() == %s, GOut->GetEdges() = %s\n", 
+        ToCStr(GOut->GetNodes()), ToCStr(G->GetEdges()));
+  printf("TreeSz == %s, TreeDepth = %s\n", ToCStr(TreeSz), ToCStr(TreeDepth));
   
   GOut = GetBfsTree(G, NNodes-1, true, true);
   GetSubTreeSz(G, 1, true, true, TreeSz, TreeDepth);
-  printf("FollowOut=true, FollowIn=true, GOut->GetNodes() == %d, GOut->GetEdges() = %d\n", 
-        GOut->GetNodes(), G->GetEdges());
-  printf("TreeSz == %d, TreeDepth = %d\n", TreeSz, TreeDepth);
+  printf("FollowOut=true, FollowIn=true, GOut->GetNodes() == %s, GOut->GetEdges() = %s\n", 
+        ToCStr(GOut->GetNodes()), ToCStr(G->GetEdges()));
+  printf("TreeSz == %s, TreeDepth = %s\n", ToCStr(TreeSz), ToCStr(TreeDepth));
   
   GOut = GetBfsTree(G, NNodes/2, true, false);
   GetSubTreeSz(G, 1, true, false, TreeSz, TreeDepth);
-  printf("FollowOut=true, FollowIn=false, GOut->GetNodes() == %d, GOut->GetEdges() = %d\n", 
-        GOut->GetNodes(), G->GetEdges());
-  printf("TreeSz == %d, TreeDepth = %d\n", TreeSz, TreeDepth);
+  printf("FollowOut=true, FollowIn=false, GOut->GetNodes() == %s, GOut->GetEdges() = %s\n", 
+        ToCStr(GOut->GetNodes()), ToCStr(G->GetEdges()));
+  printf("TreeSz == %s, TreeDepth = %s\n", ToCStr(TreeSz), ToCStr(TreeDepth));
   
   GOut = GetBfsTree(G, 1, false, true);
   GetSubTreeSz(G, 1, false, true, TreeSz, TreeDepth);
-  printf("FollowOut=false, FollowIn=true, GOut->GetNodes() == %d, GOut->GetEdges() = %d\n", 
-        GOut->GetNodes(), G->GetEdges());
-  printf("TreeSz == %d, TreeDepth = %d\n", TreeSz, TreeDepth);
+  printf("FollowOut=false, FollowIn=true, GOut->GetNodes() == %s, GOut->GetEdges() = %s\n", 
+        ToCStr(GOut->GetNodes()), ToCStr(G->GetEdges()));
+  printf("TreeSz == %s, TreeDepth = %s\n", ToCStr(TreeSz), ToCStr(TreeDepth));
   
-  TIntV NIdV;
+  TInt64V NIdV;
   int StartNId, Hop, Nodes;
   
   StartNId = 1;
   Hop = 1;
   Nodes = GetNodesAtHop(G, StartNId, Hop, NIdV, HasGraphFlag(typename PGraph::TObj, gfDirected));
-  printf("StartNId = %d, Nodes = %d, GetNodesAtHop NIdV.Len() = %d\n", StartNId, Nodes, NIdV.Len());
+  printf("StartNId = %d, Nodes = %d, GetNodesAtHop NIdV.Len() = %s\n", StartNId, Nodes, ToCStr(NIdV.Len()));
   
-  TIntPrV HopCntV;
+  TIntPr64V HopCntV;
   Nodes = GetNodesAtHops(G, StartNId, HopCntV, HasGraphFlag(typename PGraph::TObj, gfDirected));
-  printf("StartNId = %d, Nodes = %d, GetNodesAtHops HopCntV.Len() = %d\n", StartNId, Nodes, HopCntV.Len());
+  printf("StartNId = %d, Nodes = %d, GetNodesAtHops HopCntV.Len() = %s\n", StartNId, Nodes, ToCStr(HopCntV.Len()));
   
   int Length, SrcNId, DstNId;
   SrcNId = 1;
@@ -59,14 +59,14 @@ void DemoFullBfsDfs() {
   Length = GetShortPath(G, SrcNId, DstNId, HasGraphFlag(typename PGraph::TObj, gfDirected));
   printf("SPL Length = %d\n", Length);
   
-  TIntH NIdToDistH;
+  TInt64H NIdToDistH;
   int MaxDist = 9;
   Length = GetShortPath(G, SrcNId, NIdToDistH, HasGraphFlag(typename PGraph::TObj, gfDirected), MaxDist);
 //  for (int i = 0; i < min(5,NIdToDistH.Len()); i++) {
 //    printf("NIdToDistH[%d] = %d\n", i, NIdToDistH[i].Val);
 //  }
   
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam, AvgDiam;
   int NTestNodes = 10;
   
@@ -74,18 +74,18 @@ void DemoFullBfsDfs() {
     printf("IsDir = %d:\n", IsDir);
     
     FullDiam = GetBfsFullDiam(G, NTestNodes, IsDir);
-    printf("FullDiam = %d\n", FullDiam);
+    printf("FullDiam = %s\n", ToCStr(FullDiam));
     
     EffDiam = GetBfsEffDiam (G, NTestNodes, IsDir);
     printf("EffDiam = %.3f\n", EffDiam);
     
     EffDiam = GetBfsEffDiam (G, NTestNodes, IsDir, EffDiam, FullDiam);
-    printf("EffDiam = %.3f, FullDiam = %d\n", EffDiam, FullDiam);
+    printf("EffDiam = %.3f, FullDiam = %s\n", EffDiam, ToCStr(FullDiam));
     
     EffDiam = GetBfsEffDiam (G, NTestNodes, IsDir, EffDiam, FullDiam, AvgDiam);
-    printf("EffDiam = %.3f, FullDiam = %d, AvgDiam = %.3f\n", EffDiam, FullDiam, AvgDiam);
+    printf("EffDiam = %.3f, FullDiam = %s, AvgDiam = %.3f\n", EffDiam, ToCStr(FullDiam), AvgDiam);
     
-    TIntV SubGraphNIdV;
+    TInt64V SubGraphNIdV;
     for (int i = 0; i < NTestNodes; i++) {
       SubGraphNIdV.Add(G->GetRndNId());
     }
@@ -94,7 +94,7 @@ void DemoFullBfsDfs() {
 //    }
     
     EffDiam = GetBfsEffDiam(G, NTestNodes, SubGraphNIdV, IsDir, EffDiam, FullDiam);
-    printf("For subgraph: EffDiam = %.3f, FullDiam = %d\n", EffDiam, FullDiam);
+    printf("For subgraph: EffDiam = %.3f, FullDiam = %s\n", EffDiam, ToCStr(FullDiam));
     
   }
   
@@ -114,13 +114,13 @@ void DemoBFSUndirectedRandom() {
 //  SaveEdgeList(G, FName);
   
 //  G = LoadEdgeList<PUNGraph>(FName);
-  TIntStrH NodeLabelH;
+  TIntStr64H NodeLabelH;
   for (int i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
   DrawGViz(G, gvlNeato, TStr::Fmt("%s/sample_bfsdfs_unpower.png", DIRNAME), "Sample bfsdfs Graph", NodeLabelH);
   
-  TIntV NIdV;
+  TInt64V NIdV;
   int StartNId, Hop, Nodes;
   
   int IsDir = 0;
@@ -129,16 +129,15 @@ void DemoBFSUndirectedRandom() {
   StartNId = 1;
   Hop = 1;
   Nodes = GetNodesAtHop(G, StartNId, Hop, NIdV, IsDir);
-  printf("StartNId = %d, Nodes = %d, GetNodesAtHop NIdV.Len() = %d, NIdV[0] = %d\n", StartNId, Nodes, NIdV.Len(), NIdV[0].Val);
+  printf("StartNId = %d, Nodes = %d, GetNodesAtHop NIdV.Len() = %s, NIdV[0] = %s\n", StartNId, Nodes, ToCStr(NIdV.Len()), ToCStr(NIdV[0].Val));
   
-  TIntPrV HopCntV;
+  TIntPr64V HopCntV;
   Nodes = GetNodesAtHops(G, StartNId, HopCntV, IsDir);
-  printf("StartNId = %d, Nodes = %d, GetNodesAtHops HopCntV.Len() = %d\n", StartNId , Nodes, HopCntV.Len());
+  printf("StartNId = %d, Nodes = %d, GetNodesAtHops HopCntV.Len() = %s\n", StartNId , Nodes, ToCStr(HopCntV.Len()));
 //  for (int N = 0; N < HopCntV.Len(); N++) {
 //    printf("HopCntV[%d] = (%d, %d)\n", N, HopCntV[N].Val1.Val, HopCntV[N].Val2.Val);
 //  }
-  
-  
+
   int Length, SrcNId, DstNId;
   SrcNId = 1;
   DstNId = G->GetNodes() - 1;
@@ -151,7 +150,7 @@ void DemoBFSUndirectedRandom() {
   Length = GetShortPath(G, SrcNId, DstNId, IsDir);
   printf("%d -> %d: SPL Length = %d\n", SrcNId, DstNId, Length);
   
-  TIntH NIdToDistH;
+  TInt64H NIdToDistH;
   int MaxDist = 9;
   Length = GetShortPath(G, SrcNId, NIdToDistH, IsDir, MaxDist);
 //  for (int i = 0; i < min(5,NIdToDistH.Len()); i++) {
@@ -160,23 +159,23 @@ void DemoBFSUndirectedRandom() {
   
   TInt::Rnd.PutSeed(0);
   
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam, AvgSPL;
   int NTestNodes = G->GetNodes() / 3 * 2;
   
   FullDiam = GetBfsFullDiam(G, NTestNodes, IsDir);
-  printf("FullDiam = %d\n", FullDiam);
+  printf("FullDiam = %s\n", ToCStr(FullDiam));
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, IsDir);
   printf("EffDiam = %.3f\n", EffDiam);
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, IsDir, EffDiam, FullDiam);
-  printf("EffDiam = %.3f, FullDiam = %d\n", EffDiam, FullDiam);
+  printf("EffDiam = %.3f, FullDiam = %s\n", EffDiam, ToCStr(FullDiam));
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, IsDir, EffDiam, FullDiam, AvgSPL);
-  printf("EffDiam = %.3f, FullDiam = %d, AvgDiam = %.3f\n", EffDiam, FullDiam, AvgSPL);
+  printf("EffDiam = %.3f, FullDiam = %s, AvgDiam = %.3f\n", EffDiam, ToCStr(FullDiam), AvgSPL);
   
-  TIntV SubGraphNIdV;
+  TInt64V SubGraphNIdV;
   SubGraphNIdV.Add(0);
   SubGraphNIdV.Add(4);
   SubGraphNIdV.Add(31);
@@ -189,7 +188,7 @@ void DemoBFSUndirectedRandom() {
   SubGraphNIdV.Add(30);
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, SubGraphNIdV, IsDir, EffDiam, FullDiam);
-  printf("For subgraph: EffDiam = %.4f, FullDiam = %d\n", EffDiam, FullDiam);
+  printf("For subgraph: EffDiam = %.4f, FullDiam = %s\n", EffDiam, ToCStr(FullDiam));
  
 }
 
@@ -221,21 +220,21 @@ void DemoBFSDirectedRandom() {
   G->AddEdge(NNodes, NNodes+1);
   G->AddEdge(NNodes+1, NNodes+2);
   G->AddEdge(NNodes+2, NNodes+1);
-  printf("G->GetNodes() = %d, G->GetEdges() = %d\n", G->GetNodes(), G->GetEdges());
+  printf("G->GetNodes() = %s, G->GetEdges() = %s\n", ToCStr(G->GetNodes()), ToCStr(G->GetEdges()));
   
   
   //  SaveEdgeList(G, FName);
   
   //  G = LoadEdgeList<PNGraph>(FName);
-  TIntStrH NodeLabelH;
+  TIntStr64H NodeLabelH;
   for (int i = 0; i < G->GetNodes(); i++) {
     NodeLabelH.AddDat(i, TStr::Fmt("%d", i));
   }
   DrawGViz(G, gvlDot, TStr::Fmt("%s/sample_bfsdfs_ngraph.png", DIRNAME), "Sample BFS Graph", NodeLabelH);
   
-  printf("G->GetNodes() = %d, G->GetEdges() = %d\n", G->GetNodes(), G->GetEdges());
+  printf("G->GetNodes() = %s, G->GetEdges() = %s\n", ToCStr(G->GetNodes()), ToCStr(G->GetEdges()));
   
-  TIntV NIdV;
+  TInt64V NIdV;
   int StartNId, Hop, Nodes;
   
   //  for (int IsDir = 0; IsDir < 2; IsDir++) {
@@ -245,16 +244,16 @@ void DemoBFSDirectedRandom() {
   StartNId = 11;
   Hop = 1;
   Nodes = GetNodesAtHop(G, StartNId, Hop, NIdV, IsDir);
-  printf("Nodes = %d, GetNodesAtHop NIdV.Len() = %d\n", Nodes, NIdV.Len());
+  printf("Nodes = %d, GetNodesAtHop NIdV.Len() = %s\n", Nodes, ToCStr(NIdV.Len()));
   for (int i = 0; i < NIdV.Len(); i++) {
-    printf("NIdV[%d] = %d\n", i, NIdV[i].Val);
+    printf("NIdV[%d] = %s\n", i, ToCStr(NIdV[i].Val));
   }
   printf("Nodes == 2");
   printf("NIdV.Len() == 2");
   
-  TIntPrV HopCntV;
+  TIntPr64V HopCntV;
   Nodes = GetNodesAtHops(G, StartNId, HopCntV, IsDir);
-  printf("Nodes = %d, GetNodesAtHops HopCntV.Len() = %d\n", Nodes, HopCntV.Len());
+  printf("Nodes = %d, GetNodesAtHops HopCntV.Len() = %s\n", Nodes, ToCStr(HopCntV.Len()));
   printf("Nodes == 10");
   printf("HopCntV.Len() == 10");
 //  for (int N = 0; N < HopCntV.Len(); N++) {
@@ -273,7 +272,7 @@ void DemoBFSDirectedRandom() {
   Length = GetShortPath(G, SrcNId, DstNId, IsDir);
   printf("%d -> %d: SPL Length = %d\n", SrcNId, DstNId, Length);
   
-  TIntH NIdToDistH;
+  TInt64H NIdToDistH;
   int MaxDist = 9;
   Length = GetShortPath(G, SrcNId, NIdToDistH, IsDir, MaxDist);
 //  for (int i = 0; i < min(5,NIdToDistH.Len()); i++) {
@@ -282,23 +281,23 @@ void DemoBFSDirectedRandom() {
   
   TInt::Rnd.PutSeed(0);
   
-  int FullDiam;
+  int64 FullDiam;
   double EffDiam, AvgSPL;
   int NTestNodes = G->GetNodes() / 2;
   
   FullDiam = GetBfsFullDiam(G, NTestNodes, IsDir);
-  printf("FullDiam = %d\n", FullDiam);
+  printf("FullDiam = %s\n", ToCStr(FullDiam));
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, IsDir);
   printf("EffDiam = %.3f\n", EffDiam);
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, IsDir, EffDiam, FullDiam);
-  printf("EffDiam = %.3f, FullDiam = %d\n", EffDiam, FullDiam);
+  printf("EffDiam = %.3f, FullDiam = %s\n", EffDiam, ToCStr(FullDiam));
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, IsDir, EffDiam, FullDiam, AvgSPL);
-  printf("EffDiam = %.3f, FullDiam = %d, AvgDiam = %.3f\n", EffDiam, FullDiam, AvgSPL);
+  printf("EffDiam = %.3f, FullDiam = %s, AvgDiam = %.3f\n", EffDiam, ToCStr(FullDiam), AvgSPL);
   
-  TIntV SubGraphNIdV;
+  TInt64V SubGraphNIdV;
   SubGraphNIdV.Add(8);
   SubGraphNIdV.Add(29);
   SubGraphNIdV.Add(16);
@@ -314,7 +313,7 @@ void DemoBFSDirectedRandom() {
   SubGraphNIdV.Add(18);
   
   EffDiam = GetBfsEffDiam(G, NTestNodes, SubGraphNIdV, IsDir, EffDiam, FullDiam);
-  printf("For subgraph: EffDiam = %.4f, FullDiam = %d\n", EffDiam, FullDiam);
+  printf("For subgraph: EffDiam = %.4f, FullDiam = %s\n", EffDiam, ToCStr(FullDiam));
   
 }
 

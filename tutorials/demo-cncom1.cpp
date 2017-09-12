@@ -16,23 +16,24 @@ void GetCnCom() {
   printf("IsWeaklyConnected(G) = %s\n", (IsWeaklyConn(G) ? "True" : "False"));
   
   // Get weakly connected component counts
-  TIntPrV WccSzCnt;
+  TIntPr64V WccSzCnt;
   GetWccSzCnt(G, WccSzCnt);
   for (int i = 0; i < WccSzCnt.Len(); i++) {
-    printf("WccSzCnt[%d] = (%d, %d)\n", i, WccSzCnt[i].Val1.Val, WccSzCnt[i].Val2.Val);
+    printf("WccSzCnt[%d] = (%s, %s)\n", i,
+              ToCStr(WccSzCnt[i].Val1.Val), ToCStr(WccSzCnt[i].Val2.Val));
   }
-  
+
   // Get all nodes in same component
-  TIntV CnCom;
+  TInt64V CnCom;
   GetNodeWcc(G, 1, CnCom);
-  printf("CnCom.Len() = %d\n", CnCom.Len());
-  
+  printf("CnCom.Len() = %s\n", ToCStr(CnCom.Len()));
+
   TCnComV WCnComV;
   GetWccs(G, WCnComV);
   for (int i = 0; i < WCnComV.Len(); i++) {
-    printf("WCnComV[%d].Len() = %d\n", i, WCnComV[i].Len());
+    printf("WCnComV[%d].Len() = %s\n", i, ToCStr(WCnComV[i].Len()));
     for (int j = 0; j < WCnComV[i].Len(); j++) {
-      printf("WCnComV[%d][%d] = %d\n", i, j, WCnComV[i][j].Val);
+      printf("WCnComV[%d][%d] = %s\n", i, j, ToCStr(WCnComV[i][j].Val));
     }
   }
   
@@ -41,19 +42,20 @@ void GetCnCom() {
   
   // Get graph with largest SCC
   PNGraph GMx = GetMxWcc(G);
-  printf("GMx: GetNodes() = %d, GetEdges() = %d\n", GMx->GetNodes(), GMx->GetEdges());
+  printf("GMx: GetNodes() = %s, GetEdges() = %s\n",
+        ToCStr(GMx->GetNodes()), ToCStr(GMx->GetEdges()));
   
   // Get strongly connected components
   TCnComV SCnComV;
   GetSccs(G, SCnComV);
   for (int i = 0; i < SCnComV.Len(); i++) {
-    printf("SCnComV[%d].Len() = %d\n", i, SCnComV[i].Len());
+    printf("SCnComV[%d].Len() = %s\n", i, ToCStr(SCnComV[i].Len()));
   }
   
   // Get largest bi-connected component
   PNGraph GMxBi = GetMxBiCon(G);
-  printf("GMxBi: GetNodes() = %d, GetEdges() = %d\n", GMxBi->GetNodes(), GMxBi->GetEdges());
-  
+  printf("GMxBi: GetNodes() = %s, GetEdges() = %s\n",
+          ToCStr(GMxBi->GetNodes()), ToCStr(GMxBi->GetEdges()));
 }
 
 int main(int argc, char* argv[]) {
