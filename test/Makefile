@@ -31,6 +31,7 @@ TEST_SRCS = test-helper.cpp \
 	test-TAttr.cpp \
 	test-TStrPool.cpp \
 	test-TSysTm.cpp \
+	test-shmio.cpp \
 	test-ggen.cpp \
 	test-gio.cpp \
 	test-gviz.cpp \
