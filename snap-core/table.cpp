@@ -357,23 +357,23 @@ void TTable::GenerateColTypeMap(THash<TStr,TPair<TInt64,TInt64>, int64 > & ColTy
   IsNextDirty = 0;
 }
 
-void TTable::LoadTableShm(TShMIn& ShMIn, TTableContext* ContextTable) {
-    Context = ContextTable;
-    NumRows = TInt64(ShMIn);
-    NumValidRows = TInt64(ShMIn);
-    FirstValidRow = TInt64(ShMIn);
-    LastValidRow = TInt64(ShMIn);
-    Next.LoadShM(ShMIn);
+void TTable::LoadTableShM(TShMIn& ShMIn, TTableContext* ContextTable) {
+  Context = ContextTable;
+  NumRows = TInt64(ShMIn);
+  NumValidRows = TInt64(ShMIn);
+  FirstValidRow = TInt64(ShMIn);
+  LastValidRow = TInt64(ShMIn);
+  Next.LoadShM(ShMIn);
 
-    TLoadVecInit Fn;
-    IntCols.LoadShM(ShMIn, Fn);
-    FltCols.Load(ShMIn);
-    StrColMaps.LoadShM(ShMIn, Fn);
-    THash<TStr,TPair<TInt64,TInt64>, int64 > ColTypeIntMap;
-    ColTypeIntMap.LoadShM(ShMIn);
+  TLoadVecInit Fn;
+  IntCols.LoadShM(ShMIn, Fn);
+  FltCols.Load(ShMIn);
+  StrColMaps.LoadShM(ShMIn, Fn);
+  THash<TStr,TPair<TInt64,TInt64>, int64 > ColTypeIntMap;
+  ColTypeIntMap.LoadShM(ShMIn);
 
-    GenerateColTypeMap(ColTypeIntMap);
-  }
+  GenerateColTypeMap(ColTypeIntMap);
+}
 
 TTable::TTable(TSIn& SIn, TTableContext* Context): Context(Context), NumRows(SIn),
   NumValidRows(SIn), FirstValidRow(SIn), LastValidRow(SIn), Next(SIn), IntCols(SIn),

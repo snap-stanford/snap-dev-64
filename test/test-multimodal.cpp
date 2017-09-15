@@ -1279,9 +1279,9 @@ static void setup_copytests(PMMNet& mmnet) {
   mmnet = TMMNet::New();
   // add modes and nodes
   for (int i = 0; i < kNModes; i++) {
-    std::ostringstream oss; oss << "Mode " << i;
+    std::ostringstream oss; oss << "TestMode" << i;
     TStr modename = oss.str().c_str();
-    mmnet->AddModeNet(modename);
+    TInt64 ModeId = mmnet->AddModeNet(modename);
     for (int j = 0; j < kNNodes; j++) {
       mmnet->GetModeNetByName(modename).AddNode();
     }
@@ -1302,7 +1302,9 @@ static void setup_copytests(PMMNet& mmnet) {
     strattr << " - " << i; strattr_sparse << " - " << i << "S";
     mode.AddStrAttrDatN(i, strattr.str().c_str(), kStrANameN);
     mode.AddSAttrDatN(i, kStrSANameN, strattr_sparse.str().c_str());
-    for (TInt64 j = 0; j < 5; j++) mode.AppendIntVAttrDatN(i, j, kIntVANameN);                        
+    for (TInt64 j = 0; j < 5; j++) {
+      mode.AppendIntVAttrDatN(i, j, kIntVANameN);
+    }
   }
 
   // add edge attributes to a mode, add a (meaningless) edge to mode and assign sparse attrs to it
@@ -1317,16 +1319,16 @@ static void setup_copytests(PMMNet& mmnet) {
   
   // add crossnets
   for (int i = 0; i < kNModes; i++) {
-    std::ostringstream oss1; oss1 << "Mode " << i;
+    std::ostringstream oss1; oss1 << "TestMode" << i;
     TStr modename1 = oss1.str().c_str();
     // inter-mode: three per pair, one per direction and one undirected
     for (int j = 0; j < i; j++) {
-      std::ostringstream oss2; oss2 << "Mode " << j;
+      std::ostringstream oss2; oss2 << "TestMode" << j;
       TStr modename2 = oss2.str().c_str();
       std::ostringstream oss1to2, oss2to1, ossboth;
-      oss1to2 << i << "->" << j;
-      oss2to1 << i << "<-" << j;
-      ossboth << i << "<->" << j;      
+      oss1to2 << i << "_To_" << j;
+      oss2to1 << i << "_From_" << j;
+      ossboth << i << "_Bidir_" << j;      
       mmnet->AddCrossNet(modename1, modename2, oss1to2.str().c_str(), true);
       mmnet->AddCrossNet(modename2, modename1, oss2to1.str().c_str(), true);
       mmnet->AddCrossNet(modename1, modename2, ossboth.str().c_str(), false);
@@ -1335,7 +1337,7 @@ static void setup_copytests(PMMNet& mmnet) {
     std::ostringstream selfdir, selfundir;
     selfdir << i << "dir"; selfundir << i << "undir";
     mmnet->AddCrossNet(modename1, modename1, selfdir.str().c_str(), true);
-    mmnet->AddCrossNet(modename1, modename1, selfdir.str().c_str(), false);
+    mmnet->AddCrossNet(modename1, modename1, selfundir.str().c_str(), false);
   }
 
   int kMagicPrime = 7;
@@ -1384,7 +1386,7 @@ TEST(multimodal, CopyModeWithoutNodes) {
   
   // invoke method, ensure basic information about TMMNet and nodeless modenet holds
   TMMNet::CopyModeWithoutNodes(mmnet, mmnet2, 0);
-  EXPECT_EQ(0, mmnet2->GetModeId("Mode 0"));
+  EXPECT_EQ(0, mmnet2->GetModeId("TestMode0"));
   EXPECT_EQ(1, mmnet2->GetModeNets()); 
   TModeNet& modecopy = mmnet2->GetModeNetById(0);
   EXPECT_EQ(0, modecopy.GetNodes());
@@ -1465,7 +1467,9 @@ TEST(multimodal, CopyNodesWithoutNeighbors) {
   // Check crossnet attrs still deleted
   TStr64V CNAttrNames;
   GetCNAttrNames(CNAttrNames, mmnet, mode);
-  for (int i = 0; i < CNAttrNames.Len(); i++) EXPECT_FALSE(modecopy.IsIntVAttrN(CNAttrNames[i]));
+  for (int i = 0; i < CNAttrNames.Len(); i++) {
+    EXPECT_FALSE(modecopy.IsIntVAttrN(CNAttrNames[i]));
+  }
 }
 
 TEST(multimodal, CopyCrossNetWithoutEdges) {
@@ -1502,8 +1506,11 @@ TEST(multimodal, CopyCrossNetWithoutEdges) {
   // Verify that all crossnet attribute names are properly copied.
   for (int i = 0; i < mmnet->GetModeNets(); i++) {
     TModeNet& mode = mmnet->GetModeNetById(i), & modecopy = mmnet2->GetModeNetById(i);
-    TStr64V CNAttrNames; GetCNAttrNames(CNAttrNames, mmnet, mode);
-    for (int j = 0; j < CNAttrNames.Len(); j++) EXPECT_TRUE(modecopy.IsIntVAttrN(CNAttrNames[j]));
+    TStr64V CNAttrNames;
+    GetCNAttrNames(CNAttrNames, mmnet, mode);
+    for (int j = 0; j < CNAttrNames.Len(); j++) {
+      EXPECT_TRUE(modecopy.IsIntVAttrN(CNAttrNames[j]));
+    }
   }
 }
 
@@ -1707,9 +1714,9 @@ static void makenetwork(const PGraph& metagraph, const TStr& filename, bool undi
   int64 count = 0;
   for (typename PGraph::TObj::TNodeI NI = metagraph->BegNI(); NI < metagraph->EndNI(); NI++) {
     if (count % metagraph->GetNodes()/10 == 0) { std::cout << "." << std::flush; }
-    int64 mid = mmnet->AddModeNet(TStr::Fmt("Mode %d", NI.GetId()));
+    int64 mid = mmnet->AddModeNet(TStr::Fmt("TestMode%d", NI.GetId()));
     TModeNet& mode = mmnet->GetModeNetById(mid);
-    mode.AddIntAttrN(TStr::Fmt("Attr %d", mid));
+    mode.AddIntAttrN(TStr::Fmt("Attr_%d", mid));
 
     // Add nodes to the mode (and intra-mode edges, as a crossnet) using Barabasi-Albert model
     PUNGraph temp = TSnap::GenPrefAttach(kNNodesPerMode, kNNodesPerMode/10);
@@ -1717,7 +1724,7 @@ static void makenetwork(const PGraph& metagraph, const TStr& filename, bool undi
     for (TUNGraph::TNodeI NJ = temp->BegNI(); NJ < temp->EndNI(); NJ++) {
       TInt64 nid = NJ.GetId();
       mode.AddNode(nid);
-      mode.AddIntAttrDatN(nid, -nid, TStr::Fmt("Attr %d", mid));
+      mode.AddIntAttrDatN(nid, -nid, TStr::Fmt("Attr_%d", mid));
     }
     
     TStr CNName = TStr::Fmt("%d to %d", mid, mid);

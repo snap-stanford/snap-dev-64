@@ -91,7 +91,7 @@ PUNGraph GenDegSeq(const TInt64V& DegSeqV, TRnd& Rnd) {
       else {
         // find rnd edge, break and cross-connect
         const TInt64Pr Edge = TSnapDetail::GetRndEdgeNonAdjNode(GraphPt, NId1, NId2);
-        if (Edge.Val1==-1) {continue; }
+        if (Edge.Val1==-1) { continue; }
         Graph.DelEdge(Edge.Val1, Edge.Val2);
         Graph.AddEdge(NId1, Edge.Val1);
         Graph.AddEdge(NId2, Edge.Val2);
@@ -237,8 +237,8 @@ PNGraph GenRewire(const PNGraph& OrigGraph, const int64& NSwitch, TRnd& Rnd) {
     if (keyId1 == keyId2) { skip++; continue; }
     const TInt64Pr& E1 = EdgeSet[keyId1];
     const TInt64Pr& E2 = EdgeSet[keyId2];
-    TInt64Pr NewE1(E1.Val1, E2.Val1), NewE2(E1.Val2, E2.Val2);
-    if (NewE1.Val1!=NewE2.Val1 && NewE1.Val2!=NewE2.Val1 && NewE1.Val2!=NewE2.Val1 && NewE1.Val2!=NewE2.Val2 && ! EdgeSet.IsKey(NewE1) && ! EdgeSet.IsKey(NewE2)) {
+    TInt64Pr NewE1(E1.Val1, E2.Val2), NewE2(E2.Val1, E1.Val2);
+    if (NewE1.Val1!=NewE1.Val2 && NewE2.Val1!=NewE2.Val2 && NewE1.Val1!=NewE2.Val1 && NewE1.Val2!=NewE2.Val2 && ! EdgeSet.IsKey(NewE1) && ! EdgeSet.IsKey(NewE2)) {
       EdgeSet.DelKeyId(keyId1);  EdgeSet.DelKeyId(keyId2);
       EdgeSet.AddKey(TInt64Pr(NewE1));
       EdgeSet.AddKey(TInt64Pr(NewE2));

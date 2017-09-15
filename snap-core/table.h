@@ -203,9 +203,9 @@ public:
   TTableContext(TSIn& SIn): StringVals(SIn) {}
   /// Loads TTableContext in binary from \c SIn.
   void Load(TSIn& SIn) { StringVals.Load(SIn); }
-  /// Loads TTableContext using shared memory
-  void LoadShM(TShMIn& ShMin) {
-    StringVals.LoadShM(ShMin, true);
+  /// Loads TTableContext using shared memory, the object is read only.
+  void LoadShM(TShMIn& ShMIn) {
+    StringVals.LoadShM(ShMIn, true);
   }
   /// Saves TTableContext in binary to \c SOut.
   void Save(TSOut& SOut) const { StringVals.Save(SOut); }
@@ -858,11 +858,11 @@ private:
   public:
     TLoadVecInit() {}
     template<typename TElem>
-    void operator() (TVec<TElem, int64>* Node, TShMIn& ShMin) {Node->LoadShM(ShMin);}
+    void operator() (TVec<TElem, int64>* Node, TShMIn& ShMIn) {Node->LoadShM(ShMIn);}
   };
 private:
   void GenerateColTypeMap(THash<TStr,TPair<TInt64,TInt64>, int64 > & ColTypeIntMap);
-  void LoadTableShm(TShMIn& ShMIn, TTableContext* ContextTable);
+  void LoadTableShM(TShMIn& ShMIn, TTableContext* ContextTable);
 
 public:
 /***** Constructors *****/
@@ -934,7 +934,7 @@ public:
   /// Static constructor to load table from memory ##TTable::LoadShM
   static PTable LoadShM(TShMIn& ShMIn, TTableContext* Context) {
     TTable* Table = new TTable();
-    Table->LoadTableShm(ShMIn, Context);
+    Table->LoadTableShM(ShMIn, Context);
     return PTable(Table);
   }
   /// Saves table schema and content to a binary format. ##TTable::Save
@@ -1393,7 +1393,7 @@ public:
   /// Adds explicit row ids, initialize hash set mapping ids to physical rows.
   void InitIds();
 
-  /// Distance based filter. ##TTable::IsNextK
+  /// Implements distance based filter. ##TTable::IsNextK
   PTable IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName = "");
 
   /// Gets sequence of PageRank tables from given \c GraphSeq.
@@ -1608,7 +1608,6 @@ void TTable::RegisterGrouping(const T& Grouping, const TStr& GroupByCol, TBool U
   }
 }
 */
-
 
 namespace TSnap {
 

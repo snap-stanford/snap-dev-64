@@ -616,5 +616,47 @@ void GetHitsMP(const PGraph& Graph, TIntFlt64H& NIdHubH, TIntFlt64H& NIdAuthH, c
 }
 #endif
 
+/// Gets sequence of PageRank tables from given \c GraphSeq into \c TableSeq.
+template <class PGraph>
+void MapPageRank(const TVec<PGraph, int64>& GraphSeq, TVec<PTable>& TableSeq,
+    TTableContext* Context,
+    const double& C, const double& Eps, const int& MaxIter) {
+  int NumGraphs = GraphSeq.Len();
+  TableSeq.Reserve(NumGraphs, NumGraphs);
+  // This loop is parallelizable.
+  for (TInt i = 0; i < NumGraphs; i++) {
+    TIntFlt64H PRankH;
+    GetPageRank(GraphSeq[i], PRankH, C, Eps, MaxIter);
+    TableSeq[i] = TTable::TableFromHashMap(PRankH, "NodeId", "PageRank", Context, false);
+  }
+}
+
+/// Gets sequence of Hits tables from given \c GraphSeq into \c TableSeq.
+template <class PGraph>
+void MapHits(const TVec<PGraph>& GraphSeq, TVec<PTable>& TableSeq,
+    TTableContext* Context,
+    const int& MaxIter) {
+  int NumGraphs = GraphSeq.Len();
+  TableSeq.Reserve(NumGraphs, NumGraphs);
+  // This loop is parallelizable.
+  for (TInt i = 0; i < NumGraphs; i++) {
+    TIntFlt64H HubH;
+    TIntFlt64H AuthH;
+    GetHits(GraphSeq[i], HubH, AuthH, MaxIter);
+    PTable HubT =  TTable::TableFromHashMap(HubH, "NodeId", "Hub", Context, false);
+    PTable AuthT =  TTable::TableFromHashMap(AuthH, "NodeId", "Authority", Context, false);
+    PTable HitsT = HubT->Join("NodeId", AuthT, "NodeId");
+    HitsT->Rename("1.NodeId", "NodeId");
+    HitsT->Rename("1.Hub", "Hub");
+    HitsT->Rename("2.Authority", "Authority");
+    TStr64V V = TStrV(3, 0);
+    V.Add("NodeId");
+    V.Add("Hub");
+    V.Add("Authority");
+    HitsT->ProjectInPlace(V);
+    TableSeq[i] = HitsT;
+  }
+}
+
 }; // namespace TSnap
 

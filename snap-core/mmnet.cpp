@@ -1,6 +1,5 @@
 ////////////////////////////////////////////////
 // Mutimodal Network
-//#include <iostream> 
 
 TStr TModeNet::GetNeighborCrossName(const TStr& CrossName, bool isOutEdge, const bool sameMode, bool isDir) const {
   TStr Cpy(CrossName);
@@ -26,9 +25,15 @@ void TModeNet::GetNeighborCrossNames(TStr64V& Names) const {
 
 void TModeNet::ClrNbr(const TStr& CrossNetName, const bool& outEdge, const bool& sameMode, bool& isDir) {
   TStr Name = GetNeighborCrossName(CrossNetName, outEdge, sameMode, isDir);
-  TVec<TInt64V, int64> Attrs(MxNId);
+  TInt location = CheckDenseOrSparseN(Name);
   int64 index = KeyToIndexTypeN.GetDat(Name).Val2;
-  VecOfIntVecVecsN[index] = Attrs;
+  if (location == 1) {
+    TVec<TInt64V, int64> Attrs(MxNId);
+    VecOfIntVecVecsN[index] = Attrs;
+  } else {
+    THash<TInt64, TInt64V, int64> Attrs;
+    VecOfIntHashVecsN[index] = Attrs;
+  }
 }
 
 void TModeNet::Clr() {
@@ -185,13 +190,36 @@ void TModeNet::CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, con
   }
 }
 
-
-int64 TModeNet::AddIntVAttrByVecN(const TStr& attr, TVec<TInt64V, int64>& Attrs){
+int64 TModeNet::AddIntVAttrByVecN(const TStr& attr, TVec<TInt64V, int64>& Attrs, TBool UseDense){
   TInt64 CurrLen;
-  TVec<TInt64V, int64> NewVec;
-  CurrLen = VecOfIntVecVecsN.Len();
+  if (UseDense) {
+    CurrLen = VecOfIntVecVecsN.Len();
+    KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
+    KeyToDenseN.AddDat(attr, true);
+    VecOfIntVecVecsN.Add(Attrs);
+  } else {
+    THash<TInt64, TInt64V, int64> NewHash;
+    CurrLen = VecOfIntHashVecsN.Len();
+    KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
+    KeyToDenseN.AddDat(attr, false);
+    for (int i=0; i< Attrs.Len(); i++) {
+      NewHash.AddDat(i, Attrs[i]);
+    }
+    VecOfIntHashVecsN.Add(NewHash);
+  }
+  return 0;
+}
+
+int TModeNet::AddIntVAttrByHashN(const TStr& attr, THash<TInt64, TInt64V, int64>& Attrs){
+  TInt64 CurrLen;
+  THash<TInt64, TInt64V, int64> NewHash;
+  CurrLen = VecOfIntHashVecsN.Len();
   KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
-  VecOfIntVecVecsN.Add(Attrs);
+  KeyToDenseN.AddDat(attr, false);
+  for (int i=0; i< Attrs.Len(); i++) {
+    NewHash.AddDat(i, Attrs[i]);
+  }
+  VecOfIntHashVecsN.Add(NewHash);
   return 0;
 }
 
@@ -217,12 +245,25 @@ void TModeNet::RemoveCrossNets(TModeNet& Result, TStr64V& CrossNets) {
         TStr NbrName = isSingleVNbrAttr ? AttrName : WithoutSuffix;
         if (CrossNets.IsIn(NbrName)) {
           Result.AddNbrType(NbrName, removeSuffix, removeSuffix);
-          TVec<TInt64V, int64>& Attrs = VecOfIntVecVecsN[AttrIndex];
-          Result.AddIntVAttrByVecN(AttrName, Attrs);
+          TInt location = CheckDenseOrSparseN(AttrName);
+          if (location == 1) {
+            TVec<TInt64V, int64>& Attrs = VecOfIntVecVecsN[AttrIndex];
+            Result.AddIntVAttrByVecN(AttrName, Attrs);
+          } else {
+            THash<TInt64, TInt64V, int64>& Attrs = VecOfIntHashVecsN[AttrIndex];
+            Result.AddIntVAttrByHashN(AttrName, Attrs);
+          }
+          
         }
       } else {
-        TVec<TInt64V, int64>& Attrs = VecOfIntVecVecsN[AttrIndex];
-        Result.AddIntVAttrByVecN(AttrName, Attrs);
+        TInt location = CheckDenseOrSparseN(AttrName);
+        if (location == 1) {
+          TVec<TInt64V, int64>& Attrs = VecOfIntVecVecsN[AttrIndex];
+          Result.AddIntVAttrByVecN(AttrName, Attrs);
+        } else {
+          THash<TInt64, TInt64V, int64>& Attrs = VecOfIntHashVecsN[AttrIndex];
+          Result.AddIntVAttrByHashN(AttrName, Attrs);
+        }
       }
     }
   }
@@ -774,17 +815,17 @@ PBPGraph TCrossNet::GetBipartiteGraph() {
   return Graph;
 }
 
-void TMMNet::LoadNetworkShm(TShMIn& ShMin) {
-  MxModeId = TInt64(ShMin);
-  MxCrossNetId = TInt64(ShMin);
+void TMMNet::LoadNetworkShM(TShMIn& ShMIn) {
+  MxModeId = TInt64(ShMIn);
+  MxCrossNetId = TInt64(ShMIn);
   TModeNetInit Fm;
-  TModeNetH.LoadShM(ShMin, Fm);
+  TModeNetH.LoadShM(ShMIn, Fm);
   TCrossNetInit Fc;
-  TCrossNetH.LoadShM(ShMin, Fc);
-  ModeIdToNameH.LoadShM(ShMin);
-  ModeNameToIdH.LoadShM(ShMin);
-  CrossIdToNameH.LoadShM(ShMin);
-  CrossNameToIdH.LoadShM(ShMin);
+  TCrossNetH.LoadShM(ShMIn, Fc);
+  ModeIdToNameH.LoadShM(ShMIn);
+  ModeNameToIdH.LoadShM(ShMIn);
+  CrossIdToNameH.LoadShM(ShMIn);
+  CrossNameToIdH.LoadShM(ShMIn);
   for (THash<TInt64, TModeNet, int64>::TIter it = TModeNetH.BegI(); it < TModeNetH.EndI(); it++) {
     it.GetDat().SetParentPointer(this);
   }
@@ -1522,7 +1563,6 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
   int64 offset = 0;
   int64 NumEdges = 0;
   //TVec<TCrossNet> CrossNets;
-  //std::cerr<<"here 0\n";
   for (int64 i=0; i < CrossNetNames.Len(); i++) {
     //  CrossNets.Add(GetCrossNetByName(CrossNetNames[i]));
     CrossNetStart.AddDat(CrossNetNames[i], offset);
@@ -1533,7 +1573,6 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     ModeSet.AddKey(CrossNet.GetMode1());
     ModeSet.AddKey(CrossNet.GetMode2());
   }
-  //std::cerr<<"here2\n";
   int64 MxEId = offset;
 
   int64 NumNodes = 0;
@@ -1541,11 +1580,9 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     TModeNet& ModeNet = GetModeNetById(MI.GetKey());
     NumNodes += ModeNet.GetNodes();
   }
-  //std::cerr<<"here3\n";
   THashMP<TInt64Pr, TInt64, int64> NodeMap(NumNodes);
   THashMP<TInt64Pr, TInt64Pr, int64> EdgeMap(NumEdges);
   PNEANetMP NewNet = TNEANetMP::New(NumNodes, NumEdges);
-  //std::cerr<<"here4\n";
   int64 num_threads = omp_get_max_threads();
   // int64 num_threads = 21;
   offset = 0;
@@ -1556,7 +1593,6 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     ModeNet.NodeH.GetKeyV(KeyIds);
     TIntPr64V NodePartitions;
     GetPartitionRanges(NodePartitions, num_threads, KeyIds.Len());
-    //std::cerr<<"got partitions for mode "<<ModeId<<"\n";
     int64 curr_nid;
 #pragma omp parallel for schedule(static) private(curr_nid)
     for (int64 i = 0; i < NodePartitions.Len(); i++) {
@@ -1575,7 +1611,6 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
             TStr CrossNetName = TStr(CrossNetNames[j].CStr());
             if (ModeNet.NeighborTypes.IsKey(CrossNetName)) {
               if (ModeNet.NeighborTypes.GetDat(CrossNetName)) {
-                
                 TInt64V Neighbors;
                 ModeNet.GetNeighborsByCrossNet(n_i, CrossNetName, Neighbors);
                 int64 edge_offset = CrossNetStart.GetDat(CrossNetName);
@@ -1614,22 +1649,18 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
                 InNbrs.AddV(TempIn);
               }
             }
-            //std::cerr<<"DOne \""<<CrossNetNames[j].GetCStr()<<"\"\n";
           }
-          //std::cerr<<"Done for all crossnets\n";
           NewNet->AddNodeWithEdges(curr_nid, InNbrs, OutNbrs);
           TInt64Pr NodeKey(MI.GetKey(), n_i);
           NodeMap.AddDat(NodeKey, curr_nid);
           curr_nid++;
         }
       }
-      //std::cerr<<"Exiting first loop "<<i<<"\n";
     }
   
     offset += KeyIds.Len();
   }
   NewNet->SetNodes(offset);
-  //std::cerr<<"here 5\n";
   for (int64 j=0; j < CrossNetNames.Len(); j++) {
     TStr CrossNetName = CrossNetNames[j];
     TCrossNet& CrossNet = GetCrossNetByName(CrossNetName);
@@ -1688,7 +1719,6 @@ PNEANetMP TMMNet::ToNetworkMP(TStr64V& CrossNetNames) {
     NewNet->AddIntAttrDatN(NodeMap.GetDat(NewNodeIds[i]), NewNodeIds[i].GetVal2(), TStr("Id"));
   }
 
-  //std::cerr<<"Here8\n";
   TIntPr64V NewEdgeIds;
   EdgeMap.GetKeyV(NewEdgeIds);
 #pragma omp parallel for schedule(static)

@@ -1,38 +1,46 @@
 /////////////////////////////////////////////////
-void TNEANet::LoadNetworkShm(TShMIn& ShMin) {
-      MxNId = TInt64(ShMin);
-      MxEId = TInt64(ShMin);
+void TNEANet::LoadNetworkShM(TShMIn& ShMIn) {
+  MxNId = TInt64(ShMIn);
+  MxEId = TInt64(ShMIn);
 
-      LoadTNodeFunctor NodeFn;
-      NodeH.LoadShM(ShMin, NodeFn);
+  LoadTNodeFunctor NodeFn;
+  NodeH.LoadShM(ShMIn, NodeFn);
 
-      EdgeH.LoadShM(ShMin);
-      KeyToIndexTypeN.LoadShM(ShMin);
-      KeyToIndexTypeE.LoadShM(ShMin);
-      IntDefaultsN.LoadShM(ShMin);
-      IntDefaultsE.LoadShM(ShMin);
-      StrDefaultsN.LoadShM(ShMin);
-      StrDefaultsE.LoadShM(ShMin);
-      FltDefaultsE.LoadShM(ShMin);
-      FltDefaultsE.LoadShM(ShMin);
+  EdgeH.LoadShM(ShMIn);
+  KeyToIndexTypeN.LoadShM(ShMIn);
+  KeyToIndexTypeE.LoadShM(ShMIn);
 
-      LoadVecFunctor VecFn;
-      VecOfIntVecsN.LoadShM(ShMin, VecFn);
-      VecOfIntVecsE.LoadShM(ShMin, VecFn);
-      /* Strings and floats are complicated, so don't optimize on these */
-      VecOfStrVecsN.Load(ShMin);
-      VecOfStrVecsE.Load(ShMin);
-      VecOfFltVecsN.Load(ShMin);
-      VecOfFltVecsE.Load(ShMin);
+  KeyToDenseN.LoadShM(ShMIn);
+  KeyToDenseE.LoadShM(ShMIn);
 
-      LoadVecOfVecFunctor VecVecFn;
-      VecOfIntVecVecsN.LoadShM(ShMin, VecVecFn);
-      VecOfIntVecVecsE.LoadShM(ShMin, VecVecFn);
+  IntDefaultsN.LoadShM(ShMIn);
+  IntDefaultsE.LoadShM(ShMIn);
+  StrDefaultsN.LoadShM(ShMIn);
+  StrDefaultsE.LoadShM(ShMIn);
+  FltDefaultsE.LoadShM(ShMIn);
+  FltDefaultsE.LoadShM(ShMIn);
 
-      /* Attributes are complicated so load these straight */
-      SAttrN.Load(ShMin);
-      SAttrE.Load(ShMin);
-  }
+  LoadVecFunctor VecFn;
+  VecOfIntVecsN.LoadShM(ShMIn, VecFn);
+  VecOfIntVecsE.LoadShM(ShMIn, VecFn);
+  /* Strings and floats are complicated, so don't optimize on these */
+  VecOfStrVecsN.Load(ShMIn);
+  VecOfStrVecsE.Load(ShMIn);
+  VecOfFltVecsN.Load(ShMIn);
+  VecOfFltVecsE.Load(ShMIn);
+
+  LoadVecOfVecFunctor VecVecFn;
+  VecOfIntVecVecsN.LoadShM(ShMIn, VecVecFn);
+  VecOfIntVecVecsE.LoadShM(ShMIn, VecVecFn);
+
+  LoadHashOfVecFunctor HashVecFn;
+  VecOfIntHashVecsN.LoadShM(ShMIn, HashVecFn);
+  VecOfIntHashVecsE.LoadShM(ShMIn, HashVecFn);
+
+  /* Attributes are complicated so load these straight */
+  SAttrN.Load(ShMIn);
+  SAttrE.Load(ShMIn);
+}
 
 // Attribute Node Edge Network
 bool TNEANet::HasFlag(const TGraphFlag& Flag) const {
@@ -112,11 +120,21 @@ void TNEANet::IntVAttrValueNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TVe
   Values = TVec<TInt64V, int64>();
   while (!NodeHI.IsEnd()) {
     if (NodeHI.GetDat().Val1 == IntVType) {
-      TInt64V val = this->VecOfIntVecVecsN.GetVal(NodeHI.GetDat().Val2).GetVal(NodeH.GetKeyId(NId));
-      Values.Add(val);
+      TInt64 index = NodeHI.GetDat().Val2;
+      TStr attr =  NodeHI.GetKey();
+      TInt loc = CheckDenseOrSparseN(attr);
+      if (loc == 1) {
+        TInt64V val = this->VecOfIntVecVecsN.GetVal(index).GetVal(NodeH.GetKeyId(NId));
+        if (val.Len() != 0) Values.Add(val);
+      } else {
+        const THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsN[index];
+        if (NewHash.IsKey(NodeH.GetKeyId(NId))) {
+          Values.Add(NewHash[NodeH.GetKeyId(NId)]);
+        }
+      }
     }
     NodeHI++;
-  }  
+  }
 }
 
 void TNEANet::StrAttrNameNI(const TInt64& NId, TStrIntPr64H::TIter NodeHI, TStr64V& Names) const {
@@ -294,11 +312,21 @@ void TNEANet::IntVAttrValueEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TVe
   Values = TVec<TInt64V, int64>();
   while (!EdgeHI.IsEnd()) {
     if (EdgeHI.GetDat().Val1 == IntVType) {
-      TInt64V val = (this->VecOfIntVecVecsE.GetVal(EdgeHI.GetDat().Val2).GetVal(EId));
-      Values.Add(val);
+      TInt64 index = EdgeHI.GetDat().Val2;
+      TStr attr =  EdgeHI.GetKey();
+      TInt loc = CheckDenseOrSparseE(attr);
+      if (loc == 1) {
+        TInt64V val = this->VecOfIntVecVecsE.GetVal(index).GetVal(EdgeH.GetKeyId(EId));
+        if (val.Len() != 0) Values.Add(val);
+      } else {
+        const THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsE[index];
+        if (NewHash.IsKey(EdgeH.GetKeyId(EId))) {
+          Values.Add(NewHash[EdgeH.GetKeyId(EId)]);
+        }
+      }
     }
     EdgeHI++;
-  }  
+  }
 }
 
 void TNEANet::StrAttrNameEI(const TInt64& EId, TStrIntPr64H::TIter EdgeHI, TStr64V& Names) const {
@@ -528,6 +556,12 @@ void TNEANet::DelNode(const int64& NId) {
       IntVecV[EdgeH.GetKeyId(EId)] = TInt64V();
     }
     EdgeH.DelKey(EId);
+    for (i = 0; i < VecOfIntHashVecsE.Len(); i++) {
+      THash<TInt64, TInt64V, int64>& IntHashV = VecOfIntHashVecsE[i];
+      if (IntHashV.IsKey(EdgeH.GetKeyId(EId))) {
+        IntHashV.DelKey(EdgeH.GetKeyId(EId));
+      }
+    }
   }
   for (int64 in = 0; in < Node.GetInDeg(); in++) {
     const int64 EId = Node.GetInEId(in);
@@ -551,6 +585,12 @@ void TNEANet::DelNode(const int64& NId) {
       TVec<TInt64V, int64>& IntVecV = VecOfIntVecVecsE[i];
       IntVecV[EdgeH.GetKeyId(EId)] = TInt64V();
     }
+    for (i = 0; i < VecOfIntHashVecsE.Len(); i++) {
+      THash<TInt64, TInt64V, int64>& IntHashV = VecOfIntHashVecsE[i];
+      if (IntHashV.IsKey(EdgeH.GetKeyId(EId))) {
+        IntHashV.DelKey(EdgeH.GetKeyId(EId));
+      }
+    }
     EdgeH.DelKey(EId);
   }
 
@@ -569,6 +609,12 @@ void TNEANet::DelNode(const int64& NId) {
   for (i = 0; i < VecOfIntVecVecsN.Len(); i++) {
     TVec<TInt64V, int64>& IntVecV = VecOfIntVecVecsN[i];
     IntVecV[NodeH.GetKeyId(NId)] = TInt64V();
+  }
+  for (i = 0; i < VecOfIntHashVecsN.Len(); i++) {
+    THash<TInt64, TInt64V, int64>& IntHashV = VecOfIntHashVecsN[i];
+    if (IntHashV.IsKey(NodeH.GetKeyId(NId))) {
+      IntHashV.DelKey(NodeH.GetKeyId(NId));
+    }
   }
   NodeH.DelKey(NId);
 }
@@ -879,10 +925,10 @@ bool TNEANet::IsEulerian(int64 *StartNId) {
   }
 }
 
-void TNEANet::AddPath(THash<TInt64, TVec<TInt64V> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath) {
+void TNEANet::AddPath(THash<TInt64, TVec<TInt64V, int64> >& AllPaths, const TInt64V& ToAddPath, TInt64 CurrNId, TInt64V& ResultPath) {
   for (int64 i = 0; i < ToAddPath.Len(); i++) {
     if (AllPaths.IsKey(CurrNId)) { // Pause traversing current path and recursively traverse paths reachable from here
-      TVec<TInt64V>& PathsStartingHere = AllPaths.GetDat(CurrNId);
+      TVec<TInt64V, int64>& PathsStartingHere = AllPaths.GetDat(CurrNId);
       while (!PathsStartingHere.Empty()) {
         TInt64V RecursivePathToAdd = PathsStartingHere.Last();
         PathsStartingHere.DelLast(); // so recursive calls embark on new paths
@@ -916,7 +962,7 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
   }
   
   // Use Hierholzer's algorithm to generate Euler path.
-  THash<TInt64, TVec<TInt64V> > Paths; // Node id -> all paths that start at this node
+  THash<TInt64, TVec<TInt64V, int64> > Paths; // Node id -> all paths that start at this node
  
   // 1. Create a set of edge-disjoint paths that span all edges of the graph.
   // All paths except possibly the first are cycles.
@@ -952,7 +998,7 @@ bool TNEANet::GetEulerPath(TInt64V& Path) {
   
   // 2. Traverse the first/"main" path. Each time we encounter a node with a different cycle
   // starting at it, recursively add it to the result path, then continue with the main path.
-  TVec<TInt64V>& PathsFromStart = Paths.GetDat(StartNId);
+  TVec<TInt64V, int64>& PathsFromStart = Paths.GetDat(StartNId);
   PathsFromStart.Swap(0, PathsFromStart.Len()-1); // so main path can be removed efficiently
   TInt64V MainPath = PathsFromStart.Last();
   PathsFromStart.DelLast();
@@ -986,55 +1032,68 @@ int64 TNEANet::AddIntAttrDatN(const int64& NId, const TInt64& value, const TStr&
   return 0;
 }
 
-int64 TNEANet::AddIntVAttrDatN(const int64& NId, const TInt64V& value, const TStr& attr) {
-  TInt64 CurrLen;
+int64 TNEANet::AddIntVAttrDatN(const int64& NId, const TInt64V& value, const TStr& attr, TBool UseDense) {
   if (!IsNode(NId)) {
     // AddNode(NId);
     return -1;
   }
-  if (KeyToIndexTypeN.IsKey(attr)) {
+  TInt location = CheckDenseOrSparseN(attr);
+  if (location==-1) {
+    AddIntVAttrN(attr, UseDense);
+    location = CheckDenseOrSparseN(attr);
+  }
+  if (UseDense) {
+    IAssertR(location != 0, TStr::Fmt("NodeId %d exists for %s in sparse representation", NId, attr.CStr()));
     TVec<TInt64V, int64>& NewVec = VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
     NewVec[NodeH.GetKeyId(NId)] = value;
   } else {
-    CurrLen = VecOfIntVecVecsN.Len();
-    KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
-    TVec<TInt64V, int64> NewVec = TVec<TInt64V, int64>(MxNId);
-    NewVec[NodeH.GetKeyId(NId)] = value;
-    VecOfIntVecVecsN.Add(NewVec);
+    IAssertR(location != 1, TStr::Fmt("NodeId %d exists for %s in dense representation", NId, attr.CStr()));
+    THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
+    NewHash.AddDat(NodeH.GetKeyId(NId), value);
   }
+  
   return 0;
 } 
 
-int64 TNEANet::AppendIntVAttrDatN(const int64& NId, const TInt64& value, const TStr& attr) {
-  TInt64 CurrLen;
+int64 TNEANet::AppendIntVAttrDatN(const int64& NId, const TInt64& value, const TStr& attr, TBool UseDense) {
   if (!IsNode(NId)) {
     // AddNode(NId);
     return -1;
   }
-  if (KeyToIndexTypeN.IsKey(attr)) {
+  TInt location = CheckDenseOrSparseN(attr);
+  if (location==-1) {
+    AddIntVAttrN(attr, UseDense);
+    location = CheckDenseOrSparseN(attr);
+  }
+  if (UseDense) {
+    IAssertR(location != 0, TStr::Fmt("NodeId %d exists for %s in sparse representation", NId, attr.CStr()));
     TVec<TInt64V, int64>& NewVec = VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
     NewVec[NodeH.GetKeyId(NId)].Add(value);
   } else {
-    CurrLen = VecOfIntVecVecsN.Len();
-    KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
-    TVec<TInt64V, int64> NewVec;
-    VecOfIntVecVecsN.Add(NewVec);
-    VecOfIntVecVecsN[CurrLen].Gen(MxNId);
-    VecOfIntVecVecsN[CurrLen][NodeH.GetKeyId(NId)].Add(value);
+    IAssertR(location != 1, TStr::Fmt("NodeId %d exists for %s in dense representation", NId, attr.CStr()));
+    THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
+    NewHash[NodeH.GetKeyId(NId)].Add(value);
   }
   return 0;
 } 
 
 int64 TNEANet::DelFromIntVAttrDatN(const int64& NId, const TInt64& value, const TStr& attr) {
-  TInt64 CurrLen;
   if (!IsNode(NId)) {
     // AddNode(NId);
     return -1;
   }
-  if (KeyToIndexTypeN.IsKey(attr)) {
-    TVec<TInt64V, int64>& NewVec = VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
-    if (!NewVec[NodeH.GetKeyId(NId)].DelIfIn(value)) {
-      return -1;
+  TInt location = CheckDenseOrSparseN(attr);
+  if (location != -1) {
+    if (location == 1) {
+      TVec<TInt64V, int64>& NewVec = VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
+      if (!NewVec[NodeH.GetKeyId(NId)].DelIfIn(value)) {
+        return -1;
+      }
+    } else {
+      THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsN[KeyToIndexTypeN.GetDat(attr).Val2];
+      if (!NewHash[NodeH.GetKeyId(NId)].DelIfIn(value)) {
+        return -1;
+      }
     }
   } else {
     return -1;
@@ -1112,40 +1171,43 @@ int64 TNEANet::AddIntAttrDatE(const int64& EId, const TInt64& value, const TStr&
   return 0;
 }
 
-int64 TNEANet::AddIntVAttrDatE(const int64& EId, const TInt64V& value, const TStr& attr) {
-  int64 i;
-  TInt CurrLen;
-  if (!IsEdge(EId)) {
-    //AddEdge(EId);
-     return -1;
+int64 TNEANet::AddIntVAttrDatE(const int64& EId, const TInt64V& value, const TStr& attr, TBool UseDense) {
+  if (!IsNode(EId)) {
+    // AddNode(NId);
+    return -1;
   }
-  if (KeyToIndexTypeE.IsKey(attr)) {
+  TInt location = CheckDenseOrSparseE(attr);
+  if (location==-1) {
+    AddIntVAttrE(attr, UseDense);
+    location = CheckDenseOrSparseE(attr);
+  }
+  if (UseDense) {
+    IAssertR(location != 0, TStr::Fmt("EdgeID %d exists for %s in sparse representation", EId, attr.CStr()));
     TVec<TInt64V, int64>& NewVec = VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2];
     NewVec[EdgeH.GetKeyId(EId)] = value;
   } else {
-    CurrLen = VecOfIntVecVecsE.Len();
-    KeyToIndexTypeE.AddDat(attr, TInt64Pr(IntVType, CurrLen));
-    TVec<TInt64V, int64> NewVec = TVec<TInt64V, int64>();
-    for (i = 0; i < MxEId; i++) {
-      NewVec.Ins(i, TInt64V());
-    }
-    NewVec[EdgeH.GetKeyId(EId)] = value;
-    VecOfIntVecVecsE.Add(NewVec);
+    IAssertR(location != 1, TStr::Fmt("NodeId %d exists for %s in dense representation", EId, attr.CStr()));
+    THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsE[KeyToIndexTypeE.GetDat(attr).Val2];
+    NewHash.AddDat(EdgeH.GetKeyId(EId), value);
   }
   return 0;
 } 
 
-int64 TNEANet::AppendIntVAttrDatE(const int64& EId, const TInt64& value, const TStr& attr) {
-  TInt64 CurrLen;
-  if (!IsEdge(EId)) {
-    //AddEdge(EId);
-     return -1;
+int64 TNEANet::AppendIntVAttrDatE(const int64& EId, const TInt64& value, const TStr& attr, TBool UseDense) {
+  if (!IsNode(EId)) {
+    // AddNode(NId);
+    return -1;
   }
-  if (KeyToIndexTypeE.IsKey(attr)) {
+  TInt location = CheckDenseOrSparseE(attr);
+  if (location==-1) return -1;
+  if (UseDense) {
+    IAssertR(location != 0, TStr::Fmt("Edge %d exists for %s in sparse representation", EId, attr.CStr()));
     TVec<TInt64V, int64>& NewVec = VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2];
     NewVec[EdgeH.GetKeyId(EId)].Add(value);
   } else {
-    return -1;
+    IAssertR(location != 1, TStr::Fmt("Edge %d exists for %s in dense representation", EId, attr.CStr()));
+    THash<TInt64, TInt64V, int64>& NewHash = VecOfIntHashVecsE[KeyToIndexTypeE.GetDat(attr).Val2];
+    NewHash[EdgeH.GetKeyId(EId)].Add(value);
   }
   return 0;
 }
@@ -1210,7 +1272,9 @@ TInt64 TNEANet::GetIntAttrDatN(const int64& NId, const TStr& attr) {
 }
 
 TInt64V TNEANet::GetIntVAttrDatN(const int64& NId, const TStr& attr) const {
-  return VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
+  TInt location = CheckDenseOrSparseN(attr);
+  if (location != 0) return VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
+  else return VecOfIntHashVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)];
 }
 
 TStr TNEANet::GetStrAttrDatN(const int64& NId, const TStr& attr) {
@@ -1246,7 +1310,9 @@ TInt64 TNEANet::GetIntAttrDatE(const int64& EId, const TStr& attr) {
 }
 
 TInt64V TNEANet::GetIntVAttrDatE(const int64& EId, const TStr& attr) {
-  return VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
+  TInt location = CheckDenseOrSparseE(attr);
+  if (location != 0) return VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
+  else return VecOfIntHashVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
 }
 
 TStr TNEANet::GetStrAttrDatE(const int64& EId, const TStr& attr) {
@@ -1286,7 +1352,9 @@ int64 TNEANet::DelAttrDatN(const int64& NId, const TStr& attr) {
   } else if (vecType == FltType) {
     VecOfFltVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)] = GetFltAttrDefaultN(attr);
   } else if (vecType ==IntVType) {
-    VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)] = TInt64V();
+    TInt location = CheckDenseOrSparseN(attr);
+    if (location == 0) VecOfIntHashVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)] = TInt64V();
+    else VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2][NodeH.GetKeyId(NId)] = TInt64V();
   } else {
     return -1;
   }
@@ -1303,7 +1371,9 @@ int64 TNEANet::DelAttrDatE(const int64& EId, const TStr& attr) {
   } else if (vecType == FltType) {
     VecOfFltVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)] = GetFltAttrDefaultE(attr);
   } else if (vecType == IntVType) {
-    VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)] = TInt64V();
+    TInt location = CheckDenseOrSparseE(attr);
+    if (location == 0) VecOfIntHashVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)] = TInt64V();
+    else VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)] = TInt64V();
   } else {
     return -1;
   }
@@ -1371,13 +1441,21 @@ int64 TNEANet::AddIntAttrN(const TStr& attr, TInt64 defaultValue){
   return 0;
 }
 
-int64 TNEANet::AddIntVAttrN(const TStr& attr){
-  TInt64 CurrLen;
-  TVec<TInt64V, int64> NewVec;
-  CurrLen = VecOfIntVecVecsN.Len();
-  KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
-  NewVec = TVec<TInt64V, int64>(MxNId);
-  VecOfIntVecVecsN.Add(NewVec);
+int64 TNEANet::AddIntVAttrN(const TStr& attr, TBool UseDense){
+  TInt CurrLen;
+  if (UseDense) {
+    CurrLen = VecOfIntVecVecsN.Len();
+    KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
+    KeyToDenseN.AddDat(attr, true);
+    TVec<TInt64V, int64> NewVec = TVec<TInt64V, int64>(MxNId);
+    VecOfIntVecVecsN.Add(NewVec);
+  } else {
+    CurrLen = VecOfIntHashVecsN.Len();
+    KeyToIndexTypeN.AddDat(attr, TInt64Pr(IntVType, CurrLen));
+    KeyToDenseN.AddDat(attr, false);
+    THash<TInt64, TInt64V, int64> NewHash;
+    VecOfIntHashVecsN.Add(NewHash);
+  }
   return 0;
 }
 
@@ -1440,17 +1518,21 @@ int64 TNEANet::AddIntAttrE(const TStr& attr, TInt64 defaultValue){
   return 0;
 }
 
-int64 TNEANet::AddIntVAttrE(const TStr& attr){
-  int64 i;
+int64 TNEANet::AddIntVAttrE(const TStr& attr, TBool UseDense){
   TInt64 CurrLen;
-  TVec<TInt64V, int64> NewVec;
-  CurrLen = VecOfIntVecVecsE.Len();
-  KeyToIndexTypeE.AddDat(attr, TInt64Pr(IntVType, CurrLen));
-  NewVec = TVec<TInt64V, int64>();
-  for (i = 0; i < MxEId; i++) {
-    NewVec.Ins(i, TInt64V());
+  if (UseDense) {
+    CurrLen = VecOfIntVecVecsE.Len();
+    KeyToIndexTypeE.AddDat(attr, TInt64Pr(IntVType, CurrLen));
+    KeyToDenseE.AddDat(attr, true);
+    TVec<TInt64V, int64> NewVec = TVec<TInt64V, int64>(MxEId);
+    VecOfIntVecVecsE.Add(NewVec);
+  } else {
+    CurrLen = VecOfIntHashVecsE.Len();
+    KeyToIndexTypeE.AddDat(attr, TInt64Pr(IntVType, CurrLen));
+    KeyToDenseE.AddDat(attr, false);
+    THash<TInt64, TInt64V, int64> NewHash;
+    VecOfIntHashVecsE.Add(NewHash);
   }
-  VecOfIntVecVecsE.Add(NewVec);
   return 0;
 }
 
@@ -1510,7 +1592,15 @@ int64 TNEANet::DelAttrN(const TStr& attr) {
       FltDefaultsN.DelKey(attr);
     }
   } else if (vecType == IntVType) {
-    VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2] = TVec<TInt64V, int64>();
+    TInt location = CheckDenseOrSparseN(attr);
+    if (location == 1) {
+      VecOfIntVecVecsN[KeyToIndexTypeN.GetDat(attr).Val2] = TVec<TInt64V, int64>();
+    } else if (location == 0) {
+      VecOfIntHashVecsN[KeyToIndexTypeN.GetDat(attr).Val2] = THash<TInt64, TInt64V, int64>();
+    }
+    if (location != -1) {
+      KeyToDenseN.DelKey(attr);
+    }
   } else {
     return -1;
   }
