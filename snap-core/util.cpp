@@ -749,6 +749,60 @@ double TStopwatch::Min(const TExperiment Exp) const {
   return Mins[Exp];
 }
 
+////////////////////////////////////////////////////
+/// Conversions of various integer types to C strings for printing
+
+static char CStrBuf[10][128];       // buffers to return the results
+static int CStrCnt = 0;           // counter for the next buffer
+
+const char *ToCStr(const int i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], TInt::GetStr(i).CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const uint i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], TUInt::GetStr(i).CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const int64 i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], TInt64::GetStr(i).CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const uint64 i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], TUInt64::GetStr(i).CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const TInt i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], i.GetStr().CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const TUInt i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], i.GetStr().CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const TInt64 i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], i.GetStr().CStr());
+  return CStrBuf[CStrCnt];
+}
+
+const char *ToCStr(const TUInt64 i) {
+  CStrCnt = (CStrCnt + 1) % 10;
+  strcpy(CStrBuf[CStrCnt], i.GetStr().CStr());
+  return CStrBuf[CStrCnt];
+}
+
 /////////////////////////////////////////////////
 /// Snapworld supporting functions
 

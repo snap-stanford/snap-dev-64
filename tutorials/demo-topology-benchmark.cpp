@@ -45,7 +45,7 @@ void BenchmarkGraphEdgeI(PGraph Graph, std::ofstream& file, bool isDefrag) {
   }
   
   double msec = (clock() - start) * 1000.0 / CLOCKS_PER_SEC;
-  printf("Nodes: %d Edges: %d Time: %f ms\n", Graph->GetNodes(), ECount, msec/50);
+  printf("Nodes: %s Edges: %d Time: %f ms\n", ToCStr(Graph->GetNodes()), ECount, msec/50);
   file << msec/50 << " ";
 }
 
@@ -65,7 +65,7 @@ void BenchmarkGraphDegTrav(PGraph Graph, std::ofstream& file, bool isDefrag) {
   }
 
   double msec = (clock() - start) * 1000.0 / CLOCKS_PER_SEC;
-  printf("Nodes: %d Edges: %d Time: %f ms\n", Graph->GetNodes(), ECount, msec/50);
+  printf("Nodes: %s Edges: %d Time: %f ms\n", ToCStr(Graph->GetNodes()), ECount, msec/50);
   file << msec/50 << " ";
 }
 
@@ -83,7 +83,7 @@ void BenchmarkGraphNodeI(PGraph Graph, std::ofstream& file, bool isDefrag) {
   }
   
   double msec = (clock() - start) * 1000.0 / CLOCKS_PER_SEC;
-  printf("Nodes: %d Edges: %d Time: %f ms\n", NCount, Graph->GetEdges(), msec/50);
+  printf("Nodes: %d Edges: %s Time: %f ms\n", NCount, ToCStr(Graph->GetEdges()), msec/50);
   file << msec/50 << " ";
 }
 
