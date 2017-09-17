@@ -123,7 +123,7 @@ int64 TModeNet::DelNbrType(const TStr& CrossName) {
   return 0;
 }
 
-void TModeNet::GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId) const{
+void TModeNet::GetNeighborsByCrossNet(const int64& NId, const TStr& Name, TInt64V& Neighbors, const bool isOutEId) const{
   IAssertR(NeighborTypes.IsKey(Name), TStr::Fmt("Cross Type does not exist: %s", Name.GetCStr()));
   TBool hasSingleVector = NeighborTypes.GetDat(Name);
   if (hasSingleVector) {
@@ -1144,7 +1144,7 @@ void TMMNet::ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& 
   }
 }
 
-PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths) {
+PMMNet TMMNet::GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths) {
   TVec<TBoolV> CrossOrientations(Metapaths.Len(), Metapaths.Len()); // for undirected edges. true = treat mode1 as src, false = treat mode2 as src. Must be true for directed.
   ValidateCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths, CrossOrientations);
 
@@ -1181,9 +1181,8 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const int64& StartModeId, const TI
         TInt64 SrcNId = *SrcNIt;
         TInt64V CNNeighboringEdges;
         SrcMode.GetNeighborsByCrossNet(SrcNId, CNName, CNNeighboringEdges, true);
-        for (TInt64V::TIter EdgeIt = CNNeighboringEdges.BegI(); EdgeIt < CNNeighboringEdges.EndI(); EdgeIt++) {          
-          const TCrossNet::TCrossEdge& edge = CN.GetEdge(*EdgeIt);
-          
+        for (TInt64V::TIter EdgeIt = CNNeighboringEdges.BegI(); EdgeIt < CNNeighboringEdges.EndI(); EdgeIt++) {
+          TCrossNet::TCrossEdgeI edge = CN.GetEdgeI(*EdgeIt);
           // If the crossnet is undirected, this edge may have the current node as the src type or dst type.
           // Therefore find the endpoint that matches SrcNId and visit the other endpoint.
           TInt64 DstNId = (edge.GetSrcNId() == SrcNId ? edge.GetDstNId() : edge.GetSrcNId());
@@ -1202,6 +1201,12 @@ PMMNet TMMNet::GetSubgraphByCrossNetMetapaths(const int64& StartModeId, const TI
   }
 
   return Result;
+}
+
+PMMNet TMMNet::GetSubgraphByMetapath(const int64& StartModeId, const TInt64V& StartNodeIds, const TInt64V& Metapath) {
+  TVec<TInt64V> _Metapath;
+  _Metapath.Add(Metapath);
+  return GetSubgraphByMetapaths(StartModeId, StartNodeIds, _Metapath);
 }
 
 PNEANet TMMNet::ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64>& EdgeAttrMap) {
@@ -1453,7 +1458,7 @@ PNEANet TMMNet::ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, T
   return NewNet;
 }
 
-PNEANet TMMNet::GetMetagraph() {
+PNEANet TMMNet::GetMetagraph() const {
   PNEANet Result = TNEANet::New(GetModeNets(), GetCrossNets());
   Result->AddStrAttrN("ModeName");
   Result->AddIntAttrN("Weight");
@@ -1499,6 +1504,36 @@ PNEANet TMMNet::GetMetagraph() {
   }
 
   return Result;
+}
+
+void TMMNet::GetMetapaths(const int64& StartModeId, const int64& EndModeId, const int64& MaxPathLen, TVec<TInt64V>& Metapaths) const {
+  IAssertR(TModeNetH.IsKey(StartModeId), TStr::Fmt("No mode with starting id %d", StartModeId));
+  IAssertR(TModeNetH.IsKey(EndModeId), TStr::Fmt("No mode with ending id %d", EndModeId));
+  IAssertR(MaxPathLen > 0, TStr::Fmt("MaxPathLen must be greater than 0; %d given", MaxPathLen));  
+  Metapaths.Clr();
+
+  PNEANet Metagraph = GetMetagraph();
+  TInt64V CurrPath;
+  MetapathDfsVisit(Metagraph, StartModeId, EndModeId, MaxPathLen, CurrPath, Metapaths);
+}
+
+void TMMNet::MetapathDfsVisit(const PNEANet Metagraph, const TInt64& CurrModeId, const TInt64& EndModeId,
+                      const TInt64& MaxL, TInt64V& CurrPath, TVec<TInt64V>& Metapaths) const {
+  if (CurrModeId == EndModeId && CurrPath.Len() > 0) { Metapaths.Add(CurrPath); }
+  if (CurrPath.Len() == MaxL) { return; }
+  
+  TNEANet::TNodeI CurrNode = Metagraph->GetNI(CurrModeId);
+  for (int64 i = 0; i < CurrNode.GetOutDeg(); i++) {
+    int64 OutEId = CurrNode.GetOutEId(i);
+    TNEANet::TEdgeI OutEdge = Metagraph->GetEI(OutEId);
+    if (!Metagraph->GetIntAttrDatE(OutEdge, "Directed")) { // undirected crossnet; CN id is min(OutEId, id of reverse(OutEId))
+      CurrPath.Add(TMath::Mn(OutEId, Metagraph->GetIntAttrDatE(OutEdge, "Reverse").Val));
+    } else { 
+      CurrPath.Add(OutEId);
+    }
+    MetapathDfsVisit(Metagraph, OutEdge.GetDstNId(), EndModeId, MaxL, CurrPath, Metapaths);
+    CurrPath.DelLast();
+  }
 }
 
 void TMMNet::GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxLen) const {

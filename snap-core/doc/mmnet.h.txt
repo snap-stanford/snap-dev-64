@@ -32,7 +32,7 @@ All attribute data from the original crossnet is copied to the edges of the new 
 All node attribute names and defaults are copied except those which denote crossnets incident to Src. All edge attribute names and defaults are deleted, as intra-mode edges should be represented by self-crossnets.
 ///
 
-/// TMMNet::GetSubgraphByCrossNetMetapaths
+/// TMMNet::GetSubgraphByMetapaths
 Each row of \c Metapaths is a vector of crossnet ids in the multimodal network. Each vector must form a path through the mode connectivity graph, in the sense that the source mode of each crossnet must match the destination mode of its predecessor.
 The orientation of each metapath's crossnets is determined by \c StartModeId. \c StartModeId must match \c Mode1 of the zeroth crossnet of each metapath if that crossnet is directed. If the zeroth crossnet of a metapath is undirected, either \c Mode1 or \c Mode2 may match it, and the other mode becomes the destination mode of the crossnet. 
 For every subsequent crossnet in a metapath, \c Mode1 must match the destination mode of the previous crossnet if the current one is directed; otherwise, either \c Mode1 or \c Mode2 must match. The unmatched mode is treated as the destination of a crossnet when dealing with its successor.

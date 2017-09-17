@@ -1677,7 +1677,7 @@ TEST(multimodal, GetMetagraph) {
 static const int kNGenModes = 25;
 static const int kNNodesPerMode = 100;
 static const double kCrossEdgeProb = 0.1;
-static const TStr outpathbase = "multimodal/networks/";
+static const TStr outpathbase = "";
 
 static bool coinflip(double p) { return TFlt::Rnd.GetUniDev() < p; }
 
@@ -1927,7 +1927,7 @@ static void eulerian_reconstitute(const TStr& filename) {
   for (TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
   TVec<TInt64V> Metapaths; 
   Metapaths.Add(metapath);
-  PMMNet copy = fullnet->GetSubgraphByCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths);
+  PMMNet copy = fullnet->GetSubgraphByMetapaths(StartModeId, StartNodeIds, Metapaths);
   check_reconstituted(fullnet, copy);
 }
 
@@ -1979,7 +1979,7 @@ static void tree_reconstitute(const TStr& filename) {
   for (TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
   TVec<TInt64V> Metapaths;
   ASSERT_TRUE(get_tree_metapaths(fullnet, Metapaths, StartModeId));
-  PMMNet copy = fullnet->GetSubgraphByCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths);
+  PMMNet copy = fullnet->GetSubgraphByMetapaths(StartModeId, StartNodeIds, Metapaths);
 
   // Only check mode data, since BFS tree doesn't necessarily include all edges.
   check_reconstituted_modes(fullnet, copy, false);  
@@ -2043,3 +2043,4 @@ TEST(multimodal, SplitCrossNetByStrAttr) {
     }
   }
 }
+
