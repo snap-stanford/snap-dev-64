@@ -1023,10 +1023,15 @@ public:
     KeyI=SetKeyI.KeyI; EndI=SetKeyI.EndI; return *this; }
   bool operator==(const THashSetKeyI& SetKeyI) const {
     return KeyI==SetKeyI.KeyI; }
+  bool operator!=(const THashSetKeyI& SetKeyI) const {
+    return KeyI!=SetKeyI.KeyI;}
   bool operator<(const THashSetKeyI& SetKeyI) const {
     return KeyI<SetKeyI.KeyI; }
-  THashSetKeyI& operator++(int) { KeyI++; while (KeyI < EndI && KeyI->HashCd==-1) { KeyI++; } return *this; }
-  THashSetKeyI& operator--(int) { do { KeyI--; } while (KeyI->HashCd==-1); return *this; }
+
+  THashSetKeyI& operator++(){ KeyI++; while (KeyI < EndI && KeyI->HashCd==-1) { KeyI++; } return *this; }
+  THashSetKeyI& operator--(){ do { KeyI--; } while (KeyI->HashCd==-1); return *this;}
+  THashSetKeyI operator++(int){ THashSetKeyI OldVal = *this; KeyI++; while (KeyI < EndI && KeyI->HashCd==-1) { KeyI++; } return OldVal; }
+  THashSetKeyI operator--(int){ THashSetKeyI OldVal = *this; do { KeyI--; } while (KeyI->HashCd==-1); return OldVal;}
 
   const TKey& operator*() const { return KeyI->Key; }
   const TKey& operator()() const { return KeyI->Key; }
@@ -1110,6 +1115,8 @@ public:
     return TIter(KeyV.EndI(), KeyV.EndI());
   }
   TIter EndI() const {return TIter(KeyV.EndI(), KeyV.EndI()); }
+  TIter begin() const { return BegI(); } // required by C++11 for each
+  TIter end() const { return EndI(); } // required by C++11 for each
   TIter GetI(const TKey& Key) const {return TIter(&KeyV[GetKeyId(Key)], KeyV.EndI()); }
 
   void Gen(const TSizeTy& ExpectVals) {

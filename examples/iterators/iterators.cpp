@@ -40,7 +40,13 @@ int main(int argc, char* argv[]) {
     }
     printf("\n");
 
-    //
+    // has set
+    TIntSet IntSet = TIntSet(TIntV::GetV(1,2,3,4,5));
+    for (const auto& Key : IntSet) {
+        printf("%d ", Key.Val);
+    }
+    printf("\n");
+
 
     return 0;
 }
