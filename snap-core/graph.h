@@ -73,9 +73,14 @@ public:
     /// Decrement iterator.
     TNodeI& operator-- (int) { NodeHI--; return *this; }
 
-
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
+
+    /// Following functions are required for C++11 range loops
+    TNodeI& operator++ () { return operator++(0); }
+    bool operator != (const TNodeI& NodeI) const { return !(NodeI == *this); }
+    const TNodeI& operator*() const { return *this; }
+    TNodeI& operator*() { return *this; }
 
     /// Returns ID of the current node.
     int64 GetId() const { return NodeHI.GetDat().GetId(); }
@@ -115,6 +120,11 @@ public:
     TEdgeI& operator++ (int) { do { CurEdge++; if (CurEdge >= CurNode.GetOutDeg()) { CurEdge=0; CurNode++; while (CurNode < EndNode && CurNode.GetOutDeg()==0) { CurNode++; } } } while (CurNode < EndNode && GetSrcNId()>GetDstNId()); return *this; }
     bool operator < (const TEdgeI& EdgeI) const { return CurNode<EdgeI.CurNode || (CurNode==EdgeI.CurNode && CurEdge<EdgeI.CurEdge); }
     bool operator == (const TEdgeI& EdgeI) const { return CurNode == EdgeI.CurNode && CurEdge == EdgeI.CurEdge; }
+    /// Following functions are required for C++11 range loops
+    TEdgeI& operator++ () { return operator++(0); }
+    bool operator != (const TEdgeI& EdgeI) const { return !(EdgeI == *this); }
+    const TEdgeI& operator*() const { return *this; }
+    TEdgeI& operator*() { return *this; }
     /// Returns edge ID. Always returns -1 since only edges in multigraphs have explicit IDs.
     int64 GetId() const { return -1; }
     /// Returns the source of the edge. Since the graph is undirected, this is the node with a smaller ID of the edge endpoints.
@@ -167,7 +177,7 @@ public:
   bool HasFlag(const TGraphFlag& Flag) const;
   TUNGraph& operator = (const TUNGraph& Graph) {
     if (this!=&Graph) { MxNId=Graph.MxNId; NEdges=Graph.NEdges; NodeH=Graph.NodeH; } return *this; }
-  
+
   /// Returns the number of nodes in the graph.
   int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the graph. ##TUNGraph::AddNode
@@ -192,6 +202,8 @@ public:
   TNodeI EndNI() const { return TNodeI(NodeH.EndI()); }
   /// Returns an iterator referring to the node of ID NId in the graph.
   TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId)); }
+  /// Returns wraper for C++ range-based loops over nodes
+  TIterNode<TUNGraph> GetNI() const { return TIterNode<TUNGraph>(this); }
   /// Returns an ID that is larger than any node ID in the graph.
   int64 GetMxNId() const { return MxNId; }
 
@@ -217,6 +229,8 @@ public:
   TEdgeI GetEI(const int64& EId) const;
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the graph. ##TUNGraph::GetEI
   TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
+  /// Returns wraper for C++ range-based loops over edges
+  TIterEdge<TUNGraph> GetEI() const { return TIterEdge<TUNGraph>(this); }
 
   /// Returns an ID of a random node in the graph.
   int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
@@ -303,6 +317,13 @@ public:
 
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
+
+    /// Following functions are required for C++11 range loops
+    TNodeI& operator++ () { return operator++(0); }
+    bool operator != (const TNodeI& NodeI) const { return !(NodeI == *this); }
+    const TNodeI& operator*() const { return *this; }
+    TNodeI& operator*() { return *this; }
+
     /// Returns ID of the current node.
     int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node, the sum of in-degree and out-degree.
@@ -342,6 +363,11 @@ public:
       while (CurNode < EndNode && CurNode.GetOutDeg()==0) { CurNode++; } }  return *this; }
     bool operator < (const TEdgeI& EdgeI) const { return CurNode<EdgeI.CurNode || (CurNode==EdgeI.CurNode && CurEdge<EdgeI.CurEdge); }
     bool operator == (const TEdgeI& EdgeI) const { return CurNode == EdgeI.CurNode && CurEdge == EdgeI.CurEdge; }
+    /// Following functions are required for C++11 range loops
+    TEdgeI& operator++ () { return operator++(0); }
+    bool operator != (const TEdgeI& EdgeI) const { return !(EdgeI == *this); }
+    const TEdgeI& operator*() const { return *this; }
+    TEdgeI& operator*() { return *this; }
     /// Returns edge ID. Always returns -1 since only edges in multigraphs have explicit IDs.
     int64 GetId() const { return -1; }
     /// Returns the source node of the edge.
@@ -394,7 +420,7 @@ public:
   bool HasFlag(const TGraphFlag& Flag) const;
   TNGraph& operator = (const TNGraph& Graph) {
     if (this!=&Graph) { MxNId=Graph.MxNId; NodeH=Graph.NodeH; }  return *this; }
-  
+
   /// Returns the number of nodes in the graph.
   int64 GetNodes() const { return NodeH.Len(); }
   /// Adds a node of ID NId to the graph. ##TNGraph::AddNode
@@ -419,6 +445,8 @@ public:
   TNodeI EndNI() const { return TNodeI(NodeH.EndI()); }
   /// Returns an iterator referring to the node of ID NId in the graph.
   TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId)); }
+  /// Returns wraper for C++ range-based loops over nodes
+  TIterNode<TNGraph> GetNI() const { return TIterNode<TNGraph>(this); }
   // GetNodeC() has been commented out. It was a quick shortcut, do not use.
   //const TNode& GetNodeC(const int& NId) const { return NodeH.GetDat(NId); }
   /// Returns an ID that is larger than any node ID in the graph.
@@ -446,6 +474,8 @@ public:
   TEdgeI GetEI(const int64& EId) const; // not supported
   /// Returns an iterator referring to edge (SrcNId, DstNId) in the graph.
   TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const;
+  /// Returns wraper for C++ range-based loops over edges
+  TIterEdge<TNGraph> GetEI() const { return TIterEdge<TNGraph>(this); }
 
   /// Returns an ID of a random node in the graph.
   int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
@@ -543,6 +573,13 @@ public:
 
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
+
+    /// Following functions are required for C++11 range loops
+    TNodeI& operator++ () { return operator++(0); }
+    bool operator != (const TNodeI& NodeI) const { return !(NodeI == *this); }
+    const TNodeI& operator*() const { return *this; }
+    TNodeI& operator*() { return *this; }
+
     /// Returns ID of the current node.
     int64 GetId() const { return NodeHI.GetDat().GetId(); }
     /// Returns degree of the current node, the sum of in-degree and out-degree.
@@ -594,6 +631,11 @@ public:
     TEdgeI& operator++ (int) { EdgeHI++; return *this; }
     bool operator < (const TEdgeI& EdgeI) const { return EdgeHI < EdgeI.EdgeHI; }
     bool operator == (const TEdgeI& EdgeI) const { return EdgeHI == EdgeI.EdgeHI; }
+    /// Following functions are required for C++11 range loops
+    TEdgeI& operator++ () { return operator++(0); }
+    bool operator != (const TEdgeI& EdgeI) const { return !(EdgeI == *this); }
+    const TEdgeI& operator*() const { return *this; }
+    TEdgeI& operator*() { return *this; }
     /// Gets edge ID.
     int64 GetId() const { return EdgeHI.GetDat().GetId(); }
     /// Gets the source of an edge.
@@ -651,6 +693,8 @@ public:
   TNodeI EndNI() const { return TNodeI(NodeH.EndI(), this); }
   /// Returns an iterator referring to the node of ID NId in the graph.
   TNodeI GetNI(const int64& NId) const { return TNodeI(NodeH.GetI(NId), this); }
+  /// Returns wraper for C++ range-based loops over nodes
+  TIterNode<TNEGraph> GetNI() const { return TIterNode<TNEGraph>(this); }
   /// Returns an ID that is larger than any node ID in the graph.
   int64 GetMxNId() const { return MxNId; }
 
@@ -676,10 +720,12 @@ public:
   TEdgeI BegEI() const { return TEdgeI(EdgeH.BegI(), this); }
   /// Returns an iterator referring to the past-the-end edge in the graph.
   TEdgeI EndEI() const { return TEdgeI(EdgeH.EndI(), this); }
-  /// Returns an iterator referring to edge with edge ID EId. 
+  /// Returns an iterator referring to edge with edge ID EId.
   TEdgeI GetEI(const int64& EId) const { return TEdgeI(EdgeH.GetI(EId), this); }
-  /// Returns an iterator referring to edge (SrcNId, DstNId) in the graph. 
+  /// Returns an iterator referring to edge (SrcNId, DstNId) in the graph.
   TEdgeI GetEI(const int64& SrcNId, const int64& DstNId) const { return GetEI(GetEId(SrcNId, DstNId)); }
+  /// Returns wraper for C++ range-based loops over edges
+  TIterEdge<TNEGraph> GetEI() const { return TIterEdge<TNEGraph>(this); }
 
   /// Returns an ID of a random node in the graph.
   int64 GetRndNId(TRnd& Rnd=TInt::Rnd) { return NodeH.GetKey(NodeH.GetRndKeyId(Rnd, 0.8)); }
@@ -766,7 +812,7 @@ public:
     TNodeI(const TNodeI& NodeI) : LeftHI(NodeI.LeftHI), RightHI(NodeI.RightHI), leftActive(NodeI.leftActive) { }
     TNodeI& operator = (const TNodeI& NodeI) { LeftHI = NodeI.LeftHI; RightHI=NodeI.RightHI; leftActive = NodeI.leftActive; return *this; }
     /// Increment iterator.
-    TNodeI& operator++ (int) { 
+    TNodeI& operator++ (int) {
     	if (leftActive){
 				if (! LeftHI.IsEnd()) {
 					LeftHI++; }
@@ -862,7 +908,7 @@ public:
   bool HasFlag(const TGraphFlag& Flag) const;
   TBPGraph& operator = (const TBPGraph& BPGraph) {
     if (this!=&BPGraph) { MxNId=BPGraph.MxNId; LeftH=BPGraph.LeftH; RightH=BPGraph.RightH; }  return *this; }
-  
+
   /// Returns the total number of nodes in the graph.
   int64 GetNodes() const { return GetLNodes() + GetRNodes(); }
   /// Returns the number of nodes on the 'left' side of the biparite graph.
@@ -925,7 +971,7 @@ public:
   TEdgeI GetEI(const int64& EId) const;
   /// Returns an iterator referring to edge (LeftNId, RightNId) in the graph. ##TBPGraph::GetEI
   TEdgeI GetEI(const int64& LeftNId, const int64& RightNId) const;
-    
+
   /// Returns an ID of a random node in the graph.
   int64 GetRndNId(TRnd& Rnd=TInt::Rnd);
   /// Returns an ID of a random 'left' node in the graph.
@@ -963,4 +1009,3 @@ public:
 namespace TSnap {
 template <> struct IsBipart<TBPGraph> { enum { Val = 1 }; };
 }
-

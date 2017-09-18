@@ -41,7 +41,7 @@ public:
   static TChA GetWebsiteNm(const TChA& UrlChA); // get website (GetDomNm2 or blog url)
   static bool GetNormalizedUrl(const TChA& UrlIn, const TChA& BaseUrl, TChA& UrlOut);
   static bool StripEnd(const TChA& Str, const TChA& SearchStr, TChA& NewStr);
-  
+
   static TChA GetShorStr(const TChA& LongStr, const int MaxLen=50);
   static TChA GetCleanStr(const TChA& ChA);
   static TChA GetCleanWrdStr(const TChA& ChA);
@@ -132,6 +132,30 @@ extern const char *ToCStr(const TInt i);
 extern const char *ToCStr(const TUInt i);
 extern const char *ToCStr(const TInt64 i);
 extern const char *ToCStr(const TUInt64 i);
+
+//#//////////////////////////////////////////////
+/// C++11 iterator wrapper for nodes
+template <class TGraph>
+class TIterNode {
+  private:
+    TGraph const* Graph;
+  public:
+    TIterNode(TGraph const* _Graph): Graph(_Graph) { }
+    class TGraph::TNodeI begin() { return Graph->BegNI(); }
+    class TGraph::TNodeI end() { return Graph->EndNI(); }
+};
+
+//#//////////////////////////////////////////////
+/// C++11 iterator wrapper for edges
+template <class TGraph>
+class TIterEdge {
+  private:
+    TGraph const* Graph;
+  public:
+    TIterEdge(TGraph const* _Graph): Graph(_Graph) { }
+    class TGraph::TEdgeI begin() { return Graph->BegEI(); }
+    class TGraph::TEdgeI end() { return Graph->EndEI(); }
+};
 
 //#//////////////////////////////////////////////
 /// Snapworld supporting functions

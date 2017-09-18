@@ -40,13 +40,99 @@ int main(int argc, char* argv[]) {
     }
     printf("\n");
 
-    // has set
+    // hash set
     TIntSet IntSet = TIntSet(TIntV::GetV(1,2,3,4,5));
     for (const auto& Key : IntSet) {
         printf("%d ", Key.Val);
     }
     printf("\n");
 
+    // undirected graph iterator
+    PUNGraph UNGraph = TUNGraph::New();
+    for (int ni = 0; ni < 5; ni++) {
+        UNGraph->AddNode(ni);
+    }
+    UNGraph->AddEdge(0, 1);
+    UNGraph->AddEdge(0, 2);
+    UNGraph->AddEdge(0, 3);
+    UNGraph->AddEdge(3, 4);
+    // we can iterate over nodes
+    for (const auto& NI : UNGraph->GetNI()) {
+        printf("%s:%s ", ToCStr(NI.GetId()), ToCStr(NI.GetDeg()));
+    }
+    printf("\n");
+    for (auto& NI : UNGraph->GetNI()) {
+        printf("%s:%s ", ToCStr(NI.GetId()), ToCStr(NI.GetDeg()));
+        NI.SortNIdV();
+    }
+    printf("\n");
+    // we can also iterate over edges
+    for (const auto& EI : UNGraph->GetEI()) {
+        printf("(%s -> %s) ", ToCStr(EI.GetSrcNId()), ToCStr(EI.GetDstNId()));
+    }
+    printf("\n");
+
+    // directed graph iterator
+    PNGraph NGraph = TNGraph::New();
+    for (int ni = 0; ni < 5; ni++) {
+        NGraph->AddNode(ni);
+    }
+    NGraph->AddEdge(0, 1);
+    NGraph->AddEdge(1, 0);
+    NGraph->AddEdge(0, 2);
+    NGraph->AddEdge(0, 3);
+    NGraph->AddEdge(3, 4);
+    // we can iterate over nodes
+    for (const auto& NI : NGraph->GetNI()) {
+        printf("%s:%s ", ToCStr(NI.GetId()), ToCStr(NI.GetDeg()));
+    }
+    printf("\n");
+    // we can also iterate over edges
+    for (const auto& EI : NGraph->GetEI()) {
+        printf("(%s -> %s) ", ToCStr(EI.GetSrcNId()), ToCStr(EI.GetDstNId()));
+    }
+    printf("\n");
+
+    // directed multigraph iterator
+    PNEGraph NEGraph = TNEGraph::New();
+    for (int ni = 0; ni < 5; ni++) {
+        NEGraph->AddNode(ni);
+    }
+    NEGraph->AddEdge(0, 1);
+    NEGraph->AddEdge(0, 1);
+    NEGraph->AddEdge(0, 2);
+    NEGraph->AddEdge(0, 3);
+    NEGraph->AddEdge(3, 4);
+    // we can iterate over nodes
+    for (const auto& NI : NEGraph->GetNI()) {
+        printf("%s:%s ", ToCStr(NI.GetId()), ToCStr(NI.GetDeg()));
+    }
+    printf("\n");
+    // we can also iterate over edges
+    for (const auto& EI : NEGraph->GetEI()) {
+        printf("(%s -> %s) ", ToCStr(EI.GetSrcNId()), ToCStr(EI.GetDstNId()));
+    }
+    printf("\n");
+
+    // directed multigraph iterator
+    PNEANet NEANet = TNEANet::New();
+    for (int ni = 0; ni < 5; ni++) {
+        NEANet->AddNode(ni);
+    }
+    NEANet->AddEdge(0, 1, 123);
+    NEANet->AddEdge(0, 2, 234);
+    NEANet->AddEdge(0, 3, 345);
+    NEANet->AddEdge(3, 4, 456);
+    // we can iterate over nodes
+    for (const auto& NI : NEANet->GetNI()) {
+        printf("%s:%s ", ToCStr(NI.GetId()), ToCStr(NI.GetDeg()));
+    }
+    printf("\n");
+    // we can also iterate over edges
+    for (const auto& EI : NEANet->GetEI()) {
+        printf("(%s: %s -> %s) ", ToCStr(EI.GetId()), ToCStr(EI.GetSrcNId()), ToCStr(EI.GetDstNId()));
+    }
+    printf("\n");
 
     return 0;
 }
