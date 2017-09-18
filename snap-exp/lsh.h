@@ -12,6 +12,7 @@ private:
     TCRef CRef;
   public:
     virtual int Hash(TFltV Datum) = 0;
+    virtual ~HashFunc() {};
     friend class TPt<HashFunc>;
   };
   
