@@ -185,8 +185,7 @@ PNEANet KNNJaccard(PNGraph Graph, int K) {
 
   int sum_neighbors = 0;
   int ct;
-  int end;
-  end = Graph->GetNodes();
+  //int end = Graph->GetNodes();
   TIntV* Neighbors_old = new TIntV();
   TIntV* Neighbors = new TIntV();
   TIntV* temp;
@@ -263,4 +262,3 @@ PNEANet KNNJaccard(PNGraph Graph, int K) {
 
   return KNN;
 }
-

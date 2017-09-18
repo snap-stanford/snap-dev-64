@@ -780,8 +780,8 @@ PTable TTable::LoadSS(const Schema& S, const TStr& InFNm, TTableContext* Context
   if (GetMP() && NoStringCols) {
     // Right now, can load in parallel only in Linux (for mmap) and if
     // there are no string columns
-#ifdef GLib_LINUX
-     LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
+#ifdef GCC_ATOMIC
+    LoadSSPar(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #else
     LoadSSSeq(T, S, InFNm, RelevantCols, Separator, HasTitleLine);
 #endif
@@ -1239,7 +1239,7 @@ void TTable::GroupByIntColMP(const TStr& GroupBy, THashMP<TInt64, TInt64V, int64
   GroupingSanityCheck(GroupBy, atInt);
   TIntPr64V Partitions;
   GetPartitionRanges(Partitions, 8*CHUNKS_PER_THREAD);
-  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  //TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
   //double endPart = omp_get_wtime();
   //printf("Partition time = %f\n", endPart-startFn);
 
@@ -2901,7 +2901,7 @@ void TTable::SelectAtomicConst(const TStr& Col, const TPrimitive& Val, TPredComp
       //printf("Init time = %f\n", endInit-startFn);
       TIntPr64V Partitions;
       GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-      TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+      //TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
       int64 RemoveCount = 0;
       //double endPart = omp_get_wtime();
       //printf("Partition time = %f\n", endPart-endInit);
@@ -4167,7 +4167,7 @@ void TTable::SetFltColToConstMP(TInt64 UpdateColIdx, TFlt DefaultFltVal){
     if(!GetMP()){ TExcept::Throw("Not Using MP!");}
   TIntPr64V Partitions;
   GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  //TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
   #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
   for (int64 i = 0; i < Partitions.Len(); i++){
     TRowIterator RowI(Partitions[i].GetVal1(), this);
@@ -4211,7 +4211,7 @@ void TTable::UpdateFltFromTableMP(const TStr& KeyAttr, const TStr& UpdateAttr,
 
   TIntPr64V Partitions;
   Table.GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  //TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
   TInt64V Locks(NumRows);
   Locks.PutAll(0);  // need to parallelize this...
 
@@ -4724,7 +4724,7 @@ void TTable::ColGenericOpMP(TInt64 ArgColIdx1, TInt64 ArgColIdx2, TAttrType ArgT
   if(ArgType1 == atInt && ArgType2 == atInt){ ResType = atInt;}
   TIntPr64V Partitions;
   GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  //TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
   #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
   for (int64 i = 0; i < Partitions.Len(); i++){
     TRowIterator RowI(Partitions[i].GetVal1(), this);
@@ -5046,7 +5046,7 @@ void TTable::ColGenericOp(const TStr& Attr1, const TFlt& Num, const TStr& ResAtt
 void TTable::ColGenericOpMP(const TInt64& ColIdx1, const TInt64& ColIdx2, TAttrType ArgType, const TFlt& Num, TArithOp op, TBool ShouldCast){
   TIntPr64V Partitions;
   GetPartitionRanges(Partitions, omp_get_max_threads()*CHUNKS_PER_THREAD);
-  TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
+  //TInt64 PartitionSize = Partitions[0].GetVal2()-Partitions[0].GetVal1()+1;
   #pragma omp parallel for schedule(dynamic, CHUNKS_PER_THREAD)
   for (int64 i = 0; i < Partitions.Len(); i++){
     TRowIterator RowI(Partitions[i].GetVal1(), this);

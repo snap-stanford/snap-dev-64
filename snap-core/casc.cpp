@@ -50,7 +50,7 @@ PNGraph CascGraphSource(PTable P,const TStr C1,const TStr C2,const TStr C3,const
         if (!Graph->IsEdge(OIdx,InIdx)) {
           Graph->AddEdge(OIdx,InIdx);
         }
-      }      
+      }
     }
   }
   return Graph;
@@ -117,7 +117,7 @@ PNGraph CascGraphTime(PTable P,const TStr C1,const TStr C2,const TStr C3,const T
         if (!Graph->IsEdge(OIdx,InIdx)) {
           Graph->AddEdge(OIdx,InIdx);
         }
-      }      
+      }
     }
   }
   return Graph;
@@ -192,7 +192,7 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
                   TInt64::GetStr(PDest).CStr(),
                   TInt64::GetStr(PStart).CStr(),
                   TInt64::GetStr(PDur).CStr());
-      }   
+      }
     }
     if (ToAddV.Len() > 1) {
       TopCascVV.Add(ToAddV);
@@ -204,10 +204,10 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
 #ifdef USE_OPENMP
 void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,TVec<TInt64V, int64> &TopCascVV) {
   // Attribute to Int mapping
-  TInt64 SIdx = P->GetColIdx(C1);
-  TInt64 DIdx = P->GetColIdx(C2);
-  TInt64 StIdx = P->GetColIdx(C3);
-  TInt64 DuIdx = P->GetColIdx(C4);
+  // TInt64 SIdx = P->GetColIdx(C1);
+  // TInt64 DIdx = P->GetColIdx(C2);
+  // TInt64 StIdx = P->GetColIdx(C3);
+  // TInt64 DuIdx = P->GetColIdx(C4);
   TInt64V MapV, PhyV;
   TStr64V SortBy;
   SortBy.Add(C3);
@@ -253,7 +253,7 @@ void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3
       for (TInt64V::TIter VI = CurCasc.BegI(); VI < CurCasc.EndI(); VI++) {
         ToAddV.Add(MapV.GetVal(VI->Val));
       }
-      if (ToAddV.Len() > 1) { ThTopCascVV.Add(ToAddV);}  
+      if (ToAddV.Len() > 1) { ThTopCascVV.Add(ToAddV);}
     }
     #pragma omp critical
     {

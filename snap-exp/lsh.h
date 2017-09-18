@@ -11,10 +11,11 @@ private:
   private:
     TCRef CRef;
   public:
+    virtual ~HashFunc() { }
     virtual int Hash(TFltV Datum) = 0;
     friend class TPt<HashFunc>;
   };
-  
+
   class JaccardHash : public HashFunc {
   private:
     TIntV Perm;
@@ -32,7 +33,7 @@ private:
     CosineHash(TBoolV Hyperplane);
     int Hash(TFltV Datum);
   };
-  
+
   class EuclideanHash : public HashFunc {
   private:
     static const int Gap;
