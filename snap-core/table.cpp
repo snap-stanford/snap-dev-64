@@ -212,6 +212,17 @@ TBool TRowIterator::CompareAtomicConstTStr(TInt64 ColIdx, const TStr& Val, TPred
   return Result;
 }
 
+TRowIteratorWrap::TRowIteratorWrap(TTable const* _Table): Table(_Table) { }
+
+TRowIterator TRowIteratorWrap::begin() {
+    return Table->BegRI();
+}
+
+TRowIterator TRowIteratorWrap::end() {
+    return Table->EndRI();
+}
+
+
 TRowIteratorWithRemove::TRowIteratorWithRemove(TInt64 RowIdx, TTable* TablePtr) :
   CurrRowIdx(RowIdx), Table(TablePtr), Start(RowIdx == TablePtr->FirstValidRow) {}
 
@@ -295,6 +306,16 @@ TBool TRowIteratorWithRemove::CompareAtomicConst(TInt64 ColIdx, const TPrimitive
       Result = TBool(false);
   }
   return Result;
+}
+
+TRowIteratorWithRemoveWrap::TRowIteratorWithRemoveWrap(TTable* _Table): Table(_Table) { }
+
+TRowIteratorWithRemove TRowIteratorWithRemoveWrap::begin() {
+    return Table->BegRIWR();
+}
+
+TRowIteratorWithRemove TRowIteratorWithRemoveWrap::end() {
+    return Table->EndRIWR();
 }
 
 // Better not use default constructor as it leads to a memory leak.

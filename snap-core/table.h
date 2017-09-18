@@ -350,12 +350,18 @@ public:
   TRowIterator(const TRowIterator& RowI): CurrRowIdx(RowI.CurrRowIdx), Table(RowI.Table) {}
   /// Increments the iterator.
   TRowIterator& operator++(int);
+  /// Increments the iterator (for C++11 range loops)
+  TRowIterator& operator++() { return operator++(0); }
   /// Increments the iterator (For Python compatibility).
   TRowIterator& Next();
   /// Checks if this iterator points to a row that is before the one pointed by \c RowI.
   bool operator < (const TRowIterator& RowI) const;
   /// Checks if this iterator points to the same row pointed by \c RowI.
   bool operator == (const TRowIterator& RowI) const;
+  /// Check if this iterator points to different row than pointed by \c RowI
+  bool operator != (const TRowIterator& RowI) const { return !(RowI == *this); }
+  /// Return iterator (for C++11 range loops)
+  const TRowIterator& operator*() const { return *this; }
   /// Gets the id of the row pointed by this iterator.
   TInt64 GetRowIdx() const;
   /// Returns value of integer attribute specified by integer column index for current row.
@@ -381,6 +387,17 @@ public:
 };
 
 //#//////////////////////////////////////////////
+/// C++11 iterator wrapper for rows
+class TRowIteratorWrap {
+  private:
+    TTable const* Table;
+  public:
+    TRowIteratorWrap(TTable const* _Table);
+    TRowIterator begin();
+    TRowIterator end();
+};
+
+//#//////////////////////////////////////////////
 /// Iterator class for TTable rows, that allows logical row removal while iterating.
 class TRowIteratorWithRemove {
   TInt64 CurrRowIdx; ///< Physical row index of current row pointer by iterator.
@@ -399,12 +416,18 @@ public:
     Table(RowI.Table), Start(RowI.Start) {}
   /// Increments the iterator.
   TRowIteratorWithRemove& operator++(int);
+  /// Increments the iterator (for C++11 range loops)
+  TRowIteratorWithRemove& operator++() { return operator++(0); }
   /// Increments the iterator (For Python compatibility).
   TRowIteratorWithRemove& Next();
   /// Checks if this iterator points to a row that is before the one pointed by \c RowI.
   bool operator < (const TRowIteratorWithRemove& RowI) const;
   /// Checks if this iterator points to the same row pointed by \c RowI.
   bool operator == (const TRowIteratorWithRemove& RowI) const;
+  /// Check if this iterator points to different row than pointed by \c RowI
+  bool operator != (const TRowIteratorWithRemove& RowI) const { return !(RowI == *this); }
+  /// Return iterator (for C++11 range loops)
+  const TRowIteratorWithRemove& operator*() const { return *this; }
   /// Gets physical index of current row.
   TInt64 GetRowIdx() const;
   /// Gets physical index of next row.
@@ -427,6 +450,17 @@ public:
   void RemoveNext();
   /// Compares value in column \c ColIdx with given primitive \c Val.
   TBool CompareAtomicConst(TInt64 ColIdx, const TPrimitive& Val, TPredComp Cmp);
+};
+
+//#//////////////////////////////////////////////
+/// C++11 iterator wrapper for rows
+class TRowIteratorWithRemoveWrap {
+  private:
+    TTable* Table;
+  public:
+    TRowIteratorWithRemoveWrap(TTable* _Table);
+    TRowIteratorWithRemove begin();
+    TRowIteratorWithRemove end();
 };
 
 //#//////////////////////////////////////////////
@@ -1147,10 +1181,14 @@ public:
   TRowIterator BegRI() const { return TRowIterator(FirstValidRow, this);}
   /// Gets iterator to the last valid row of the table.
   TRowIterator EndRI() const { return TRowIterator(TTable::Last, this);}
+  /// Get iterator wrapper for C++11 range loops
+  TRowIteratorWrap GetRI() const { return TRowIteratorWrap(this); }
   /// Gets iterator with reomve to the first valid row.
   TRowIteratorWithRemove BegRIWR(){ return TRowIteratorWithRemove(FirstValidRow, this);}
   /// Gets iterator with reomve to the last valid row.
   TRowIteratorWithRemove EndRIWR(){ return TRowIteratorWithRemove(TTable::Last, this);}
+  /// Get iterator wrapper for C++11 range loops
+  TRowIteratorWithRemoveWrap GetRIWR() { return TRowIteratorWithRemoveWrap(this); }
   /// Partitions the table into \c NumPartitions and populate \c Partitions with the ranges.
   void GetPartitionRanges(TIntPr64V& Partitions, TInt64 NumPartitions) const;
 

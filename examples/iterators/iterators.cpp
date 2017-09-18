@@ -134,5 +134,26 @@ int main(int argc, char* argv[]) {
     }
     printf("\n");
 
+    // table
+    Schema GradeS;
+    GradeS.Add(TPair<TStr,TAttrType>("Class", atStr));
+    GradeS.Add(TPair<TStr,TAttrType>("Area", atStr));
+    GradeS.Add(TPair<TStr,TAttrType>("Quarter", atStr));
+    GradeS.Add(TPair<TStr,TAttrType>("Grade 2011", atInt));
+    GradeS.Add(TPair<TStr,TAttrType>("Grade 2012", atInt));
+    GradeS.Add(TPair<TStr,TAttrType>("Grade 2013", atInt));
+    TInt64V RelevantCols;
+    RelevantCols.Add(0); RelevantCols.Add(1); RelevantCols.Add(2);
+    RelevantCols.Add(3); RelevantCols.Add(4); RelevantCols.Add(5);
+    TTableContext Context;
+    PTable P = TTable::LoadSS(GradeS, "../../test/table/grades.txt", &Context, RelevantCols);
+    // we can iterate over the rows
+    for (auto RI : P->GetRI()) {
+        printf("%s: %s %s %s %s %s %s\n", ToCStr(RI.GetRowIdx()), RI.GetStrAttr("Class").CStr(),
+            RI.GetStrAttr("Area").CStr(), RI.GetStrAttr("Quarter").CStr(),
+            ToCStr(RI.GetIntAttr("Grade 2011")), ToCStr(RI.GetIntAttr("Grade 2011")),
+            ToCStr(RI.GetIntAttr("Grade 2011")));
+    }
+
     return 0;
 }
