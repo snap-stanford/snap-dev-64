@@ -63,10 +63,14 @@ public:
     KeyDatI=HashKeyDatI.KeyDatI; EndI=HashKeyDatI.EndI; return *this;}
   bool operator==(const THashKeyDatI& HashKeyDatI) const {
     return KeyDatI==HashKeyDatI.KeyDatI;}
+  bool operator!=(const THashKeyDatI& HashKeyDatI) const {
+    return KeyDatI!=HashKeyDatI.KeyDatI;}
   bool operator<(const THashKeyDatI& HashKeyDatI) const {
     return KeyDatI<HashKeyDatI.KeyDatI;}
-  THashKeyDatI& operator++(int){ KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return *this; }
-  THashKeyDatI& operator--(int){ do { KeyDatI--; } while (KeyDatI->HashCd==-1); return *this;}
+  THashKeyDatI& operator++(){ KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return *this; }
+  THashKeyDatI& operator--(){ do { KeyDatI--; } while (KeyDatI->HashCd==-1); return *this;}
+  THashKeyDatI operator++(int){ THashKeyDatI OldVal = *this; KeyDatI++; while (KeyDatI < EndI && KeyDatI->HashCd==-1) { KeyDatI++; } return OldVal; }
+  THashKeyDatI operator--(int){ THashKeyDatI OldVal = *this; do { KeyDatI--; } while (KeyDatI->HashCd==-1); return OldVal;}
   THKeyDat& operator*() const { return *KeyDatI; }
   THKeyDat& operator()() const { return *KeyDatI; }
   THKeyDat* operator->() const { return KeyDatI; }
@@ -173,7 +177,7 @@ public:
     FreeKeys=TInt64(ShMIn);
     ShMIn.LoadCs();
   }
-  
+
   void Load(TSIn& SIn){
     PortV.Load(SIn); KeyDatV.Load(SIn);
     AutoSizeP=TBool(SIn); FFreeKeyId=TInt64(SIn); FreeKeys=TInt64(SIn);
@@ -216,6 +220,8 @@ public:
     TSizeTy FKeyId=-1;  FNextKeyId(FKeyId);
     return TIter(KeyDatV.BegI()+FKeyId, KeyDatV.EndI()); }
   TIter EndI() const {return TIter(KeyDatV.EndI(), KeyDatV.EndI());}
+  TIter begin() const { return BegI(); } // required by C++11 for each
+  TIter end() const { return EndI(); } // required by C++11 for each
   //TIter GetI(const int& KeyId) const {return TIter(&KeyDatV[KeyId], KeyDatV.EndI());}
   TIter GetI(const TKey& Key) const {return TIter(&KeyDatV[GetKeyId(Key)], KeyDatV.EndI());}
 
@@ -1318,9 +1324,9 @@ public:
   inline static int GetSecHashCd(const char *p) {
     const char *r = p;  while (*r) { r++; }
     return (int) DJBHash((const char *) p, r - p) & 0x7fffffff; }
-  inline static int GetPrimHashCd(const TStr& s) { 
+  inline static int GetPrimHashCd(const TStr& s) {
     return GetPrimHashCd(s.CStr()); }
-  inline static int GetSecHashCd(const TStr& s) { 
+  inline static int GetSecHashCd(const TStr& s) {
     return GetSecHashCd(s.CStr()); }
   inline static int GetPrimHashCd(const char *p, const ::TSize& Len) {
     return (int) DJBHash((const char *) p, Len) & 0x7fffffff; }
