@@ -38,6 +38,7 @@ public:
 public:
   TPair(): Val1(), Val2(){}
   TPair(const TPair& Pair): Val1(Pair.Val1), Val2(Pair.Val2){}
+  TPair(const TPair&& Pair): Val1(std::move(Pair.Val1)), Val2(std::move(Pair.Val2)) {}
   TPair(const TVal1& _Val1, const TVal2& _Val2): Val1(_Val1), Val2(_Val2){}
   explicit TPair(TSIn& SIn): Val1(SIn), Val2(SIn){}
   void Save(TSOut& SOut) const {
@@ -48,7 +49,9 @@ public:
 
   TPair& operator=(const TPair& Pair){
     if (this!=&Pair){Val1=Pair.Val1; Val2=Pair.Val2;} return *this;}
-  bool operator==(const TPair& Pair) const {
+  TPair& operator=(TPair&& Pair) {
+      if (this != &Pair) {std::swap(Val1, Pair.Val1); std::swap(Val2, Pair.Val2);} return *this;}
+ bool operator==(const TPair& Pair) const {
     return (Val1==Pair.Val1)&&(Val2==Pair.Val2);}
   bool operator<(const TPair& Pair) const {
     return (Val1<Pair.Val1)||((Val1==Pair.Val1)&&(Val2<Pair.Val2));}
@@ -141,6 +144,8 @@ public:
   TTriple(): Val1(), Val2(), Val3(){}
   TTriple(const TTriple& Triple):
     Val1(Triple.Val1), Val2(Triple.Val2), Val3(Triple.Val3){}
+  TTriple(TTriple&& Triple):
+    Val1(std::move(Triple.Val1)), Val2(std::move(Triple.Val2)), Val3(std::move(Triple.Val3)) {}
   TTriple(const TVal1& _Val1, const TVal2& _Val2, const TVal3& _Val3):
     Val1(_Val1), Val2(_Val2), Val3(_Val3){}
   explicit TTriple(TSIn& SIn): Val1(SIn), Val2(SIn), Val3(SIn){}
@@ -152,6 +157,14 @@ public:
   TTriple& operator=(const TTriple& Triple){
     if (this!=&Triple){Val1=Triple.Val1; Val2=Triple.Val2; Val3=Triple.Val3;}
     return *this;}
+  TTriple& operator=(TTriple&& Triple) {
+      if (this != &Triple) {
+        std::swap(Val1, Triple.Val1);
+        std::swap(Val2, Triple.Val2);
+        std::swap(Val3, Triple.Val3);
+      }
+      return *this;
+  }
   bool operator==(const TTriple& Triple) const {
     return (Val1==Triple.Val1)&&(Val2==Triple.Val2)&&(Val3==Triple.Val3);}
   bool operator<(const TTriple& Triple) const {
@@ -358,6 +371,7 @@ public:
 public:
   TKeyDat(): Key(), Dat(){}
   TKeyDat(const TKeyDat& KeyDat): Key(KeyDat.Key), Dat(KeyDat.Dat){}
+  TKeyDat(TKeyDat&& KeyDat): Key(std::move(KeyDat.Key)), Dat(std::move(KeyDat.Dat)){}
   explicit TKeyDat(const TKey& _Key): Key(_Key), Dat(){}
   TKeyDat(const TKey& _Key, const TDat& _Dat): Key(_Key), Dat(_Dat){}
   explicit TKeyDat(TSIn& SIn): Key(SIn), Dat(SIn){}
@@ -367,6 +381,8 @@ public:
 
   TKeyDat& operator=(const TKeyDat& KeyDat){
     if (this!=&KeyDat){Key=KeyDat.Key; Dat=KeyDat.Dat;} return *this;}
+  TKeyDat& operator=(TKeyDat&& KeyDat){
+    if (this!=&KeyDat){Key=std::move(KeyDat.Key); Dat=std::move(KeyDat.Dat);} return *this;}
   bool operator==(const TKeyDat& KeyDat) const {return Key==KeyDat.Key;}
   bool operator<(const TKeyDat& KeyDat) const {return Key<KeyDat.Key;}
 
@@ -445,6 +461,8 @@ protected:
 public:
   TVec(): MxVals(0), Vals(0), ValT(NULL), IsShM(false) {}
   TVec(const TVec<TVal, TSizeTy>& Vec);
+  /// Move constructor
+  TVec(TVec<TVal, TSizeTy>&& Vec);
   /// Constructs a vector (an array) of length \c _Vals.
   explicit TVec(const TSizeTy& _Vals){
     IsShM = false;
@@ -496,6 +514,8 @@ public:
 
   /// Assigns new contents to the vector, replacing its current content.
   TVec<TVal, TSizeTy>& operator=(const TVec<TVal, TSizeTy>& Vec);
+  /// Move assignment
+  TVec<TVal, TSizeTy>& operator=(TVec<TVal, TSizeTy>&& Vec);
   /// Appends value \c Val to the vector.
   TVec<TVal, TSizeTy>& operator+(const TVal& Val){Add(Val); return *this;}
   /// Checks that the two vectors have the same contents.
@@ -642,9 +662,15 @@ public:
   /// Sets all elements of the vector to value \c Val.
   void PutAll(const TVal& Val);
 
+  /// Move element from position \c ValN1 to \c ValN2
+  void Move(const TSizeTy& FromValN, const TSizeTy& ToValN){
+    EAssertR(!(IsShM && (MxVals == -1)), "Cannot write to shared memory");
+    ValT[ToValN] = std::move(ValT[FromValN]); }
   /// Swaps elements at positions \c ValN1 and \c ValN2.
-  void Swap(const TSizeTy& ValN1, const TSizeTy& ValN2){EAssertR(!(IsShM && (MxVals == -1)), "Cannot write to shared memory");
-    const TVal Val=ValT[ValN1]; ValT[ValN1]=ValT[ValN2]; ValT[ValN2]=Val;}
+  void Swap(const TSizeTy& ValN1, const TSizeTy& ValN2){
+    EAssertR(!(IsShM && (MxVals == -1)), "Cannot write to shared memory");
+    Assert(0 <= ValN1 && ValN1 < Len() && 0 <= ValN2 && ValN2 < Len());
+    std::swap(ValT[ValN1], ValT[ValN2]); }
   /// Swaps the elements that iterators \c LVal and \c RVal point to.
   static void SwapI(TIter LVal, TIter RVal){const TVal Val=*LVal; *LVal=*RVal; *RVal=Val;}
 
@@ -844,7 +870,7 @@ void TVec<TVal, TSizeTy>::Resize(const TSizeTy& _MxVals){
       FailR(TStr::Fmt("TVec::Resize: %s, Length:%s, Capacity:%s, New capacity:%s, Type:%s [Program failed to allocate more memory. Solution-1: Get a bigger machine and a 64-bit compiler.]",
         Ex.what(), TInt::GetStr(Vals).CStr(), TInt::GetStr(MxVals).CStr(), TInt::GetStr(_MxVals).CStr(), GetTypeNm(*this).CStr()).CStr());}
     IAssert(NewValT!=NULL);
-    for (TSizeTy ValN=0; ValN<Vals; ValN++){NewValT[ValN]=ValT[ValN];}
+    for (TSizeTy ValN=0; ValN<Vals; ValN++){NewValT[ValN]=std::move(ValT[ValN]);}
     if (OldMxVals != -1) {delete[] ValT;} ValT=NewValT;
   }
   IsShM = false;
@@ -868,6 +894,15 @@ TVec<TVal, TSizeTy>::TVec(const TVec<TVal, TSizeTy>& Vec){
   IsShM = false;
 }
 
+template <class TVal, class TSizeTy>
+TVec<TVal, TSizeTy>::TVec(TVec<TVal, TSizeTy>&& Vec) : MxVals(0), Vals(0), ValT() {
+  MxVals = std::move(Vec.MxVals);
+  Vals = std::move(Vec.Vals);
+  ValT = Vec.ValT;
+  Vec.MxVals = 0;
+  Vec.Vals = 0;
+  Vec.ValT = NULL;
+}
 
 template <class TVal, class TSizeTy>
 void TVec<TVal, TSizeTy>::LoadShM(TShMIn& ShMIn) {
@@ -900,11 +935,34 @@ void TVec<TVal, TSizeTy>::Save(TSOut& SOut) const {
 
 template <class TVal, class TSizeTy>
 TVec<TVal, TSizeTy>& TVec<TVal, TSizeTy>::operator=(const TVec<TVal, TSizeTy>& Vec){
-  if (this!=&Vec){
-    if ((ValT!=NULL)&&(MxVals!=-1)){delete[] ValT;}
-    MxVals=Vals=Vec.Vals;
-    if (MxVals==0){ValT=NULL;} else {ValT=new TVal[MxVals];}
-    for (TSizeTy ValN=0; ValN<Vec.Vals; ValN++){ValT[ValN]=Vec.ValT[ValN];}
+  if (this != &Vec) {
+    // check if we have enough space and we are not in a vector pool
+    if ((MxVals > 0) && (Vec.Vals <= MxVals)) {
+      // only need to copy the new number of elements
+      Vals = Vec.Vals;
+    } else {
+      // delete old buffer if we have it and own it
+      if ((ValT != NULL) && (MxVals != -1)) { delete[] ValT; }
+      MxVals = Vals = Vec.Vals;
+      // create the buffer if we have any values
+      if (MxVals == 0) { ValT = NULL; } else { ValT = new TVal[MxVals]; }
+    }
+    // copy values
+    for (TSizeTy ValN = 0; ValN < Vec.Vals; ValN++) { ValT[ValN] = Vec.ValT[ValN]; }
+  }
+  return *this;
+}
+
+template <class TVal, class TSizeTy>
+TVec<TVal, TSizeTy>& TVec<TVal, TSizeTy>::operator=(TVec<TVal, TSizeTy>&& Vec) {
+  if (this != &Vec) {
+    if(MxVals != -1) delete[] ValT;
+    MxVals = std::move(Vec.MxVals);
+    Vals = std::move(Vec.Vals);
+    ValT = Vec.ValT;
+    Vec.MxVals = 0;
+    Vec.Vals = 0;
+    Vec.ValT = NULL;
   }
   return *this;
 }
@@ -989,7 +1047,7 @@ void TVec<TVal, TSizeTy>::Trunc(const TSizeTy& _Vals){
       }
       TVal* NewValT=new TVal[MxVals];
       IAssert(NewValT!=NULL);
-      for (TSizeTy ValN=0; ValN<Vals; ValN++){NewValT[ValN]=ValT[ValN];}
+      for (TSizeTy ValN=0; ValN<Vals; ValN++){NewValT[ValN]=std::move(ValT[ValN]);}
       delete[] ValT; ValT=NewValT;
     }
 }
@@ -1005,7 +1063,7 @@ void TVec<TVal, TSizeTy>::Pack(){
       MxVals=Vals;
       TVal* NewValT=new TVal[MxVals];
       IAssert(NewValT!=NULL);
-      for (TSizeTy ValN=0; ValN<Vals; ValN++){NewValT[ValN]=ValT[ValN];}
+      for (TSizeTy ValN=0; ValN<Vals; ValN++){NewValT[ValN]=std::move(ValT[ValN]);}
       delete[] ValT; ValT=NewValT;
     }
 }
@@ -2174,6 +2232,12 @@ public:
   TVVec(): XDim(), YDim(), ValV(){}
   TVVec(const TVVec& Vec):
     XDim(Vec.XDim), YDim(Vec.YDim), ValV(Vec.ValV){}
+  TVVec(const TVVec&& Vec) :
+    XDim(std::move(Vec.XDim)), YDim(std::move(Vec.YDim)), ValV(std::move(Vec.ValV)) { }
+  TVVec(const TVec<TVal, TSizeTy>& Vec) :
+    XDim(Vec.Len()), YDim(1), ValV(Vec){}
+  TVVec(const TVec<TVal, TSizeTy> && Vec) :
+    XDim(Vec.Len()), YDim(1), ValV(std::move(Vec)){}
   TVVec(const TSizeTy& _XDim, const TSizeTy& _YDim):
     XDim(), YDim(), ValV(){Gen(_XDim, _YDim);}
   explicit TVVec(const TVec<TVal,TSizeTy>& _ValV, const TSizeTy& _XDim, const TSizeTy& _YDim):
@@ -2309,7 +2373,7 @@ void TVVec<TVal, TSizeTy>::DelX(const TSizeTy& X){
     for (TSizeTy RX=X+1; RX<XDim; RX++){
       NewVVec.At(RX-1, Y)=At(RX, Y);}
   }
-  *this=NewVVec;
+  *this=std::move(NewVVec);
 }
 
 template <class TVal, class TSizeTy>
@@ -2321,7 +2385,7 @@ void TVVec<TVal, TSizeTy>::DelY(const TSizeTy& Y){
     for (TSizeTy RY=Y+1; RY<YDim; RY++){
       NewVVec.At(X, RY-1)=At(X, RY);}
   }
-  *this=NewVVec;
+  *this=std::move(NewVVec);
 }
 
 template <class TVal, class TSizeTy >

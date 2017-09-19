@@ -40,6 +40,11 @@ public:
       Next=HashKeyDat.Next; HashCd=HashKeyDat.HashCd;
       Key=HashKeyDat.Key; Dat=HashKeyDat.Dat;}
     return *this;}
+  THashKeyDat& operator=(THashKeyDat&& HashKeyDat){
+    if (this!=&HashKeyDat){
+      Next=HashKeyDat.Next; HashCd=HashKeyDat.HashCd;
+      Key=std::move(HashKeyDat.Key); Dat=std::move(HashKeyDat.Dat);}
+    return *this;}
 };
 #pragma pack(pop)
 

@@ -572,7 +572,7 @@ public:
 // Swap
 template <class TRec>
 void Swap(TRec& Rec1, TRec& Rec2){
-  TRec Rec=Rec1; Rec1=Rec2; Rec2=Rec;
+  std::swap(Rec1, Rec2);
 }
 
 /////////////////////////////////////////////////
