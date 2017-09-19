@@ -813,9 +813,9 @@ bool THttpResp::IsFldVal(const TStr& FldNm, const TStr& FldVal) const {
 void THttpResp::AddFldVal(const TStr& FldNm, const TStr& FldVal){
   TStr NrFldNm=THttpLx::GetNrStr(FldNm);
   FldNmToValVH.AddDat(NrFldNm).Add(FldVal);
-  if (HdStr.IsSuffix("\r\n\r\n")){
+  if (HdStr.EndsWith("\r\n\r\n")){
     TChA HdChA=HdStr;
-    HdChA.Pop(); HdChA.Pop(); 
+    HdChA.Pop(); HdChA.Pop();
     HdChA+=NrFldNm; HdChA+=": "; HdChA+=FldVal;
     HdChA+="\r\n\r\n";
     HdStr=HdChA;
@@ -832,7 +832,7 @@ void THttpResp::GetCookieKeyValDmPathQuV(TStrQuV& CookieKeyValDmPathQuV){
     TStrPrV KeyValPrV; TStr DmNm; TStr PathStr;
     for (int KeyValStrN=0; KeyValStrN<KeyValStrV.Len(); KeyValStrN++){
       TStr KeyValStr=KeyValStrV[KeyValStrN];
-      TStr KeyNm; TStr ValStr; 
+      TStr KeyNm; TStr ValStr;
       if (KeyValStr.IsChIn('=')){
         KeyValStrV[KeyValStrN].SplitOnCh(KeyNm, '=', ValStr);
         KeyNm.ToTrunc(); ValStr.ToTrunc();
@@ -862,4 +862,3 @@ PSIn THttpResp::GetSIn() const {
   MOut.PutStr(HdStr); MOut.PutMem(BodyMem);
   return MOut.GetSIn();
 }
-

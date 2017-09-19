@@ -30,19 +30,19 @@ int main(int argc, char* argv[]) {
   TIntStrH NIDNameH;
   if (IsUndirected == 1) {
     PUNGraph UG;
-    if (InFNm.IsSuffix(".ungraph")) {
+    if (InFNm.EndsWith(".ungraph")) {
       TFIn GFIn(InFNm);
       UG = TUNGraph::Load(GFIn);
-      
+
     } else {
       UG = TAGMUtil::LoadEdgeListStr<PUNGraph>(InFNm, NIDNameH);
     }
     G = TSnap::ConvertGraph<PNGraph, PUNGraph>(UG);
   } else {
-    if (InFNm.IsSuffix(".ngraph")) {
+    if (InFNm.EndsWith(".ngraph")) {
       TFIn GFIn(InFNm);
       G = TNGraph::Load(GFIn);
-      
+
     } else {
       G = TAGMUtil::LoadEdgeListStr<PNGraph>(InFNm, NIDNameH);
     }
@@ -57,11 +57,11 @@ int main(int argc, char* argv[]) {
         TUInt64::GetStr(G->GetNodes()).CStr(),
         TUInt64::GetStr(G->GetEdges()).CStr());
 
-  
+
   TVec<TIntV> EstCmtyVVIn, EstCmtyVVOut;
   TExeTm RunTm;
   TCoda CD(G, 10, 10);
-  
+
   if (OptComs == -1) {
     printf("finding number of communities\n");
     OptComs = CD.FindComsByCV(NumThreads, MaxComs, MinComs, DivComs, OutFPrx, StepAlpha, StepBeta);

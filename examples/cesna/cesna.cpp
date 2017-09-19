@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
   TStrHash<TInt> NodeNameH;
   TVec<TFltV> Wck;
   TVec<TIntV> EstCmtyVV;
-  if (InFNm.IsSuffix(".ungraph")) {
+  if (InFNm.EndsWith(".ungraph")) {
     TFIn GFIn(InFNm);
     G = TUNGraph::Load(GFIn);
   } else {
@@ -73,7 +73,7 @@ int main(int argc, char* argv[]) {
 
   TExeTm RunTm;
   TCesna CS(G, NIDAttrH, 10, 10);
-  
+
   if (OptComs == -1) {
     printf("finding number of communities\n");
     OptComs = CS.FindComs(NumThreads, MaxComs, MinComs, DivComs, "", false, 0.1, StepAlpha, StepBeta);

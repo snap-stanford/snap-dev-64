@@ -36,9 +36,8 @@ TStr GVizGetLayoutStr(const TGVizLayout& Layout) {
     case gvlSfdp: return "sfdp";
     default: Fail;
   }
-  return TStr::GetNullStr();
+  return TStr();
 }
 
 } // namespace TSnapDetail
 } // namespace TSnap
-

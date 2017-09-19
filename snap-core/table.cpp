@@ -922,7 +922,7 @@ void TTable::Dump(FILE *OutF) const {
       char C = (i == L-1) ? '\n' : '\t';
       switch (GetSchemaColType(i)) {
         case atInt: {
-          fprintf(OutF, "%s%c", TInt64::GetStr(RowI.GetIntAttr(GetSchemaColName(i)).Val).GetCStr(), C);
+          fprintf(OutF, "%s%c", TInt64::GetStr(RowI.GetIntAttr(GetSchemaColName(i)).Val).CStr(), C);
           break;
         }
         case atFlt: {

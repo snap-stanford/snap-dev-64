@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 template<class PGraph>
-void CreatePlots(const PGraph& Graph, TStr OutFNm, TStr Desc, 
-                 bool PlotDD, bool PlotCDD, bool PlotHop, bool PlotWcc, 
+void CreatePlots(const PGraph& Graph, TStr OutFNm, TStr Desc,
+                 bool PlotDD, bool PlotCDD, bool PlotHop, bool PlotWcc,
                  bool PlotScc, bool PlotSVal, bool PlotSVec, bool PlotClustCf) {
   printf("Creating plots...\n");
   const int SingularVals = Graph->GetNodes()/2 > 200 ? 200 : Graph->GetNodes()/2;
@@ -60,15 +60,15 @@ int main(int argc, char* argv[]) {
   PNGraph NGraph;
   PUNGraph UNGraph;
   // binary formats
-  if (InFNm.IsSuffix(".ngraph")) { 
+  if (InFNm.EndsWith(".ngraph")) {
     printf("directed graph (binary format)\n");
     TFIn FIn(InFNm);  NGraph = TNGraph::Load(FIn);
   } else
   if (InFNm.SearchStr(".ngraph.")!=-1 && TZipIn::IsZipFNm(InFNm)) {
     printf("directed graph (binary zipped format)\n");
     TZipIn ZipIn(InFNm);  NGraph = TNGraph::Load(ZipIn);
-  } else 
-  if (InFNm.IsSuffix(".ungraph")) { 
+  } else
+  if (InFNm.EndsWith(".ungraph")) {
     printf("undirected graph (binary format)\n");
     TFIn FIn(InFNm);  UNGraph = TUNGraph::Load(FIn);
   } else
@@ -85,14 +85,13 @@ int main(int argc, char* argv[]) {
     UNGraph = TSnap::LoadEdgeList<PUNGraph>(InFNm);
   }
   // create plots
-  if (! UNGraph.Empty()) { 
+  if (! UNGraph.Empty()) {
     TSnap::PrintInfo(UNGraph, InFNm, "", UNGraph->GetNodes()>Kilo(1));
     CreatePlots(UNGraph, OutFNm, Desc, PlotDD, PlotCDD, PlotHop, PlotWcc, PlotScc, PlotSVal, PlotSVec, PlotClustCf); }
-  if (! NGraph.Empty()) { 
+  if (! NGraph.Empty()) {
     TSnap::PrintInfo(NGraph, InFNm, "", NGraph->GetNodes()>Kilo(1));
     CreatePlots(NGraph, OutFNm, Desc, PlotDD, PlotCDD, PlotHop, PlotWcc, PlotScc, PlotSVal, PlotSVec, PlotClustCf); }
   Catch
   printf("\nrun time: %s (%s)\n", ExeTm.GetTmStr(), TSecTm::GetCurTm().GetTmStr().CStr());
   return 0;
 }
-

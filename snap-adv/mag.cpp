@@ -202,7 +202,7 @@ void TMAGNodeSimple::AttrGen(TIntVV& AttrVV, const int& NNodes) {
 	IAssert(Dim > 0);
 	AttrVV.Gen(NNodes, Dim);
 	AttrVV.PutAll(0);
-	
+
 	for(int i = 0; i < NNodes; i++) {
 		for(int l = 0; l < Dim; l++) {
 			if((TMAGNodeSimple::Rnd).GetUniDev() > Mu) {
@@ -239,7 +239,7 @@ void TMAGNodeSimple::SaveTxt(TStrV& OutStrV) const {
 
 
 /////////////////////////////////////////////////
-// MAG node attributes with (different) Bernoulli 
+// MAG node attributes with (different) Bernoulli
 
 TMAGNodeBern& TMAGNodeBern::operator=(const TMAGNodeBern& Dist) {
 	MuV = Dist.MuV;
@@ -251,7 +251,7 @@ void TMAGNodeBern::AttrGen(TIntVV& AttrVV, const int& NNodes) {
 	IAssert(Dim > 0);
 	AttrVV.Gen(NNodes, Dim);
 	AttrVV.PutAll(0);
-	
+
 	for(int i = 0; i < NNodes; i++) {
 		for(int l = 0; l < Dim; l++) {
 			if((TMAGNodeBern::Rnd).GetUniDev() > MuV[l]) {
@@ -311,7 +311,7 @@ void TMAGNodeBeta::SetBeta(const int& Attr, const double& Alpha, const double& B
 	BetaV[Attr] = Beta;
 	Dirty = true;
 }
-	
+
 void TMAGNodeBeta::SetBetaV(const TFltV& _AlphaV, const TFltV& _BetaV) {
 	IAssert(_AlphaV.Len() == _BetaV.Len());
 	AlphaV = _AlphaV;
@@ -326,7 +326,7 @@ void TMAGNodeBeta::AttrGen(TIntVV& AttrVV, const int& NNodes) {
 	AttrVV.PutAll(0);
 
 //	printf("AlphaV = %d, BetaV = %d, MuV = %d\n", AlphaV.Len(), BetaV.Len(), MuV.Len());
-	
+
 	for(int i = 0; i < NNodes; i++) {
 		for(int l = 0; l < Dim; l++) {
 			double x = TMAGNodeBeta::Rnd.GetGammaDev((int)AlphaV[l]);
@@ -355,7 +355,7 @@ void TMAGNodeBeta::LoadTxt(const TStr& InFNm) {
 
 	while(fgets(buf, sizeof(buf), fp) != NULL) {
 		token = strtok(buf, "&");
-		
+
 		token = strtok(token, " \t");
 		TokenStr = TStr(token);
 		AlphaV.Add(TokenStr.GetFlt(Val));
@@ -402,7 +402,7 @@ void TMAGFitBern::SetPhiVV(const TIntVV& AttrVV, const int KnownIds) {
 
 	PhiVV.Gen(NNodes, NAttrs);
 	KnownVV.Gen(NNodes, NAttrs);
-	
+
 	for(int l = 0; l < NAttrs; l++) {
 		for(int i = 0; i < NNodes; i++) {
 			if(int(AttrVV(i, l)) == 0) {
@@ -427,7 +427,7 @@ void TMAGFitBern::SaveTxt(const TStr& FNm) {
 	TMAGAffMtxV MtxV;
 	Param.GetMtxV(MtxV);
 
-	FILE *fp = fopen(FNm.GetCStr(), "w");
+	FILE *fp = fopen(FNm.CStr(), "w");
 	for(int l = 0; l < NAttrs; l++) {
 		fprintf(fp, "%.4f\t", double(MuV[l]));
 		for(int row = 0; row < 2; row++) {
@@ -448,7 +448,7 @@ void TMAGFitBern::SaveTxt(const TStr& FNm) {
 	}
 	fclose(fp);
 }
-	
+
 void TMAGFitBern::Init(const TFltV& MuV, const TMAGAffMtxV& AffMtxV) {
 	TMAGNodeBern DistParam(MuV);
 	Param.SetNodeAttr(DistParam);
@@ -474,7 +474,7 @@ void TMAGFitBern::PerturbInit(const TFltV& MuV, const TMAGAffMtxV& AffMtxV, cons
 
 	const int NNodes = Param.GetNodes();
 	const int NAttrs = Param.GetAttrs();
-	
+
 	for(int l = 0; l < NAttrs; l++) {
 		double Mu = MuV[l] + PerturbRate * (Rnd.GetUniDev() - 0.5) * 2;
 //		double Mu = 0.5;
@@ -500,7 +500,7 @@ void TMAGFitBern::PerturbInit(const TFltV& MuV, const TMAGAffMtxV& AffMtxV, cons
 	}
 	Param.SetMtxV(PerturbMtxV);
 	Param.SetNodeAttr(DistParam);
-	
+
 	PhiVV.Gen(NNodes, NAttrs);
 	KnownVV.Gen(NNodes, NAttrs);
 	KnownVV.PutAll(false);
@@ -514,10 +514,10 @@ void TMAGFitBern::RandomInit(const TFltV& MuV, const TMAGAffMtxV& AffMtxV, const
 	TFltV InitMuV = MuV;	InitMuV.PutAll(0.5);
 	TMAGNodeBern DistParam(InitMuV);
 	Param.SetMtxV(AffMtxV);
-	
+
 	const int NNodes = Param.GetNodes();
 	const int NAttrs = Param.GetAttrs();
-	
+
 	PhiVV.Gen(NNodes, NAttrs);
 	KnownVV.Gen(NNodes, NAttrs);
 	KnownVV.PutAll(false);
@@ -528,7 +528,7 @@ void TMAGFitBern::RandomInit(const TFltV& MuV, const TMAGAffMtxV& AffMtxV, const
 //			PhiVV.At(i, l) = 0.5;
 		}
 	}
-	
+
 	TMAGAffMtxV RndMtxV = AffMtxV;
 	for(int l = 0; l < NAttrs; l++) {
 		for(int p = 0; p < 4; p++) {
@@ -538,10 +538,10 @@ void TMAGFitBern::RandomInit(const TFltV& MuV, const TMAGAffMtxV& AffMtxV, const
 		}
 		RndMtxV[l].At(0, 1) = RndMtxV[l].At(1, 0);
 	}
-	
+
 	printf("\n");
 	for(int l = 0; l < NAttrs; l++) {
-		printf("AffMtx = %s\n", RndMtxV[l].GetMtxStr().GetCStr());
+		printf("AffMtx = %s\n", RndMtxV[l].GetMtxStr().CStr());
 	}
 	Param.SetMtxV(RndMtxV);
 	Param.SetNodeAttr(DistParam);
@@ -681,11 +681,11 @@ const double LogSumExp(const double LogVal1, const double LogVal2) {
 const double LogSumExp(const TFltV& LogValV) {
 	const int Len = LogValV.Len();
 	double MaxExp = -DBL_MAX;
-	
+
 	for(int i = 0; i < Len; i++) {
 		if(MaxExp < LogValV[i]) {  MaxExp = LogValV[i];  }
 	}
-	
+
 	double Sum = 0.0;
 	for(int i = 0; i < Len; i++) {
 		Sum += exp(LogValV[i] - MaxExp);
@@ -746,7 +746,7 @@ const double TMAGFitBern::ObjPhiMI(const double& x, const int& NId, const int& A
 const double TMAGFitBern::GetEstNoEdgeLL(const int& NId, const int& AId) const {
 	// const int NNodes = Param.GetNodes();
 	// const int NAttrs = Param.GetAttrs();
-	
+
 	TMAGNodeBern DistParam = Param.GetNodeAttr();
 	double LL = 0.0;
 
@@ -754,7 +754,7 @@ const double TMAGFitBern::GetEstNoEdgeLL(const int& NId, const int& AId) const {
 }
 
 const double TMAGFitBern::UpdatePhi(const int& NId, const int& AId, double& Phi) {
-	TMAGAffMtx LLTheta, Theta = Param.GetMtx(AId); 
+	TMAGAffMtx LLTheta, Theta = Param.GetMtx(AId);
 	TMAGAffMtx SqTheta(Theta);
 	const int NNodes = Param.GetNodes();
 	// const int NAttrs = Param.GetAttrs();
@@ -776,7 +776,7 @@ const double TMAGFitBern::UpdatePhi(const int& NId, const int& AId, double& Phi)
 		//MaxExp[i] = -DBL_MAX;
 		NonEdgeLLV[i].Gen(4 * NNodes, 0);
 	}
-	
+
 	for(int j = 0; j < NNodes; j++) {
 		if(j == NId) {	continue;	}
 
@@ -809,7 +809,7 @@ const double TMAGFitBern::UpdatePhi(const int& NId, const int& AId, double& Phi)
 
 	NonEdgeQ[0] = LogSumExp(NonEdgeLLV[0]);
 	NonEdgeQ[1] = LogSumExp(NonEdgeLLV[1]);
-	
+
 	double Q[2];
 	Q[0] = log(Mu) + EdgeQ[0] - exp(NonEdgeQ[0]);
 	Q[1] = log(1.0 - Mu) + EdgeQ[1] - exp(NonEdgeQ[1]);
@@ -825,7 +825,7 @@ const double TMAGFitBern::UpdatePhi(const int& NId, const int& AId, double& Phi)
 
 
 const double TMAGFitBern::UpdatePhiMI(const double& Lambda, const int& NId, const int& AId, double& Phi) {
-	TMAGAffMtx LLTheta, Theta = Param.GetMtx(AId); 
+	TMAGAffMtx LLTheta, Theta = Param.GetMtx(AId);
 	TMAGAffMtx SqTheta(Theta);
 	const int NNodes = Param.GetNodes();
 	const int NAttrs = Param.GetAttrs();
@@ -848,7 +848,7 @@ const double TMAGFitBern::UpdatePhiMI(const double& Lambda, const int& NId, cons
 		//MaxExp[i] = -DBL_MAX;
 		NonEdgeLLV[i].Gen(4 * NNodes, 0);
 	}
-	
+
 	for(int j = 0; j < NNodes; j++) {
 		if(j == NId) {	continue;	}
 
@@ -886,10 +886,10 @@ const double TMAGFitBern::UpdatePhiMI(const double& Lambda, const int& NId, cons
 			}
 		}
 	}
-	
+
 	NonEdgeQ[0] = LogSumExp(NonEdgeLLV[0]);
 	NonEdgeQ[1] = LogSumExp(NonEdgeLLV[1]);
-	
+
 	double Q[2];
 	Q[0] = log(Mu) + EdgeQ[0] - exp(NonEdgeQ[0]);
 	Q[1] = log(1.0 - Mu) + EdgeQ[1] - exp(NonEdgeQ[1]);
@@ -930,7 +930,7 @@ const double TMAGFitBern::UpdatePhiMI(const double& Lambda, const int& NId, cons
 
 
 const double TMAGFitBern::UpdateApxPhiMI(const double& Lambda, const int& NId, const int& AId, double& Phi, TFltVV& ProdVV) {
-	TMAGAffMtx LLTheta, Theta = Param.GetMtx(AId); 
+	TMAGAffMtx LLTheta, Theta = Param.GetMtx(AId);
 	const int NNodes = Param.GetNodes();
 	const int NAttrs = Param.GetAttrs();
 	Theta.GetLLMtx(LLTheta);
@@ -968,7 +968,7 @@ const double TMAGFitBern::UpdateApxPhiMI(const double& Lambda, const int& NId, c
 	EdgeQ[0] = -(NNodes - 1) * exp(LogSumExp(NonEdgeLLV[0]));
 	EdgeQ[1] = -(NNodes - 1) * exp(LogSumExp(NonEdgeLLV[1]));
 
-	
+
 	for(int l = 0; l < NAttrs; l++) {
 		if(l == AId) {  continue;  }
 		int BgId = (AId > l) ? AId : l;
@@ -1094,7 +1094,7 @@ double TMAGFitBern::DoEStepOneIter(const TFltV& TrueMuV, TFltVV& NewPhiVV, const
 
 //			PhiVV.At(NId, AId) = Val;
 			NewVal[l] = TFltIntIntTr(Val, NId, AId);
-			
+
 //			MuV[AId] = MuV[AId] + Val;
 			if(fabs(Delta) > MaxDelta) {
 				MaxDelta = fabs(Delta);
@@ -1193,7 +1193,7 @@ double TMAGFitBern::DoEStepApxOneIter(const TFltV& TrueMuV, TFltVV& NewPhiVV, co
 
 //			PhiVV.At(NId, AId) = Val;
 			NewVal[l] = TFltIntIntTr(Val, NId, AId);
-			
+
 //			MuV[AId] = MuV[AId] + Val;
 			if(fabs(Delta) > MaxDelta) {
 				MaxDelta = fabs(Delta);
@@ -1227,7 +1227,7 @@ double TMAGFitBern::DoEStepApxOneIter(const TFltV& TrueMuV, TFltVV& NewPhiVV, co
 			AvgPhiV[AId] -= PhiVV(NId, AId);
 
 			PhiVV.At(NId, AId) = NewVal[l].Val1;
-			
+
 			ProdVV(NId, 0) += GetAvgThetaLL(NId, NId, AId, true, false);
 			ProdVV(NId, 1) += GetAvgThetaLL(NId, NId, AId, false, true);
 			ProdVV(NId, 2) += GetAvgSqThetaLL(NId, NId, AId, true, false);
@@ -1324,7 +1324,7 @@ const void TMAGFitBern::GradAffMtx(const int& AId, const TFltVV& ProdVV, const T
 	const int NNodes = Param.GetNodes();
 	// const int NAttrs = Param.GetAttrs();
 	GradV.PutAll(0.0);
-	
+
 	for(int i = 0; i < NNodes; i++) {
 		for(int j = 0; j < NNodes; j++) {
 			double Prod = ProdVV(i, j) - GetThetaLL(i, j, AId);
@@ -1372,7 +1372,7 @@ const void TMAGFitBern::GradApxAffMtx(const int& AId, const TFltVV& ProdVV, cons
 		double LogSum = LogSumExp(LogSumV);
 		GradV[p] -= (NNodes - 1) * 0.5 * exp(LogSum);
 	}
-	
+
 	for(TNGraph::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
 		const int NId1 = EI.GetSrcNId();
 		const int NId2 = EI.GetDstNId();
@@ -1447,8 +1447,8 @@ const double TMAGFitBern::UpdateAffMtx(const int& AId, const double& LrnRate, co
 	}
 
 	printf("      [Attr = %d]\n", AId);
-    printf("        %s  + [%f, %f; %f %f]  ----->  %s\n", (AffMtx.GetMtxStr()).GetCStr(), double(GradV[0]), double(GradV[1]), double(GradV[2]), double(GradV[3]), (NewMtx.GetMtxStr()).GetCStr());
-	
+    printf("        %s  + [%f, %f; %f %f]  ----->  %s\n", (AffMtx.GetMtxStr()).CStr(), double(GradV[0]), double(GradV[1]), double(GradV[2]), double(GradV[3]), (NewMtx.GetMtxStr()).CStr());
+
 //	Param.SetMtx(AId, NewMtx);
 	return Delta;
 }
@@ -1459,7 +1459,7 @@ void TMAGFitBern::NormalizeAffMtxV(TMAGAffMtxV& MtxV, const bool UseMu) {
 	const int NAttrs = MtxV.Len();
 	TFltV MuV = GetMuV();
 	double Product = 1.0, ExpEdge = NNodes * (NNodes - 1);
-	
+
 	TFltV SumV(NAttrs), EdgeSumV(NAttrs);
 	SumV.PutAll(0.0);	EdgeSumV.PutAll(0.0);
 	for(int l = 0; l < NAttrs; l++) {
@@ -1480,7 +1480,7 @@ void TMAGFitBern::NormalizeAffMtxV(TMAGAffMtxV& MtxV, const bool UseMu) {
 //	NormConst = ExpEdge;
 	Product = 1.0;
 //	Product = pow(Product * ExpEdge, 1.0 / double(NAttrs));
-	
+
 	for(int l = 0; l < NAttrs; l++) {
 		for(int p = 0; p < 4; p++) {
 			MtxV[l].At(p) = MtxV[l].At(p) * Product / SumV[l];
@@ -1498,7 +1498,7 @@ void TMAGFitBern::UnNormalizeAffMtxV(TMAGAffMtxV& MtxV, const bool UseMu) {
 	TFltIntPrV MaxEntV(NAttrs);
 	TFltV MuV = GetMuV();
 	NormalizeAffMtxV(MtxV, UseMu);
-	
+
 	double ExpEdge = NNodes * (NNodes - 1);
 	for(int l = 0; l < NAttrs; l++) {
 		double Mu = MuV[l];
@@ -1510,7 +1510,7 @@ void TMAGFitBern::UnNormalizeAffMtxV(TMAGAffMtxV& MtxV, const bool UseMu) {
 	}
 	NormConst = double(Graph->GetEdges()) / ExpEdge;
 //	NormConst *= ExpEdge;
-	
+
 	for(int l = 0; l < NAttrs; l++) {
 		MaxEntV[l] = TFltIntPr(-1, l);
 		for(int p = 0; p < 4; p++) {
@@ -1557,7 +1557,7 @@ const void TMAGFitBern::PrepareUpdateApxAffMtx(TFltVV& ProdVV, TFltVV& SqVV) {
 		SqVV(i, 1) = GetAvgProdSqWeight(i, i, false, true);
 	}
 }
-	
+
 const double TMAGFitBern::UpdateAffMtxV(const int& GradIter, const double& LrnRate, const double& MaxGrad, const double& Lambda, const int& NReal) {
 	const int NNodes = Param.GetNodes();
 	const int NAttrs = Param.GetAttrs();
@@ -1565,7 +1565,7 @@ const double TMAGFitBern::UpdateAffMtxV(const int& GradIter, const double& LrnRa
 	const TFltV MuV = DistParam.GetMuV();
 	double Delta = 0.0;
 	double DecLrnRate = LrnRate, DecMaxGrad = MaxGrad;
-	
+
 	TFltVV ProdVV(NNodes, NNodes), SqVV(NNodes, NNodes);
 	TMAGAffMtxV NewMtxV, OldMtxV;
 	Param.GetMtxV(OldMtxV);
@@ -1592,7 +1592,7 @@ const double TMAGFitBern::UpdateAffMtxV(const int& GradIter, const double& LrnRa
 		Param.SetMtxV(NewMtxV);
 	}
 	NormalizeAffMtxV(NewMtxV, true);
-	
+
 	printf( "\nFinal\n");
 	for(int l = 0; l < NAttrs; l++) {
 		printf("    [");
@@ -1614,7 +1614,7 @@ void TMAGFitBern::DoMStep(const int& GradIter, const double& LrnRate, const doub
 	double MuDelta = 0.0, AffMtxDelta = 0.0;
 
 	TExeTm ExeTm;
-	
+
 	printf("\n");
 	AvgPhiV.Gen(NAttrs);	AvgPhiV.PutAll(0.0);
 	for(int l = 0; l < NAttrs; l++) {
@@ -1649,7 +1649,7 @@ void TMAGFitBern::DoEMAlg(const int& NStep, const int& NEstep, const int& NMstep
 	TMAGNodeBern NodeAttr = Param.GetNodeAttr();
 	Param.GetMtxV(InitMtxV);
 	TFltV InitMuV = NodeAttr.GetMuV();
-	
+
 	for(int i = 0; i < NNodes; i++) {
 		for(int l = 0; l < NAttrs; l++) {
 			if(! KnownVV(i, l)) {
@@ -1657,7 +1657,7 @@ void TMAGFitBern::DoEMAlg(const int& NStep, const int& NEstep, const int& NMstep
 			}
 		}
 	}
-	
+
 	if(Debug) {
 		double LL = ComputeApxLL();
 		MuHisV.Add(InitMuV);
@@ -1672,7 +1672,7 @@ void TMAGFitBern::DoEMAlg(const int& NStep, const int& NEstep, const int& NMstep
 		printf("--------------------------------------------\n");
 		printf("EM Iteration : %d\n", (n+1));
 		printf("--------------------------------------------\n");
-		
+
 		NodeAttr = Param.GetNodeAttr();
 		for(int i = 0; i < NNodes; i++) {
 			for(int l = 0; l < NAttrs; l++) {
@@ -1735,7 +1735,7 @@ void TMAGFitBern::PlotProperties(const TStr& FNm) {
 	MAGGen.SetNodeAttr(MAGNode);
 	TMAGAffMtxV MtxV;	Param.GetMtxV(MtxV);
 	MAGGen.SetMtxV(MtxV);
-	
+
 	PNGraph TrG = new TNGraph;
 	*TrG = *Graph;
 
@@ -1750,12 +1750,12 @@ void TMAGFitBern::PlotProperties(const TStr& FNm) {
 //	PNGraph MAG = MAGGen.GenAttrMAG(AttrVV, true, 10000);
 	printf("%s edges created for MAG...\n",
         TUInt64::GetStr(MAG->GetEdges()).CStr());
-	
+
 	TSnap::DelZeroDegNodes(TrG);
 	TSnap::DelZeroDegNodes(MAG);
 
 	TGStatVec GS(tmuNodes, TFSet() | gsdInDeg | gsdOutDeg | gsdWcc | gsdHops | gsdClustCf | gsdSngVec | gsdSngVal | gsdTriadPart);
-	
+
     TGnuPlot InDegP(FNm + "-InDeg"), OutDegP(FNm + "-OutDeg"), SvalP(FNm + "-Sval"), SvecP(FNm + "-Svec"), WccP(FNm + "-Wcc"), HopP(FNm + "-Hop"), TriadP(FNm + "-Triad"), CcfP(FNm + "-Ccf");;
 
     InDegP.SetXYLabel("Degree", "# of nodes");
@@ -1781,7 +1781,7 @@ void TMAGFitBern::PlotProperties(const TStr& FNm) {
 	CcfP.ShowGrid(false);
 	HopP.ShowGrid(false);
 	TriadP.ShowGrid(false);
-	
+
 	const TStr Style[2] = {"lt 1 lw 3 lc rgb 'black'", "lt 2 lw 3 lc rgb 'red'"};
 	const TStr Name[2] = {"Real", "MAG"};
 	GS.Add(Graph, TSecTm(1), "Real Graph");
@@ -1841,7 +1841,7 @@ void TMAGFitBern::SortAttrOrdering(const TFltV& TrueMuV, TIntV& IndexV) const {
 		TrueIdxV[l] = l;
 		EstIdxV[l] = l;
 	}
-	
+
 	CountAttr(EstMuV);
 	SortedTrueMuV = TrueMuV;
 	SortedEstMuV = EstMuV;
@@ -1988,7 +1988,7 @@ const double TMAGFitBern::ComputeJointLL(int NSample) const {
 	for(int s = 0; s < NSample; s++) {
 		for(int i = 0; i < NNodes; i++) {
 			for(int l = 0; l < NAttrs; l++) {
-			
+
 				if(Rnd.GetUniDev() <= PhiVV(i, l)) {
 					AttrVV.At(i, l) = 0;
 				} else {
@@ -2117,7 +2117,7 @@ const double TMAGFitBern::ComputeMI(const TIntVV& AttrV, const int AId1, const i
       MI += Pxy(x, y) / double(NNodes) * (log(Pxy(x, y).Val) - log(Px[x].Val) - log(Py[y].Val) + log((double)NNodes));
 		}
 	}
-	
+
 	return MI;
 }
 
@@ -2131,7 +2131,7 @@ const double TMAGFitBern::ComputeMI(const TFltVV& AttrV, const int AId1, const i
 	Pxy.PutAll(0.0);
 	Px.PutAll(0.0);
 	Py.PutAll(0.0);
-	
+
 	for(int i = 0; i < NNodes; i++) {
 		double X = AttrV(i, AId1);
 		double Y = AttrV(i, AId2);
@@ -2145,13 +2145,13 @@ const double TMAGFitBern::ComputeMI(const TFltVV& AttrV, const int AId1, const i
 	}
 	Px[1] = NNodes - Px[0];
 	Py[1] = NNodes - Py[0];
-	
+
 	for(int x = 0; x < 2; x++) {
 		for(int y = 0; y < 2; y++) {
 			MI += Pxy(x, y) / double(NNodes) * (log(Pxy(x, y)) - log(Px[x]) - log(Py[y]) + log(double(NNodes)));
 		}
 	}
-	
+
 	return MI;
 }
 

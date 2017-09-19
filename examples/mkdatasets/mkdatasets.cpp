@@ -30,7 +30,7 @@ void PrintGraphStat(const PNGraph& G) {
   printf("90-percentile effective diameter\t%.2g\n", EffDiam);
 }
 
-template<class PGraph> 
+template<class PGraph>
 void PrintGraphStatTable(const PGraph& G, TStr OutFNm, TStr Desc="") {
   TFltPr64V DegCCfV;
   int64 ClosedTriads, OpenTriads;
@@ -231,7 +231,7 @@ void MakeSlashdotSignNet(const TStr InFNm, TStr OutFNm, TStr Desc, THashSet<TChA
     else if (strcmp(WrdV[1], "foes")==0) { Sign = -1; } else { Fail; }
     const int SrcNId = NIdSet.AddKey(WrdV[0]);
     if (! Net->IsNode(SrcNId)) {
-      Net->AddNode(SrcNId); }   
+      Net->AddNode(SrcNId); }
     for (int e = 2; e < WrdV.Len(); e++) {
       const int DstNId = NIdSet.AddKey(WrdV[e]);
       i ++ ;
@@ -240,19 +240,19 @@ void MakeSlashdotSignNet(const TStr InFNm, TStr OutFNm, TStr Desc, THashSet<TChA
           Net->AddNode(DstNId);
         Net->AddEdge(SrcNId, DstNId, Sign);
       }
-    }  
-  }  
-  TSnap::PrintInfo(Net, "Slashdot (" + TInt::GetStr(i) + ")");  
+    }
+  }
+  TSnap::PrintInfo(Net, "Slashdot (" + TInt::GetStr(i) + ")");
 
   // copied from gio.h - line 111
   FILE *F = fopen(OutFNm.CStr(), "wt");
   fprintf(F, "# Directed graph: %s\n", OutFNm.CStr());
-  if (! Desc.Empty()) 
+  if (! Desc.Empty())
     fprintf(F, "# %s\n", (Desc).CStr());
     fprintf(F, "# Nodes: %s Edges: %s\n",
         TUInt64::GetStr(Net->GetNodes()).CStr(),
         TUInt64::GetStr(Net->GetEdges()).CStr());
-    fprintf(F, "# UserId\tGroupId\tSign\n"); 
+    fprintf(F, "# UserId\tGroupId\tSign\n");
   for (TNodeEDatNet<TInt,TInt>::TEdgeI ei = Net->BegEI(); ei < Net->EndEI(); ei++) {
       fprintf(F, "%s\t%s\t%d\n",
           TInt64::GetStr(ei.GetSrcNId()).CStr(),
@@ -260,7 +260,7 @@ void MakeSlashdotSignNet(const TStr InFNm, TStr OutFNm, TStr Desc, THashSet<TChA
           ei()());
   }
   fclose(F);
-  
+
   PrintGraphStatTable(Net, OutFNm, Desc);
 }
 
@@ -274,18 +274,18 @@ void MakeSlasdotSignNets(){
 void MakeLJNets(TStr InFNm, TStr OutFNm, TStr Desc){
   TStrHash<TInt> StrSet(Mega(1), true);
   for (int i = 1; i < 13; i++){
-    TStr tmp = "";  
-      
+    TStr tmp = "";
+
     if (i < 10)
-      tmp = InFNm + "ljgraph.0" + TInt::GetStr(i);  
+      tmp = InFNm + "ljgraph.0" + TInt::GetStr(i);
     else
-      tmp = InFNm + "ljgraph." + TInt::GetStr(i);  
-  
-    printf("%s\n",tmp());
+      tmp = InFNm + "ljgraph." + TInt::GetStr(i);
+
+    printf("%s\n",tmp.CStr());
 
     TSsParser Ss(tmp, ssfTabSep);
     PNGraph Graph = TNGraph::New();
-      
+
     while (Ss.Next()) {
       const int SrcNId = StrSet.AddKey(Ss[0]);
       if (! Graph->IsNode(SrcNId)) { Graph->AddNode(SrcNId); }
@@ -303,7 +303,7 @@ void MakeLJNets(TStr InFNm, TStr OutFNm, TStr Desc){
       OutFNm = "soc-lj-friends.0"+TInt::GetStr(i);
     else
       OutFNm = "soc-lj-friends."+TInt::GetStr(i);
-  
+
     PrintGraphStatTable(Graph, OutFNm, Desc);
   }
 }
@@ -311,24 +311,24 @@ void MakeLJNets(TStr InFNm, TStr OutFNm, TStr Desc){
 void MakeLJGroupsNets(const TStr InFNm, TStr OutFNm, TStr Desc){
   TStrHash<TInt> StrSetU(Mega(1), true);
   TStrHash<TInt> StrSetG(Mega(1), true);
-  
+
   for (int i = 1; i < 13; i++){
-    TStr tmp = "";  
-      
+    TStr tmp = "";
+
     if (i < 10)
-      tmp = InFNm + "ljgraph.0" + TInt::GetStr(i);  
+      tmp = InFNm + "ljgraph.0" + TInt::GetStr(i);
     else
-      tmp = InFNm + "ljgraph." + TInt::GetStr(i);  
-  
-    printf("%s\n",tmp());
+      tmp = InFNm + "ljgraph." + TInt::GetStr(i);
+
+    printf("%s\n",tmp.CStr());
 
     TSsParser Ss(tmp, ssfTabSep);
     PNGraph Graph = TNGraph::New();
-      
+
     while (Ss.Next()) {
       const int SrcNId = StrSetU.AddKey(Ss[0]);
-      if (! Graph->IsNode(SrcNId)) 
-         Graph->AddNode(SrcNId); 
+      if (! Graph->IsNode(SrcNId))
+         Graph->AddNode(SrcNId);
       for (int dst = 2; dst < Ss.Len(); dst++) {
         TStr ls,rs;
           ((TStr)Ss[dst]).SplitOnCh(ls,' ',rs);
@@ -343,44 +343,44 @@ void MakeLJGroupsNets(const TStr InFNm, TStr OutFNm, TStr Desc){
       OutFNm = "soc-lj-friends.0"+TInt::GetStr(i);
     else
       OutFNm = "soc-lj-friends."+TInt::GetStr(i);
-  
+
   //  PrintGraphStatTable(Graph, OutFNm, Desc);
   }
-  
+
   for (int i = 5; i < 14; i++){
-    TStr tmp = "";       
-    
-    tmp = InFNm + "ljcomm." + TInt::GetStr(i);  
-    printf("%s\n",tmp());
-    
+    TStr tmp = "";
+
+    tmp = InFNm + "ljcomm." + TInt::GetStr(i);
+    printf("%s\n",tmp.CStr());
+
     TSsParser Ss1(tmp, ssfTabSep);
-  
+
     PNGraph Graph1 = TNGraph::New();
     PNGraph Graph2 = TNGraph::New();
-  
-    TSsParser Ss(tmp, ssfTabSep);    
+
+    TSsParser Ss(tmp, ssfTabSep);
     while (Ss.Next()) {
       const int SrcNId = StrSetU.AddKey(Ss[0]);
       if (! Graph1->IsNode(SrcNId)) { Graph1->AddNode(SrcNId); }
       if (! Graph2->IsNode(SrcNId)) { Graph2->AddNode(SrcNId); }
-      
-      for (int dst = 2; dst < Ss.Len(); dst++) {   
+
+      for (int dst = 2; dst < Ss.Len(); dst++) {
         TStr ls,rs;
-        ((TStr)Ss[dst]).SplitOnCh(ls,' ',rs);            
+        ((TStr)Ss[dst]).SplitOnCh(ls,' ',rs);
         const int DstNId = StrSetG.AddKey(rs) + 10000000;
         if (! Graph1->IsNode(DstNId)) { Graph1->AddNode(DstNId); }
         if (! Graph2->IsNode(DstNId)) { Graph2->AddNode(DstNId); }
         if (ls == "<") // member
-          Graph1->AddEdge(SrcNId, DstNId);  
+          Graph1->AddEdge(SrcNId, DstNId);
         else if (ls == ">") // watching
-          Graph2->AddEdge(SrcNId, DstNId);      
+          Graph2->AddEdge(SrcNId, DstNId);
       }
     }
     OutFNm = "soc-lj-comm-";
     TStr s = "";
     if (i < 10)
       s = "0";
-    
+
     PrintGraphStatTable(Graph1, OutFNm+"members-" + s + TInt::GetStr(i), Desc+" communities - members");
     PrintGraphStatTable(Graph2, OutFNm+"watchers-"+ s + TInt::GetStr(i), Desc+" communities - watchers");
   }
@@ -391,9 +391,9 @@ void MakeSignEpinions() {
   //PSignNet Net = TSignNet::New();
   TPt<TNodeEDatNet<TInt, TInt> >  Net = TNodeEDatNet<TInt, TInt>::New();
   TStrHash<TInt> StrSet(Mega(1), true);
-      
+
   while (Ss.Next()) {
-    if ( ((TStr)Ss[0]).IsPrefix("#")  )
+    if ( ((TStr)Ss[0]).StartsWith("#")  )
       continue;
     const int SrcNId = StrSet.AddKey(Ss[0]);
     const int DstNId = StrSet.AddKey(Ss[1]);
@@ -402,7 +402,7 @@ void MakeSignEpinions() {
     const int Sign = ((TStr)Ss[2]).GetInt();
     Net->AddEdge(SrcNId, DstNId, Sign);
   }
-    
+
   //    PrintGraphStatTable(Graph, OutFNm, Desc);
   TStr OutFNm = "soc-sign-epinions-user-ratings";
   TStr Desc = "Epinions signed social network";
@@ -410,12 +410,12 @@ void MakeSignEpinions() {
   // copied from gio.h - line 111
   FILE *F = fopen(OutFNm.CStr(), "wt");
   fprintf(F, "# Directed graph: %s\n", OutFNm.CStr());
-  if (! Desc.Empty()) 
+  if (! Desc.Empty())
     fprintf(F, "# %s\n", (Desc).CStr());
   fprintf(F, "# Nodes: %s Edges: %s\n",
         TUInt64::GetStr(Net->GetNodes()).CStr(),
         TUInt64::GetStr(Net->GetEdges()).CStr());
-  fprintf(F, "# FromNodeId\tToNodeId\tSign\n"); 
+  fprintf(F, "# FromNodeId\tToNodeId\tSign\n");
   for (TNodeEDatNet<TInt,TInt>::TEdgeI ei = Net->BegEI(); ei < Net->EndEI(); ei++) {
       fprintf(F, "%s\t%s\t%d\n",
                     TInt64::GetStr(ei.GetSrcNId()).CStr(),
@@ -423,7 +423,7 @@ void MakeSignEpinions() {
                     ei()());
   }
   fclose(F);
-  
+
   PrintGraphStatTable(Net, OutFNm, Desc);
 }
 
@@ -442,15 +442,15 @@ void MakeASNets() {
 
 void MakeASSkitterNets() {
   { PUNGraph G = TSnap::LoadEdgeListStr<PUNGraph>("as-skitter.txt", 0, 1);
-  PrintGraphStatTable(G, "as-skitter", "Autonomous Systems (From traceroutes run daility in 2005 by skitter - http://www.caida.org/tools/measurement/skitter)"); 
+  PrintGraphStatTable(G, "as-skitter", "Autonomous Systems (From traceroutes run daility in 2005 by skitter - http://www.caida.org/tools/measurement/skitter)");
   }
 }
 
 void MakeASCaidaNets() {
   { PNGraph G = TSnap::LoadEdgeListStr<PNGraph>("/u/ana/data/AS-Caida/dataweb/as-caida20071105.txt", 0, 1);
-  PrintGraphStatTable(G , "as-caida20071105", "The CAIDA AS Relationships Dataset, from October 15 2007, http://www.caida.org/data/active/as-relationships/)"); } 
+  PrintGraphStatTable(G , "as-caida20071105", "The CAIDA AS Relationships Dataset, from October 15 2007, http://www.caida.org/data/active/as-relationships/)"); }
   { PNGraph G = TSnap::LoadEdgeListStr<PNGraph>("/u/ana/data/AS-Caida/dataweb/as-caida20070917.txt", 0, 1);
-  PrintGraphStatTable(G , "as-caida20070917", "The CAIDA AS Relationships Dataset, from October 15 2007, http://www.caida.org/data/active/as-relationships/)"); } 
+  PrintGraphStatTable(G , "as-caida20070917", "The CAIDA AS Relationships Dataset, from October 15 2007, http://www.caida.org/data/active/as-relationships/)"); }
 }
 
 
@@ -458,23 +458,23 @@ void MakeASOregonNets() {
   TStr files[18] = {"peer.oregon.010331","peer.oregon+.010331","peer.oregon.010407","peer.oregon+.010407","peer.oregon.010414","peer.oregon+.010414","peer.oregon.010421","peer.oregon+.010421","peer.oregon.010428","peer.oregon+.010428","peer.oregon.010505","peer.oregon+.010505","peer.oregon.010512","peer.oregon+.010512","peer.oregon.010519","peer.oregon+.010519","peer.oregon.010526","peer.oregon+.010526"};
   for (int i = 0; i < 18; i++){
     TStr tmp = ((TStr)"/u/ana/data/Oregon/") + files[i];
-    PUNGraph G = TSnap::LoadEdgeList<PUNGraph>(tmp(), 0, 1, ':');
+    PUNGraph G = TSnap::LoadEdgeList<PUNGraph>(tmp.CStr(), 0, 1, ':');
     if (files[i].GetCh(11) == '+'){
-      files[i].DelSubStr(0,4);    
+      files[i].DelSubStr(0,4);
       files[i].DelSubStr(6,7);
-      files[i].InsStr(6,"2_");    
-      PrintGraphStatTable(G , files[i](), "AS peering information inferred from Oregon route-views BGP data, from ");  
+      files[i].InsStr(6,"2_");
+      PrintGraphStatTable(G , files[i].CStr(), "AS peering information inferred from Oregon route-views BGP data, from ");
     }
     else{
-      files[i].DelSubStr(0,4);    
+      files[i].DelSubStr(0,4);
       files[i].DelSubStr(6,6);
       files[i].InsStr(6,"1_");
-      PrintGraphStatTable(G , files[i](), "AS peering information inferred from Oregon route-views BGP data, from ");  
+      PrintGraphStatTable(G , files[i].CStr(), "AS peering information inferred from Oregon route-views BGP data, from ");
     }
-  } 
-  
+  }
+
  /* { PUNGraph G = TSnap::LoadEdgeListStr<PUNGraph>("data/peer.all020515.txt", 0, 1);
-  PrintGraphStatTable(G , "peer.all020515", "AS peering information inferred from (1) Oregon route-views,(2) RIPE RIS BGP, (3) Looking glass data, and (4) Routing registry, all combined, May 15 2002"); } 
+  PrintGraphStatTable(G , "peer.all020515", "AS peering information inferred from (1) Oregon route-views,(2) RIPE RIS BGP, (3) Looking glass data, and (4) Routing registry, all combined, May 15 2002"); }
   { PUNGraph G = TSnap::LoadEdgeListStr<PUNGraph>("data/peer.ris020515.txt", 0, 1);
   PrintGraphStatTable(G , "peer.ris020515", "AS peering information inferred from RIPE RIS BGP data, May 15 2002"); } */
 }

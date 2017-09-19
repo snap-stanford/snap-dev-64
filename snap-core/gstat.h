@@ -93,7 +93,7 @@ public:
   TStr GetNm() const { return GraphNm; }
   void SetNm(const TStr& GraphName) { GraphNm=GraphName; }
   int GetTime(const TTmUnit& TimeUnit) const { return Time.GetInUnits(TimeUnit); }
-  
+
   int64 GetVals() const { return ValStatH.Len(); }
   bool HasVal(const TGStatVal& StatVal) const;
   double GetVal(const TGStatVal& StatVal) const;
@@ -217,7 +217,7 @@ public:
 // Implementation
 template <class PGraph>
 void TGStat::TakeStat(const PGraph& Graph, const TSecTm& _Time, TFSet StatFSet, const TStr& GraphName) {
-  printf("**TakeStat:  G(%s, %s)\n", TInt64::GetStr(Graph->GetNodes()).GetCStr(), TInt64::GetStr(Graph->GetEdges()).GetCStr());
+  printf("**TakeStat:  G(%s, %s)\n", TInt64::GetStr(Graph->GetNodes()).CStr(), TInt64::GetStr(Graph->GetEdges()).CStr());
   TExeTm ExeTm, FullTm;
   Time = _Time;
   GraphNm = GraphName;
@@ -333,7 +333,7 @@ void TGStat::TakeDiam(const PGraph& Graph, TFSet StatFSet, const bool& IsMxWcc) 
   TExeTm ExeTm;
   if (! IsMxWcc) {
     if (StatFSet.In(gsvFullDiam) || StatFSet.In(gsvEffDiam) || StatFSet.In(gsdHops)) {
-      printf("anf:%sruns...", TInt64::GetStr(NDiamRuns).GetCStr()); }
+      printf("anf:%sruns...", TInt64::GetStr(NDiamRuns).CStr()); }
     //bool Line=false;
     if (StatFSet.In(gsvEffDiam) || StatFSet.In(gsdHops)) {
       TMom DiamMom;  ExeTm.Tick();

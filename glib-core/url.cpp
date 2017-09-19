@@ -89,7 +89,7 @@ public:
     for (int ChN=0; ChN<Str.Len(); ChN++){GetCh(Str[ChN]);} return Str;}
   const char* GetStr(const char *Str){
 	int Len = (int) strlen(Str);
-    for (int ChN=0; ChN<Len; ChN++){GetCh(Str[ChN]);} 
+    for (int ChN=0; ChN<Len; ChN++){GetCh(Str[ChN]);}
 	return Str;
   }
 
@@ -164,16 +164,16 @@ void TUrl::GetAbs(const TStr& AbsUrlStr){
     else if (PortN==THttp::DfPortN){PortStr.Clr();}
     //**if (!PortStr.Empty()){Str+=':'; Str+=PortStr;}
     if (Lx.PeekCh()=='/'){
-      PathStr=Lx.GetCh('/'); PathStr+=Lx.GetHPath(PathSegV); Str+=PathStr;}
+      PathStr=TStr(Lx.GetCh('/')); PathStr+=Lx.GetHPath(PathSegV); Str+=PathStr;}
     if (PathStr.Empty()){PathStr="/"; Str+=PathStr;}
     if (Lx.PeekCh()=='?'){
-      SearchStr=Lx.GetCh('?'); SearchStr+=Lx.GetSearch(); Str+=SearchStr;}
+      SearchStr=TStr(Lx.GetCh('?')); SearchStr+=Lx.GetSearch(); Str+=SearchStr;}
   } else {
     Scheme=usOther; Str+=Lx.GetToCh();
   }
   while (Lx.PeekCh()==' '){Lx.GetCh();}
   if (Lx.PeekCh()=='#'){
-    FragIdStr=Lx.GetCh('#'); FragIdStr+=Lx.GetToCh();
+    FragIdStr=TStr(Lx.GetCh('#')); FragIdStr+=Lx.GetToCh();
   }
   EAssertR(Lx.Eof(), "");
   UrlStr=Str;
@@ -185,7 +185,7 @@ void TUrl::GetAbsFromBase(const TStr& RelUrlStr, const TStr& BaseUrlStr){
   EAssertR(IsAbs(BaseUrlStr), "");
   TStr AbsUrlStr=BaseUrlStr;
   TStr NrRelUrlStr=RelUrlStr;
-  if (NrRelUrlStr.GetLc().IsPrefix(UrlHttpPrefixStr)){
+  if (NrRelUrlStr.GetLc().StartsWith(UrlHttpPrefixStr)){
     NrRelUrlStr.DelSubStr(0, UrlHttpPrefixStr.Len()-1);}
   if (NrRelUrlStr.Len()>0){
     if (NrRelUrlStr[0]=='/'){
@@ -322,8 +322,8 @@ void TUrl::ToLcPath(){
 }
 
 bool TUrl::IsAbs(const TStr& UrlStr){
-  if (UrlStr.GetLc().IsPrefix(UrlHttpPrefixStr)){
-    return UrlStr.GetLc().IsPrefix(UrlHttpAbsPrefixStr);
+  if (UrlStr.GetLc().StartsWith(UrlHttpPrefixStr)){
+    return UrlStr.GetLc().StartsWith(UrlHttpAbsPrefixStr);
   } else {
     int ColonChN=UrlStr.SearchCh(':'); int SlashChN=UrlStr.SearchCh('/');
     return (ColonChN!=-1)&&((SlashChN==-1)||((SlashChN!=-1)&&(ColonChN<SlashChN)));
@@ -467,4 +467,3 @@ PUrlEnv TUrlEnv::MkClone(const PUrlEnv& UrlEnv){
    PUrlEnv(new TUrlEnv(*UrlEnv));
   return CloneUrlEnv;
 }
-

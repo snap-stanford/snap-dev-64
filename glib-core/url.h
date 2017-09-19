@@ -76,9 +76,9 @@ public:
     HttpRqStr.ChangeStr(SrcStr, DstStr);}
 
   bool IsInHost(const TStr& _HostNm) const {
-    EAssert(IsOk()); return HostNm.GetUc().IsSuffix(_HostNm.GetUc());}
+    EAssert(IsOk()); return HostNm.GetUc().EndsWith(_HostNm.GetUc());}
   bool IsInPath(const TStr& _PathStr) const {
-    EAssert(IsOk()); return PathStr.GetUc().IsPrefix(_PathStr.GetUc());}
+    EAssert(IsOk()); return PathStr.GetUc().StartsWith(_PathStr.GetUc());}
   void ToLcPath();
 
   static bool IsAbs(const TStr& UrlStr);
@@ -169,4 +169,3 @@ public:
 
   static PUrlEnv MkClone(const PUrlEnv& UrlEnv);
 };
-

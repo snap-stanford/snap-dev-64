@@ -629,18 +629,18 @@ TStr TStrUtil::GetStdName(TStr AuthorName) {
     pos++; }
   if (pos < AuthorName.Len()) {
     AuthorName = AuthorName.GetSubStr(0, pos-1).ToTrunc(); }
-  if (AuthorName.Empty()) { return TStr::GetNullStr(); }
+  if (AuthorName.Empty()) { return TStr(); }
 
   // replace everything after '('
   int b = AuthorName.SearchCh('(');
   if (b != -1) {
     AuthorName = AuthorName.GetSubStr(0, b-1).ToTrunc(); }
   // skip if contains ')'
-  if (AuthorName .SearchCh(')')!=-1) { return TStr::GetNullStr(); }
+  if (AuthorName .SearchCh(')')!=-1) { return TStr(); }
   // skip if it is not a name
   if (AuthorName .SearchStr("figures")!=-1 || AuthorName .SearchStr("macros")!=-1
    || AuthorName .SearchStr("univ")!=-1 || AuthorName .SearchStr("institute")!=-1) {
-    return TStr::GetNullStr();
+    return TStr();
   }
   // remove all non-letters (latex tags, ...)
   TChA NewName;
@@ -652,10 +652,10 @@ TStr TStrUtil::GetStdName(TStr AuthorName) {
   TStrV AuthNmV; StdName.SplitOnWs(AuthNmV);
   // too short -- not a name
   if (! AuthNmV.Empty() && AuthNmV.Last() == "jr") AuthNmV.DelLast();
-  if (AuthNmV.Len() < 2) return TStr::GetNullStr();
+  if (AuthNmV.Len() < 2) return TStr();
 
   const TStr LastNm = AuthNmV.Last();
-  if (! TCh::IsAlpha(LastNm[0]) || LastNm.Len() == 1) return TStr::GetNullStr();
+  if (! TCh::IsAlpha(LastNm[0]) || LastNm.Len() == 1) return TStr();
 
   IAssert(isalpha(AuthNmV[0][0]));
   return TStr::Fmt("%s_%c", LastNm.CStr(), AuthNmV[0][0]);
@@ -823,4 +823,3 @@ int WriteN(int fd, char *ptr, int nbytes) {
   return (nbytes-nleft);
 }
 #endif
-

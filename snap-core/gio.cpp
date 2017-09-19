@@ -184,7 +184,7 @@ void WriteNodeSchemaToFile(FILE *F, TStr64V &IntAttrNNames, TStr64V &FltAttrNNam
 
 // Writes nodes out to the file. Each line consists of the node id followed by the
 // int attributes in the order specified by the TStrV IntAttrNNames, the float attributes
-// in the order specified by FltAttrNNames, and the string attributes specified by StrAttrNNames. 
+// in the order specified by FltAttrNNames, and the string attributes specified by StrAttrNNames.
 void WriteNodesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrNNames, TStr64V &FltAttrNNames, TStr64V &StrAttrNNames) {
   for (TNEANet::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     fprintf(F, "%s", TInt64::GetStr(NI.GetId()).CStr());
@@ -209,7 +209,7 @@ void WriteNodesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrNNames, TSt
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
       }
-      char * AttrStrVal = Graph->GetStrAttrDatN(NI.GetId(), StrAttrNNames[i]).CStr();
+      const char * AttrStrVal = Graph->GetStrAttrDatN(NI.GetId(), StrAttrNNames[i]).CStr();
       fprintf(F, "\t%s", AttrStrVal);
     }
     fprintf(F, "\n");
@@ -234,7 +234,7 @@ void WriteEdgeSchemaToFile(FILE *F, TStr64V &IntAttrENames, TStr64V &FltAttrENam
 
 // Writes edges out to the file. Each line consists of the SrcNId and DstNId followed by the
 // int attributes in the order specified by the TStrV IntAttrENames, the float attributes
-// in the order specified by FltAttrENames, and the string attributes specified by StrAttrENames. 
+// in the order specified by FltAttrENames, and the string attributes specified by StrAttrENames.
 void WriteEdgesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrENames, TStr64V &FltAttrENames, TStr64V &StrAttrENames) {
   for (TNEANet::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     fprintf(F, "%s\t%s", TInt64::GetStr(EI.GetSrcNId()).CStr(), TInt64::GetStr(EI.GetDstNId()).CStr());
@@ -259,7 +259,7 @@ void WriteEdgesToFile(FILE *F, const PNEANet& Graph, TStr64V &IntAttrENames, TSt
         fprintf(F, "\t%s", NULL_VAL.CStr());
         continue;
       }
-      char * AttrStrVal = Graph->GetStrAttrDatE(EI.GetId(), StrAttrENames[i]).CStr();
+      const char * AttrStrVal = Graph->GetStrAttrDatE(EI.GetId(), StrAttrENames[i]).CStr();
       fprintf(F, "\t%s", AttrStrVal);
     }
     fprintf(F, "\n");
@@ -279,7 +279,7 @@ void SaveEdgeListNet(const PNEANet& Graph, const TStr& OutFNm, const TStr& Desc)
   WriteNodeSchemaToFile(F, IntAttrNNames, FltAttrNNames, StrAttrNNames);
   WriteNodesToFile(F, Graph, IntAttrNNames, FltAttrNNames, StrAttrNNames);
   fprintf(F, "%s\n", END_SENTINEL.CStr());
-  
+
   TStr64V IntAttrENames;
   TStr64V FltAttrENames;
   TStr64V StrAttrENames;

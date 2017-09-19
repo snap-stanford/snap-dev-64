@@ -6,7 +6,7 @@ template <class Type>
 class TTypeNm: public TStr{
 public:
   static TStr GetNrTypeNm(const TStr& TypeNm){
-    if (TypeNm.IsPrefix("class ")){
+    if (TypeNm.StartsWith("class ")){
       return TypeNm.GetSubStr(6, TypeNm.Len()-1);}
     else {return TypeNm;}}
 public:
@@ -89,12 +89,12 @@ public:
   void OnNotify(const TNotifyType& Type, const TStr& MsgStr)
   {
     Assert(CallbackF != NULL);
-    CallbackF(Type, MsgStr); 
+    CallbackF(Type, MsgStr);
   }
   void OnStatus(const TStr& MsgStr)
   {
     Assert(CallbackF != NULL);
-    CallbackF(ntStat, MsgStr); 
+    CallbackF(ntStat, MsgStr);
   }
 };
 
@@ -112,12 +112,12 @@ public:
   void OnNotify(const TNotifyType& Type, const TStr& MsgStr)
   {
     Assert(CallbackF != NULL);
-    CallbackF((int)Type, MsgStr.CStr()); 
+    CallbackF((int)Type, MsgStr.CStr());
   }
   void OnStatus(const TStr& MsgStr)
   {
     Assert(CallbackF != NULL);
-    CallbackF((int)ntStat, MsgStr.CStr()); 
+    CallbackF((int)ntStat, MsgStr.CStr());
   }
 };
 

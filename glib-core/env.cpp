@@ -13,7 +13,7 @@ TEnv::TEnv(const TStr& _ArgStr, const PNotify& _Notify):
 
 TStr TEnv::GetExeFNm() const {
   TStr ExeFNm=GetArg(0);
-  if (ExeFNm.IsPrefix("//?")){ // observed on Win64 CGI
+  if (ExeFNm.StartsWith("//?")){ // observed on Win64 CGI
     ExeFNm=ExeFNm.GetSubStr(3, ExeFNm.Len());
   }
   return ExeFNm;
@@ -286,8 +286,12 @@ void TEnv::GetVarNmValV(TStrV& VarNmValV){
 }
 
 void TEnv::PutVarVal(const TStr& VarNm, const TStr& VarVal) {
-  const int RetVal = putenv(TStr::Fmt("%s=%s", VarNm.CStr(), VarVal.CStr()).CStr());
-  IAssert(RetVal==0);
+#ifdef GLib_WIN
+  const int ErrCd = _putenv(TStr::Fmt("%s=%s", VarNm.CStr(), VarVal.CStr()).CStr());
+#else
+  const int ErrCd = setenv(VarNm.CStr(), VarVal.CStr(), 1);
+#endif
+  IAssert(ErrCd==0);
 }
 
 TStr TEnv::GetVarVal(const TStr& VarNm) const {
@@ -295,4 +299,3 @@ TStr TEnv::GetVarVal(const TStr& VarNm) const {
 }
 
 TEnv Env;
-

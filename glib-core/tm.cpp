@@ -125,7 +125,7 @@ TStr TTmInfo::GetTmUnitStr(const TTmUnit& TmUnit) {
     case tmuEdges : return "Edges";
     default: Fail;
   }
-  return TStr::GetNullStr();
+  return TStr();
 }
 
 TStr TTmInfo::GetTmZoneDiffStr(const TStr& TmZoneStr){
@@ -1089,13 +1089,13 @@ uint64 TTm::GetPerfTimerTicks(){
   return TSysTm::GetPerfTimerTicks();
 }
 
-void TTm::GetDiff(const TTm& Tm1, const TTm& Tm2, int& Days, 
+void TTm::GetDiff(const TTm& Tm1, const TTm& Tm2, int& Days,
 	  int& Hours, int& Mins, int& Secs, int& MSecs) {
 
 	const uint64 DiffMSecs = TTm::GetDiffMSecs(Tm1, Tm2);
 	const uint64 DiffSecs = DiffMSecs / 1000;
 	const uint64 DiffMins = DiffSecs / 60;
-	const uint64 DiffHours = DiffMins / 60;	
+	const uint64 DiffHours = DiffMins / 60;
 
 	MSecs = int(DiffMSecs % 1000);
 	Secs = int(DiffSecs % 60);
@@ -1252,7 +1252,7 @@ uint TTm::GetYearIntFromTm(const TTm& Tm) {
 }
 
 uint TTm::GetDateTimeIntFromTm(const TTm& Tm) {
-    return Tm.IsDef() ? 
+    return Tm.IsDef() ?
 		GetDateTimeInt(Tm.GetYear(), Tm.GetMonth(),
         Tm.GetDay(), Tm.GetHour(), Tm.GetMin(), Tm.GetSec()) : 0;
 }
@@ -1269,9 +1269,9 @@ TSecTm TTm::GetSecTmFromDateTimeInt(const uint& DateTimeInt) {
 
 /////////////////////////////////////////////////
 // Time-Profiler - poor-man's profiler
-int TTmProfiler::AddTimer(const TStr& TimerNm) { 
+int TTmProfiler::AddTimer(const TStr& TimerNm) {
 	MxNmLen = TInt::GetMx(MxNmLen, TimerNm.Len());
-	return TimerH.AddKey(TimerNm); 
+	return TimerH.AddKey(TimerNm);
 }
 
 void TTmProfiler::ResetAll() {

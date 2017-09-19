@@ -313,7 +313,7 @@ public:
   static uint GetMSecsFromOsStart();
   static uint64 GetPerfTimerFq();
   static uint64 GetPerfTimerTicks();
-  static void GetDiff(const TTm& Tm1, const TTm& Tm2, int& Days, 
+  static void GetDiff(const TTm& Tm1, const TTm& Tm2, int& Days,
 	  int& Hours, int& Mins, int& Secs, int& MSecs);
   static uint64 GetDiffMSecs(const TTm& Tm1, const TTm& Tm2);
   static uint64 GetDiffSecs(const TTm& Tm1, const TTm& Tm2){
@@ -329,18 +329,18 @@ public:
   static TTm GetTmFromWebLogTimeStr(const TStr& TimeStr,
    const char TimeSepCh=':', const char MSecSepCh='.');
   static TTm GetTmFromWebLogDateTimeStr(const TStr& DateTimeStr,
-   const char DateSepCh='-', const char TimeSepCh=':', 
+   const char DateSepCh='-', const char TimeSepCh=':',
    const char MSecSepCh='.', const char DateTimeSepCh=' ');
   static TTm GetTmFromIdStr(const TStr& IdStr);
-  
+
   // get unix timestamp
-  static uint GetDateTimeInt(const int& Year = 0, const int& Month = 0, 
+  static uint GetDateTimeInt(const int& Year = 0, const int& Month = 0,
     const int& Day = 1, const int& Hour = 0, const int& Min = 0,
-	const int& Sec = 0);   
-  static uint GetDateIntFromTm(const TTm& Tm);   
+	const int& Sec = 0);
+  static uint GetDateIntFromTm(const TTm& Tm);
   static uint GetMonthIntFromTm(const TTm& Tm);
   static uint GetYearIntFromTm(const TTm& Tm);
-  static uint GetDateTimeIntFromTm(const TTm& Tm);   
+  static uint GetDateTimeIntFromTm(const TTm& Tm);
   static TTm GetTmFromDateTimeInt(const uint& DateTimeInt);
   static TSecTm GetSecTmFromDateTimeInt(const uint& DateTimeInt);
 };
@@ -371,7 +371,7 @@ public:
     if (GetSecs() < 60) { sprintf(TmStr, "%.2fs", GetSecs()); }
     else if (GetSecs() < 3600) { sprintf(TmStr, "%02dm%02ds", int(GetSecs())/60, int(GetSecs())%60); }
     else { sprintf(TmStr, "%02dh%02dm", int(GetSecs())/3600, (int(GetSecs())%3600)/60); }  return TmStr; }
-  static char* GetCurTm(){ static TStr TmStr; TmStr=TSecTm::GetCurTm().GetTmStr(); return TmStr.CStr(); }
+  static const char* GetCurTm(){ static TStr TmStr; TmStr=TSecTm::GetCurTm().GetTmStr(); return TmStr.CStr(); }
 };
 
 /////////////////////////////////////////////////
@@ -432,7 +432,7 @@ public:
 // Timer
 class TTmTimer {
 private:
-    int MxMSecs; 
+    int MxMSecs;
     TTmStopWatch StopWatch;
 
     UndefDefaultCopyAssign(TTmTimer);

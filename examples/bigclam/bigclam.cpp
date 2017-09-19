@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
 #endif
   PUNGraph G;
   TIntStrH NIDNameH;
-  if (InFNm.IsSuffix(".ungraph")) {
+  if (InFNm.EndsWith(".ungraph")) {
     TFIn GFIn(InFNm);
     G = TUNGraph::Load(GFIn);
   } else if (LabelFNm.Len() > 0) {
@@ -43,11 +43,11 @@ int main(int argc, char* argv[]) {
   printf("Graph: %s Nodes %s Edges\n",
         TUInt64::GetStr(G->GetNodes()).CStr(),
         TUInt64::GetStr(G->GetEdges()).CStr());
-  
+
   TVec<TIntV> EstCmtyVV;
   TExeTm RunTm;
   TAGMFast RAGM(G, 10, 10);
-  
+
   if (OptComs == -1) {
     printf("finding number of communities\n");
     OptComs = RAGM.FindComsByCV(NumThreads, MaxComs, MinComs, DivComs, OutFPrx, StepAlpha, StepBeta);

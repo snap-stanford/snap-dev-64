@@ -120,8 +120,8 @@ void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const 
   }
   // print info
   fprintf(F, "\n");
-  fprintf(F, "  Nodes:                    %s\n", TInt64::GetStr(Graph->GetNodes()).GetCStr());
-  fprintf(F, "  Edges:                    %s\n", TInt64::GetStr(Graph->GetEdges()).GetCStr());
+  fprintf(F, "  Nodes:                    %s\n", TInt64::GetStr(Graph->GetNodes()).CStr());
+  fprintf(F, "  Edges:                    %s\n", TInt64::GetStr(Graph->GetEdges()).CStr());
   fprintf(F, "  Zero Deg Nodes:           %s\n", TInt64::GetStr(ZeroNodes).CStr());
   fprintf(F, "  Zero InDeg Nodes:         %s\n", TInt64::GetStr(ZeroInNodes).CStr());
   fprintf(F, "  Zero OutDeg Nodes:        %s\n", TInt64::GetStr(ZeroOutNodes).CStr());
@@ -335,4 +335,3 @@ void THeap<TVal, TCmp>::MakeHeap(const int64& First, const int64& Len) {
     Parent--;
   }
 }
-
