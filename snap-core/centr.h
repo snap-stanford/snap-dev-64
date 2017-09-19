@@ -114,6 +114,17 @@ template<class PGraph> void GetHits(const PGraph& Graph, TIntFlt64H& NIdHubH, TI
 template<class PGraph> void GetHitsMP(const PGraph& Graph, TIntFlt64H& NIdHubH, TIntFlt64H& NIdAuthH, const int64& MaxIter=20);
 #endif
 
+/// Gets sequence of PageRank tables from given \c GraphSeq.
+TTableIterator GetMapPageRank(const TVec<PNEANet, int64>& GraphSeq,
+    TTableContext* Context,
+    const double& C = 0.85, const double& Eps = 1e-4, const int& MaxIter = 100) ;
+
+/// Gets sequence of Hits tables from given \c GraphSeq.
+TTableIterator GetMapHitsIterator(
+    const TVec<PNEANet, int64>& GraphSeq,
+    TTableContext* Context,
+    const int& MaxIter = 20);
+
 /// Dijkstra Algorithm
 /// For more info see:  https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 int64 GetWeightedShortestPath(const PNEANet Graph, const int64& SrcNId, TIntFlt64H& NIdDistH, const TFlt64V& Attr);
@@ -618,7 +629,7 @@ void GetHitsMP(const PGraph& Graph, TIntFlt64H& NIdHubH, TIntFlt64H& NIdAuthH, c
 
 /// Gets sequence of PageRank tables from given \c GraphSeq into \c TableSeq.
 template <class PGraph>
-void MapPageRank(const TVec<PGraph, int64>& GraphSeq, TVec<PTable>& TableSeq,
+void MapPageRank(const TVec<PGraph, int64>& GraphSeq, TVec<PTable, int64>& TableSeq,
     TTableContext* Context,
     const double& C, const double& Eps, const int& MaxIter) {
   int NumGraphs = GraphSeq.Len();
@@ -633,7 +644,7 @@ void MapPageRank(const TVec<PGraph, int64>& GraphSeq, TVec<PTable>& TableSeq,
 
 /// Gets sequence of Hits tables from given \c GraphSeq into \c TableSeq.
 template <class PGraph>
-void MapHits(const TVec<PGraph>& GraphSeq, TVec<PTable>& TableSeq,
+void MapHits(const TVec<PGraph, int64>& GraphSeq, TVec<PTable, int64>& TableSeq,
     TTableContext* Context,
     const int& MaxIter) {
   int NumGraphs = GraphSeq.Len();
@@ -649,7 +660,7 @@ void MapHits(const TVec<PGraph>& GraphSeq, TVec<PTable>& TableSeq,
     HitsT->Rename("1.NodeId", "NodeId");
     HitsT->Rename("1.Hub", "Hub");
     HitsT->Rename("2.Authority", "Authority");
-    TStr64V V = TStrV(3, 0);
+    TStr64V V = TStr64V(3, 0);
     V.Add("NodeId");
     V.Add("Hub");
     V.Add("Authority");

@@ -309,7 +309,7 @@ void TempMotifCounter::Count3TEdge3NodeStars(double delta, Counter3D& pre_counts
     int center = centers[c];
     TVec<TIntPair> ts_indices;
     TVec<StarEdgeData> events;
-    TNGraph::TNodeI NI = static_graph_->GetNI(center);
+    //TNGraph::TNodeI NI = static_graph_->GetNI(center);
     int index = 0;
     TIntV nbrs;
     GetAllNeighbors(center, nbrs);
