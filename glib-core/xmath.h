@@ -18,7 +18,7 @@ public:
   static double Round(const double& Val){
     return (Val>0)?floor(Val+0.5):ceil(Val-0.5);}
   static double Round(const double & Val, int64 Decs){
-    const double pwr=pow(10.0, Decs); return Round(Val * pwr) / pwr;}
+    const double pwr=pow(10.0, (double) Decs); return Round(Val * pwr) / pwr;}
   static int64 Fac(const int64& Val){
     if (Val<=1){return 1;} else {return Val*Fac(Val-1);}}
   static int64 Choose(const int64& N, const int64& K){ // binomial coefficient
