@@ -381,7 +381,7 @@ private:
 
 public:
   /// Empty String Constructor
-  TStr(): Inner(nullptr) {}
+  TStr(): Inner(NULL) {}
   /// C-String constructor
   TStr(const char* CStr);
   /// 1 char constructor
@@ -472,7 +472,7 @@ public:
   int Len() const { return Empty() ? 0 : (int)strlen(Inner); }
   /// Check if this is an empty string
   bool Empty() const;
-  /// Deletes the char pointer if it is not nullptr. (not thread safe)
+  /// Deletes the char pointer if it is not NULL. (not thread safe)
   void Clr();
   /// returns a reference to this string
   const TStr& GetStr() const { return *this; }
