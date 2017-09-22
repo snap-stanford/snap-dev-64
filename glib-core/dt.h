@@ -621,7 +621,7 @@ public:
   bool IsInt(const bool& Check, const int& MnVal, const int& MxVal, int& Val) const;
   bool IsInt(int& Val) const {return IsInt(false, 0, 0, Val);}
   bool IsInt() const {int Val; return IsInt(false, 0, 0, Val);}
-  int GetInt() const {int Val; IAssertR(IsInt(false, 0, 0, Val), *this); return Val;}
+  int GetInt() const {int Val=0; IAssertR(IsInt(false, 0, 0, Val), *this); return Val;}
   int GetInt(const int& DfVal) const {
     int Val; if (IsInt(false, 0, 0, Val)){return Val;} else {return DfVal;}}
 

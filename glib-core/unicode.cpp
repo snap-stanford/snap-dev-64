@@ -1275,7 +1275,7 @@ void TUniChDb::LoadTxt(const TStr& basePath)
 		ci.chCat = s[0]; ci.chSubCat = s[1];
 		// Canonical combining class.
 		s = fields[3]; IAssert(s.Len() > 0);
-		int i; bool ok = s.IsInt(true, TUCh::Mn, TUCh::Mx, i); IAssertR(ok, s);
+		int i = 0; bool ok = s.IsInt(true, TUCh::Mn, TUCh::Mx, i); IAssertR(ok, s);
 		ci.combClass = (uchar) i;
 		// Decomposition type and mapping.
 		LoadTxt_ProcessDecomposition(ci, fields[5]);

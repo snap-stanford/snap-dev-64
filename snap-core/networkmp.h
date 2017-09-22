@@ -232,13 +232,13 @@ private:
   /// Get Int node attribute val.  If not a proper attr, return default.
   TInt64 GetIntAttrDefaultN(const TStr& attribute) const { return IntDefaultsN.IsKey(attribute) ? IntDefaultsN.GetDat(attribute) : (TInt64) TInt64::Mn; }
   /// Get Str node attribute val.  If not a proper attr, return default.
-  TStr GetStrAttrDefaultN(const TStr& attribute) const { return StrDefaultsN.IsKey(attribute) ? StrDefaultsN.GetDat(attribute) : (TStr) TStr::GetNullStr(); }
+  TStr GetStrAttrDefaultN(const TStr& attribute) const { return StrDefaultsN.IsKey(attribute) ? StrDefaultsN.GetDat(attribute) : (TStr) TStr(); }
   /// Get Flt node attribute val.  If not a proper attr, return default.
   TFlt GetFltAttrDefaultN(const TStr& attribute) const { return FltDefaultsN.IsKey(attribute) ? FltDefaultsN.GetDat(attribute) : (TFlt) TFlt::Mn; }
   /// Get Int edge attribute val.  If not a proper attr, return default.
   TInt64 GetIntAttrDefaultE(const TStr& attribute) const { return IntDefaultsE.IsKey(attribute) ? IntDefaultsE.GetDat(attribute) : (TInt64) TInt64::Mn; }
   /// Get Str edge attribute val.  If not a proper attr, return default.
-  TStr GetStrAttrDefaultE(const TStr& attribute) const { return StrDefaultsE.IsKey(attribute) ? StrDefaultsE.GetDat(attribute) : (TStr) TStr::GetNullStr(); }
+  TStr GetStrAttrDefaultE(const TStr& attribute) const { return StrDefaultsE.IsKey(attribute) ? StrDefaultsE.GetDat(attribute) : (TStr) TStr(); }
   /// Get Flt edge attribute val.  If not a proper attr, return default.
   TFlt GetFltAttrDefaultE(const TStr& attribute) const { return FltDefaultsE.IsKey(attribute) ? FltDefaultsE.GetDat(attribute) : (TFlt) TFlt::Mn; }
 
@@ -601,14 +601,14 @@ public:
   /// Adds a new Int node attribute to the hashmap.
   int64 AddIntAttrN(const TStr& attr, TInt64 defaultValue=TInt::Mn);
   /// Adds a new Str node attribute to the hashmap.
-  int64 AddStrAttrN(const TStr& attr, TStr defaultValue=TStr::GetNullStr());
+  int64 AddStrAttrN(const TStr& attr, TStr defaultValue=TStr());
   /// Adds a new Flt node attribute to the hashmap.
   int64 AddFltAttrN(const TStr& attr, TFlt defaultValue=TFlt::Mn);
 
   /// Adds a new Int edge attribute to the hashmap.
   int64 AddIntAttrE(const TStr& attr, TInt64 defaultValue=TInt::Mn);
   /// Adds a new Str edge attribute to the hashmap.
-  int64 AddStrAttrE(const TStr& attr, TStr defaultValue=TStr::GetNullStr());
+  int64 AddStrAttrE(const TStr& attr, TStr defaultValue=TStr());
   /// Adds a new Flt edge attribute to the hashmap.
   int64 AddFltAttrE(const TStr& attr, TFlt defaultValue=TFlt::Mn);
 
