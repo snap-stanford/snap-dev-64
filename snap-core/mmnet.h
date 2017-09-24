@@ -697,7 +697,7 @@ public:
   /// Adds to Dst a copy of the crossnet with given ID from Src, without any edges; all edge attribute names and defaults are copied.
   static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const int64& CrossId);
   /// Gets the subnetwork reachable from a set of starting nodes in a single mode via one or more metapaths to traverse from the starting mode. ##TMMNet::GetSubgraphByMetapaths
-  PMMNet GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths);
+  PMMNet GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V, int64>& Metapaths);
   /// Gets the subnetwork reachable from a set of starting nodes in a single mode via one metapath.
   PMMNet GetSubgraphByMetapath(const int64& StartModeId, const TInt64V& StartNodeIds, const TInt64V& Metapath);
   
@@ -708,7 +708,7 @@ public:
   /// Constructs a metagraph representation of this multimodal network. ##TMMNet::GetMetagraph
   PNEANet GetMetagraph() const;
   /// Fetches all metapaths of length at most MaxPathLen that connect StartMode to EndMode.
-  void GetMetapaths(const int64& StartModeId, const int64& EndModeId, const int64& MaxPathLen, TVec<TInt64V>& Metapaths) const;
+  void GetMetapaths(const int64& StartModeId, const int64& EndModeId, const int64& MaxPathLen, TVec<TInt64V, int64>& Metapaths) const;
 
   #ifdef GCC_ATOMIC
   PNEANetMP ToNetworkMP(TStr64V& CrossNetNames);
@@ -722,8 +722,8 @@ private:
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);
   void GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxVal) const;
   /// Ensures the parameters of GetSubgraphByMetapaths are valid as described in its documentation; sets orientations of undirected crossnets in CrossOrientations.
-  void ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations); 
-  void MetapathDfsVisit(const PNEANet Metagraph, const TInt64& CurrModeId, const TInt64& EndModeId, const TInt64& MaxL, TInt64V& CurrPath, TVec<TInt64V>& Metapaths) const;
+  void ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V, int64>& Metapaths, TVec<TBoolV>& CrossOrientations); 
+  void MetapathDfsVisit(const PNEANet Metagraph, const TInt64& CurrModeId, const TInt64& EndModeId, const TInt64& MaxL, TInt64V& CurrPath, TVec<TInt64V, int64>& Metapaths) const;
 };
 
 // set flags

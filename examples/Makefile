@@ -31,6 +31,7 @@ MakeAll:
 	$(MAKE) -C lshtest
 	$(MAKE) -C magfit
 	$(MAKE) -C maggen
+	$(MAKE) -C metapath
 	$(MAKE) -C mkdatasets
 	# 'motifcluster' compilation skipped by default, it requires ARPACK
 	#$(MAKE) -C motifcluster
@@ -72,6 +73,7 @@ clean:
 	$(MAKE) clean -C lshtest
 	$(MAKE) clean -C magfit
 	$(MAKE) clean -C maggen
+	$(MAKE) clean -C metapath
 	$(MAKE) clean -C mkdatasets
 	$(MAKE) clean -C motifcluster
 	$(MAKE) clean -C motifs

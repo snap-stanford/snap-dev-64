@@ -1684,7 +1684,7 @@ TEST(multimodal, GetMetagraph) {
 static const int kNGenModes = 25;
 static const int kNNodesPerMode = 100;
 static const double kCrossEdgeProb = 0.1;
-static const TStr outpathbase = "";
+static const TStr outpathbase = ".";
 
 static bool coinflip(double p) { return TFlt::Rnd.GetUniDev() < p; }
 
@@ -1772,16 +1772,8 @@ static void generate_networks() {
 
 static void destroy_networks() {
   std::cout << "Deleting sample networks..." << std::flush;
-  DIR *netdir = opendir(outpathbase.CStr());
-  if (netdir == NULL) return;
-  
-  dirent *network;
-  while ((network = readdir(netdir)) != NULL) {
-    if (network->d_type == DT_REG) {
-      std::remove(TStr::Fmt("%s/%s", outpathbase.CStr(), network->d_name).CStr()); //filename in network directory
-    }
-  } 
-  closedir(netdir);
+  const char *toRemove[8] = {"full", "1-circle", "many-circle", "grid", "star", "3-tree", "prefattach", "barahierar"};
+  for (int i = 0; i < 8; i++) { std::remove(TStr::Fmt("%s/%s.graph", outpathbase.CStr(), toRemove[i]).CStr()); }
   std::cout << " Done." << std::endl;
 }
 
@@ -1932,14 +1924,14 @@ static void eulerian_reconstitute(const TStr& filename) {
   TModeNet& Mode = fullnet->GetModeNetById(StartModeId);
   TInt64V StartNodeIds;
   for (TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
-  TVec<TInt64V> Metapaths; 
+  TVec<TInt64V, int64> Metapaths; 
   Metapaths.Add(metapath);
   PMMNet copy = fullnet->GetSubgraphByMetapaths(StartModeId, StartNodeIds, Metapaths);
   check_reconstituted(fullnet, copy);
 }
 
 
-static void visit(const PNGraph& tree, const PNEANet& metagraph, int64 nid, TInt64V& treepath, TVec<TInt64V>& metapaths) {
+static void visit(const PNGraph& tree, const PNEANet& metagraph, int64 nid, TInt64V& treepath, TVec<TInt64V, int64>& metapaths) {
   TNGraph::TNodeI currnode = tree->GetNI(nid);
   ASSERT_LE(currnode.GetOutDeg(), metagraph->GetNI(nid).GetOutDeg());
 
@@ -1957,7 +1949,7 @@ static void visit(const PNGraph& tree, const PNEANet& metagraph, int64 nid, TInt
   }
 }
 
-static bool get_tree_metapaths(const PMMNet& mmnet, TVec<TInt64V>& metapaths, int64 startmodeid) {
+static bool get_tree_metapaths(const PMMNet& mmnet, TVec<TInt64V, int64>& metapaths, int64 startmodeid) {
   PNEANet metagraph = mmnet->GetMetagraph();
 
   PNGraph tree = TSnap::GetBfsTree<PNEANet>(metagraph, startmodeid, true, false);
@@ -1984,7 +1976,7 @@ static void tree_reconstitute(const TStr& filename) {
   TModeNet& Mode = fullnet->GetModeNetById(StartModeId);
   TInt64V StartNodeIds;
   for (TNEANet::TNodeI NI = Mode.BegNI(); NI < Mode.EndNI(); NI++) { StartNodeIds.Add(NI.GetId()); }
-  TVec<TInt64V> Metapaths;
+  TVec<TInt64V, int64> Metapaths;
   ASSERT_TRUE(get_tree_metapaths(fullnet, Metapaths, StartModeId));
   PMMNet copy = fullnet->GetSubgraphByMetapaths(StartModeId, StartNodeIds, Metapaths);
 

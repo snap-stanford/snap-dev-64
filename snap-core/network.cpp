@@ -1309,15 +1309,10 @@ TInt64 TNEANet::GetIntAttrDatE(const int64& EId, const TStr& attr) const {
   return VecOfIntVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
 }
 
-<<<<<<< HEAD
 TInt64V TNEANet::GetIntVAttrDatE(const int64& EId, const TStr& attr) const {
-  return VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
-=======
-TInt64V TNEANet::GetIntVAttrDatE(const int64& EId, const TStr& attr) {
   TInt location = CheckDenseOrSparseE(attr);
   if (location != 0) return VecOfIntVecVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
   else return VecOfIntHashVecsE[KeyToIndexTypeE.GetDat(attr).Val2][EdgeH.GetKeyId(EId)];
->>>>>>> 61b27b23860bd02c251ec2d4b2ad80821e630f3d
 }
 
 TStr TNEANet::GetStrAttrDatE(const int64& EId, const TStr& attr) const {

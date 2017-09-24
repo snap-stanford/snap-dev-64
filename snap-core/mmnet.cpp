@@ -1126,7 +1126,7 @@ PMMNet TMMNet::GetSubgraphByModeNet(TStr64V& ModeNetTypes) {
   return Result;
 }
 
-void TMMNet::ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations) {
+void TMMNet::ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V, int64>& Metapaths, TVec<TBoolV>& CrossOrientations) {
   // Ensure the start mode exists in the network
   IAssertR(ModeIdToNameH.IsKey(StartModeId), TStr::Fmt("Mode with id %d does not exist", StartModeId));
 
@@ -1185,7 +1185,7 @@ void TMMNet::ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& 
   }
 }
 
-PMMNet TMMNet::GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths) {
+PMMNet TMMNet::GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V, int64>& Metapaths) {
   TVec<TBoolV> CrossOrientations(Metapaths.Len(), Metapaths.Len()); // for undirected edges. true = treat mode1 as src, false = treat mode2 as src. Must be true for directed.
   ValidateCrossNetMetapaths(StartModeId, StartNodeIds, Metapaths, CrossOrientations);
 
@@ -1245,7 +1245,7 @@ PMMNet TMMNet::GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& S
 }
 
 PMMNet TMMNet::GetSubgraphByMetapath(const int64& StartModeId, const TInt64V& StartNodeIds, const TInt64V& Metapath) {
-  TVec<TInt64V> _Metapath;
+  TVec<TInt64V, int64> _Metapath;
   _Metapath.Add(Metapath);
   return GetSubgraphByMetapaths(StartModeId, StartNodeIds, _Metapath);
 }
@@ -1547,7 +1547,7 @@ PNEANet TMMNet::GetMetagraph() const {
   return Result;
 }
 
-void TMMNet::GetMetapaths(const int64& StartModeId, const int64& EndModeId, const int64& MaxPathLen, TVec<TInt64V>& Metapaths) const {
+void TMMNet::GetMetapaths(const int64& StartModeId, const int64& EndModeId, const int64& MaxPathLen, TVec<TInt64V, int64>& Metapaths) const {
   IAssertR(TModeNetH.IsKey(StartModeId), TStr::Fmt("No mode with starting id %d", StartModeId));
   IAssertR(TModeNetH.IsKey(EndModeId), TStr::Fmt("No mode with ending id %d", EndModeId));
   IAssertR(MaxPathLen > 0, TStr::Fmt("MaxPathLen must be greater than 0; %d given", MaxPathLen));  
@@ -1559,7 +1559,7 @@ void TMMNet::GetMetapaths(const int64& StartModeId, const int64& EndModeId, cons
 }
 
 void TMMNet::MetapathDfsVisit(const PNEANet Metagraph, const TInt64& CurrModeId, const TInt64& EndModeId,
-                      const TInt64& MaxL, TInt64V& CurrPath, TVec<TInt64V>& Metapaths) const {
+                      const TInt64& MaxL, TInt64V& CurrPath, TVec<TInt64V, int64>& Metapaths) const {
   if (CurrModeId == EndModeId && CurrPath.Len() > 0) { Metapaths.Add(CurrPath); }
   if (CurrPath.Len() == MaxL) { return; }
   
