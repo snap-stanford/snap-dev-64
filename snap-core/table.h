@@ -175,20 +175,6 @@ public:
 };
 #endif
 
-//TODO: move to separate file (map.h / file with PR and HITS)
-namespace TSnap {
-
-  /// Gets sequence of PageRank tables from given \c GraphSeq into \c TableSeq.
-  template <class PGraph>
-  void MapPageRank(const TVec<PGraph, int64>& GraphSeq, TVec<PTable, int64>& TableSeq,
-      TTableContext* Context, const double& C, const double& Eps, const int64& MaxIter);
-
-  /// Gets sequence of Hits tables from given \c GraphSeq into \c TableSeq.
-  template <class PGraph>
-  void MapHits(const TVec<PGraph, int64>& GraphSeq, TVec<PTable, int64>& TableSeq,
-    TTableContext* Context, const int64& MaxIter);
-}
-
 //#//////////////////////////////////////////////
 /// Execution context
 class TTableContext {
@@ -1396,21 +1382,6 @@ public:
   /// Implements distance based filter. ##TTable::IsNextK
   PTable IsNextK(const TStr& OrderCol, TInt64 K, const TStr& GroupBy, const TStr& RankColName = "");
 
-  /// Gets sequence of PageRank tables from given \c GraphSeq.
-  static TTableIterator GetMapPageRank(const TVec<PNEANet, int64>& GraphSeq, TTableContext* Context,
-   const double& C = 0.85, const double& Eps = 1e-4, const int64& MaxIter = 100) {
-    TVec<PTable, int64> TableSeq(GraphSeq.Len());
-    TSnap::MapPageRank(GraphSeq, TableSeq, Context, C, Eps, MaxIter);
-    return TTableIterator(TableSeq);
-  }
-
-  /// Gets sequence of Hits tables from given \c GraphSeq.
-  static TTableIterator GetMapHitsIterator(const TVec<PNEANet, int64>& GraphSeq,
-   TTableContext* Context, const int64& MaxIter = 20) {
-    TVec<PTable, int64> TableSeq(GraphSeq.Len());
-    TSnap::MapHits(GraphSeq, TableSeq, Context, MaxIter);
-    return TTableIterator(TableSeq);
-  }
   void PrintSize();
   void PrintContextSize();
   /// Returns approximate memory used by table in [KB]
@@ -1596,7 +1567,7 @@ void TTable::UpdateGrouping(THashMP<T,TInt64V, int64>& Grouping, T Key, TInt64 V
 }
 #endif // GCC_ATOMIC
 
-/*
+#if 0
 template<class T>
 void TTable::RegisterGrouping(const T& Grouping, const TStr& GroupByCol, TBool UsePhysicalIds){
   TStrV GroupByVec;
@@ -1607,49 +1578,6 @@ void TTable::RegisterGrouping(const T& Grouping, const TStr& GroupByCol, TBool U
     GroupMapping.GetDat(Stmt).AddDat(it.GetKey(), TIntV(it.GetDat()));
   }
 }
-*/
-
-namespace TSnap {
-
-  /// Gets sequence of PageRank tables from given \c GraphSeq into \c TableSeq.
-  template <class PGraph>
-  void MapPageRank(const TVec<PGraph, int64>& GraphSeq, TVec<PTable, int64>& TableSeq,
-   TTableContext* Context, const double& C, const double& Eps, const int64& MaxIter) {
-    int64 NumGraphs = GraphSeq.Len();
-    TableSeq.Reserve(NumGraphs, NumGraphs);
-    // This loop is parallelizable.
-    for (TInt64 i = 0; i < NumGraphs; i++){
-      TIntFlt64H PRankH;
-      GetPageRank(GraphSeq[i], PRankH, C, Eps, MaxIter);
-      TableSeq[i] = TTable::TableFromHashMap(PRankH, "NodeId", "PageRank", Context, false);
-    }
-  }
-
-  /// Gets sequence of Hits tables from given \c GraphSeq into \c TableSeq.
-  template <class PGraph>
-  void MapHits(const TVec<PGraph, int64>& GraphSeq, TVec<PTable, int64>& TableSeq,
-    TTableContext* Context, const int64& MaxIter) {
-    int64 NumGraphs = GraphSeq.Len();
-    TableSeq.Reserve(NumGraphs, NumGraphs);
-    // This loop is parallelizable.
-    for (TInt64 i = 0; i < NumGraphs; i++){
-      TIntFlt64H HubH;
-      TIntFlt64H AuthH;
-      GetHits(GraphSeq[i], HubH, AuthH, MaxIter);
-      PTable HubT =  TTable::TableFromHashMap(HubH, "NodeId", "Hub", Context, false);
-      PTable AuthT =  TTable::TableFromHashMap(AuthH, "NodeId", "Authority", Context, false);
-      PTable HitsT = HubT->Join("NodeId", AuthT, "NodeId");
-      HitsT->Rename("1.NodeId", "NodeId");
-      HitsT->Rename("1.Hub", "Hub");
-      HitsT->Rename("2.Authority", "Authority");
-      TStr64V V = TStr64V(3, 0);
-      V.Add("NodeId");
-      V.Add("Hub");
-      V.Add("Authority");
-      HitsT->ProjectInPlace(V);
-      TableSeq[i] = HitsT;
-    }
-  }
-}
+#endif
 
 #endif //TABLE_H

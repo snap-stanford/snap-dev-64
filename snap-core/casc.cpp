@@ -204,10 +204,10 @@ void CascFind(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,c
 #ifdef USE_OPENMP
 void CascFindMP(PNGraph Graph,PTable P,const TStr C1,const TStr C2,const TStr C3,const TStr C4,TVec<TInt64V, int64> &TopCascVV) {
   // Attribute to Int mapping
-  TInt64 SIdx = P->GetColIdx(C1);
-  TInt64 DIdx = P->GetColIdx(C2);
-  TInt64 StIdx = P->GetColIdx(C3);
-  TInt64 DuIdx = P->GetColIdx(C4);
+  //TInt64 SIdx = P->GetColIdx(C1);
+  //TInt64 DIdx = P->GetColIdx(C2);
+  //TInt64 StIdx = P->GetColIdx(C3);
+  //TInt64 DuIdx = P->GetColIdx(C4);
   TInt64V MapV, PhyV;
   TStr64V SortBy;
   SortBy.Add(C3);

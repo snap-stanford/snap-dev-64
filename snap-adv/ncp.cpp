@@ -1255,9 +1255,14 @@ void TNcpGraphsBase::PlotAvgNcp(const TStr& OutFNm, const TVec<TFltPrV>& NcpVec,
   for (int i = 0; i < NcpVec.Len(); i++) {
     if (GSizeV[i].Val1 < MinSz) { continue; }
     const TFltPrV& Ncp = NcpVec[i];
-    double MinX=1, MinY=1;
+    //double MinX=1;
+    double MinY=1;
     for (int k = 0; k < Ncp.Len(); k++){
-      if (Ncp[k].Val2<MinY) { MinX=Ncp[k].Val1; MinY=Ncp[k].Val2; } }
+      if (Ncp[k].Val2<MinY) {
+        //MinX=Ncp[k].Val1;
+        MinY=Ncp[k].Val2;
+      }
+    }
     if (MinY > MaxMinY) { continue; }  Cnt++;
     //const double Coef = (1-0.0001)/(1.0-MinY);
     for (int k = 0; k < Ncp.Len(); k++){
