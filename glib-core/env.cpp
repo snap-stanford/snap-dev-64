@@ -14,7 +14,7 @@ TEnv::TEnv(const TStr& _ArgStr, const PNotify& _Notify):
 TStr TEnv::GetExeFNm() const {
   TStr ExeFNm=GetArg(0);
   if (ExeFNm.StartsWith("//?")){ // observed on Win64 CGI
-    ExeFNm=ExeFNm.GetSubStr(3, ExeFNm.Len());
+    ExeFNm=ExeFNm.GetSubStr(3, ExeFNm.Len()-1);
   }
   return ExeFNm;
 }
@@ -31,7 +31,7 @@ TStr TEnv::GetCmLn(const int& FromArgN) const {
 int TEnv::GetPrefixArgN(const TStr& PrefixStr) const {
   int ArgN=0;
   while (ArgN<GetArgs()){
-    if (GetArg(ArgN).GetSubStr(0, PrefixStr.Len()-1)==PrefixStr){return ArgN;}
+    if (GetArg(ArgN).StartsWith(PrefixStr)){return ArgN;}
     ArgN++;
   }
   return -1;
@@ -40,7 +40,7 @@ int TEnv::GetPrefixArgN(const TStr& PrefixStr) const {
 TStr TEnv::GetArgPostfix(const TStr& PrefixStr) const {
   int ArgN=GetPrefixArgN(PrefixStr); IAssert(ArgN!=-1);
   TStr ArgStr=GetArg(ArgN);
-  return ArgStr.GetSubStr(PrefixStr.Len(), ArgStr.Len());
+  return ArgStr.GetSubStr(PrefixStr.Len(), ArgStr.Len()-1);
 }
 
 void TEnv::PrepArgs(const TStr& _HdStr, const int& _MnArgs, const bool& _SilentP){
@@ -155,7 +155,7 @@ TStrV TEnv::GetIfArgPrefixStrV(
       TStr ArgStr=GetArg(ArgN);
       if (ArgStr.GetSubStr(0, PrefixStr.Len()-1)==PrefixStr){
         // extract & add argument value
-        TStr ArgVal=ArgStr.GetSubStr(PrefixStr.Len(), ArgStr.Len());
+        TStr ArgVal=ArgStr.GetSubStr(PrefixStr.Len(), ArgStr.Len()-1);
         ArgValV.Add(ArgVal);
         // add to message string
         if (ArgValV.Len()>1){ArgValVChA+=", ";}
