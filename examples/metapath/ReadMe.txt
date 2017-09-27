@@ -36,7 +36,7 @@ Start user social network (-n:) (choose from facebook, linkedin, instagram,
 Usage:
 
 Print a list of all accounts, across all social networks, that are 
-connected to an account owned by the person who owns the Facebook profile
-with ID 534.
+connected by friendships or outward follows to an account owned by 
+the person who owns the GitHub profile with ID 8831.
 
-./metapath -u:534 -n:facebook
+./metapath -u:8831 -n:github
