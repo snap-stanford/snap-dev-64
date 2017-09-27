@@ -128,6 +128,9 @@ Description of examples:
 	Estimates Multiplicative Attribute Graph (MAG) model parameter.
   maggen : 
 	Generates Multiplicative Attribute Graphs (MAG).
+  metapath :
+        Demonstrates use of metapaths in revealing information about subgraphs
+        in multimodal networks.
   mkdatasets :
 	Demonstrates how to load different kinds of networks in various
 	network formats and how to compute various statistics of the network.

@@ -29,7 +29,7 @@ representing accounts owned by the same person on other sites.
 Parameters:
 Start user id (-u:)
 Start user social network (-n:) (choose from facebook, linkedin, instagram,
-								 twitter, github)
+				 twitter, github)
 
 
 ////////////////////////////////////////////////////////////////////////
