@@ -215,7 +215,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
 
   for (TCrossNet::TAStrI EI = Graph.BegEAStrI(attr1);
     EI < Graph.EndEAStrI(attr1); EI++) {
-    if (EI.GetDat() != TStr::GetNullStr()) {
+    if (EI.GetDat() != TStr()) {
       TAStrIV.Add(EI.GetDat());
       EdgeId++;
     } else {
@@ -247,7 +247,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
   Graph.AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("int") == EIdAttrName[i]()) {
+    if (TStr("int") == EIdAttrName[i].CStr()) {
       // FAIL
       EXPECT_EQ(2,3);
     }
@@ -258,7 +258,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
   Graph.AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("aaa") == EIdAttrName[i]()) {
+    if (TStr("aaa") == EIdAttrName[i].CStr()) {
       // FAIL
       EXPECT_EQ(2,3);
     }
@@ -268,7 +268,7 @@ TEST(TCrossNet, ManipulateNodesEdgeAttributes) {
   Graph.AttrValueEI(EId, EIdAttrValue);
   AttrLen = EIdAttrValue.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("str") == EIdAttrValue[i]()) {
+    if (TStr("str") == EIdAttrValue[i].CStr()) {
       // FAIL
       EXPECT_EQ(2,3);
     }

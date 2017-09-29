@@ -31,9 +31,11 @@ MakeAll:
 	$(MAKE) -C lshtest
 	$(MAKE) -C magfit
 	$(MAKE) -C maggen
+	$(MAKE) -C metapath
 	$(MAKE) -C mkdatasets
-	# 'motifcluster' compilation skipped by default, it requires ARPACK
-	#$(MAKE) -C motifcluster
+	@# 'motifcluster' compilation skipped by default,
+	@#       it requires that the ARPACK library is installed
+	@#$(MAKE) -C motifcluster
 	$(MAKE) -C motifs
 	$(MAKE) -C ncpplot
 	$(MAKE) -C netevol
@@ -44,7 +46,10 @@ MakeAll:
 	$(MAKE) -C rolx
 	$(MAKE) -C temporalmotifs
 	$(MAKE) -C testgraph
-	$(MAKE) -C iterators
+	@# 'iterators' compilation skipped by default,
+	@#       it requires compiler support for range-based for loops,
+	@#       at least MSVC 11, GCC 4.6.
+	@#$(MAKE) -C iterators
 
 clean:
 	$(MAKE) clean -C agmgen
@@ -73,6 +78,7 @@ clean:
 	$(MAKE) clean -C lshtest
 	$(MAKE) clean -C magfit
 	$(MAKE) clean -C maggen
+	$(MAKE) clean -C metapath
 	$(MAKE) clean -C mkdatasets
 	$(MAKE) clean -C motifcluster
 	$(MAKE) clean -C motifs

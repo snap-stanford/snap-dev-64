@@ -319,7 +319,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
 
   for (TNEANet::TAStrI NI = Graph->BegNAStrI(attr1);
     NI < Graph->EndNAStrI(attr1); NI++) {
-    if (NI.GetDat() != TStr::GetNullStr()) {
+    if (NI.GetDat() != TStr()) {
       NodeId++;
       TAStrIV.Add(NI.GetDat());
     } else {
@@ -353,7 +353,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
   Graph->AttrNameNI(NId, NIdAttrName);
   AttrLen = NIdAttrName.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("int") == NIdAttrName[i]()) {
+    if (TStr("int") == NIdAttrName[i].CStr()) {
       // FAIL
       EXPECT_EQ(1,2);
     }
@@ -365,7 +365,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
   Graph->AttrNameNI(NId, NIdAttrName);
   AttrLen = NIdAttrName.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("str") == NIdAttrName[i]()) {
+    if (TStr("str") == NIdAttrName[i].CStr()) {
       // FAIL
       EXPECT_EQ(1,2);
     }
@@ -376,7 +376,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
   Graph->AttrValueNI(NId, NIdAttrValue);
   AttrLen = NIdAttrValue.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("str") == NIdAttrValue[i]()) {
+    if (TStr("str") == NIdAttrValue[i].CStr()) {
       // FAIL
       EXPECT_EQ(1,2);
     }
@@ -489,7 +489,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
 
   for (TNEANet::TAStrI EI = Graph->BegEAStrI(attr1);
     EI < Graph->EndEAStrI(attr1); EI++) {
-    if (EI.GetDat() != TStr::GetNullStr()) {
+    if (EI.GetDat() != TStr()) {
       TAStrIV.Add(EI.GetDat());
       EdgeId++;
     } else {
@@ -521,7 +521,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
   Graph->AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("int") == EIdAttrName[i]()) {
+    if (TStr("int") == EIdAttrName[i].CStr()) {
       // FAIL
       EXPECT_EQ(2,3);
     }
@@ -532,7 +532,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
   Graph->AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("aaa") == EIdAttrName[i]()) {
+    if (TStr("aaa") == EIdAttrName[i].CStr()) {
       // FAIL
       EXPECT_EQ(2,3);
     }
@@ -542,7 +542,7 @@ TEST(TNEANet, ManipulateNodesEdgeAttributes) {
   Graph->AttrValueEI(EId, EIdAttrValue);
   AttrLen = EIdAttrValue.Len();
   for (i = 0; i < AttrLen; i++) {
-    if (TStr("str") == EIdAttrValue[i]()) {
+    if (TStr("str") == EIdAttrValue[i].CStr()) {
       // FAIL
       EXPECT_EQ(2,3);
     }

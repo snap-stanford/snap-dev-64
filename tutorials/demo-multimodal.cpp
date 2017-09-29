@@ -101,12 +101,12 @@ void ManipulateMMNet() {
 
   //Iterate over modes
   for (TMMNet::TModeNetI MI = Graph->BegModeNetI(); MI < Graph->EndModeNetI(); MI++) {
-    PrintGStats(MI.GetModeName().GetCStr(), MI.GetModeNet());
+    PrintGStats(MI.GetModeName().CStr(), MI.GetModeNet());
   }
 
   //Iterate over crossnets
   for (TMMNet::TCrossNetI CI = Graph->BegCrossNetI(); CI < Graph->EndCrossNetI(); CI++) {
-    PrintGStats(CI.GetCrossName().GetCStr(), CI.GetCrossNet());
+    PrintGStats(CI.GetCrossName().CStr(), CI.GetCrossNet());
   }
 
   // Get subgraph

@@ -153,9 +153,8 @@ void ManipulateNodeEdgeAttributes() {
     NI < Graph->EndNAIntI(attr2); NI++) {
     // Check if defaults are now 0.
     if (NI.GetDat()() != 0) {
-      printf("Attribute: %s, Node: %s, Val: %s\n", attr2(),
-                TInt64::GetStr(NodeId).CStr(),
-                TInt64::GetStr(NI.GetDat()()).CStr());
+      printf("Attribute: %s, Node: %s, Val: %s\n", attr2.CStr(),
+                            ToCStr(NodeId), ToCStr(NI.GetDat()));
       NodeId++;
     }
   } 
@@ -169,9 +168,8 @@ void ManipulateNodeEdgeAttributes() {
   for (TNEANet::TAFltI NI = Graph->BegNAFltI(attr3);
     NI < Graph->EndNAFltI(attr3); NI++) {
     if (NI.GetDat() != TFlt::Mn) {
-      printf("Attribute: %s, Node: %s, Val: %f\n", attr3(),
-                TInt64::GetStr(NodeId).CStr(),
-                NI.GetDat()());
+      printf("Attribute: %s, Node: %s, Val: %f\n", attr3.CStr(),
+                ToCStr(NodeId), NI.GetDat()());
       NodeId++;
     } 
   }
@@ -186,10 +184,10 @@ void ManipulateNodeEdgeAttributes() {
   
   for (TNEANet::TAStrI NI = Graph->BegNAStrI(attr1);
     NI < Graph->EndNAStrI(attr1); NI++) {
-    if (NI.GetDat() != TStr::GetNullStr()) {
-      printf("Attribute: %s, Node: %s, Val: %s\n", attr1(),
-                TInt64::GetStr(NodeId).CStr(),
-                NI.GetDat()());
+    if (NI.GetDat() != TStr()) {
+      printf("Attribute: %s, Node: %s, Val: %s\n", attr1.CStr(),
+                ToCStr(NodeId),
+                NI.GetDat().CStr());
       NodeId++;
     }
   } 
@@ -204,14 +202,14 @@ void ManipulateNodeEdgeAttributes() {
   Graph->AttrNameNI(NId, NIdAttrName);
   int AttrLen = NIdAttrName.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Node: %i, Attr: %s\n", NId, NIdAttrName[i]());
+    printf("Vertical Node: %i, Attr: %s\n", NId, NIdAttrName[i].CStr());
   } 
 
   Graph->DelAttrDatN(NId, attr2);
   Graph->AttrNameNI(NId, NIdAttrName);
   AttrLen = NIdAttrName.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Node (no int) : %i, Attr: %s\n", NId, NIdAttrName[i]());
+    printf("Vertical Node (no int) : %i, Attr: %s\n", NId, NIdAttrName[i].CStr());
   } 
 
   Graph->AddIntAttrDatN(NId, 3*2, attr2);
@@ -219,14 +217,14 @@ void ManipulateNodeEdgeAttributes() {
   Graph->AttrNameNI(NId, NIdAttrName);
   AttrLen = NIdAttrName.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Node (no str) : %i, Attr: %s\n", NId, NIdAttrName[i]());
+    printf("Vertical Node (no str) : %i, Attr: %s\n", NId, NIdAttrName[i].CStr());
   } 
 
   TStr64V NIdAttrValue;
   Graph->AttrValueNI(NId, NIdAttrValue);
   AttrLen = NIdAttrValue.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Node (no str) : %i, Attr_Val: %s\n", NId, NIdAttrValue[i]());
+    printf("Vertical Node (no str) : %i, Attr_Val: %s\n", NId, NIdAttrValue[i].CStr());
   } 
 
   for (i = 0; i <NNodes; i++) {
@@ -263,9 +261,9 @@ void ManipulateNodeEdgeAttributes() {
   for (TNEANet::TAIntI EI = Graph->BegEAIntI(attr2);
     EI < Graph->EndEAIntI(attr2); EI++) {
     if (EI.GetDat() != TInt::Mn) {
-      printf("E Attribute: %s, Edge: %s, Val: %s\n", attr2(),
-                TInt64::GetStr(EdgeId).CStr(),
-                TInt64::GetStr(EI.GetDat()()).CStr());
+      printf("E Attribute: %s, Edge: %s, Val: %s\n", attr2.CStr(),
+                ToCStr(EdgeId),
+                ToCStr(EI.GetDat()()));
       EdgeId++;
     }
   } 
@@ -281,8 +279,8 @@ void ManipulateNodeEdgeAttributes() {
     EI < Graph->EndEAFltI(attr3); EI++) {
     // Check if defaults are set to 0.
     if (EI.GetDat() != 0.00) {
-      printf("E Attribute: %s, Edge: %s, Val: %f\n", attr3(),
-                TInt64::GetStr(EdgeId).CStr(),
+      printf("E Attribute: %s, Edge: %s, Val: %f\n", attr3.CStr(),
+                ToCStr(EdgeId),
                 EI.GetDat()());
       EdgeId++;
     } 
@@ -297,10 +295,10 @@ void ManipulateNodeEdgeAttributes() {
   EdgeId = 0;
   for (TNEANet::TAStrI EI = Graph->BegEAStrI(attr1);
     EI < Graph->EndEAStrI(attr1); EI++) {
-    if (EI.GetDat() != TStr::GetNullStr()) {
-        printf("E Attribute: %s, Edge: %s, Val: %s\n", attr1(),
-                TInt64::GetStr(EdgeId).CStr(),
-                EI.GetDat()());
+    if (EI.GetDat() != TStr()) {
+        printf("E Attribute: %s, Edge: %s, Val: %s\n", attr1.CStr(),
+                ToCStr(EdgeId),
+                EI.GetDat().CStr());
 	EdgeId++;
     }
   } 
@@ -316,14 +314,14 @@ void ManipulateNodeEdgeAttributes() {
   Graph->AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Edge: %i, Attr: %s\n", EId, EIdAttrName[i]());
+    printf("Vertical Edge: %i, Attr: %s\n", EId, EIdAttrName[i].CStr());
   } 
 
   Graph->DelAttrDatE(EId, attr2);
   Graph->AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Edge (no int) : %i, Attr: %s\n", EId, EIdAttrName[i]());
+    printf("Vertical Edge (no int) : %i, Attr: %s\n", EId, EIdAttrName[i].CStr());
   } 
 
   Graph->AddIntAttrDatE(EId, 3*2, attr2);
@@ -331,14 +329,14 @@ void ManipulateNodeEdgeAttributes() {
   Graph->AttrNameEI(EId, EIdAttrName);
   AttrLen = EIdAttrName.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Edge (no str) : %i, Attr: %s\n", EId, EIdAttrName[i]());
+    printf("Vertical Edge (no str) : %i, Attr: %s\n", EId, EIdAttrName[i].CStr());
   } 
 
   TStr64V EIdAttrValue;
   Graph->AttrValueEI(EId, EIdAttrValue);
   AttrLen = EIdAttrValue.Len();
   for (int i = 0; i < AttrLen; i++) {
-    printf("Vertical Edge (no str) : %i, Attr_Val: %s\n", EId, EIdAttrValue[i]());
+    printf("Vertical Edge (no str) : %i, Attr_Val: %s\n", EId, EIdAttrValue[i].CStr());
   } 
 
   for (i = 0; i <NEdges; i++) {

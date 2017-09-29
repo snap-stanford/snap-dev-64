@@ -2509,72 +2509,71 @@ public:
   int64 AppendIntVAttrDatE(const TEdgeI& EdgeI, const TInt64& value, const TStr& attr) { return AppendIntVAttrDatE(EdgeI.GetId(), value, attr); }
   int64 AppendIntVAttrDatE(const int64& EId, const TInt64& value, const TStr& attr, TBool UseDense=true);
   /// Gets the value of int attr from the node attr value vector.
-  TInt64 GetIntAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetIntAttrDatN(NodeI.GetId(), attr); }
-  TInt64 GetIntAttrDatN(const int64& NId, const TStr& attr);
-
+  TInt64 GetIntAttrDatN(const TNodeI& NodeI, const TStr& attr) const { return GetIntAttrDatN(NodeI.GetId(), attr); }
+  TInt64 GetIntAttrDatN(const int64& NId, const TStr& attr) const;
   /// Gets the value of str attr from the node attr value vector.
-  TStr GetStrAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetStrAttrDatN(NodeI.GetId(), attr); }
-  TStr GetStrAttrDatN(const int64& NId, const TStr& attr);
+  TStr GetStrAttrDatN(const TNodeI& NodeI, const TStr& attr) const { return GetStrAttrDatN(NodeI.GetId(), attr); }
+  TStr GetStrAttrDatN(const int64& NId, const TStr& attr) const;
   /// Gets the value of flt attr from the node attr value vector.
-  TFlt GetFltAttrDatN(const TNodeI& NodeI, const TStr& attr) { return GetFltAttrDatN(NodeI.GetId(), attr); }
-  TFlt GetFltAttrDatN(const int64& NId, const TStr& attr);
+  TFlt GetFltAttrDatN(const TNodeI& NodeI, const TStr& attr) const { return GetFltAttrDatN(NodeI.GetId(), attr); }
+  TFlt GetFltAttrDatN(const int64& NId, const TStr& attr) const;
   /// Gets the value of the intv attr from the node attr value vector.
   TInt64V GetIntVAttrDatN(const TNodeI& NodeI, const TStr& attr) const { return GetIntVAttrDatN(NodeI.GetId(), attr); }
   TInt64V GetIntVAttrDatN(const int64& NId, const TStr& attr) const;
 
   /// Gets the index of the node attr value vector specified by \c attr (same as GetAttrIndN for compatibility reasons).
-  int64 GetIntAttrIndN(const TStr& attr);
+  int64 GetIntAttrIndN(const TStr& attr) const;
   /// Gets the index of the node attr value vector specified by \c attr.
-  int64 GetAttrIndN(const TStr& attr);
+  int64 GetAttrIndN(const TStr& attr) const;
 
   /// Gets the value of an int node attr specified by node iterator \c NodeI and the attr \c index.
-  TInt64 GetIntAttrIndDatN(const TNodeI& NodeI, const int64& index) { return GetIntAttrIndDatN(NodeI.GetId(), index); }
+  TInt64 GetIntAttrIndDatN(const TNodeI& NodeI, const int64& index) const { return GetIntAttrIndDatN(NodeI.GetId(), index); }
   /// Gets the value of an int node attr specified by node ID \c NId and the attr \c index.
-  TInt64 GetIntAttrIndDatN(const int64& NId, const int64& index);
+  TInt64 GetIntAttrIndDatN(const int64& NId, const int64& index) const;
 
   /// Gets the value of a string node attr specified by node iterator \c NodeI and the attr \c index.
-  TStr GetStrAttrIndDatN(const TNodeI& NodeI, const int64& index) { return GetStrAttrIndDatN(NodeI.GetId(), index); }
+  TStr GetStrAttrIndDatN(const TNodeI& NodeI, const int64& index) const { return GetStrAttrIndDatN(NodeI.GetId(), index); }
   /// Gets the value of a string node attr specified by node ID \c NId and the attr \c index.
-  TStr GetStrAttrIndDatN(const int64& NId, const int64& index);
+  TStr GetStrAttrIndDatN(const int64& NId, const int64& index) const;
 
   /// Gets the value of a float node attr specified by node iterator \c NodeI and the attr \c index.
-  TFlt GetFltAttrIndDatN(const TNodeI& NodeI, const int64& index) { return GetFltAttrIndDatN(NodeI.GetId(), index); }
+  TFlt GetFltAttrIndDatN(const TNodeI& NodeI, const int64& index) const { return GetFltAttrIndDatN(NodeI.GetId(), index); }
   /// Gets the value of a float node attr specified by node ID \c NId and the attr \c index.
-  TFlt GetFltAttrIndDatN(const int64& NId, const int64& index);
+  TFlt GetFltAttrIndDatN(const int64& NId, const int64& index) const;
 
   /// Gets the value of int attr from the edge attr value vector.
-  TInt64 GetIntAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetIntAttrDatE(EdgeI.GetId(), attr); }
-  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr);
+  TInt64 GetIntAttrDatE(const TEdgeI& EdgeI, const TStr& attr) const { return GetIntAttrDatE(EdgeI.GetId(), attr); }
+  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of str attr from the edge attr value vector.
-  TStr GetStrAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetStrAttrDatE(EdgeI.GetId(), attr); }
-  TStr GetStrAttrDatE(const int64& EId, const TStr& attr);
+  TStr GetStrAttrDatE(const TEdgeI& EdgeI, const TStr& attr) const { return GetStrAttrDatE(EdgeI.GetId(), attr); }
+  TStr GetStrAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of flt attr from the edge attr value vector.
-  TFlt GetFltAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetFltAttrDatE(EdgeI.GetId(), attr); }
-  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr);
+  TFlt GetFltAttrDatE(const TEdgeI& EdgeI, const TStr& attr) const { return GetFltAttrDatE(EdgeI.GetId(), attr); }
+  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of the intv attr from the edge attr value vector.
-  TInt64V GetIntVAttrDatE(const TEdgeI& EdgeI, const TStr& attr) { return GetIntVAttrDatE(EdgeI.GetId(), attr); }
-  TInt64V GetIntVAttrDatE(const int64& EId, const TStr& attr);
+  TInt64V GetIntVAttrDatE(const TEdgeI& EdgeI, const TStr& attr) const { return GetIntVAttrDatE(EdgeI.GetId(), attr); }
+  TInt64V GetIntVAttrDatE(const int64& EId, const TStr& attr) const;
 
   /// Gets the index of the edge attr value vector specified by \c attr (same as GetAttrIndE for compatibility reasons).
-  int64 GetIntAttrIndE(const TStr& attr);
+  int64 GetIntAttrIndE(const TStr& attr) const;
   /// Gets the index of the edge attr value vector specified by \c attr.
-  int64 GetAttrIndE(const TStr& attr);
+  int64 GetAttrIndE(const TStr& attr) const;
 
   /// Gets the value of an int edge attr specified by edge iterator \c EdgeI and the attr \c index.
-  TInt64 GetIntAttrIndDatE(const TEdgeI& EdgeI, const int64& index) { return GetIntAttrIndDatE(EdgeI.GetId(), index); }
+  TInt64 GetIntAttrIndDatE(const TEdgeI& EdgeI, const int64& index) const { return GetIntAttrIndDatE(EdgeI.GetId(), index); }
   /// Gets the value of an int edge attr specified by edge ID \c EId and the attr \c index.
-  TInt64 GetIntAttrIndDatE(const int64& EId, const int64& index);
-
+  TInt64 GetIntAttrIndDatE(const int64& EId, const int64& index) const;
+ 
   /// Gets the value of a float edge attr specified by edge iterator \c EdgeI and the attr \c index.
-  TFlt GetFltAttrIndDatE(const TEdgeI& EdgeI, const int& index) { return GetFltAttrIndDatE(EdgeI.GetId(), index); }
+  TFlt GetFltAttrIndDatE(const TEdgeI& EdgeI, const int& index) const { return GetFltAttrIndDatE(EdgeI.GetId(), index); }
   /// Gets the value of an int edge attr specified by edge ID \c EId and the attr \c index.
-  TFlt GetFltAttrIndDatE(const int64& EId, const int64& index);
-
+  TFlt GetFltAttrIndDatE(const int64& EId, const int64& index) const;
+ 
   /// Gets the value of a string edge attr specified by edge iterator \c EdgeI and the attr \c index.
-  TStr GetStrAttrIndDatE(const TEdgeI& EdgeI, const int64& index) { return GetStrAttrIndDatE(EdgeI.GetId(), index); }
+  TStr GetStrAttrIndDatE(const TEdgeI& EdgeI, const int64& index) const { return GetStrAttrIndDatE(EdgeI.GetId(), index); }
   /// Gets the value of an int edge attr specified by edge ID \c EId and the attr \c index.
-  TStr GetStrAttrIndDatE(const int64& EId, const int64& index);
-
+  TStr GetStrAttrIndDatE(const int64& EId, const int64& index) const;
+ 
   /// Deletes the node attribute for NodeI.
   int64 DelAttrDatN(const TNodeI& NodeI, const TStr& attr) { return DelAttrDatN(NodeI.GetId(), attr); }
   int64 DelAttrDatN(const int64& NId, const TStr& attr);

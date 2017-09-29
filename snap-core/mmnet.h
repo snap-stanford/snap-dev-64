@@ -28,7 +28,7 @@ public:
     bool operator < (const TNodeI& NodeI) const { return NodeHI < NodeI.NodeHI; }
     bool operator == (const TNodeI& NodeI) const { return NodeHI == NodeI.NodeHI; }
     /// Gets the neighbors (NIds) for the given node for the given CrossNet type.
-    void GetNeighborsByCrossNet(TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) {
+    void GetNeighborsByCrossNet(const TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) {
         const TModeNet *TMGraph = static_cast<const TModeNet *>(Graph); TMGraph->GetNeighborsByCrossNet(GetId(), Name, Neighbors, isOutEId); }
     /// Gets all the CrossNets that include the given node.
     void GetCrossNetNames(TStr64V& Names) { const TModeNet *TMGraph = static_cast<const TModeNet *>(Graph); TMGraph->GetCrossNetNames(Names); }
@@ -68,7 +68,7 @@ public:
   /// Gets a list of CrossNets that have this Mode as either a source or destination type.
   void GetCrossNetNames(TStr64V& Names) const { NeighborTypes.GetKeyV(Names); }
   /// For the given node, gets all the neighbors for the crossnet type. If this mode is both the source and dest type, use isOutEId to specify direction.
-  void GetNeighborsByCrossNet(const int64& NId, TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
+  void GetNeighborsByCrossNet(const int64& NId, const TStr& Name, TInt64V& Neighbors, const bool isOutEId=false) const;
   /// Copies all nodes whose Ids are given from Src into Dst. ##TModeNet::CopyNodesWithoutNeighbors
   static void CopyNodesWithoutNeighbors(const TModeNet& Src, TModeNet& Dst, const TInt64V& ToCopyIds);
   /// Returns an iterator referring to the first node in the graph.
@@ -406,14 +406,14 @@ public:
   int64 AddFltAttrDatE(const int64& EId, const TFlt& value, const TStr& attr);
 
   /// Gets the value of int attr from the edge attr value vector.
-  TInt64 GetIntAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) { return GetIntAttrDatE(EdgeI.GetId(), attr); }
-  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr);
+  TInt64 GetIntAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) const { return GetIntAttrDatE(EdgeI.GetId(), attr); }
+  TInt64 GetIntAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of str attr from the edge attr value vector.
-  TStr GetStrAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) { return GetStrAttrDatE(EdgeI.GetId(), attr); }
-  TStr GetStrAttrDatE(const int64& EId, const TStr& attr);
+  TStr GetStrAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) const { return GetStrAttrDatE(EdgeI.GetId(), attr); }
+  TStr GetStrAttrDatE(const int64& EId, const TStr& attr) const;
   /// Gets the value of flt attr from the edge attr value vector.
-  TFlt GetFltAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) { return GetFltAttrDatE(EdgeI.GetId(), attr); }
-  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr);
+  TFlt GetFltAttrDatE(const TCrossEdgeI& EdgeI, const TStr& attr) const { return GetFltAttrDatE(EdgeI.GetId(), attr); }
+  TFlt GetFltAttrDatE(const int64& EId, const TStr& attr) const;
 
   /// Returns an iterator referring to the first edge's int attribute.
   TAIntI BegEAIntI(const TStr& attr) const {
@@ -675,17 +675,17 @@ public:
   void GetCrossIdV(TInt64V& CrossIds) { TCrossNetH.GetKeyV(CrossIds); }
 
   /// Returns the number of modes in the multimodal network.
-  int64 GetModeNets() { return TModeNetH.Len(); }
+  int64 GetModeNets() const { return TModeNetH.Len(); }
   /// Returns the number of crossnets in the multimodal network.
-  int64 GetCrossNets() { return TCrossNetH.Len(); }
+  int64 GetCrossNets() const { return TCrossNetH.Len(); }
   /// Returns the max mode id.
-  int64 GetMxModeId() { return MxModeId; }
+  int64 GetMxModeId() const { return MxModeId; }
   /// Returns the max crossnet id.
-  int64 GetMxCrossId() { return MxCrossNetId; }
+  int64 GetMxCrossId() const { return MxCrossNetId; }
 
   /// Divides the given crossnet into many: one for each unique string value stored with the given attribute name. ##TMMNet::SplitCrossNetByStrAttr
-  int64 SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStrV& NewCrossNames);
-  int64 SplitCrossNetByStrAttr(const TStr& CrossName, const TStr& AttrName, TStrV& NewCrossNames) { return SplitCrossNetByStrAttr(GetCrossId(CrossName), AttrName, NewCrossNames); }
+  int64 SplitCrossNetByStrAttr(const int64& CrossId, const TStr& AttrName, TStr64V& NewCrossNames);
+  int64 SplitCrossNetByStrAttr(const TStr& CrossName, const TStr& AttrName, TStr64V& NewCrossNames) { return SplitCrossNetByStrAttr(GetCrossId(CrossName), AttrName, NewCrossNames); }
 
   /// Gets the induced subgraph given a vector of crossnet type names.
   PMMNet GetSubgraphByCrossNet(TStr64V& CrossNetTypes);
@@ -696,15 +696,19 @@ public:
   static int64 CopyModeWithoutNodes(const PMMNet& Src, PMMNet& Dst, const int64& ModeId);
   /// Adds to Dst a copy of the crossnet with given ID from Src, without any edges; all edge attribute names and defaults are copied.
   static int64 CopyCrossNetWithoutEdges(const PMMNet& Src, PMMNet& Dst, const int64& CrossId);
-  /// Gets the subnetwork reachable a set of starting nodes in a single mode and a sequence of metapaths to traverse from the starting mode. ##TMMNet::GetSubgraphByCrossNetMetapaths
-  PMMNet GetSubgraphByCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths);
-
+  /// Gets the subnetwork reachable from a set of starting nodes in a single mode via one or more metapaths to traverse from the starting mode. ##TMMNet::GetSubgraphByMetapaths
+  PMMNet GetSubgraphByMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V, int64>& Metapaths);
+  /// Gets the subnetwork reachable from a set of starting nodes in a single mode via one metapath.
+  PMMNet GetSubgraphByMetapath(const int64& StartModeId, const TInt64V& StartNodeIds, const TInt64V& Metapath);
+  
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the (Mode/Cross Id, old att name, new attr name)
   PNEANet ToNetwork(TInt64V& CrossNetTypes, TIntStrStrTr64V& NodeAttrMap, TVec<TTriple<TInt64, TStr, TStr>, int64 >& EdgeAttrMap);
   /// Converts multimodal network to TNEANet; as attr names can collide, AttrMap specifies the Mode/Cross Id -> vec of pairs (old att name, new attr name)
   PNEANet ToNetwork2(TInt64V& CrossNetTypes, TIntStrPr64VH& NodeAttrMap, THash<TInt64, TVec<TPair<TStr, TStr>, int64>,int64 >& EdgeAttrMap);
   /// Constructs a metagraph representation of this multimodal network. ##TMMNet::GetMetagraph
-  PNEANet GetMetagraph();
+  PNEANet GetMetagraph() const;
+  /// Fetches all metapaths of length at most MaxPathLen that connect StartMode to EndMode.
+  void GetMetapaths(const int64& StartModeId, const int64& EndModeId, const int64& MaxPathLen, TVec<TInt64V, int64>& Metapaths) const;
 
   #ifdef GCC_ATOMIC
   PNEANetMP ToNetworkMP(TStr64V& CrossNetNames);
@@ -717,8 +721,9 @@ private:
   int64 AddNodeAttributes(PNEANet& NewNet, TModeNet& Net, TVec<TPair<TStr, TStr>, int64>& Attrs, int64 ModeId, int64 oldId, int64 NId);
   int64 AddEdgeAttributes(PNEANet& NewNet, TCrossNet& Net, TVec<TPair<TStr, TStr>, int64 >& Attrs, int64 CrossId, int64 oldId, int64 EId);
   void GetPartitionRanges(TIntPr64V& Partitions, const TInt64& NumPartitions, const TInt64& MxVal) const;
-  /// Ensures the parameters of GetSubgraphByCrossNetMetapaths are valid as described in its documentation; sets orientations of undirected crossnets in CrossOrientations.
-  void ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V>& Metapaths, TVec<TBoolV>& CrossOrientations);
+  /// Ensures the parameters of GetSubgraphByMetapaths are valid as described in its documentation; sets orientations of undirected crossnets in CrossOrientations.
+  void ValidateCrossNetMetapaths(const int64& StartModeId, const TInt64V& StartNodeIds, const TVec<TInt64V, int64>& Metapaths, TVec<TBoolV>& CrossOrientations); 
+  void MetapathDfsVisit(const PNEANet Metagraph, const TInt64& CurrModeId, const TInt64& EndModeId, const TInt64& MaxL, TInt64V& CurrPath, TVec<TInt64V, int64>& Metapaths) const;
 };
 
 // set flags
