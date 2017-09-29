@@ -48,7 +48,7 @@ MakeAll:
 	$(MAKE) -C testgraph
 	@# 'iterators' compilation skipped by default,
 	@#       it requires compiler support for range-based for loops,
-	@#       at least MSVC 11, GCC 4.6.
+	@#       at least MSVC 11, GCC 4.6, clang 3.0
 	@#$(MAKE) -C iterators
 
 clean:
