@@ -371,7 +371,7 @@ public:
   typedef const char* TIter;  //!< Random access iterator.
 private:
   /// Used to construct empty strings ("") to be returned by CStr()
-  const static char EmptyStr;
+  static const char EmptyStr;
   /// String
   char* Inner;
 
@@ -458,11 +458,16 @@ public:
   /// Indexing operator, returns character at position ChN by reference
   char& operator[](const int& ChN);
 
-  /// Get the inner C-String
+  /// Gets the inner C-String.
   const char* CStr() const { return Empty() ? &EmptyStr : Inner; }
-  /// Return a COPY of the string as a C String (char array)
+  /// Gets the inner C-String, equivalent to CStr().
+  const char* operator()() const { return CStr(); }
+  /// Returns a COPY of the string as a C String (char array).
   char* CloneCStr() const;
-  /// Set character to given value (not thread safe)
+  /// Returns a null string.
+  static TStr GetNullStr() { return TStr(); }
+
+  /// Sets character to given value (not thread safe).
   void PutCh(const int& ChN, const char& Ch);
   /// Get character at position ChN
   char GetCh(const int& ChN) const;

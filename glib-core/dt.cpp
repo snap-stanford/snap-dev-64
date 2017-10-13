@@ -985,6 +985,10 @@ TStr TStr::GetFromHex() const {
 }
 
 TStr TStr::GetSubStr(const int& BChN, const int& EChN) const {
+  if (EChN <= 0) {
+    // create empty string
+    return TStr();
+  }
   int StrLen = Len();
   EAssertR(0 <= BChN && BChN <= EChN && EChN < StrLen, "TStr::GetSubStr index out of bounds");
   int Chs = EChN - BChN + 1;
