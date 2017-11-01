@@ -1772,7 +1772,7 @@ public:
     bool operator < (const TAIntI& I) const { return HI < I.HI; }
     bool operator == (const TAIntI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TInt64 GetDat() const { return HI[0]; }
+    const TInt64& GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return isNode ? GetDat() == Graph->GetIntAttrDefaultN(attr) : GetDat() == Graph->GetIntAttrDefaultE(attr); };
     TAIntI& operator++(int) { HI++; return *this; }
@@ -1799,7 +1799,7 @@ public:
     bool operator < (const TAIntVI& I) const { return HI == I.HI ? HHI < I.HHI : HI < I.HI; }
     bool operator == (const TAIntVI& I) const { return HI == I.HI && HHI == I.HHI; }
     /// Returns an attribute of the node.
-    TInt64V GetDat() const { return IsDense? HI[0] : HHI.GetDat(); }
+    const TInt64V& GetDat() const { return IsDense? HI[0] : HHI.GetDat(); }
     TAIntVI& operator++(int) { if (IsDense) {HI++;} else {HHI++;} return *this; }
     friend class TNEANet;
   };
@@ -1820,7 +1820,7 @@ public:
     bool operator < (const TAStrI& I) const { return HI < I.HI; }
     bool operator == (const TAStrI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TStr GetDat() const { return HI[0]; }
+    const TStr& GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return isNode ? GetDat() == Graph->GetStrAttrDefaultN(attr) : GetDat() == Graph->GetStrAttrDefaultE(attr); };
     TAStrI& operator++(int) { HI++; return *this; }
@@ -1843,7 +1843,7 @@ public:
     bool operator < (const TAFltI& I) const { return HI < I.HI; }
     bool operator == (const TAFltI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TFlt GetDat() const { return HI[0]; }
+    const TFlt& GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return isNode ? GetDat() == Graph->GetFltAttrDefaultN(attr) : GetDat() == Graph->GetFltAttrDefaultE(attr); };
     TAFltI& operator++(int) { HI++; return *this; }
@@ -1983,8 +1983,8 @@ protected:
     FltDefaultsN(Graph.FltDefaultsN), FltDefaultsE(Graph.FltDefaultsE), VecOfIntVecsN(Graph.VecOfIntVecsN), VecOfIntVecsE(Graph.VecOfIntVecsE),
     VecOfStrVecsN(Graph.VecOfStrVecsN), VecOfStrVecsE(Graph.VecOfStrVecsE), VecOfFltVecsN(Graph.VecOfFltVecsN), VecOfFltVecsE(Graph.VecOfFltVecsE),
     VecOfIntVecVecsN(Graph.VecOfIntVecVecsN), VecOfIntVecVecsE(Graph.VecOfIntVecVecsE), VecOfIntHashVecsN(Graph.VecOfIntHashVecsN), VecOfIntHashVecsE(Graph.VecOfIntHashVecsE), SAttrN(Graph.SAttrN), SAttrE(Graph.SAttrE) { }
-    virtual ~TNEANet() { }
 public:
+  virtual ~TNEANet() { }
   /// Saves the graph to a (binary) stream SOut. Expects data structures for sparse attributes.
   void Save(TSOut& SOut) const {
     MxNId.Save(SOut); MxEId.Save(SOut); NodeH.Save(SOut); EdgeH.Save(SOut);

@@ -195,7 +195,7 @@ public:
     bool operator < (const TAIntI& I) const { return HI < I.HI; }
     bool operator == (const TAIntI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TInt64 GetDat() const { return HI[0]; }
+    const TInt64& GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return GetDat() == Graph->GetIntAttrDefaultE(attr); };
     TAIntI& operator++(int) { HI++; return *this; }
@@ -217,7 +217,7 @@ public:
     bool operator < (const TAStrI& I) const { return HI < I.HI; }
     bool operator == (const TAStrI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TStr GetDat() const { return HI[0]; }
+    const TStr& GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return GetDat() == Graph->GetStrAttrDefaultE(attr); };
     TAStrI& operator++(int) { HI++; return *this; }
@@ -239,7 +239,7 @@ public:
     bool operator < (const TAFltI& I) const { return HI < I.HI; }
     bool operator == (const TAFltI& I) const { return HI == I.HI; }
     /// Returns an attribute of the node.
-    TFlt GetDat() const { return HI[0]; }
+    const TFlt& GetDat() const { return HI[0]; }
     /// Returns true if the attribute has been deleted.
     bool IsDeleted() const { return GetDat() == Graph->GetFltAttrDefaultE(attr); };
     TAFltI& operator++(int) { HI++; return *this; }
