@@ -2,7 +2,7 @@
 #	configuration variables for the example
 
 ## Main application file
-MAIN = testrolx
+MAIN = rolx
 DEPH = $(EXSNAPADV)/rolx.h
 DEPCPP = $(EXSNAPADV)/rolx.cpp
 CXXFLAGS += $(CXXOPENMP)

@@ -31,7 +31,7 @@ bool TSysProc::ExeProc(const TStr& ExeFNm, TStr& ParamStr){
   // Start the child process.
   BOOL Ok=CreateProcess(
    ExeFNm.CStr(),    // module name
-   ParamStr.CStr(),  // patameters
+   (LPSTR) ParamStr.CStr(),  // patameters
    NULL,             // Process handle not inheritable.
    NULL,             // Thread handle not inheritable.
    FALSE,            // Set handle inheritance to FALSE.
@@ -47,6 +47,7 @@ bool TSysProc::ExeProc(const TStr& ExeFNm, TStr& ParamStr){
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
     return true;
+
   } else {
     return false;
   }
