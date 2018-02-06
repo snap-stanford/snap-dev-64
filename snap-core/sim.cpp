@@ -206,7 +206,7 @@ PNEANet KNNJaccard(PNGraph Graph, int K) {
     if (NI.GetOutDeg() == 0) {
       continue;
     }
-    ct ++;
+    ct++;
 
     TVec<TPair<TFlt, TInt> > TopK;
     for (int i = 0; i < K; i++) {
