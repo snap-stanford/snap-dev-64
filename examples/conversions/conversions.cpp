@@ -24,7 +24,6 @@ int main(int argc, char* argv[]) {
   PSIn SIn_p = TFIn::New(smallBinary);
   int t1 = tm->AddTimer("Load TUNGraph Binary");
   tm->StartTimer(t1);
-
   PGraph G = TUNGraph::Load(*SIn_p);
   tm->StopTimer(t1);
   printTime(tm, t1);
