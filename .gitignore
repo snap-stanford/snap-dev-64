@@ -39,6 +39,7 @@ sample_*.dot
 *~.nib
 *.swo
 *.swp
+*~
 
 # Doxygen-produced files
 doxygen/snapdoc-dev
