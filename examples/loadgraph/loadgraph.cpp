@@ -12,46 +12,78 @@ int main(int argc, char* argv[]) {
   //typedef TPt<TNodeEdgeNet<TInt, TInt> > PGraph;
 
   // File input
-  const char * small = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.txt";
-  const TStr InFNm = TStr(small);
-  // const char * twitter = "/lfs/local/0/gaspar09/networks/twitter_rv.txt";
-  // const TStr InFNm = TStr(twitter);
-
+  // const TStr InFNm = TStr("/lfs/local/0/gaspar09/networks/soc-LiveJournal1.txt");
+  const TStr InFNm = TStr("/lfs/local/0/gaspar09/networks/twitter_rv.txt");
+  
   // File output
   // const char * smallBinary = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.graph";
   // const char * twitterBinary = "/lfs/local/0/gaspar09/networks/twitter_rv.graph";
   // const TStr OutFnm = TStr(tmpout);
   
   printf("Benchmark Graph Loading\n");
-
-  { 
-    typedef PUNGraph PGraph; // undirected graph    
-    clock_t t0 = clock();
-    PGraph G = TSnap::LoadEdgeList<PGraph>(InFNm);
-    clock_t t1 = clock();
-    printf("Load TUNGraph: %f\n", ((float)t1-t0)/CLOCKS_PER_SEC); 
-    // save the undirected graph binary for conversions
-    PSOut SOut_p = TFOut::New(OutFnm);
-    clock_t t2 = clock();
-    G->Save(*SOut_p);
-    printf("Save Binary TUNGraph: %f\n", ((float)clock()-t2)/CLOCKS_PER_SEC); 
-  }
   
   {
-    typedef PNGraph PGraph; // directed graph   
+    typedef PNGraph PGraph; // directed graph
+    // const char * binaryNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.ngraph";
+    const char * binaryNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.ngraph";
+    PSIn SIn_p = TFIn::New(binaryNGraph);
     clock_t t0 = clock();
-    PGraph G = TSnap::LoadEdgeList<PGraph>(InFNm);
-    clock_t t1 = clock();
-    printf("Load TNGraph: %f\n", ((float)t1-t0)/CLOCKS_PER_SEC);
+    PGraph G = TNGraph::Load(*SIn_p);
+    printf("Load TNGraph Binary: %f\n", ((float)clock()-t0)/CLOCKS_PER_SEC);
+
   }
 
   {
-    typedef PNEGraph PGraph; // directed graph   
-    clock_t t0= clock();
-    PGraph G = TSnap::LoadEdgeList<PGraph>(InFNm);
-    clock_t t1 = clock();
-    printf("Load TNEGraph: %f\n", ((float)t1-t0)/CLOCKS_PER_SEC);
+    typedef PNEANet PGraph; // neanet graph
+    //const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet";
+    const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/twitter_rv.neanet";
+    PSIn SIn_p = TFIn::New(binaryNEANet);
+    clock_t t0 = clock();
+    PGraph G = TNEANet::Load(*SIn_p);
+    printf("Load TNEANet Binary: %f\n", ((float)clock()-t0)/CLOCKS_PER_SEC);
+
   }
+  
+  // { 
+  //   typedef PUNGraph PGraph; // undirected graph    
+  //   clock_t t0 = clock();
+  //   PGraph G = TSnap::LoadEdgeList<PGraph>(InFNm);
+  //   printf("Load TUNGraph: %f\n", ((float)clock()-t0)/CLOCKS_PER_SEC); 
+
+  //   save the undirected graph binary for conversions
+  //   PSOut SOut_p = TFOut::New("/lfs/local/0/gaspar09/networks/twitter_rv.graph");
+  //   clock_t t2 = clock();
+  //   G->Save(*SOut_p);
+  //   printf("Save Binary TUNGraph: %f\n", ((float)clock()-t2)/CLOCKS_PER_SEC); 
+  // }
+
+  // {
+  //   typedef PNGraph PGraph; // directed graph
+  //   clock_t t0 = clock();
+  //   PGraph G = TSnap::LoadEdgeList<PGraph>(InFNm);
+  //   printf("Load TNGraph: %f\n", ((float)clock()-t0)/CLOCKS_PER_SEC);
+    
+  //   // save the undirected graph binary for conversions
+  //   PSOut SOut_p = TFOut::New("/lfs/local/0/gaspar09/networks/twitter_rv.ngraph");
+  //   // PSOut SOut_p = TFOut::New("/lfs/local/0/gaspar09/networks/soc-LiveJournal1.ngraph");
+  //   clock_t t1 = clock();
+  //   G->Save(*SOut_p);
+  //   printf("Save Binary TNGraph: %f\n", ((float)clock()-t1)/CLOCKS_PER_SEC);
+  // }
+
+  // {
+  //   typedef PNEANet PGraph; // neanet graph
+  //   clock_t t0 = clock();
+  //   PGraph G = TSnap::LoadEdgeList<PGraph>(InFNm);
+  //   printf("Load TNEANet: %f\n", ((float)clock()-t0)/CLOCKS_PER_SEC);
+
+  //   // save the undirected graph binary for conversions
+  //   PSOut SOut_p = TFOut::New("/lfs/local/0/gaspar09/networks/twitter_rv.neanet");
+  //   // PSOut SOut_p = TFOut::New("/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet");
+  //   clock_t t1 = clock();
+  //   G->Save(*SOut_p);
+  //   printf("Save Binary TNEANet: %f\n", ((float)clock()-t1)/CLOCKS_PER_SEC);
+  // }
 
   // { 
   //   typedef PUNGraph PGraph; // undirected graph   
@@ -61,7 +93,6 @@ int main(int argc, char* argv[]) {
   //   printf("Load Binary TUNGraph: %f\n", ((float)clock()-t0)/CLOCKS_PER_SEC);     
 
   //   printf("bin loaded\n");
-
   //   PSOut SOut_p = TFOut::New(OutFnm);
   //   clock_t t2 = clock();
   //   G->Save(*SOut_p);
