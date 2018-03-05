@@ -37,10 +37,10 @@ int main(int argc, char* argv[]) {
   
   //const char * binaryNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.ngraph";
   //const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet";
-  PSIn SIn_p = TFIn::New(binaryUNGraph);
 
+  PSIn FInPt = TFIn::New(binaryUNGraph);
   clock_t t0 = clock();
-  PUNGraph G = TUNGraph::Load(*SIn_p);
+  PUNGraph G = TUNGraph::Load(*FInPt);
   clock_t t1 = clock();
   printf("Load TUNGraph (%s nodes, %s edges) Binary: %f\n",
 	 TUInt64::GetStr(G->GetNodes()).CStr(),
@@ -50,24 +50,24 @@ int main(int argc, char* argv[]) {
   if (runAll || runUNDir) {
     // get UNGraph
     clock_t t0 = clock();
-    PUNGraph H = TSnap::ConvertGraph<PUNGraph>(G);
+    PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
     clock_t t1 = clock();
+    H->IsOk(false);
     printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TUNGraph");
-
   }
   if (runAll || runDir) {
-    // get NGraph
-    clock_t t0 = clock();
-    PNGraph H = TSnap::ConvertGraph<PNGraph>(G);
-    clock_t t1 = clock();
-    printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TNGraph");
+    // // get NGraph
+    // clock_t t0 = clock();
+    // PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
+    // clock_t t1 = clock();
+    // printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TNGraph");
   }
   if (runAll || runNet) {
-    // get NEGraph
-    clock_t t0 = clock();
-    PNEANet H = TSnap::ConvertGraph<PNEANet>(G);
-    clock_t t1 = clock();
-    printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TNEANet");
+    // // get NEGraph
+    // clock_t t0 = clock();
+    // PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G);
+    // clock_t t1 = clock();
+    // printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TNEANet");
   }
 
   return 0;

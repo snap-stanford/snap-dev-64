@@ -286,6 +286,7 @@ void ExeStop(
 #define EAssert(Cond) \
   ((Cond) ? static_cast<void>(0) : TExcept::ThrowFull(#Cond, TStr(__FILE__) + " line " + TInt::GetStr(__LINE__) +": "+ TStr(#Cond)))
 
+//#define EAssertR(Cond, MsgStr) ((Cond) ? static_cast<void>(0) : static_cast<void>(0))
 #define EAssertR(Cond, MsgStr) \
   ((Cond) ? static_cast<void>(0) : TExcept::ThrowFull(MsgStr, TStr(__FILE__)+" line "+TInt::GetStr(__LINE__)+": "+TStr(#Cond)))
 

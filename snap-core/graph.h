@@ -54,6 +54,9 @@ public:
     void PackOutNIdV() { NIdV.Pack(); }
     void PackNIdV() { NIdV.Pack(); }
     void SortNIdV() { NIdV.Sort();}
+    const TInt64V& GetInNIdV() const { return NIdV; }
+    const TInt64V& GetOutNIdV() const { return NIdV; }
+    const TInt64V& GetNbrNIdV() const { return NIdV; }
     friend class TUNGraph;
     friend class TUNGraphMtx;
   };
@@ -92,6 +95,9 @@ public:
     int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Sorts the adjacency lists of the current node.
     void SortNIdV() { NodeHI.GetDat().SortNIdV(); }
+    const TInt64V& GetInNIdV() const { return NodeHI.GetDat().GetInNIdV(); }
+    const TInt64V& GetOutNIdV() const { return NodeHI.GetDat().GetOutNIdV(); }
+    const TInt64V& GetNbrNIdV() const { return NodeHI.GetDat().GetNbrNIdV(); }
     /// Returns ID of NodeN-th in-node (the node pointing to the current node). ##TUNGraph::TNodeI::GetInNId
     int64 GetInNId(const int64& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
     /// Returns ID of NodeN-th out-node (the node the current node points to). ##TUNGraph::TNodeI::GetOutNId
@@ -292,6 +298,8 @@ public:
     void PackOutNIdV() { OutNIdV.Pack(); }
     void PackNIdV() { InNIdV.Pack(); }
     void SortNIdV() { InNIdV.Sort(); OutNIdV.Sort();}
+    const TInt64V& GetInNIdV() const { return InNIdV; }
+    const TInt64V& GetOutNIdV() const { return OutNIdV; }
     void LoadShM(TShMIn& ShMIn) {
       Id = TInt64(ShMIn);
       InNIdV.LoadShM(ShMIn);
@@ -334,6 +342,8 @@ public:
     int64 GetOutDeg() const { return NodeHI.GetDat().GetOutDeg(); }
     /// Sorts the adjacency lists of the current node.
     void SortNIdV() { NodeHI.GetDat().SortNIdV(); }
+    const TInt64V& GetInNIdV() const { return NodeHI.GetDat().GetInNIdV(); }
+    const TInt64V& GetOutNIdV() const { return NodeHI.GetDat().GetOutNIdV(); }
     /// Returns ID of NodeN-th in-node (the node pointing to the current node). ##TNGraph::TNodeI::GetInNId
     int64 GetInNId(const int64& NodeN) const { return NodeHI.GetDat().GetInNId(NodeN); }
     /// Returns ID of NodeN-th out-node (the node the current node points to). ##TNGraph::TNodeI::GetOutNId
