@@ -39,9 +39,34 @@ int64 TUNGraph::AddNode(const int64& NId, const TInt64V& NbrNIdV) {
   Node.NIdV = NbrNIdV;
   Node.NIdV.Sort();
   NEdges += Node.GetDeg();
-  // for (int64 i = 0; i < NbrNIdV.Len(); i++) {
-  //   GetNode(NbrNIdV[i]).NIdV.AddSorted(NewNId);
-  // }
+  for (int64 i = 0; i < NbrNIdV.Len(); i++) {
+    GetNode(NbrNIdV[i]).NIdV.AddSorted(NewNId);
+  }
+  return NewNId;
+}
+
+// Add a node of ID NId to the graph and create edges to all nodes in vector NbrNIdV.
+int64 TUNGraph::AddNodeDirect(const int64& NId, const TInt64V& NbrNIdV) {
+  int64 NewNId;
+  if (NId == -1) {
+    NewNId = MxNId;  MxNId++;
+  } else {
+    IAssertR(! IsNode(NId), TStr::Fmt("NodeId %d already exists", NId));
+    NewNId = NId;
+    MxNId = TMath::Mx(NewNId+1, MxNId());
+  }
+  int64 NewEdges = 0;
+  TNode& Node = NodeH.AddDat(NewNId);
+  Node.Id = NewNId;
+  Node.NIdV = NbrNIdV;
+  for (int64 i = 0; i < NbrNIdV.Len(); i++) {
+    if(IsNode(NbrNIdV[i])) {
+      // Update the edge count only if the other node is already present
+      // Avoids double counting undirected edges and self loops 
+      NewEdges += 1;
+    }
+  }
+  NEdges += NewEdges;
   return NewNId;
 }
 
@@ -80,12 +105,12 @@ void TUNGraph::DelNode(const int64& NId) {
 }
 
 int64 TUNGraph::GetEdges() const {
-  int64 Edges = 0;
-  for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
-   Edges += NodeH[N].GetDeg();
-  }
-  return Edges/2;
-  // return NEdges;
+  // int64 Edges = 0;
+  // for (int64 N=NodeH.FFirstKeyId(); NodeH.FNextKeyId(N); ) {
+  //  Edges += NodeH[N].GetDeg();
+  // }
+  // return Edges/2;
+  return NEdges;
 }
 
 // Add an edge between SrcNId and DstNId to the graph.
@@ -268,6 +293,24 @@ int64 TNGraph::AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& O
   Node.OutNIdV = OutNIdV;
   Node.InNIdV.Sort();
   Node.OutNIdV.Sort();
+  return NewNId;
+}
+
+// add a node with a list of neighbors
+// (use TNGraph::IsOk to check whether the graph is consistent)
+int64 TNGraph::AddNodeDirect(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+  int64 NewNId;
+  if (NId == -1) {
+    NewNId = MxNId;  MxNId++;
+  } else {
+    IAssertR(!IsNode(NId), TStr::Fmt("NodeId %s already exists", TInt64::GetStr(NId).CStr()));
+    NewNId = NId;
+    MxNId = TMath::Mx(NewNId+1, MxNId());
+  }
+  TNode& Node = NodeH.AddDat(NewNId);
+  Node.Id = NewNId;
+  Node.InNIdV = InNIdV;
+  Node.OutNIdV = OutNIdV;
   return NewNId;
 }
 

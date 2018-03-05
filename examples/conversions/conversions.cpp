@@ -48,19 +48,20 @@ int main(int argc, char* argv[]) {
 	 ((float)t1-t0)/CLOCKS_PER_SEC);
  
   if (runAll || runUNDir) {
-    // get UNGraph
-    clock_t t0 = clock();
-    PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
-    clock_t t1 = clock();
-    H->IsOk(false);
-    printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TUNGraph");
+    // // get UNGraph
+    // clock_t t0 = clock();
+    // PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
+    // clock_t t1 = clock();
+    // H->IsOk(false);
+    // printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TUNGraph");
   }
   if (runAll || runDir) {
-    // // get NGraph
-    // clock_t t0 = clock();
-    // PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
-    // clock_t t1 = clock();
-    // printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TNGraph");
+    // get NGraph
+    clock_t t0 = clock();
+    PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
+    clock_t t1 = clock();
+    H->IsOk(false);
+    printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), "TNGraph");
   }
   if (runAll || runNet) {
     // // get NEGraph

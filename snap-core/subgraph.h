@@ -238,9 +238,18 @@ POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes) {
   POutGraph OutGraphPt = POutGraph::TObj::New();
   typename POutGraph::TObj& OutGraph = *OutGraphPt;
   OutGraph.Reserve(InGraph->GetNodes(), InGraph->GetEdges());
+  const bool OutGraphDirected = HasGraphFlag(typename POutGraph::TObj, gfDirected);
+  const bool InGraphDirected = HasGraphFlag(typename PInGraph::TObj, gfDirected);
   if (! RenumberNodes) {
-    for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
-      OutGraph.AddNode(NI.GetId(), NI.GetNbrNIdV());
+    if (! InGraphDirected) {
+      for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+	if (OutGraphDirected) {
+	  OutGraph.AddNodeDirect(NI.GetId(), NI.GetNbrNIdV(), NI.GetNbrNIdV());
+	} else {
+	  //OutGraph.AddNodeDirect(NI.GetId(), NI.GetNbrNIdV(), NI.GetNbrNIdV());
+	  OutGraph.AddNodeDirect(NI.GetId(), NI.GetNbrNIdV());
+	}
+      }
     }
   /*   for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) { */
   /*     OutGraph.AddEdge(EI.GetSrcNId(), EI.GetDstNId()); */
