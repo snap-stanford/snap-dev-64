@@ -1636,6 +1636,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   protected:
+    typedef TPt<PVec<int64>> PInt64V;
     typedef THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
     const TNEANet *Graph;
@@ -1685,6 +1686,8 @@ public:
     bool IsOutEId(const int64& EId) const { return NodeHI.GetDat().IsOutEId(EId); }
     /// Tests whether the edge with ID EId is an in or out-edge of current node.
     bool IsNbrEId(const int64& EId) const { return IsInEId(EId) || IsOutEId(EId); }
+    const PInt64V GetInNIdV() const;
+    const PInt64V GetOutNIdV() const;
     /// Gets vector of attribute names.
     void GetAttrNames(TStr64V& Names) const { Graph->AttrNameNI(GetId(), Names); }
     /// Gets vector of attribute values.
@@ -2121,6 +2124,8 @@ public:
   int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNEANet::AddNodeUnchecked
   int64 AddNodeUnchecked(int64 NId = -1);
+  /// Adds a node of ID NId to the network. Creates edges to the node from all nodes in vector InNIdV. Creates edges from the node to all nodes in vector OutNIdV. ##TNEANet::AddNodeInternal
+  int64 AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NodeI.GetId() to the graph.
   int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
   /// Deletes node of ID NId from the graph. ##TNEANet::DelNode
@@ -2411,6 +2416,8 @@ public:
   int64 AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
   /// Adds an edge between EdgeI.GetSrcNId() and EdgeI.GetDstNId() to the graph.
   int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId()); }
+  /// Adds an edge with ID EId between node IDs SrcNId and DstNId to the graph. The associated Edge Id vectors are left unsorted.
+  int64 AddEdgeUnsorted(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
   /// Deletes an edge with edge ID EId from the graph.
   void DelEdge(const int64& EId);
   /// Deletes all edges between node IDs SrcNId and DstNId from the graph. ##TNEANet::DelEdge

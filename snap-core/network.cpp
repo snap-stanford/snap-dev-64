@@ -47,6 +47,24 @@ bool TNEANet::HasFlag(const TGraphFlag& Flag) const {
   return HasGraphFlag(TNEANet::TNet, Flag);
 }
 
+const TPt<PVec<int64>> TNEANet::TNodeI::GetInNIdV() const {
+  TPt<PVec<int64>> InNIdV = PVec<int64>::New();
+  const TNode& Node = NodeHI.GetDat();
+  for (int64 edge = 0; edge < Node.GetInDeg(); edge++) {
+    InNIdV->Add(Graph->GetEdge(Node.GetInEId(edge)).GetSrcNId());
+  }
+  return InNIdV;
+}
+
+const TPt<PVec<int64>> TNEANet::TNodeI::GetOutNIdV() const {
+  TPt<PVec<int64>> OutNIdV = TPt<PVec<int64>>::New();
+  const TNode& Node = NodeHI.GetDat();
+  for (int64 edge = 0; edge < Node.GetOutDeg(); edge++) {
+    OutNIdV->Add(Graph->GetEdge(Node.GetOutEId(edge)).GetDstNId());
+  }
+  return OutNIdV;
+}
+
 bool TNEANet::TNodeI::IsInNId(const int64& NId) const {
   const TNode& Node = NodeHI.GetDat();
   for (int64 edge = 0; edge < Node.GetInDeg(); edge++) {
@@ -465,6 +483,36 @@ int64 TNEANet::AddNodeUnchecked(int64 NId) {
   return NId;
 }
 
+int64 TNEANet::AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+
+  if (!IsNode(NId)) {
+    NodeH.AddDat(NId, TNode(NId));
+    MxNId = TMath::Mx(NId+1, MxNId());
+  }
+
+  TNode Node = NodeH.GetDat(NId);
+  // Use InNIdV, OutNIdV to generate InEIdV, OutEIdV
+  // Note that to add all the edges, assuming this function is called for every node, then
+  // we only need to iterate through the OutNIdV
+  for (int64 i = 0; i < OutNIdV.Len(); i++) {
+    int64 DstNId = OutNIdV[i];
+    if (!IsNode(DstNId)) {
+      // Add the node
+      NodeH.AddDat(DstNId, TNode(DstNId));
+      // Increment the next ID
+      MxNId = TMath::Mx(DstNId+1, MxNId());
+    }
+    // Add the edge. Note there is no check for a duplicate edge since TNEANet is a multigraph
+    // Note that InEIdV and OutEIdV are always sorted.
+    int64 EId = MxEId; MxEId++;
+    EdgeH.AddDat(EId, TEdge(EId, NId, DstNId));
+    Node.OutEIdV.Add(EId);
+    NodeH.GetDat(DstNId).InEIdV.Add(EId);
+  }
+
+  return NId;
+}
+
 int64 TNEANet::AddAttributes(const int64 NId) {
   int64 i;
   // update attribute columns
@@ -686,6 +734,19 @@ int64 TNEANet::AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId) {
     TVec<TFlt, int64>& FltVec = VecOfFltVecsE[KeyToIndexTypeE.GetDat(DefFltVec[i]).Val2];
     FltVec[EdgeH.GetKeyId(EId)] = GetFltAttrDefaultE(attr);
   }
+  return EId;
+}
+
+int64 TNEANet::AddEdgeUnsorted(const int64& SrcNId, const int64& DstNId, int64 EId) {
+
+  if (EId == -1) { EId = MxEId;  MxEId++; }
+  else { MxEId = TMath::Mx(EId+1, MxEId()); }
+  //  IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %s already exists", TInt64::GetStr(EId).CStr()));
+  // IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%s or %s not a node.", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr()).CStr());
+  EdgeH.AddDat(EId, TEdge(EId, SrcNId, DstNId));
+  GetNode(SrcNId).OutEIdV.Add(EId);
+  GetNode(DstNId).InEIdV.Add(EId);
+
   return EId;
 }
 

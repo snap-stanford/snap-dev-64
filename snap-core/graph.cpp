@@ -45,8 +45,9 @@ int64 TUNGraph::AddNode(const int64& NId, const TInt64V& NbrNIdV) {
   return NewNId;
 }
 
-// Add a node of ID NId to the graph and create edges to all nodes in vector NbrNIdV.
-int64 TUNGraph::AddNodeDirect(const int64& NId, const TInt64V& NbrNIdV) {
+// Add a node of ID NId to the graph and create edges to all nodes in the union of 
+// vectors InNIdV and OutNIdV.
+int64 TUNGraph::AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
   int64 NewNId;
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
@@ -58,9 +59,13 @@ int64 TUNGraph::AddNodeDirect(const int64& NId, const TInt64V& NbrNIdV) {
   int64 NewEdges = 0;
   TNode& Node = NodeH.AddDat(NewNId);
   Node.Id = NewNId;
-  Node.NIdV = NbrNIdV;
-  for (int64 i = 0; i < NbrNIdV.Len(); i++) {
-    if(IsNode(NbrNIdV[i])) {
+  
+  // Compute the union of 'InNIdV' and 'OutNIdV'
+  Node.NIdV = InNIdV;
+  Node.NIdV.Union(OutNIdV); 
+
+  for (int64 i = 0; i < Node.NIdV.Len(); i++) {
+    if(IsNode(Node.NIdV[i])) {
       // Update the edge count only if the other node is already present
       // Avoids double counting undirected edges and self loops 
       NewEdges += 1;
@@ -298,7 +303,7 @@ int64 TNGraph::AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& O
 
 // add a node with a list of neighbors
 // (use TNGraph::IsOk to check whether the graph is consistent)
-int64 TNGraph::AddNodeDirect(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+int64 TNGraph::AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
   int64 NewNId;
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;

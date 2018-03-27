@@ -194,8 +194,8 @@ public:
   int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
   /// Adds a node of ID NId to the graph and create edges to all nodes in vector NbrNIdV. Note Add Lazy Edge creation. ##TUNGraph::AddNode-1
   int64 AddNode(const int64& NId, const TInt64V& NbrNIdV);
-  /// Adds a node of ID NId to the graph with edges to all nodes in vector NbrNIdV. No Graph consistency guarantees ##TUNGraph::AddNodeDirect
-  int64 AddNodeDirect(const int64& NId, const TInt64V& NbrNIdV);
+  /// Adds a node of ID NId to the graph with edges to all nodes in vector NbrNIdV. No Graph consistency guarantees ##TUNGraph::AddNodeInternal
+  int64 AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NId to the graph and create edges to all nodes in vector NIdVId in the vector pool Pool. ##TUNGraph::AddNode-2
   int64 AddNode(const int64& NId, const TVecPool<TInt64, int64>& Pool, const int64& NIdVId);
   /// Deletes node of ID NId from the graph. ##TUNGraph::DelNode
@@ -442,7 +442,7 @@ public:
   /// Adds a node of ID NodeI.GetId() to the graph.
   int64 AddNode(const TNodeI& NodeId) { return AddNode(NodeId.GetId()); }
   /// Adds a node of ID NId to the graph, creates edges to the node from all nodes in vector InNIdV, creates edges from the node to all nodes in vector OutNIdV. ##TNGraph::AddNode-1
-  int64 AddNodeDirect(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
+  int64 AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NId to the graph, with edges from all nodes in vector InNIdV, edges to all nodes in vector OutNIdV. ##TNGraph::AddNode-1
   int64 AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NId to the graph, creates edges to the node from all nodes in vector InNIdV in the vector pool Pool, creates edges from the node to all nodes in vector OutNIdVin the vector pool Pool . ##TNGraph::AddNode-2

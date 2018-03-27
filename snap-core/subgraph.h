@@ -36,6 +36,8 @@ template<class POutGraph, class PInGraph> POutGraph ConvertGraph(const PInGraph&
 // convert between the graphs. Does NOT copy the data
 /// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertGraphFast
 template<class POutGraph, class PInGraph> POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes=false);
+/// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertGraphFast
+template<class POutGraph, class PInGraph> POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes=false);
 /// Returns an induced subgraph of graph InGraph with NIdV nodes with an optional node renumbering. ##TSnap::ConvertSubGraph
 template<class POutGraph, class PInGraph> POutGraph ConvertSubGraph(const PInGraph& InGraph, const TInt64V& NIdV, const bool& RenumberNodes=false);
 // TODO RS 2012/08/14 find out why TSnap::ConvertSubGraph<PUNGraph>(NGraph, NIdV, true) aborts
@@ -238,37 +240,46 @@ POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes) {
   POutGraph OutGraphPt = POutGraph::TObj::New();
   typename POutGraph::TObj& OutGraph = *OutGraphPt;
   OutGraph.Reserve(InGraph->GetNodes(), InGraph->GetEdges());
-  const bool OutGraphDirected = HasGraphFlag(typename POutGraph::TObj, gfDirected);
-  const bool InGraphDirected = HasGraphFlag(typename PInGraph::TObj, gfDirected);
+
   if (! RenumberNodes) {
-    if (! InGraphDirected) {
-      for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
-	if (OutGraphDirected) {
-	  OutGraph.AddNodeDirect(NI.GetId(), NI.GetNbrNIdV(), NI.GetNbrNIdV());
-	} else {
-	  //OutGraph.AddNodeDirect(NI.GetId(), NI.GetNbrNIdV(), NI.GetNbrNIdV());
-	  OutGraph.AddNodeDirect(NI.GetId(), NI.GetNbrNIdV());
-	}
+    for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      // Note that we don't distinguish between directed or undirected graphs
+      // That logic is handled by the implementation of AddNodeInternal
+      OutGraph.AddNodeInternal(NI.GetId(), NI.GetInNIdV(), NI.GetOutNIdV());
+    }
+  } else { // renumber nodes so that node ids are 0...N-1 */
+    TInt64Set NIdSet(InGraph->GetNodes());
+    for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      NIdSet.AddKey(NI.GetId());
+    }
+    for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      //const int64 nid = NIdSet.GetKeyId(NI.GetId());
+      // TODO: Renumber the ids on the edge vectors as well.
+    }
+  }
+  //OutGraph.Defrag();
+  return OutGraphPt;
+}
+
+
+// Converts graphs to multigraph networks
+// Node/edge data is not copied between the graphs.
+template<class POutGraph, class PInGraph> 
+POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes) {
+  POutGraph OutGraphPt = POutGraph::TObj::New();
+  typename POutGraph::TObj& OutGraph = *OutGraphPt;
+  OutGraph.Reserve(InGraph->GetNodes(), InGraph->GetEdges());
+
+  if (! RenumberNodes) {
+    for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      OutGraph.AddNode(NI.GetId());
+    }
+    for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) {
+      OutGraph.AddEdgeUnsorted(EI.GetSrcNId(), EI.GetDstNId());
+      if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) { // add edge in the other direction
+        OutGraph.AddEdgeUnsorted(EI.GetDstNId(), EI.GetSrcNId());
       }
     }
-  /*   for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) { */
-  /*     OutGraph.AddEdge(EI.GetSrcNId(), EI.GetDstNId()); */
-  /*     if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) { // add edge in the other direction */
-  /*       OutGraph.AddEdge(EI.GetDstNId(), EI.GetSrcNId()); } */
-  /*   } */
-  /* } else { // renumber nodes so that node ids are 0...N-1 */
-  /*   TInt64Set NIdSet(InGraph->GetNodes()); */
-  /*   for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) { */
-  /*     const int64 nid = NIdSet.AddKey(NI.GetId()); */
-  /*     OutGraph.AddNode(nid); */
-  /*   } */
-  /*   for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) { */
-  /*     const int64 SrcNId = NIdSet.GetKeyId(EI.GetSrcNId()); */
-  /*     const int64 DstNId = NIdSet.GetKeyId(EI.GetDstNId()); */
-  /*     OutGraph.AddEdge(SrcNId, DstNId); */
-  /*     if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) { */
-  /*       OutGraph.AddEdge(DstNId, SrcNId); } */
-  /*   } */
   }
   //OutGraph.Defrag();
   return OutGraphPt;
