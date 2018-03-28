@@ -30,25 +30,58 @@ int main(int argc, char* argv[]) {
   // File input
   const char * binaryUNGraph = NULL;
   const char * binaryNGraph = NULL;
+  const char * tabletxt = NULL;
 
   if (useTwitter) {
     binaryUNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.graph";
     binaryNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.ngraph";
+    tabletxt = "/lfs/local/0/gaspar09/networks/twitter_rv.txt";
     printf("Twitter Graph\n");
   } else {
     binaryUNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.graph";
     binaryNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.ngraph";
+    tabletxt = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.txt";
     printf("Journal Graph\n");
   }
   //const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/twitter_rv.neanet"; 
   //const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet";
   if (fromTable) {
+    const char * GraphTypeSrc = "TTable";
     TTableContext Context = TTableContext();
+
     Schema s = Schema();
-    const char * smallGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.txt";
     s.Add(TPair<TStr, TAttrType>("col1", atInt));
     s.Add(TPair<TStr, TAttrType>("col2", atInt));
-    PTable T = TTable::LoadSS(s, smallGraph, &Context, '\t');
+
+    PTable T = TTable::LoadSS(s, tabletxt, &Context, '\t');
+    TStr64V OrderBy;
+    OrderBy.Add("col1");
+    OrderBy.Add("col2");
+
+    if (runAll || runUNDir) {
+      // get UNGraph
+      clock_t t0 = clock();
+      PUNGraph H = TSnap::ConvertGraphTable<PUNGraph>(T, OrderBy);
+      clock_t t1 = clock();
+      //H->IsOk(false);
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TUNGraph");
+    }
+    if (runAll || runDir) {
+      // get NGraph
+      clock_t t0 = clock();
+      PNGraph H = TSnap::ConvertGraphTable<PNGraph>(T, OrderBy);
+      clock_t t1 = clock();
+      //H->IsOk(false);
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNGraph");
+    }
+    if (runAll || runNet) {
+      // get NEANet
+      clock_t t0 = clock();
+      PNEANet H = TSnap::ConvertGraphTable<PNEANet>(T, OrderBy);
+      clock_t t1 = clock();
+      //H->IsOk(false);
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNEANet");
+    }
 
     // TRowIterator RI = T->BegRI();
     // TInt64 ColIdx = 0;

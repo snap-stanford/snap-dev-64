@@ -36,8 +36,10 @@ template<class POutGraph, class PInGraph> POutGraph ConvertGraph(const PInGraph&
 // convert between the graphs. Does NOT copy the data
 /// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertGraphFast
 template<class POutGraph, class PInGraph> POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes=false);
-/// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertGraphFast
+/// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertMultiGraph
 template<class POutGraph, class PInGraph> POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes=false);
+/// Performs conversion of TTable InTable to graph ##TSnap::ConvertGraphTable
+template<class POutGraph, class PInTable> POutGraph ConvertGraphTable(const PInTable& InTable, const TStr64V& ColNames);
 /// Returns an induced subgraph of graph InGraph with NIdV nodes with an optional node renumbering. ##TSnap::ConvertSubGraph
 template<class POutGraph, class PInGraph> POutGraph ConvertSubGraph(const PInGraph& InGraph, const TInt64V& NIdV, const bool& RenumberNodes=false);
 // TODO RS 2012/08/14 find out why TSnap::ConvertSubGraph<PUNGraph>(NGraph, NIdV, true) aborts
@@ -261,7 +263,6 @@ POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes) {
   return OutGraphPt;
 }
 
-
 // Converts graphs to multigraph networks
 // Node/edge data is not copied between the graphs.
 template<class POutGraph, class PInGraph> 
@@ -285,6 +286,26 @@ POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes) 
   return OutGraphPt;
 }
 
+template <class POutGraph, class PInTable>
+POutGraph ConvertGraphTable(const PInTable& InTable, const TStr64V& ColNames) {
+  //InTable->Order(ColNames);
+  
+  POutGraph OutGraphPt = POutGraph::TObj::New();
+  typename POutGraph::TObj& OutGraph = *OutGraphPt;
+  
+  TRowIterator RI = InTable->BegRI();
+  TInt64 ColIdx = 0;
+  for (; RI != InTable->EndRI(); RI++) {
+    TInt64 Src = RI.GetIntAttr(ColIdx);
+    TInt64 Dst = RI.GetIntAttr(ColIdx+1);
+    if (!OutGraph.IsNode(Src)) { OutGraph.AddNode(Src); }
+    if (!OutGraph.IsNode(Dst)) { OutGraph.AddNode(Dst); }
+    OutGraph.AddEdge(Src, Dst);
+  }
+  
+  return OutGraphPt;
+
+}
 
 namespace TSnapDetail {
 // Slow for small sub-graphs as it traverses all the edges of Graph
