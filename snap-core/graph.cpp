@@ -47,7 +47,7 @@ int64 TUNGraph::AddNode(const int64& NId, const TInt64V& NbrNIdV) {
 
 // Add a node of ID NId to the graph and create edges to all nodes in the union of 
 // vectors InNIdV and OutNIdV.
-int64 TUNGraph::AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+int64 TUNGraph::AddNodeWithNeighbors(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
   int64 NewNId;
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;
@@ -303,7 +303,7 @@ int64 TNGraph::AddNode(const int64& NId, const TInt64V& InNIdV, const TInt64V& O
 
 // add a node with a list of neighbors
 // (use TNGraph::IsOk to check whether the graph is consistent)
-int64 TNGraph::AddNodeInternal(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+int64 TNGraph::AddNodeWithNeighbors(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
   int64 NewNId;
   if (NId == -1) {
     NewNId = MxNId;  MxNId++;

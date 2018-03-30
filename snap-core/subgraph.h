@@ -246,8 +246,8 @@ POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes) {
   if (! RenumberNodes) {
     for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
       // Note that we don't distinguish between directed or undirected graphs
-      // That logic is handled by the implementation of AddNodeInternal
-      OutGraph.AddNodeInternal(NI.GetId(), NI.GetInNIdV(), NI.GetOutNIdV());
+      // That logic is handled by the implementation of AddNodeWithNeighbors
+      OutGraph.AddNodeWithNeighbors(NI.GetId(), NI.GetInNIdV(), NI.GetOutNIdV());
     }
   } else { // renumber nodes so that node ids are 0...N-1 */
     TInt64Set NIdSet(InGraph->GetNodes());
@@ -286,22 +286,57 @@ POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes) 
   return OutGraphPt;
 }
 
-template <class POutGraph, class PInTable>
-POutGraph ConvertGraphTable(const PInTable& InTable, const TStr64V& ColNames) {
-  //InTable->Order(ColNames);
-  
+template <class POutGraph>
+POutGraph ConvertGraphTable(const PTable& InTable, const TStr64V& ColNames) {
+
   POutGraph OutGraphPt = POutGraph::TObj::New();
   typename POutGraph::TObj& OutGraph = *OutGraphPt;
-  
+
+  TTable TableByDst(*InTable);
+
+  TStr64V ReversedColNames;
+  ReversedColNames.Add(ColNames[1]);
+  ReversedColNames.Add(ColNames[0]);
+
+  InTable->Order(ColNames);
+  TableByDst.Order(ReversedColNames);
+
   TRowIterator RI = InTable->BegRI();
+  TRowIterator DstRI = TableByDst.BegRI();
   TInt64 ColIdx = 0;
-  for (; RI != InTable->EndRI(); RI++) {
-    TInt64 Src = RI.GetIntAttr(ColIdx);
-    TInt64 Dst = RI.GetIntAttr(ColIdx+1);
-    if (!OutGraph.IsNode(Src)) { OutGraph.AddNode(Src); }
-    if (!OutGraph.IsNode(Dst)) { OutGraph.AddNode(Dst); }
-    OutGraph.AddEdge(Src, Dst);
+  while (RI != InTable->EndRI() && DstRI != TableByDst.EndRI()) {
+    // Get the first NId
+    TInt64 NId = RI.GetIntAttr(ColIdx);
+    if (DstRI.GetIntAttr(ColIdx+1) < NId) {
+      NId = DstRI.GetIntAttr(ColIdx+1);
+    }
+
+    TInt64V InNIdV;
+    TInt64V OutNIdV;
+    // Fill in the Node Id vectors for "NId"
+    while (DstRI.GetIntAttr(ColIdx+1) == NId) {
+      InNIdV.Add(DstRI.GetIntAttr(ColIdx));
+      DstRI++;
+    }
+
+    while (RI.GetIntAttr(ColIdx) == NId) {
+      OutNIdV.Add(RI.GetIntAttr(ColIdx+1));
+      RI++;
+    }
+    // Add the nodes with edge vectors to the OutGraph
+    OutGraph.AddNodeWithNeighbors(NId, InNIdV, OutNIdV);
   }
+
+  
+  /* TRowIterator RI = InTable->BegRI(); */
+  /* TInt64 ColIdx = 0; */
+  /* for (; RI != InTable->EndRI(); RI++) { */
+  /*   TInt64 Src = RI.GetIntAttr(ColIdx); */
+  /*   TInt64 Dst = RI.GetIntAttr(ColIdx+1); */
+  /*   if (!OutGraph.IsNode(Src)) { OutGraph.AddNode(Src); } */
+  /*   if (!OutGraph.IsNode(Dst)) { OutGraph.AddNode(Dst); } */
+  /*   OutGraph.AddEdge(Src, Dst); */
+  /* } */
   
   return OutGraphPt;
 
