@@ -122,9 +122,9 @@ int64 TUNGraph::GetEdges() const {
 int64 TUNGraph::AddEdge(const int64& SrcNId, const int64& DstNId) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   if (IsEdge(SrcNId, DstNId)) { return -2; } // edge already exists
-  GetNode(SrcNId).NIdV.AddFastSorted(DstNId);
+  GetNode(SrcNId).NIdV.AddSorted(DstNId);
   if (SrcNId!=DstNId) { // not a self edge
-    GetNode(DstNId).NIdV.AddFastSorted(SrcNId); }
+    GetNode(DstNId).NIdV.AddSorted(SrcNId); }
   NEdges++;
   return -1; // no edge id
 }
@@ -370,8 +370,8 @@ int64 TNGraph::AddEdge(const int64& SrcNId, const int64& DstNId) {
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%d or %d not a node.", SrcNId, DstNId).CStr());
   //IAssert(! IsEdge(SrcNId, DstNId));
   if (IsEdge(SrcNId, DstNId)) { return -2; }
-  GetNode(SrcNId).OutNIdV.AddFastSorted(DstNId);
-  GetNode(DstNId).InNIdV.AddFastSorted(SrcNId);
+  GetNode(SrcNId).OutNIdV.AddSorted(DstNId);
+  GetNode(DstNId).InNIdV.AddSorted(SrcNId);
   return -1; // no edge id
 }
 

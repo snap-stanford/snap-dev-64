@@ -675,8 +675,8 @@ int64 TNEANet::AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId) {
   IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %s already exists", TInt64::GetStr(EId).CStr()));
   IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%s or %s not a node.", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr()).CStr());
   EdgeH.AddDat(EId, TEdge(EId, SrcNId, DstNId));
-  GetNode(SrcNId).OutEIdV.AddFastSorted(EId);
-  GetNode(DstNId).InEIdV.AddFastSorted(EId);
+  GetNode(SrcNId).OutEIdV.AddSorted(EId);
+  GetNode(DstNId).InEIdV.AddSorted(EId);
 
   // update attribute columns
   for (i = 0; i < VecOfIntVecsE.Len(); i++) {
