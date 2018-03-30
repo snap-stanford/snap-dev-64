@@ -30,21 +30,23 @@ int main(int argc, char* argv[]) {
   // File input
   const char * binaryUNGraph = NULL;
   const char * binaryNGraph = NULL;
+  //const char * binaryNEANet = NULL;
   const char * tabletxt = NULL;
 
   if (useTwitter) {
     binaryUNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.graph";
     binaryNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.ngraph";
+    //binaryNEANet = "/lfs/local/0/gaspar09/networks/twitter_rv.neanet"; 
     tabletxt = "/lfs/local/0/gaspar09/networks/twitter_rv.txt";
     printf("Twitter Graph\n");
   } else {
     binaryUNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.graph";
     binaryNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.ngraph";
+    //binaryNEANet = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet";
     tabletxt = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.txt";
     printf("Journal Graph\n");
   }
-  //const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/twitter_rv.neanet"; 
-  //const char * binaryNEANet = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet";
+
   if (fromTable) {
     const char * GraphTypeSrc = "TTable";
     TTableContext Context = TTableContext();
@@ -82,15 +84,6 @@ int main(int argc, char* argv[]) {
       //H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNEANet");
     }
-
-    // TRowIterator RI = T->BegRI();
-    // TInt64 ColIdx = 0;
-    
-    // for (; RI != T->EndRI(); RI++) {
-    //   TInt64 Src = RI.GetIntAttr(ColIdx);
-    //   TInt64 Dst = RI.GetIntAttr(ColIdx+1);
-    //   printf("%s, %s\n", Src.GetStr().CStr(), Dst.GetStr().CStr());
-    // }
 
   }
   else if (! fromDir) {
