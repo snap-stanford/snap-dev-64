@@ -55,7 +55,11 @@ int main(int argc, char* argv[]) {
     s.Add(TPair<TStr, TAttrType>("col1", atInt));
     s.Add(TPair<TStr, TAttrType>("col2", atInt));
 
+    clock_t t_table0 = clock();
     PTable T = TTable::LoadSS(s, tabletxt, &Context, '\t');
+    clock_t t_table1 = clock();
+    printf("Load Table: %f\n", ((float)t_table1-t_table0)/CLOCKS_PER_SEC);
+
     TStr64V OrderBy;
     OrderBy.Add("col1");
     OrderBy.Add("col2");
