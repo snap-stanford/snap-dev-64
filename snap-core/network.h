@@ -2125,7 +2125,7 @@ public:
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNEANet::AddNodeUnchecked
   int64 AddNodeUnchecked(int64 NId = -1);
   /// Adds a node of ID NId to the network. Creates edges to the node from all nodes in vector InNIdV. Creates edges from the node to all nodes in vector OutNIdV. ##TNEANet::AddNodeInternal
-  int64 AddNodeWithNeighbors(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
+  int64 AddNodeWithNbrs(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NodeI.GetId() to the graph.
   int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
   /// Deletes node of ID NId from the graph. ##TNEANet::DelNode

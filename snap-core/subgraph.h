@@ -246,8 +246,8 @@ POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes) {
   if (! RenumberNodes) {
     for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
       // Note that we don't distinguish between directed or undirected graphs
-      // That logic is handled by the implementation of AddNodeWithNeighbors
-      OutGraph.AddNodeWithNeighbors(NI.GetId(), NI.GetInNIdV(), NI.GetOutNIdV());
+      // That logic is handled by the implementation of AddNodeWithNbrs
+      OutGraph.AddNodeWithNbrs(NI.GetId(), NI.GetInNIdV(), NI.GetOutNIdV());
     }
   } else { // renumber nodes so that node ids are 0...N-1 */
     TInt64Set NIdSet(InGraph->GetNodes());
@@ -329,10 +329,10 @@ POutGraph ConvertGraphTable(const PTable& InTable, const TStr64V& ColNames) {
       RI++;
     }
     // Add the nodes with edge vectors to the OutGraph
-    OutGraph.AddNodeWithNeighbors(NId, InNIdV, OutNIdV);
+    OutGraph.AddNodeWithNbrs(NId, InNIdV, OutNIdV);
   }
 
-  // The method below does not uses AddNodeWithNeighbors and 
+  // The method below does not use AddNodeWithNbrs and 
   // AddEdge should uses TVec::AddFastSorted
   //
   /* TRowIterator RI = InTable->BegRI(); */

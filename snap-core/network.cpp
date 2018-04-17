@@ -483,7 +483,7 @@ int64 TNEANet::AddNodeUnchecked(int64 NId) {
   return NId;
 }
 
-int64 TNEANet::AddNodeWithNeighbors(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
+int64 TNEANet::AddNodeWithNbrs(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV) {
 
   if (!IsNode(NId)) {
     NodeH.AddDat(NId, TNode(NId));
