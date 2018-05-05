@@ -12,57 +12,61 @@ void printConversionTime(clock_t t0, clock_t t1, TUInt64 nnodes, TUInt64 nedges,
 }
 
 
+template <class PGraph>
+PGraph LoadGraph(const TStr InFNm, const TStr InBinFNm) {
+  clock_t t0 = clock();    
+  PGraph G;
+  // If Binary File provided use that instead
+  if (InBinFNm.Len() != 0) {
+    TFIn GFIn(InBinFNm);
+    G = PGraph::TObj::Load(GFIn);
+  } 
+  else {
+    G = TSnap::LoadEdgeList<PGraph>(InFNm);
+  }
+  clock_t t1 = clock();
+  printf("Load Graph (%s nodes, %s edges): %f\n",
+	 TUInt64::GetStr(G->GetNodes()).CStr(),
+	 TUInt64::GetStr(G->GetEdges()).CStr(),
+	 ((float)t1-t0)/CLOCKS_PER_SEC);
+  return G;
+}
+
+
+
 int main(int argc, char* argv[]) {
 
   Env = TEnv(argc, argv, TNotify::StdNotify);
   Env.PrepArgs(TStr::Fmt("ragm. build: %s, %s. Time: %s", __TIME__, __DATE__, TExeTm::GetCurTm()));
   
-  const bool useTwitter = Env.GetIfArgPrefixBool("-t:", false, "Run conversions on Twitter Network");
-  const bool fromDir =  Env.GetIfArgPrefixBool("-sd:", false, "Convert from TNGraph to ...");
-  const bool fromTable =  Env.GetIfArgPrefixBool("-st:", false, "Convert from TTable to ...");
+  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", "../as20graph.txt", "Input edgelist file name");
+  const TStr InBinFNm = Env.GetIfArgPrefixStr("-b:", "", "Input graph binary file name");
+
+  // Arguments specifying conversion types
+  const bool fromDir = Env.GetIfArgPrefixBool("-sd:", false, "Convert from TNGraph to ...");
+  const bool fromTable = Env.GetIfArgPrefixBool("-st:", false, "Convert from TTable to ...");
 
   const bool runAll = Env.GetIfArgPrefixBool("-a:", false, "Run all conversions");
   const bool runUNDir = Env.GetIfArgPrefixBool("-u:", false, "Conversion to: TUNGraph");  
   const bool runDir = Env.GetIfArgPrefixBool("-d:", false, "Conversion to: TNGraph");
   const bool runNet = Env.GetIfArgPrefixBool("-e:", false, "Conversion to: TNEANet");
   
-
-  // File input
-  const char * binaryUNGraph = NULL;
-  const char * binaryNGraph = NULL;
-  //const char * binaryNEANet = NULL;
-  const char * tabletxt = NULL;
-
-  if (useTwitter) {
-    binaryUNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.graph";
-    binaryNGraph = "/lfs/local/0/gaspar09/networks/twitter_rv.ngraph";
-    //binaryNEANet = "/lfs/local/0/gaspar09/networks/twitter_rv.neanet"; 
-    tabletxt = "/lfs/local/0/gaspar09/networks/twitter_rv.txt";
-    printf("Twitter Graph\n");
-  } else {
-    binaryUNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.graph";
-    binaryNGraph = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.ngraph";
-    //binaryNEANet = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.neanet";
-    tabletxt = "/lfs/local/0/gaspar09/networks/soc-LiveJournal1.txt";
-    printf("Journal Graph\n");
-  }
-
   if (fromTable) {
     const char * GraphTypeSrc = "TTable";
     TTableContext Context = TTableContext();
 
     Schema s = Schema();
-    s.Add(TPair<TStr, TAttrType>("col1", atInt));
-    s.Add(TPair<TStr, TAttrType>("col2", atInt));
+    s.Add(TPair<TStr, TAttrType>("src", atInt));
+    s.Add(TPair<TStr, TAttrType>("dst", atInt));
 
     clock_t t_table0 = clock();
-    PTable T = TTable::LoadSS(s, tabletxt, &Context, '\t');
+    PTable T = TTable::LoadSS(s, InFNm, &Context, '\t');
     clock_t t_table1 = clock();
     printf("Load Table: %f\n", ((float)t_table1-t_table0)/CLOCKS_PER_SEC);
 
     TStr64V OrderBy;
-    OrderBy.Add("col1");
-    OrderBy.Add("col2");
+    OrderBy.Add("src");
+    OrderBy.Add("dst");
 
     if (runAll || runUNDir) {
       // get UNGraph
@@ -91,16 +95,10 @@ int main(int argc, char* argv[]) {
 
   }
   else if (! fromDir) {
+
     const char * GraphTypeSrc = "TUNGraph";
-    PSIn FInPt = TFIn::New(binaryUNGraph);
-    clock_t t0 = clock();
-    PUNGraph G = TUNGraph::Load(*FInPt);
-    clock_t t1 = clock();
-    printf("Load TUNGraph (%s nodes, %s edges) Binary: %f\n",
-	   TUInt64::GetStr(G->GetNodes()).CStr(),
-	   TUInt64::GetStr(G->GetEdges()).CStr(),
-	   ((float)t1-t0)/CLOCKS_PER_SEC);
-    
+    PUNGraph G = LoadGraph<PUNGraph>(InFNm, InBinFNm);
+
     if (runAll || runUNDir) {
       // get UNGraph
       clock_t t0 = clock();
@@ -127,17 +125,10 @@ int main(int argc, char* argv[]) {
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNEANet");
     }
   } else {
-    // G is an instance of TNGraph
+ 
     const char * GraphTypeSrc = "TNGraph";
-    PSIn FInPt = TFIn::New(binaryNGraph);
-    clock_t t0 = clock();
-    PNGraph G = TNGraph::Load(*FInPt);
-    clock_t t1 = clock();
-    printf("Load TNGraph (%s nodes, %s edges) Binary: %f\n",
-	   TUInt64::GetStr(G->GetNodes()).CStr(),
-	   TUInt64::GetStr(G->GetEdges()).CStr(),
-	   ((float)t1-t0)/CLOCKS_PER_SEC);
-    
+    PNGraph G = LoadGraph<PNGraph>(InFNm, InBinFNm);
+
     if (runAll || runUNDir) {
       // get UNGraph
       clock_t t0 = clock();
