@@ -2124,7 +2124,7 @@ public:
   int64 AddNode(int64 NId = -1);
   /// Adds a node of ID NId to the network, noop if the node already exists. ##TNEANet::AddNodeUnchecked
   int64 AddNodeUnchecked(int64 NId = -1);
-  /// Adds a node of ID NId to the network. Creates edges to the node from all nodes in vector InNIdV. Creates edges from the node to all nodes in vector OutNIdV. ##TNEANet::AddNodeInternal
+  /// Adds a node of ID NId to the network, create edges to the node from all nodes in vector InNIdV, create edges from the node to all nodes in vector OutNIdV. ##TNEANet::AddNodeWithNbrs
   int64 AddNodeWithNbrs(const int64& NId, const TInt64V& InNIdV, const TInt64V& OutNIdV);
   /// Adds a node of ID NodeI.GetId() to the graph.
   int64 AddNode(const TNodeI& NodeI) { return AddNode(NodeI.GetId()); }
@@ -2416,7 +2416,7 @@ public:
   int64 AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
   /// Adds an edge between EdgeI.GetSrcNId() and EdgeI.GetDstNId() to the graph.
   int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId()); }
-  /// Adds an edge with ID EId between node IDs SrcNId and DstNId to the graph. The associated Edge Id vectors are left unsorted.
+  /// Adds an edge with ID EId between SrcNId and DstNId to the graph. The associated Edge Id vectors are unsorted.
   int64 AddEdgeUnsorted(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
   /// Deletes an edge with edge ID EId from the graph.
   void DelEdge(const int64& EId);

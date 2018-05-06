@@ -631,8 +631,6 @@ public:
   TSizeTy AddSorted(const TVal& Val, const bool& Asc=true, const TSizeTy& _MxVals=-1);
   /// Adds element \c Val to a sorted vector. ##TVec::AddBackSorted
   TSizeTy AddBackSorted(const TVal& Val, const bool& Asc);
-  /// Adds element \c Val to a sorted vector. ##TVec::AddFastSorted
-  TSizeTy AddFastSorted(const TVal& Val, const bool& Asc=true);
   /// Adds element \c Val to a sorted vector only if the element \c Val is not already in the vector. ##TVec::AddMerged
   TSizeTy AddMerged(const TVal& Val);
   /// Adds elements of \c ValV to a sorted vector only if a particular element is not already in the vector. ##TVec::AddMerged1
@@ -1138,20 +1136,6 @@ TSizeTy TVec<TVal, TSizeTy>::AddBackSorted(const TVal& Val, const bool& Asc){
   TSizeTy ValN=Vals-2;
   while ((ValN>=0)&&((Asc&&(Val<ValT[ValN]))||(!Asc&&(Val>ValT[ValN])))){
     ValT[ValN+1]=ValT[ValN]; ValN--;}
-  ValT[ValN+1]=Val;
-  return ValN+1;
-}
-
-template <class TVal, class TSizeTy>
-TSizeTy TVec<TVal, TSizeTy>::AddFastSorted(const TVal& Val, const bool& Asc){
-  EAssertR(!(IsShM && (MxVals == -1)), "Cannot write to shared memory");
-  AssertR(MxVals!=-1, "This vector was obtained from TVecPool. Such vectors cannot change its size!");
-  Add();
-  TSizeTy ValN=Vals-2; // the last element not the empty cell
-  while ((ValN>=0)&&((Asc&&(Val<ValT[ValN]))||(!Asc&&(Val>ValT[ValN])))){
-    ValN--;}
-  // shift [ValN+1, ..., Vals-2] one to the right
-  memmove(ValT+ValN+2,ValT+ValN+1, (Vals-ValN-2)*sizeof(TVal));
   ValT[ValN+1]=Val;
   return ValN+1;
 }
