@@ -2,10 +2,10 @@
 #include <time.h>
 
 void printConversionTime(clock_t t0, clock_t t1, TUInt64 nnodes, TUInt64 nedges,
-			 const char * ConversionTypeSrc, const char * ConversionTypeDst) {
+			 const TStr &ConversionTypeSrc, const TStr &ConversionTypeDst) {
     printf("Convert %s->%s (%s nodes, %s edges): %f\n",
-	   ConversionTypeSrc,
-	   ConversionTypeDst,
+	   ConversionTypeSrc.CStr(),
+	   ConversionTypeDst.CStr(),
   	   TUInt64::GetStr(nnodes).CStr(),
   	   TUInt64::GetStr(nedges).CStr(),	   
   	   ((float)t1-t0)/CLOCKS_PER_SEC);
@@ -13,7 +13,7 @@ void printConversionTime(clock_t t0, clock_t t1, TUInt64 nnodes, TUInt64 nedges,
 
 
 template <class PGraph>
-PGraph LoadGraph(const TStr InFNm, const TStr InBinFNm) {
+PGraph LoadGraph(const TStr &InFNm, const TStr &InBinFNm) {
   clock_t t0 = clock();    
   PGraph G;
   // If Binary File provided use that instead
@@ -43,16 +43,19 @@ int main(int argc, char* argv[]) {
   const TStr InBinFNm = Env.GetIfArgPrefixStr("-b:", "", "Input graph binary file name");
 
   // Arguments specifying conversion types
-  const bool fromDir = Env.GetIfArgPrefixBool("-sd:", false, "Convert from TNGraph to ...");
-  const bool fromTable = Env.GetIfArgPrefixBool("-st:", false, "Convert from TTable to ...");
+  const TStr InGraphType = Env.GetIfArgPrefixStr("-s:", "TUNGraph", "Specify Graph type to convert from: TTable, TUNGraph, TNGraph, or TNEANet.");
+  const TStr OutGraphType = Env.GetIfArgPrefixStr("-d:", "TNGraph", "Specify Graph type to convert to: TUNGraph, TNGraph, or TNEANet.");
 
-  const bool runAll = Env.GetIfArgPrefixBool("-a:", false, "Run all conversions");
-  const bool runUNDir = Env.GetIfArgPrefixBool("-u:", false, "Conversion to: TUNGraph");  
-  const bool runDir = Env.GetIfArgPrefixBool("-d:", false, "Conversion to: TNGraph");
-  const bool runNet = Env.GetIfArgPrefixBool("-e:", false, "Conversion to: TNEANet");
+  const bool FromTable = (InGraphType == "TTable") ? true : false;
+  const bool FromTUNGraph = (InGraphType == "TUNGraph") ? true : false;
+  const bool FromTNGraph = (InGraphType == "TNGraph") ? true : false;
+  const bool FromTNEANet = (InGraphType == "TNEANet") ? true : false;
   
-  if (fromTable) {
-    const char * GraphTypeSrc = "TTable";
+  const bool ToTUNGraph = (OutGraphType == "TUNGraph") ? true : false;
+  const bool ToTNGraph = (OutGraphType == "TNGraph") ? true : false;
+  const bool ToTNEANet = (OutGraphType == "TNEANet") ? true : false;
+  
+  if (FromTable) {
     TTableContext Context = TTableContext();
 
     Schema s = Schema();
@@ -68,90 +71,91 @@ int main(int argc, char* argv[]) {
     OrderBy.Add("src");
     OrderBy.Add("dst");
 
-    if (runAll || runUNDir) {
+    if (ToTUNGraph) {
       // get UNGraph
       clock_t t0 = clock();
       PUNGraph H = TSnap::ConvertGraphTable<PUNGraph>(T, OrderBy);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TUNGraph");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-    if (runAll || runDir) {
+    if (ToTNGraph) {
       // get NGraph
       clock_t t0 = clock();
       PNGraph H = TSnap::ConvertGraphTable<PNGraph>(T, OrderBy);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNGraph");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-    if (runAll || runNet) {
+    if (ToTNEANet) {
       // get NEANet
       clock_t t0 = clock();
       PNEANet H = TSnap::ConvertGraphTable<PNEANet>(T, OrderBy);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNEANet");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
 
   }
-  else if (! fromDir) {
+  else if (FromTUNGraph) {
 
-    const char * GraphTypeSrc = "TUNGraph";
     PUNGraph G = LoadGraph<PUNGraph>(InFNm, InBinFNm);
 
-    if (runAll || runUNDir) {
+    if (ToTUNGraph) {
       // get UNGraph
       clock_t t0 = clock();
       PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TUNGraph");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-    if (runAll || runDir) {
+    if (ToTNGraph) {
       // get NGraph
       clock_t t0 = clock();
       PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNGraph");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-    if (runAll || runNet) {
+    if (ToTNEANet) {
       // get NEANet
       clock_t t0 = clock();
       //PNEANet H = TSnap::ConvertMultiGraph<PNEANet>(G);
       PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNEANet");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-  } else {
+  } else if (FromTNGraph) {
  
-    const char * GraphTypeSrc = "TNGraph";
     PNGraph G = LoadGraph<PNGraph>(InFNm, InBinFNm);
 
-    if (runAll || runUNDir) {
+    if (ToTUNGraph) {
       // get UNGraph
       clock_t t0 = clock();
       PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
       clock_t t1 = clock();
       H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TUNGraph");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-    if (runAll || runDir) {
+    if (ToTNGraph) {
       // get NGraph
       clock_t t0 = clock();
       PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
       clock_t t1 = clock();
       H->IsOk(false);
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNGraph");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
-    if (runAll || runNet) {
+    if (ToTNEANet) {
       // get NEANet
       clock_t t0 = clock();
       PNEANet H = TSnap::ConvertMultiGraph<PNEANet>(G);
       clock_t t1 = clock();
-      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), GraphTypeSrc, "TNEANet");
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
+  } else if (FromTNEANet) {
+    // TODO:
+    
   }
   return 0;
 }
