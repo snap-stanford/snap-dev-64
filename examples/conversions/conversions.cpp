@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
     if (ToTUNGraph) {
       // get UNGraph
       clock_t t0 = clock();
-      PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
+      PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G, true);
       clock_t t1 = clock();
       H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
     if (ToTNGraph) {
       // get NGraph
       clock_t t0 = clock();
-      PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
+      PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G, true);
       clock_t t1 = clock();
       H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
@@ -149,13 +149,38 @@ int main(int argc, char* argv[]) {
     if (ToTNEANet) {
       // get NEANet
       clock_t t0 = clock();
-      PNEANet H = TSnap::ConvertMultiGraph<PNEANet>(G);
+      PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G, true);
       clock_t t1 = clock();
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
   } else if (FromTNEANet) {
-    // TODO:
-    
+
+    PNEANet G = LoadGraph<PNEANet>(InFNm, InBinFNm);
+
+    if (ToTUNGraph) {
+      // get UNGraph
+      clock_t t0 = clock();
+      PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G, true);
+      clock_t t1 = clock();
+      H->IsOk(false);
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
+    }
+    if (ToTNGraph) {
+      // get NGraph
+      clock_t t0 = clock();
+      PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G, true);
+      clock_t t1 = clock();
+      H->IsOk(false);
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
+    }
+    if (ToTNEANet) {
+      // get NEANet
+      clock_t t0 = clock();
+      PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G, true);
+      clock_t t1 = clock();
+      H->IsOk(false);
+      printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
+    }
   }
   return 0;
 }

@@ -2181,7 +2181,7 @@ class PVec{
 private:
   TCRef CRef;
 public:
-  TVec<TVal> V;
+  TVec<TVal, int64> V;
 public:
   PVec<TVal>(): V(){}
   PVec<TVal>(const PVec<TVal>& Vec): V(Vec.V){}

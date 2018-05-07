@@ -36,7 +36,9 @@ template<class POutGraph, class PInGraph> POutGraph ConvertGraph(const PInGraph&
 // convert between the graphs. Does NOT copy the data
 /// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertGraphFast
 template<class POutGraph, class PInGraph> POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes=false);
-/// Performs conversion of graph InGraph with an optional node renumbering. ##TSnap::ConvertMultiGraph
+//// Partial Specialization for converting from TNEANet Graphs
+template<class POutGraph> POutGraph ConvertGraphFast(const PNEANet& InGraph, const bool& RenumberNodes=false);
+/// Performs conversion of graph InGraph to a multigraph OutGraph with an optional node renumbering. ##TSnap::ConvertMultiGraph
 template<class POutGraph, class PInGraph> POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes=false);
 /// Performs conversion of TTable InTable to graph ##TSnap::ConvertGraphTable
 template<class POutGraph, class PInTable> POutGraph ConvertGraphTable(const PInTable& InTable, const TStr64V& ColNames);
@@ -255,10 +257,70 @@ POutGraph ConvertGraphFast(const PInGraph& InGraph, const bool& RenumberNodes) {
       NIdSet.AddKey(NI.GetId());
     }
     for (typename PInGraph::TObj::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
-      //const int64 nid = NIdSet.GetKeyId(NI.GetId());
-   
-      // TODO: Renumber the ids on the edge vectors as well.
+      const int64 NId = NIdSet.GetKeyId(NI.GetId());
+      
+      TInt64V InNIdV(NI.GetInNIdV());
+      TInt64V OutNIdV(NI.GetOutNIdV());
 
+      // Renumber the ids on the edge vectors as well.
+      for (TInt64V::TIter NIdI = InNIdV.BegI(); NIdI < InNIdV.EndI(); NIdI++) {
+	TInt64 InNodeId = *NIdI;
+	*NIdI = NIdSet.GetKeyId(InNodeId);
+      }
+      for (TInt64V::TIter NIdI = OutNIdV.BegI(); NIdI < OutNIdV.EndI(); NIdI++) {
+	TInt64 OutNodeId = *NIdI;
+	*NIdI = NIdSet.GetKeyId(OutNodeId);
+      }
+
+      // sorting necessary after mapping Node Ids
+      InNIdV.Sort();
+      OutNIdV.Sort();
+      OutGraph.AddNodeWithNbrs(NId, InNIdV, OutNIdV);
+    }
+  }
+
+  return OutGraphPt;
+}
+
+// Partial specialization to convert from TNEANet to other graphs.
+// Node/edge data is not copied between the graphs.
+template<class POutGraph> 
+POutGraph ConvertGraphFast(const PNEANet& InGraph, const bool& RenumberNodes) {
+  POutGraph OutGraphPt = POutGraph::TObj::New();
+  typename POutGraph::TObj& OutGraph = *OutGraphPt;
+  OutGraph.Reserve(InGraph->GetNodes(), InGraph->GetEdges());
+
+  if (! RenumberNodes) {
+    for (TNEANet::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      // Note that we don't distinguish between directed or undirected graphs
+      // That logic is handled by the implementation of AddNodeWithNbrs
+      OutGraph.AddNodeWithNbrs(NI.GetId(), NI.GetInNIdV()->V, NI.GetOutNIdV()->V);
+    }
+  } else { // renumber nodes so that node ids are 0...N-1 */
+    TInt64Set NIdSet(InGraph->GetNodes());
+    for (TNEANet::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      NIdSet.AddKey(NI.GetId());
+    }
+    for (TNEANet::TNodeI NI = InGraph->BegNI(); NI < InGraph->EndNI(); NI++) {
+      const int64 NId = NIdSet.GetKeyId(NI.GetId());
+      
+      TInt64V InNIdV(NI.GetInNIdV()->V);
+      TInt64V OutNIdV(NI.GetOutNIdV()->V);
+
+      // Renumber the ids on the edge vectors as well.
+      for (TInt64V::TIter NIdI = InNIdV.BegI(); NIdI < InNIdV.EndI(); NIdI++) {
+	TInt64 InNodeId = *NIdI;
+	*NIdI = NIdSet.GetKeyId(InNodeId);
+      }
+      for (TInt64V::TIter NIdI = OutNIdV.BegI(); NIdI < OutNIdV.EndI(); NIdI++) {
+	TInt64 OutNodeId = *NIdI;
+	*NIdI = NIdSet.GetKeyId(OutNodeId);
+      }
+
+      // sorting necessary after mapping Node Ids
+      InNIdV.Sort();
+      OutNIdV.Sort();
+      OutGraph.AddNodeWithNbrs(NId, InNIdV, OutNIdV);
     }
   }
 
