@@ -76,7 +76,7 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       PUNGraph H = TSnap::ConvertGraphTable<PUNGraph>(T, OrderBy);
       clock_t t1 = clock();
-      //H->IsOk(false);
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
     if (ToTNGraph) {
@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       PNGraph H = TSnap::ConvertGraphTable<PNGraph>(T, OrderBy);
       clock_t t1 = clock();
-      //H->IsOk(false);
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
     if (ToTNEANet) {
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       PNEANet H = TSnap::ConvertGraphTable<PNEANet>(T, OrderBy);
       clock_t t1 = clock();
-      //H->IsOk(false);
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
 
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       PUNGraph H = TSnap::ConvertGraphFast<PUNGraph>(G);
       clock_t t1 = clock();
-      //H->IsOk(false);
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
     if (ToTNGraph) {
@@ -114,7 +114,7 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       PNGraph H = TSnap::ConvertGraphFast<PNGraph>(G);
       clock_t t1 = clock();
-      //H->IsOk(false);
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
     if (ToTNEANet) {
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
       //PNEANet H = TSnap::ConvertMultiGraph<PNEANet>(G);
       PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G);
       clock_t t1 = clock();
-      //H->IsOk(false);
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
   } else if (FromTNGraph) {
@@ -151,6 +151,7 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G, true);
       clock_t t1 = clock();
+      H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
   } else if (FromTNEANet) {

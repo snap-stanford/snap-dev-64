@@ -1636,7 +1636,7 @@ public:
   /// Node iterator. Only forward iteration (operator++) is supported.
   class TNodeI {
   protected:
-    typedef TPt<PVec<TInt64>> PInt64V;
+    typedef TPt<PVec<TInt64, int64>> PInt64V;
     typedef THash<TInt64, TNode, int64>::TIter THashIter;
     THashIter NodeHI;
     const TNEANet *Graph;

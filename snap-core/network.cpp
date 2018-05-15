@@ -47,8 +47,8 @@ bool TNEANet::HasFlag(const TGraphFlag& Flag) const {
   return HasGraphFlag(TNEANet::TNet, Flag);
 }
 
-const TPt<PVec<TInt64>> TNEANet::TNodeI::GetInNIdV() const {
-  TPt<PVec<TInt64>> InNIdV = PVec<TInt64>::New();
+const TPt<PVec<TInt64, int64>> TNEANet::TNodeI::GetInNIdV() const {
+  TPt<PVec<TInt64, int64>> InNIdV = PVec<TInt64, int64>::New();
   const TNode& Node = NodeHI.GetDat();
   for (int64 edge = 0; edge < Node.GetInDeg(); edge++) {
     InNIdV->Add(Graph->GetEdge(Node.GetInEId(edge)).GetSrcNId());
@@ -57,8 +57,8 @@ const TPt<PVec<TInt64>> TNEANet::TNodeI::GetInNIdV() const {
   return InNIdV;
 }
 
-const TPt<PVec<TInt64>> TNEANet::TNodeI::GetOutNIdV() const {
-  TPt<PVec<TInt64>> OutNIdV = TPt<PVec<TInt64>>::New();
+const TPt<PVec<TInt64, int64>> TNEANet::TNodeI::GetOutNIdV() const {
+  TPt<PVec<TInt64, int64>> OutNIdV = TPt<PVec<TInt64, int64>>::New();
   const TNode& Node = NodeHI.GetDat();
   for (int64 edge = 0; edge < Node.GetOutDeg(); edge++) {
     OutNIdV->Add(Graph->GetEdge(Node.GetOutEId(edge)).GetDstNId());

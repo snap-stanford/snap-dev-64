@@ -2176,31 +2176,31 @@ typedef TPt<TIntVecPool> PIntVecPool;
 
 /////////////////////////////////////////////////
 // Vector-Pointer
-template <class TVal>
+template <class TVal, class TSizeTy = int>
 class PVec{
 private:
   TCRef CRef;
 public:
-  TVec<TVal, int64> V;
+  TVec<TVal, TSizeTy> V;
 public:
-  PVec<TVal>(): V(){}
-  PVec<TVal>(const PVec<TVal>& Vec): V(Vec.V){}
-  static TPt<PVec<TVal> > New(){
-    return new PVec<TVal>();}
-  PVec<TVal>(const int& MxVals, const int& Vals): V(MxVals, Vals){}
-  static TPt<PVec<TVal> > New(const int& MxVals, const int& Vals){
-    return new PVec<TVal>(MxVals, Vals);}
-  PVec<TVal>(const TVec<TVal>& _V): V(_V){}
-  static TPt<PVec<TVal> > New(const TVec<TVal>& V){
-    return new PVec<TVal>(V);}
-  explicit PVec<TVal>(TSIn& SIn): V(SIn){}
-  static TPt<PVec<TVal> > Load(TSIn& SIn){return new PVec<TVal>(SIn);}
+  PVec(): V(){}
+  PVec(const PVec<TVal,TSizeTy>& Vec): V(Vec.V){}
+  static TPt<PVec<TVal, TSizeTy> > New(){
+    return new PVec<TVal, TSizeTy>();}
+  PVec(const int& MxVals, const int& Vals): V(MxVals, Vals){}
+  static TPt<PVec<TVal, TSizeTy> > New(const int& MxVals, const int& Vals){
+    return new PVec<TVal, TSizeTy>(MxVals, Vals);}
+  PVec(const TVec<TVal, TSizeTy>& _V): V(_V){}
+  static TPt<PVec<TVal, TSizeTy> > New(const TVec<TVal, TSizeTy>& V){
+    return new PVec<TVal, TSizeTy>(V);}
+  explicit PVec(TSIn& SIn): V(SIn){}
+  static TPt<PVec<TVal, TSizeTy> > Load(TSIn& SIn){return new PVec<TVal, TSizeTy>(SIn);}
   void Save(TSOut& SOut) const {V.Save(SOut);}
 
-  PVec<TVal>& operator=(const PVec<TVal>& Vec){
+  PVec<TVal, TSizeTy>& operator=(const PVec<TVal, TSizeTy>& Vec){
     if (this!=&Vec){V=Vec.V;} return *this;}
-  bool operator==(const PVec<TVal>& Vec) const {return V==Vec.V;}
-  bool operator<(const PVec<TVal>& Vec) const {return V<Vec.V;}
+  bool operator==(const PVec<TVal, TSizeTy>& Vec) const {return V==Vec.V;}
+  bool operator<(const PVec<TVal, TSizeTy>& Vec) const {return V<Vec.V;}
   TVal& operator[](const int& ValN) const {return V[ValN];}
 
   bool Empty() const {return V.Empty();}
@@ -2209,7 +2209,7 @@ public:
 
   int Add(const TVal& Val){return V.Add(Val);}
 
-  friend class TPt<PVec<TVal> >;
+  friend class TPt<PVec<TVal, TSizeTy> >;
 };
 
 /////////////////////////////////////////////////
