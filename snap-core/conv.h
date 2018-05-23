@@ -3,6 +3,30 @@
 
 namespace TSnap {
 
+template<class PGraph>
+PTable ToTable(const PGraph& Graph) {
+  PTable Table = TTable::New();
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+  Table->AddIntCol("dst");
+  Table->SetDstCol("dst");
+  for(typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(EI.GetSrcNId());
+    TableRow.AddInt(EI.GetDstNId());
+    Table->AddRow(TableRow);
+  }
+
+  TStr64V OrderBy;
+  OrderBy.Add(Table->GetSrcCol());
+  OrderBy.Add(Table->GetDstCol()); 
+  Table->Order(OrderBy);
+
+  return Table;
+}
+
+
+
 /// Sequentially converts the table into a graph with links from nodes in \c SrcCol to those in \c DstCol.
 template<class PGraph>
 PGraph ToGraph(PTable Table, const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy)
