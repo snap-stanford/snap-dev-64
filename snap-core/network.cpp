@@ -506,10 +506,7 @@ int64 TNEANet::AddNodeWithNbrs(const int64& NId, const TInt64V& InNIdV, const TI
     }
     // Add the edge. Note there is no check for a duplicate edge since TNEANet is a multigraph
     // Note that InEIdV and OutEIdV are always sorted.
-    int64 EId = MxEId; MxEId++;
-    EdgeH.AddDat(EId, TEdge(EId, NId, DstNId));
-    Node.OutEIdV.Add(EId);
-    NodeH.GetDat(DstNId).InEIdV.Add(EId);
+    AddEdgeUnchecked(NId, DstNId);
   }
 
   return NId;
@@ -739,16 +736,12 @@ int64 TNEANet::AddEdge(const int64& SrcNId, const int64& DstNId, int64 EId) {
   return EId;
 }
 
-int64 TNEANet::AddEdgeUnsorted(const int64& SrcNId, const int64& DstNId, int64 EId) {
-
+int64 TNEANet::AddEdgeUnchecked(const int64& SrcNId, const int64& DstNId, int64 EId) {
   if (EId == -1) { EId = MxEId;  MxEId++; }
   else { MxEId = TMath::Mx(EId+1, MxEId()); }
-  //  IAssertR(!IsEdge(EId), TStr::Fmt("EdgeId %s already exists", TInt64::GetStr(EId).CStr()));
-  // IAssertR(IsNode(SrcNId) && IsNode(DstNId), TStr::Fmt("%s or %s not a node.", TInt64::GetStr(SrcNId).CStr(), TInt64::GetStr(DstNId).CStr()).CStr());
   EdgeH.AddDat(EId, TEdge(EId, SrcNId, DstNId));
   GetNode(SrcNId).OutEIdV.Add(EId);
   GetNode(DstNId).InEIdV.Add(EId);
-
   return EId;
 }
 

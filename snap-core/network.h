@@ -2417,7 +2417,7 @@ public:
   /// Adds an edge between EdgeI.GetSrcNId() and EdgeI.GetDstNId() to the graph.
   int64 AddEdge(const TEdgeI& EdgeI) { return AddEdge(EdgeI.GetSrcNId(), EdgeI.GetDstNId(), EdgeI.GetId()); }
   /// Adds an edge with ID EId between SrcNId and DstNId to the graph. The associated Edge Id vectors are unsorted.
-  int64 AddEdgeUnsorted(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
+  int64 AddEdgeUnchecked(const int64& SrcNId, const int64& DstNId, int64 EId  = -1);
   /// Deletes an edge with edge ID EId from the graph.
   void DelEdge(const int64& EId);
   /// Deletes all edges between node IDs SrcNId and DstNId from the graph. ##TNEANet::DelEdge

@@ -2,6 +2,34 @@
 // Conversion Functions
 namespace TSnap {
 
+template <>
+PTable ToTable(const TModeNet& Graph) {
+  PTable Table = TTable::New();
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+  for(typename TModeNet::TNodeI NI = Graph.BegMMNI(); NI < Graph.EndMMNI(); NI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(NI.GetId());
+    Table->AddRow(TableRow);
+  }
+  return Table;
+}
+
+template <>
+PTable ToTable(const TCrossNet& Graph) {
+  PTable Table = TTable::New();
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+  Table->AddIntCol("dst");
+  Table->SetDstCol("dst");
+  for(typename TCrossNet::TCrossEdgeI EI = Graph.BegEdgeI(); EI < Graph.EndEdgeI(); EI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(EI.GetSrcNId());
+    TableRow.AddInt(EI.GetDstNId());
+    Table->AddRow(TableRow);
+  }
+  return Table;
+}
 
 int64 LoadModeNetToNet(PMMNet Graph, const TStr& Name, PTable Table, const TStr& NCol,
   TStr64V& NodeAttrV) {

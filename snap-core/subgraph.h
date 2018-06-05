@@ -216,7 +216,7 @@ POutGraph ConvertGraph(const PInGraph& InGraph, const bool& RenumberNodes) {
     }
     for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) {
       OutGraph.AddEdge(EI.GetSrcNId(), EI.GetDstNId());
-      if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) { // add edge in the other direction
+      if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected) && EI.GetDstNId() != EI.GetSrcNId()) { // add edge in the other direction
         OutGraph.AddEdge(EI.GetDstNId(), EI.GetSrcNId()); }
     }
   } else { // renumber nodes so that node ids are 0...N-1
@@ -229,7 +229,7 @@ POutGraph ConvertGraph(const PInGraph& InGraph, const bool& RenumberNodes) {
       const int64 SrcNId = NIdSet.GetKeyId(EI.GetSrcNId());
       const int64 DstNId = NIdSet.GetKeyId(EI.GetDstNId());
       OutGraph.AddEdge(SrcNId, DstNId);
-      if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) {
+      if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected) && DstNId != SrcNId) {
         OutGraph.AddEdge(DstNId, SrcNId); }
     }
   }
@@ -340,9 +340,9 @@ POutGraph ConvertMultiGraph(const PInGraph& InGraph, const bool& RenumberNodes) 
       OutGraph.AddNode(NI.GetId());
     }
     for (typename PInGraph::TObj::TEdgeI EI = InGraph->BegEI(); EI < InGraph->EndEI(); EI++) {
-      OutGraph.AddEdgeUnsorted(EI.GetSrcNId(), EI.GetDstNId());
+      OutGraph.AddEdgeUnchecked(EI.GetSrcNId(), EI.GetDstNId());
       if (! HasGraphFlag(typename PInGraph::TObj, gfDirected) && HasGraphFlag(typename POutGraph::TObj, gfDirected)) { // add edge in the other direction
-        OutGraph.AddEdgeUnsorted(EI.GetDstNId(), EI.GetSrcNId());
+        OutGraph.AddEdgeUnchecked(EI.GetDstNId(), EI.GetSrcNId());
       }
     }
   } else {
