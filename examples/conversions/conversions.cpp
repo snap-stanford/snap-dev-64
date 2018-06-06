@@ -235,8 +235,8 @@ int main(int argc, char* argv[]) {
       clock_t t0 = clock();
       //PNEANet H = TSnap::ConvertMultiGraph<PNEANet>(G);
       PNEANet H = TSnap::ConvertGraphFast<PNEANet>(G);
-      EAssert(VerifyConvertGraphFast(G, H));
       clock_t t1 = clock();
+      EAssert(VerifyConvertGraphFast(G, H));
       H->IsOk(false);
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType);
     }
