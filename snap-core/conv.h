@@ -16,29 +16,17 @@ PTable ToTable(const PGraph& Graph) {
     TableRow.AddInt(EI.GetDstNId());
     Table->AddRow(TableRow);
   }
-
   return Table;
 }
+
+template<>
+PTable ToTable(const PNEANet& Graph);
 
 template<>
 PTable ToTable(const TModeNet& Graph);
 
 template<>
 PTable ToTable(const TCrossNet& Graph);
-/*   PTable Table = TTable::New(); */
-/*   Table->AddIntCol("src"); */
-/*   Table->SetSrcCol("src"); */
-/*   Table->AddIntCol("dst"); */
-/*   Table->SetDstCol("dst"); */
-/*   for(typename TNEANet::TEdgeI EI = Graph.BegEI(); EI < Graph.EndEI(); EI++) { */
-/*     TTableRow TableRow; */
-/*     TableRow.AddInt(EI.GetSrcNId()); */
-/*     TableRow.AddInt(EI.GetDstNId()); */
-/*     Table->AddRow(TableRow); */
-/*   } */
-
-/*   return Table; */
-/* } */
 
 
 /// Sequentially converts the table into a graph with links from nodes in \c SrcCol to those in \c DstCol.

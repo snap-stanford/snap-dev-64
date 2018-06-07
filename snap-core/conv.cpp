@@ -2,14 +2,102 @@
 // Conversion Functions
 namespace TSnap {
 
+
+template <>
+PTable ToTable(const PNEANet& Graph) {
+  PTable Table = TTable::New();
+
+  // Add node id columns
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+  Table->AddIntCol("dst");
+  Table->SetDstCol("dst");
+
+  // Add attributes columns
+  TStr64V IntAttrNames;
+  TStr64V FltAttrNames;
+  TStr64V StrAttrNames;
+  Graph->GetAttrENames(IntAttrNames, FltAttrNames, StrAttrNames);
+  
+  for (int64 i = 0; i < IntAttrNames.Len(); i++) {
+    Table->AddIntCol(IntAttrNames[i]);
+    Table->AddEdgeAttr(IntAttrNames[i]);
+  }
+  for (int64 i = 0; i < FltAttrNames.Len(); i++) {
+    Table->AddFltCol(FltAttrNames[i]);
+    Table->AddEdgeAttr(FltAttrNames[i]);
+  }
+  for (int64 i = 0; i < StrAttrNames.Len(); i++) {
+    Table->AddStrCol(StrAttrNames[i]);
+    Table->AddEdgeAttr(StrAttrNames[i]);
+  }
+  
+  // Add graph data
+  for(typename PNEANet::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(EI.GetSrcNId());
+    TableRow.AddInt(EI.GetDstNId());
+    
+    for (int64 i = 0; i < IntAttrNames.Len(); i++) {
+      TableRow.AddInt(Graph->GetIntAttrDatE(EI, IntAttrNames[i]));
+    }
+    for (int64 i = 0; i < FltAttrNames.Len(); i++) {
+      TableRow.AddFlt(Graph->GetFltAttrDatE(EI, FltAttrNames[i]));
+    }
+    for (int64 i = 0; i < StrAttrNames.Len(); i++) {
+      TableRow.AddStr(Graph->GetStrAttrDatE(EI, StrAttrNames[i]));
+    } 
+    
+    // Finally add the row for edge EI to Table. 
+    Table->AddRow(TableRow);
+  }
+
+  return Table;
+}
+
+
+
 template <>
 PTable ToTable(const TModeNet& Graph) {
   PTable Table = TTable::New();
   Table->AddIntCol("src");
   Table->SetSrcCol("src");
+
+  // Add attributes columns
+  TStr64V IntAttrNames;
+  TStr64V FltAttrNames;
+  TStr64V StrAttrNames;
+  Graph.GetAttrNNames(IntAttrNames, FltAttrNames, StrAttrNames);
+  
+  for (int64 i = 0; i < IntAttrNames.Len(); i++) {
+    Table->AddIntCol(IntAttrNames[i]);
+    Table->AddNodeAttr(IntAttrNames[i]);
+  }
+  for (int64 i = 0; i < FltAttrNames.Len(); i++) {
+    Table->AddFltCol(FltAttrNames[i]);
+    Table->AddNodeAttr(FltAttrNames[i]);
+  }
+  for (int64 i = 0; i < StrAttrNames.Len(); i++) {
+    Table->AddStrCol(StrAttrNames[i]);
+    Table->AddNodeAttr(StrAttrNames[i]);
+  }
+
+  // Add graph data
   for(typename TModeNet::TNodeI NI = Graph.BegMMNI(); NI < Graph.EndMMNI(); NI++) {
     TTableRow TableRow;
     TableRow.AddInt(NI.GetId());
+
+    for (int64 i = 0; i < IntAttrNames.Len(); i++) {
+      TableRow.AddInt(Graph.GetIntAttrDatN(NI, IntAttrNames[i]));
+    }
+    for (int64 i = 0; i < FltAttrNames.Len(); i++) {
+      TableRow.AddFlt(Graph.GetFltAttrDatN(NI, FltAttrNames[i]));
+    }
+    for (int64 i = 0; i < StrAttrNames.Len(); i++) {
+      TableRow.AddStr(Graph.GetStrAttrDatN(NI, StrAttrNames[i]));
+    } 
+
+    // Finally add the row for edge EI to Table. 
     Table->AddRow(TableRow);
   }
   return Table;
