@@ -33,7 +33,7 @@ PTable ToTable(const PNEANet& Graph) {
   }
   
   // Add graph data
-  for(typename PNEANet::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
+  for(PNEANet::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
     TTableRow TableRow;
     TableRow.AddInt(EI.GetSrcNId());
     TableRow.AddInt(EI.GetDstNId());
@@ -83,7 +83,7 @@ PTable ToTable(const TModeNet& Graph) {
   }
 
   // Add graph data
-  for(typename TModeNet::TNodeI NI = Graph.BegMMNI(); NI < Graph.EndMMNI(); NI++) {
+  for(TModeNet::TNodeI NI = Graph.BegMMNI(); NI < Graph.EndMMNI(); NI++) {
     TTableRow TableRow;
     TableRow.AddInt(NI.GetId());
 
@@ -110,7 +110,7 @@ PTable ToTable(const TCrossNet& Graph) {
   Table->SetSrcCol("src");
   Table->AddIntCol("dst");
   Table->SetDstCol("dst");
-  for(typename TCrossNet::TCrossEdgeI EI = Graph.BegEdgeI(); EI < Graph.EndEdgeI(); EI++) {
+  for(TCrossNet::TCrossEdgeI EI = Graph.BegEdgeI(); EI < Graph.EndEdgeI(); EI++) {
     TTableRow TableRow;
     TableRow.AddInt(EI.GetSrcNId());
     TableRow.AddInt(EI.GetDstNId());
