@@ -4,7 +4,7 @@
 namespace TSnap {
 
 template<class PGraph>
-PTable ToTable(const PGraph& Graph) {
+PTable EdgesToTable(const PGraph& Graph) {
   PTable Table = TTable::New();
   Table->AddIntCol("src");
   Table->SetSrcCol("src");
@@ -20,14 +20,30 @@ PTable ToTable(const PGraph& Graph) {
 }
 
 template<>
-PTable ToTable(const PNEANet& Graph);
+PTable EdgesToTable(const PNEANet& Graph);
 
 template<>
-PTable ToTable(const TModeNet& Graph);
+PTable EdgesToTable(const TCrossNet& Graph);
+
+template<class PGraph>
+PTable NodesToTable(const PGraph& Graph) {
+  PTable Table = TTable::New();
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+
+  for(typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(NI.GetNId());
+    Table->AddRow(TableRow);
+  }
+  return Table;
+}
 
 template<>
-PTable ToTable(const TCrossNet& Graph);
+PTable NodesToTable(const PNEANet& Graph);
 
+template<>
+PTable NodesToTable(const TModeNet& Graph);
 
 /// Sequentially converts the table into a graph with links from nodes in \c SrcCol to those in \c DstCol.
 template<class PGraph>
