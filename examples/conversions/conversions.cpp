@@ -188,23 +188,21 @@ int main(int argc, char* argv[]) {
 
     if (ToTTable) {
       // get Table from TModeNet
-      // TSnap::ToTable requires a pointer
       clock_t t0 = clock();
       TModeNet ModeNet = MMNet->GetModeNetByName(ModeName);
-      PTable OutT = TSnap::ToTable(ModeNet);
+      PTable OutT = TSnap::NodesToTable(ModeNet);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTimeTable(t0, t1, ModeNet.GetNodes(), OutT->GetNumRows(), InGraphType, OutGraphType);
+      printConversionTimeTable(t0, t1, ModeNet.GetNodes(), OutT->GetNumRows(), "TModeNet", OutGraphType);
     }
     if (ToTTable) {
       // get Table from TModeNet
-      // TSnap::ToTable requires a pointer
       clock_t t0 = clock();
       TCrossNet CrossNet = MMNet->GetCrossNetByName(CrossName);
-      PTable OutT = TSnap::ToTable(CrossNet);
+      PTable OutT = TSnap::EdgesToTable(CrossNet);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTimeTable(t0, t1, CrossNet.GetEdges(), OutT->GetNumRows(), InGraphType, OutGraphType);
+      printConversionTimeTable(t0, t1, CrossNet.GetEdges(), OutT->GetNumRows(), "TCrossNet", OutGraphType);
     }
 
   }
@@ -243,10 +241,18 @@ int main(int argc, char* argv[]) {
     if (ToTTable) {
       // get Table
       clock_t t0 = clock();
-      PTable T = TSnap::ToTable(G);
+      PTable T = TSnap::NodesToTable(G);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, G->GetNodes(), T->GetNumRows(), InGraphType, OutGraphType);
+      printConversionTimeTable(t0, t1, G->GetNodes(), T->GetNumRows(), InGraphType, OutGraphType);
+    }
+    if (ToTTable) {
+      // get Table
+      clock_t t0 = clock();
+      PTable T = TSnap::EdgesToTable(G);
+      clock_t t1 = clock();
+      //H->IsOk(false);
+      printConversionTimeTable(t0, t1, G->GetEdges(), T->GetNumRows(), InGraphType, OutGraphType);
     }
   } else if (FromTNGraph) {
  
@@ -282,10 +288,18 @@ int main(int argc, char* argv[]) {
     if (ToTTable) {
       // get Table
       clock_t t0 = clock();
-      PTable T = TSnap::ToTable(G);
+      PTable T = TSnap::NodesToTable(G);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, G->GetNodes(), T->GetNumRows(), InGraphType, OutGraphType);
+      printConversionTimeTable(t0, t1, G->GetNodes(), T->GetNumRows(), InGraphType, OutGraphType);
+    }
+    if (ToTTable) {
+      // get Table
+      clock_t t0 = clock();
+      PTable T = TSnap::EdgesToTable(G);
+      clock_t t1 = clock();
+      //H->IsOk(false);
+      printConversionTimeTable(t0, t1, G->GetEdges(), T->GetNumRows(), InGraphType, OutGraphType);
     }
   } else if (FromTNEANet) {
 
@@ -321,10 +335,18 @@ int main(int argc, char* argv[]) {
     if (ToTTable) {
       // get Table
       clock_t t0 = clock();
-      PTable T = TSnap::ToTable(G);
+      PTable T = TSnap::NodesToTable(G);
       clock_t t1 = clock();
       //H->IsOk(false);
-      printConversionTime(t0, t1, G->GetNodes(), T->GetNumRows(), InGraphType, OutGraphType);
+      printConversionTimeTable(t0, t1, G->GetNodes(), T->GetNumRows(), InGraphType, OutGraphType);
+    }
+    if (ToTTable) {
+      // get Table
+      clock_t t0 = clock();
+      PTable T = TSnap::EdgesToTable(G);
+      clock_t t1 = clock();
+      //H->IsOk(false);
+      printConversionTimeTable(t0, t1, G->GetEdges(), T->GetNumRows(), InGraphType, OutGraphType);
     }
   }
   return 0;

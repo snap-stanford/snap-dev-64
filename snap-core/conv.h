@@ -33,7 +33,7 @@ PTable NodesToTable(const PGraph& Graph) {
 
   for(typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
     TTableRow TableRow;
-    TableRow.AddInt(NI.GetNId());
+    TableRow.AddInt(NI.GetId());
     Table->AddRow(TableRow);
   }
   return Table;
