@@ -360,6 +360,8 @@ public:
 
   /// Whether edges in the crossnet are directed.
   bool IsDirected() const { return IsDirect;}
+  /// Fills each of the vectors with the names of edge attributes of the given type.
+  void GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const;
   /// Returns a vector of attr names for edge EId.
   void AttrNameEI(const TInt64& EId, TStr64V& Names) const {
     AttrNameEI(EId, KeyToIndexTypeE.BegI(), Names);}

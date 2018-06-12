@@ -418,6 +418,23 @@ void TCrossNet::SetParentPointer(TMMNet* parent) {
   Net = parent;
 }
 
+void TCrossNet::GetAttrENames(TStr64V& IntAttrNames, TStr64V& FltAttrNames, TStr64V& StrAttrNames) const {
+  TStrIntPr64H::TIter CrossHI = KeyToIndexTypeE.BegI();
+  while (!CrossHI.IsEnd()) {
+    if (CrossHI.GetDat().Val1 == IntType) {
+      IntAttrNames.Add(CrossHI.GetKey());
+    }
+    if (CrossHI.GetDat().Val1 == FltType) {
+      FltAttrNames.Add(CrossHI.GetKey());
+    }
+    if (CrossHI.GetDat().Val1 == StrType) {
+      StrAttrNames.Add(CrossHI.GetKey());
+    }
+    CrossHI++;
+  }
+} 
+
+
 void TCrossNet::AttrNameEI(const TInt64& EId, TStrIntPr64H::TIter CrossHI, TStr64V& Names) const {
   Names = TVec<TStr, int64>();
   while (!CrossHI.IsEnd()) {
