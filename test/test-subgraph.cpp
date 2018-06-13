@@ -202,6 +202,7 @@ TEST(subgraph, TestEdgeSubNets) {
 TEST(subgraph, TestConvertGraphs) {
   PNGraph NGraph;
   PUNGraph UNGraph;
+  PNEANet NEANet;
 
   NGraph = GetTestTNGraph();
   EXPECT_EQ(20,NGraph->GetNodes());
@@ -214,6 +215,24 @@ TEST(subgraph, TestConvertGraphs) {
   NGraph = TSnap::ConvertGraph<PNGraph>(UNGraph);
   EXPECT_EQ(20,NGraph->GetNodes());
   EXPECT_EQ(120,NGraph->GetEdges());
+
+  NEANet = TSnap::ConvertGraph<PNEANet>(NGraph);
+  EXPECT_EQ(20,NEANet->GetNodes());
+  EXPECT_EQ(120,NEANet->GetEdges());
+
+  // Fast Conversions
+  UNGraph = TSnap::ConvertGraphFast<PUNGraph>(NGraph);
+  EXPECT_EQ(20,UNGraph->GetNodes());
+  EXPECT_EQ(60,UNGraph->GetEdges());
+
+  NGraph = TSnap::ConvertGraphFast<PNGraph>(UNGraph);
+  EXPECT_EQ(20,NGraph->GetNodes());
+  EXPECT_EQ(120,NGraph->GetEdges());
+
+  NEANet = TSnap::ConvertGraphFast<PNEANet>(NGraph);
+  EXPECT_EQ(20,NEANet->GetNodes());
+  EXPECT_EQ(120,NEANet->GetEdges());
+
 }
 
 // Test node subgraph conversion
