@@ -31,7 +31,6 @@
 #include "cncom.cpp"         // connected components
 #include "alg.cpp"           // misc graph algorithms
 #include "gsvd.cpp"          // SVD and eigenvector computations
-#include "gstat.cpp"         // graph statistics
 #include "centr.cpp"         // centrality measures
 #include "cmty.cpp"          // community detection algorithms
 #include "flow.cpp"          // network flow algorithms
@@ -46,5 +45,6 @@
 
 #include "gviz.cpp"
 #include "ghash.cpp"
-#include "statplot.cpp"
 #include "gio.cpp"
+#include "gstat.cpp"         // graph statistics
+#include "statplot.cpp"

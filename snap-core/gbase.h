@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////
+//#//////////////////////////////////////////////
 // Defines
 #define Kilo(n) (1000*(n))
 #define Mega(n) (1000*1000*(n))
@@ -60,92 +60,11 @@ public:
 };
 #endif
 
-/////////////////////////////////////////////////
+//#//////////////////////////////////////////////
 // Graph Base
 
 /// Returns a string representation of a flag.
 TStr GetFlagStr(const TGraphFlag& GraphFlag);
-/// Prints basic graph statistics. ##TSnap::PrintInfo
-template <class PGraph> void PrintInfo(const PGraph& Graph, const TStr& Desc="", const TStr& OutFNm="", const bool& Fast=true);
-
-/////////////////////////////////////////////////
-// Implementation
-
-// Forward declaration, definition in triad.h
-template <class PGraph> int64 GetTriads(const PGraph& Graph, int64& ClosedTriads, int64& OpenTriads, int64 SampleNodes=-1);
-template <class PGraph> double GetBfsEffDiam(const PGraph& Graph, const int64& NTestNodes, const bool& IsDir, double& EffDiam, int64& FullDiam);
-template <class PGraph> double GetMxWccSz(const PGraph& Graph);
-template <class PGraph> double GetMxSccSz(const PGraph& Graph);
-template<class PGraph> int64 GetKCoreNodes(const PGraph& Graph, TIntPr64V& CoreIdSzV);
-template<class PGraph> int64 GetKCoreEdges(const PGraph& Graph, TIntPr64V& CoreIdSzV);
-
-template <class PGraph>
-void PrintInfo(const PGraph& Graph, const TStr& Desc, const TStr& OutFNm, const bool& Fast) {
-  int64 BiDirEdges=0, ZeroNodes=0, ZeroInNodes=0, ZeroOutNodes=0, SelfEdges=0, NonZIODegNodes=0;
-  THash<TInt64Pr, TInt64, int64> UniqDirE, UniqUnDirE;
-  FILE *F = stdout;
-  if (! OutFNm.Empty()) F = fopen(OutFNm.CStr(), "wt");
-  if (! Desc.Empty()) { fprintf(F, "%s:", Desc.CStr()); }
-  else { fprintf(F, "Graph:"); }
-  for (int64 f = gfUndef; f < gfMx; f++) {
-    if (HasGraphFlag(typename PGraph::TObj, TGraphFlag(f))) {
-      fprintf(F, " %s", TSnap::GetFlagStr(TGraphFlag(f)).CStr()); }
-  }
-  // calc stat
-  for (typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    if (NI.GetDeg()==0) ZeroNodes++;
-    if (NI.GetInDeg()==0) ZeroInNodes++;
-    if (NI.GetOutDeg()==0) ZeroOutNodes++;
-    if (NI.GetInDeg()!=0 && NI.GetOutDeg()!=0) NonZIODegNodes++;
-    if (! Fast || Graph->GetNodes() < 1000) {
-      const int64 NId = NI.GetId();
-      for (int64 edge = 0; edge < NI.GetOutDeg(); edge++) {
-        const int64 DstNId = NI.GetOutNId(edge);
-        if (Graph->IsEdge(DstNId, NId)) BiDirEdges++;
-        if (NId == DstNId) SelfEdges++;
-        UniqDirE.AddKey(TInt64Pr(NId, DstNId));
-        UniqUnDirE.AddKey(TInt64Pr(TInt64::GetMn(NId, DstNId), TInt64::GetMx(NId, DstNId)));
-      }
-    }
-  }
-  int64 Closed=0, Open=0;
-  double WccSz=0, SccSz=0;
-  double EffDiam=0;
-  int64 FullDiam=0;
-  if (! Fast) {
-    TSnap::GetTriads(Graph, Closed, Open);
-    WccSz = TSnap::GetMxWccSz(Graph);
-    SccSz = TSnap::GetMxSccSz(Graph);
-    TSnap::GetBfsEffDiam(Graph, 100, false, EffDiam, FullDiam);
-  }
-  // print info
-  fprintf(F, "\n");
-  fprintf(F, "  Nodes:                    %s\n", TInt64::GetStr(Graph->GetNodes()).CStr());
-  fprintf(F, "  Edges:                    %s\n", TInt64::GetStr(Graph->GetEdges()).CStr());
-  fprintf(F, "  Zero Deg Nodes:           %s\n", TInt64::GetStr(ZeroNodes).CStr());
-  fprintf(F, "  Zero InDeg Nodes:         %s\n", TInt64::GetStr(ZeroInNodes).CStr());
-  fprintf(F, "  Zero OutDeg Nodes:        %s\n", TInt64::GetStr(ZeroOutNodes).CStr());
-  fprintf(F, "  NonZero In-Out Deg Nodes: %s\n", TInt64::GetStr(NonZIODegNodes).CStr());
-
-  if (! Fast) {
-    fprintf(F, "  Unique directed edges:    %s\n", TInt64::GetStr(UniqDirE.Len()).CStr());
-    fprintf(F, "  Unique undirected edges:  %s\n", TInt64::GetStr(UniqUnDirE.Len()).CStr());
-    fprintf(F, "  Self Edges:               %s\n", TInt64::GetStr(SelfEdges).CStr());
-    fprintf(F, "  BiDir Edges:              %s\n", TInt64::GetStr(BiDirEdges).CStr());
-    fprintf(F, "  Closed triangles:         %s\n", TUInt64::GetStr(Closed).CStr());
-    fprintf(F, "  Open triangles:           %s\n", TUInt64::GetStr(Open).CStr());
-    fprintf(F, "  Frac. of closed triads:   %f\n", Closed/double(Closed+Open));
-    fprintf(F, "  Connected component size: %f\n", WccSz);
-    fprintf(F, "  Strong conn. comp. size:  %f\n", SccSz);
-    fprintf(F, "  Approx. full diameter:    %s\n", TInt64::GetStr(FullDiam).CStr());
-    fprintf(F, "  90%% effective diameter:  %f\n", EffDiam);
-    //fprintf(F, "  Core\tNodes\tEdges\n");
-    //for (int i  = 0; i < CNodesV.Len(); i++) {
-    //  printf("  %d\t%d\t%d\n", CNodesV[i].Val1(), CNodesV[i].Val2(), CEdgesV[i].Val2());
-    //}
-  }
-  if (! OutFNm.Empty()) { fclose(F); }
-}
 
 }  // namespace TSnap
 

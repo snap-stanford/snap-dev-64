@@ -2,10 +2,6 @@
 This is very useful for testing graph properties at compile time for partial template specialization as well as compile time assert (CAssert).
 ///
 
-/// TSnap::PrintInfo
-@param Fast true: only computes basic statistics (that can be computed fast). For more extensive information (and longer execution times) set <tt>Fast = false</tt>.
-///
-
 /// TUnionFind
 For more info see: http://en.wikipedia.org/wiki/Disjoint-set_data_structure).
 ///

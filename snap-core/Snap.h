@@ -37,7 +37,6 @@
 #include "alg.h"             // misc graph algorithms
 #include "triad.h"           // clustering coefficient and triads
 #include "gsvd.h"            // SVD and eigenvector computations
-#include "gstat.h"           // graph statistics
 #include "centr.h"           // centrality measures
 #include "cmty.h"            // community detection algorithms
 #include "flow.h"            // network flow algorithms
@@ -53,6 +52,7 @@
 #include "gio.h"
 #include "gviz.h"
 #include "ghash.h"
+#include "gstat.h"           // graph statistics
 #include "statplot.h"
 
 #endif // SNAP_H

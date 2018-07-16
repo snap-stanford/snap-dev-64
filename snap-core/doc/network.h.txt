@@ -308,7 +308,7 @@ one of those nodes has one more in-edge than out-edge, and the other has one mor
 than in-edge.
 ///
 
-/// TNEANET::GetEulerPath
+/// TNEANet::GetEulerPath
 The path will visit every edge in the graph exactly once; \c Path is populated
 with the ids of the visited edges, in order. Self edges are visited by the path.
 ///

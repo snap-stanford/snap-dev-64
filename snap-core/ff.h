@@ -1,5 +1,10 @@
 #include "bd.h"
 
+// Forward declarations, definitions in gstat.h
+// statistics of a sequence of graph snapshots
+class TGStatVec;
+typedef TPt<TGStatVec> PGStatVec;
+
 //#//////////////////////////////////////////////
 /// Simulates a single Forest Fire on a directed graph starting for a given starting node.
 /// For more details is "Graph Evolution: Densification and Shrinking Diameters" by J. Leskovec, J. Kleinberg, C. Faloutsos. ACM Transactions on Knowledge Discovery from Data (TKDD), 1(1), 2007.
