@@ -6,15 +6,15 @@ all: MakeAll
 
 test: TestAll
 
-core:
-	$(MAKE) -C snap-core
-
 MakeAll:
 	$(MAKE) -C snap-core
 	$(MAKE) -C examples
 
 TestAll:
 	$(MAKE) run -C test
+
+core:
+	$(MAKE) -C snap-core
 
 clean:
 	$(MAKE) clean -C snap-core
