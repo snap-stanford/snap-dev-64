@@ -3,6 +3,48 @@
 
 namespace TSnap {
 
+template<class PGraph>
+PTable EdgesToTable(const PGraph& Graph) {
+  PTable Table = TTable::New();
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+  Table->AddIntCol("dst");
+  Table->SetDstCol("dst");
+  for(typename PGraph::TObj::TEdgeI EI = Graph->BegEI(); EI < Graph->EndEI(); EI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(EI.GetSrcNId());
+    TableRow.AddInt(EI.GetDstNId());
+    Table->AddRow(TableRow);
+  }
+  return Table;
+}
+
+template<>
+PTable EdgesToTable(const PNEANet& Graph);
+
+template<>
+PTable EdgesToTable(const TCrossNet& Graph);
+
+template<class PGraph>
+PTable NodesToTable(const PGraph& Graph) {
+  PTable Table = TTable::New();
+  Table->AddIntCol("src");
+  Table->SetSrcCol("src");
+
+  for(typename PGraph::TObj::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
+    TTableRow TableRow;
+    TableRow.AddInt(NI.GetId());
+    Table->AddRow(TableRow);
+  }
+  return Table;
+}
+
+template<>
+PTable NodesToTable(const PNEANet& Graph);
+
+template<>
+PTable NodesToTable(const TModeNet& Graph);
+
 /// Sequentially converts the table into a graph with links from nodes in \c SrcCol to those in \c DstCol.
 template<class PGraph>
 PGraph ToGraph(PTable Table, const TStr& SrcCol, const TStr& DstCol, TAttrAggr AggrPolicy)

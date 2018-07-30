@@ -15,6 +15,7 @@ LIBS += -lgtest
 
 ## Main application file
 MAIN = run-all-tests
+
 TEST_SRCS = test-helper.cpp \
 	test-multimodal.cpp \
 	test-TMMNet.cpp \

@@ -17,6 +17,7 @@ MakeAll:
 	$(MAKE) -C coda
 	$(MAKE) -C community
 	$(MAKE) -C concomp
+	$(MAKE) -C conversions
 	$(MAKE) -C flows
 	$(MAKE) -C forestfire
 	$(MAKE) -C graphgen
@@ -64,6 +65,7 @@ clean:
 	$(MAKE) clean -C coda
 	$(MAKE) clean -C community
 	$(MAKE) clean -C concomp
+	$(MAKE) clean -C conversions
 	$(MAKE) clean -C flows
 	$(MAKE) clean -C forestfire
 	$(MAKE) clean -C graphgen
