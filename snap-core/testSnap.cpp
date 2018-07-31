@@ -15,11 +15,11 @@ int main(int argc, char* argv[]) {
   Graph = TSnap::LoadEdgeList<PNGraph>("graph.txt", 0, 1);
   // traverse nodes
   for (TNGraph::TNodeI NI = Graph->BegNI(); NI < Graph->EndNI(); NI++) {
-    printf("NodeId: %d, InDegree: %d, OutDegree: %d\n", NI.GetId(), NI.GetInDeg(), NI.GetOutDeg());
+    printf("NodeId: %s, InDegree: %s, OutDegree: %s\n", ToCStr(NI.GetId()), ToCStr(NI.GetInDeg()), ToCStr(NI.GetOutDeg()));
     printf("OutNodes: ");
-    for (int e = 0; e < NI.GetOutDeg(); e++) { printf("  %d", NI.GetOutNId(e)); }
+    for (int e = 0; e < NI.GetOutDeg(); e++) { printf("  %s", ToCStr(NI.GetOutNId(e))); }
     printf("\nInNodes: ");
-    for (int e = 0; e < NI.GetInDeg(); e++) { printf("  %d", NI.GetInNId(e)); }
+    for (int e = 0; e < NI.GetInDeg(); e++) { printf("  %s", ToCStr(NI.GetInNId(e))); }
     printf("\n\n");
   }
   // graph statistic
@@ -55,13 +55,13 @@ int main(int argc, char* argv[]) {
   DirectedGraph->AddEdge(7, 2);
   DirectedGraph->AddEdge(8, 9);
 
-  TIntFltH nodeBtwH;
-  TIntPrFltH edgeBtwH;
+  TIntFlt64H nodeBtwH;
+  TIntPrFlt64H edgeBtwH;
 
 
   printf("Testing Betweenness Centrality Calculation \n");
   TSnap::GetBetweennessCentr<PNGraph> (DirectedGraph, nodeBtwH, edgeBtwH, true);
-  for (TIntFltH::TIter It = nodeBtwH.BegI(); It < nodeBtwH.EndI(); It++) {
+  for (TIntFlt64H::TIter It = nodeBtwH.BegI(); It < nodeBtwH.EndI(); It++) {
     int node_id = It.GetKey();
     double centr = It.GetDat();
     printf("NodeId: %d, Centr: %f \n", node_id, centr);
