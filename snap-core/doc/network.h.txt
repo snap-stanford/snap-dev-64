@@ -269,6 +269,10 @@ Otherwise, it returns the ID of the node being added.
 If NId is -1, node ID is automatically assigned.
 ///
 
+/// TNEANet::AddNodeWithNbrs
+Returns the ID of the node being added.
+///
+
 /// TNEANet::DelNode
 If the node of ID NId does not exist the function aborts.
 ///

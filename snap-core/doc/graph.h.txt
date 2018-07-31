@@ -42,6 +42,10 @@ Otherwise, it returns the ID of the node being added.
 If NId is -1, node ID is automatically assigned.
 ///
 
+/// TUNGraph::AddNodeWithNbrs
+Returns the ID of the node being added.
+///
+
 /// TUNGraph::AddNode-1 (const int& NId, const TIntV& NbrNIdV)
 Returns the ID of the node being added.
 If NId is -1, node ID is automatically assigned.
@@ -156,6 +160,10 @@ Aborts, if a node with ID NId already exists.
 Returns -1, if the node NId already exists.
 Otherwise, it returns the ID of the node being added.
 If NId is -1, node ID is automatically assigned.
+///
+
+/// TNGraph::AddNodeWithNbrs
+Returns the ID of the node being added.
 ///
     
 /// TNGraph::AddNode-1 (const int& NId, const TIntV& InNIdV, const TIntV& OutNIdV)

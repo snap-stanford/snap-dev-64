@@ -1,0 +1,4 @@
+/// TSnap::PrintInfo
+@param Fast true: only computes basic statistics (that can be computed fast). For more extensive information (and longer execution times) set <tt>Fast = false</tt>.
+///
+
