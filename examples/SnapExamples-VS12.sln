@@ -65,6 +65,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "randwalk", "randwalk\randwa
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rolx", "rolx\rolx.vcxproj", "{54A2FDEC-58F5-4EFA-A10A-838263E89629}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "conversions", "conversions\conversions.vcxproj", "{22962168-7727-4E6B-9A3D-E62EAAC2992C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -368,6 +370,18 @@ Global
 		{54A2FDEC-58F5-4EFA-A10A-838263E89629}.Release64|Win32.ActiveCfg = Release64|Win32
 		{54A2FDEC-58F5-4EFA-A10A-838263E89629}.Release64|x64.ActiveCfg = Release64|x64
 		{54A2FDEC-58F5-4EFA-A10A-838263E89629}.Release64|x64.Build.0 = Release64|x64
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Debug|Win32.Build.0 = Debug|Win32
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Debug|x64.ActiveCfg = Debug|x64
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Debug|x64.Build.0 = Debug|x64
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release|Win32.ActiveCfg = Release|Win32
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release|Win32.Build.0 = Release|Win32
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release|x64.ActiveCfg = Release|x64
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release|x64.Build.0 = Release|x64
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release64|Win32.ActiveCfg = Release64|Win32
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release64|Win32.Build.0 = Release64|Win32
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release64|x64.ActiveCfg = Release64|x64
+		{22962168-7727-4E6B-9A3D-E62EAAC2992C}.Release64|x64.Build.0 = Release64|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
