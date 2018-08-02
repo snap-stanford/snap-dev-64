@@ -1,4 +1,4 @@
-#ifdef GLib_LINUX
+#ifdef GLib_UNIX
 extern "C" {
 	#include <sys/mman.h>
 }
@@ -539,7 +539,7 @@ TShMIn::TShMIn(const TStr& Str): TSBase("Input-Shared_Memory"),
     TSIn("Input-Shared_Memory"), TotalLength(0),
     SizeLeft(0) {
 
-#ifdef GLib_LINUX
+#ifdef GLib_UNIX
       TStr FNm = Str;
       TFileId FileId;
       int fd;
@@ -564,7 +564,7 @@ TShMIn::TShMIn(const TStr& Str): TSBase("Input-Shared_Memory"),
       TotalLength = FLen;
       IsMemoryMapped = true;
 #else
-      TExcept::Throw("TMIn::TMIn(TStr, Bool): GLib_LINUX undefined.\n");
+      TExcept::Throw("TMIn::TMIn(TStr, Bool): GLib_UNIX undefined.\n");
 #endif
     }
 
@@ -577,7 +577,7 @@ TShMIn::TShMIn(void* _Bf, const TSize& _BfL): TSBase("Input-Shared_Memory"),
 void TShMIn::CloseMapping() {
   if (OriginalBuffer!=NULL){
     if (IsMemoryMapped) {
-#ifdef GLib_LINUX
+#ifdef GLib_UNIX
       munmap(OriginalBuffer, TotalLength);
       IsMemoryMapped = false;
       OriginalBuffer = NULL;
@@ -611,7 +611,7 @@ TMIn::TMIn(const char* CStr):
   BfL=uint64(strlen(CStr)); Bf=new char[static_cast<size_t>(BfL+1)]; strcpy(Bf, CStr);
 }
 
-/* GLib_LINUX should be defined if FromFile is true */
+/* GLib_UNIX should be defined if FromFile is true */
 TMIn::TMIn(const TStr& Str, bool FromFile):
   TSBase("Input-Memory"), TSIn("Input-Memory"), Bf(NULL), BfC(0), BfL(0){
   if (FromFile == false) {
@@ -619,7 +619,7 @@ TMIn::TMIn(const TStr& Str, bool FromFile):
     IsMemoryMapped = false;
   }
   else {
-#ifdef GLib_LINUX
+#ifdef GLib_UNIX
     TStr FNm = Str;
     TFileId FileId;
     int fd;
@@ -655,7 +655,7 @@ TMIn::TMIn(const TStr& Str, bool FromFile):
     }
     IsMemoryMapped = true;
 #else
-    TExcept::Throw("TMIn::TMIn(TStr, Bool): GLib_LINUX undefined.\n");
+    TExcept::Throw("TMIn::TMIn(TStr, Bool): GLib_UNIX undefined.\n");
 #endif
   }
 }
@@ -688,7 +688,7 @@ PSIn TMIn::New(const TChA& ChA){
 TMIn::~TMIn(){
   if (Bf!=NULL){
     if (IsMemoryMapped) {
-#ifdef GLib_LINUX
+#ifdef GLib_UNIX
       munmap(Bf, BfL);
 #endif
     }
@@ -1176,13 +1176,14 @@ void TFile::Copy(const TStr& SrcFNm, const TStr& DstFNm,
   }
 }
 
-#elif defined(GLib_LINUX)
+#elif defined(GLib_UNIX)
 
 void TFile::Copy(const TStr& SrcFNm, const TStr& DstFNm,
  const bool& ThrowExceptP, const bool& FailIfExistsP){
 	int input, output;
 	size_t filesize;
 	void *source, *target;
+	char *strnull = "\0";
 
 	if( (input = open(SrcFNm.CStr(), O_RDONLY)) == -1) {
 		if (ThrowExceptP) {
@@ -1210,7 +1211,7 @@ void TFile::Copy(const TStr& SrcFNm, const TStr& DstFNm,
 
 	filesize = lseek(input, 0, SEEK_END);
 	lseek(output, filesize - 1, SEEK_SET);
-	write(output, '\0', 1);
+	write(output, strnull, 1);
 
 	if((source = mmap(0, filesize, PROT_READ, MAP_SHARED, input, 0)) == (void *) -1) {
 		close(input);
@@ -1395,7 +1396,7 @@ uint64 TFile::GetLastWriteTm(const TStr& FNm) {
     return UInt64.Val / uint64(10000);
 }
 
-#elif defined(GLib_LINUX)
+#elif defined(GLib_UNIX)
 
 uint64 TFile::GetSize(const TStr& FNm) {
 	Fail; return 0;

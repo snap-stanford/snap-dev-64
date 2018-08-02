@@ -1,10 +1,10 @@
 /////////////////////////////////////////////////
 // Random
-const int64 TRnd::RndSeed=0;
-const int64 TRnd::a=16807;
-const int64 TRnd::m=2147483647;
-const int64 TRnd::q=127773; // m DIV a
-const int64 TRnd::r=2836; // m MOD a
+const int TRnd::RndSeed=0;
+const int TRnd::a=16807;
+const int TRnd::m=2147483647;
+const int TRnd::q=127773; // m DIV a
+const int TRnd::r=2836; // m MOD a
 
 void TRnd::LoadXml(const PXmlTok& XmlTok, const TStr& Nm){
   XLoadHd(Nm);

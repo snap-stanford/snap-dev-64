@@ -196,7 +196,6 @@ TEST(TUNGraph, ManipulateEdges) {
           Graph->AddNode(NodeIds[n]);
         }
         EXPECT_FALSE(Graph->Empty());
-        
         // Create random edges
         EdgeSet.Clr();
         NCount = NEdges;

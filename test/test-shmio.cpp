@@ -29,8 +29,10 @@ PGraph WriteGraph(TStr Filename) {
     Graph->AddEdge(i, i+1);
     Graph->AddEdge(i, i-1);
   }
-  TFOut OutStream(Filename);
-  Graph->Save(OutStream);
+  {
+    TFOut OutStream(Filename);
+    Graph->Save(OutStream);
+  }
   return Graph;
 }
 
@@ -88,8 +90,10 @@ PNEANet writeTNEANet(TStr Filename) {
   Graph->AddStrAttrDatN(10, "abc", attr1);
   Graph->AddStrAttrDatN(20, "def", attr1);
 
-  TFOut OutStream(Filename);
-  Graph->Save(OutStream);
+  {
+    TFOut OutStream(Filename);
+    Graph->Save(OutStream);
+  }
   return Graph;
 }
 
@@ -166,8 +170,10 @@ PNet writeNetwork(TStr Filename) {
   Graph->AddSAttrN("TestInt64", atInt, AttrId);
   Graph->AddSAttrN("TestFlt", atFlt, AttrId);
   Graph->AddSAttrN("TestStr", atStr, AttrId);
-  TFOut OutStream(Filename);
-  Graph->Save(OutStream);
+  {
+    TFOut OutStream(Filename);
+    Graph->Save(OutStream);
+  }
   return Graph;
 }
 
@@ -213,8 +219,10 @@ TEST(SHMTest, LoadTables) {
   RelevantCols.Add(0); RelevantCols.Add(1); RelevantCols.Add(2);
   RelevantCols.Add(3); RelevantCols.Add(4); RelevantCols.Add(5);
   PTable p1 = TTable::LoadSS(GradeS, "table/grades.txt", &Context, RelevantCols);
-  TFOut OutStream(Filename);
-  p1->Save(OutStream);
+  {
+    TFOut OutStream(Filename);
+    p1->Save(OutStream);
+  }
 
   TShMIn ShMIn(Filename);
   PTable p2 = TTable::LoadShM(ShMIn, &Context);

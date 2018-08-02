@@ -25,7 +25,8 @@ TEST_SRCS = test-helper.cpp \
 	test-TNEANet.cpp \
 	test-TNEGraph.cpp \
 	test-TNodeNet.cpp test-TNodeEDatNet.cpp test-TNodeEdgeNet.cpp \
-	test-TUNGraph.cpp test-TNGraph.cpp \
+	test-TUNGraph.cpp \
+	test-TNGraph.cpp \
 	test-TUndirNet.cpp test-TDirNet.cpp \
 	test-THash.cpp \
 	test-THashSet.cpp \

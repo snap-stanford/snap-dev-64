@@ -8,12 +8,20 @@ ClassHdTP(TXmlTok, PXmlTok);
 
 /////////////////////////////////////////////////
 // Random
+// TRnd implements a Lehmer RNG (Park-Miller RNG), see:
+//         https://en.wikipedia.org/wiki/Lehmer_random_number_generator
+// TODO RS 2018/08/01
+// TRnd works for 32-bits, but generates negative numbers with 64-bit int64.
+// Reimplement the class with a 64-bit generator, such as xoroshiro128+:
+//         https://en.wikipedia.org/wiki/Xoroshiro128%2B
+//         http://vigna.di.unimi.it/xorshift/xoroshiro128plus.c
+
 class TRnd{
 public:
-  static const int64 RndSeed;
+  static const int RndSeed;
 private:
-  static const int64 a, m, q, r;
-  int64 Seed;
+  static const int a, m, q, r;
+  int Seed;
   int64 GetNextSeed(){
     if ((Seed=a*(Seed%q)-r*(Seed/q))>0){return Seed;} else {return Seed+=m;}}
 public:
