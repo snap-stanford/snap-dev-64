@@ -1183,7 +1183,7 @@ void TFile::Copy(const TStr& SrcFNm, const TStr& DstFNm,
 	int input, output;
 	size_t filesize;
 	void *source, *target;
-	char *strnull = "\0";
+	const char *strnull = "\0";
 
 	if( (input = open(SrcFNm.CStr(), O_RDONLY)) == -1) {
 		if (ThrowExceptP) {
