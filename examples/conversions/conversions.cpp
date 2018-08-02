@@ -118,6 +118,7 @@ int main(int argc, char* argv[]) {
     // TODO: ADD the other conversions for ToGraph (TNGraph) and ToNetwork (TNEANet)
     // HERE
 
+#ifdef GLib_LINUX
     if (ToTNGraphMP) {                                                                        
       // get NGraph
       clock_t t0 = clock();                                                                 
@@ -126,6 +127,9 @@ int main(int argc, char* argv[]) {
       H->IsOk(false);                                                                       
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType); 
     }                                                                                       
+#endif
+
+#ifdef GLib_LINUX
     if (ToTNEANetMP) {                                                                        
       // get NEANetMP
       clock_t t0 = clock();                    
@@ -134,6 +138,8 @@ int main(int argc, char* argv[]) {
       H->IsOk(false);                                                                       
       printConversionTime(t0, t1, H->GetNodes(), H->GetEdges(), InGraphType, OutGraphType); 
     }                                                                 
+#endif
+
     if (ToTUNGraph) {
       // get UNGraph
       clock_t t0 = clock();
