@@ -11,6 +11,7 @@ project.xcworkspace/
 xcuserdata/
 
 build/
+.idea/
 
 # Compiler-generated files
 *.o

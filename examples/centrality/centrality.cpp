@@ -5,8 +5,8 @@ int main(int argc, char* argv[]) {
   Env.PrepArgs(TStr::Fmt("Node Centrality. build: %s, %s. Time: %s", __TIME__, __DATE__, TExeTm::GetCurTm()));
   TExeTm ExeTm;
   Try
-  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", "../as20graph.txt", "Input un/directed graph");
-  const TStr OutFNm = Env.GetIfArgPrefixStr("-o:", "node_centrality.tab", "Output file");
+  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", argv[2], "Input un/directed graph");
+  const TStr OutFNm = Env.GetIfArgPrefixStr("-o:", argv[4], "Output file");
   printf("Loading %s...", InFNm.CStr());
   PNGraph Graph = TSnap::LoadEdgeList<PNGraph>(InFNm);
   //PNGraph Graph = TSnap::GenRndGnm<PNGraph>(10, 10);
@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   printf(" Constraint (SLOW!)...");    TNetConstraint<PUNGraph> NetC(UGraph, true);
   printf(" Closeness (SLOW!)...");
   for (TUNGraph::TNodeI NI = UGraph->BegNI(); NI < UGraph->EndNI(); NI++) {
-    const int NId = NI.GetId();
+    const int64 NId = NI.GetId();
     CloseH.AddDat(NId, TSnap::GetClosenessCentr<PUNGraph>(UGraph, NId, false));
   }
   printf("\nDONE! saving...");
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
         TUInt64::GetStr(Graph->GetEdges()).CStr());
   fprintf(F,"#NodeId\tDegree\tCloseness\tBetweennes\tEigenVector\tNetworkConstraint\tClusteringCoefficient\tPageRank\tHubScore\tAuthorityScore\n");
   for (TUNGraph::TNodeI NI = UGraph->BegNI(); NI < UGraph->EndNI(); NI++) {
-    const int NId = NI.GetId();
+    const int64 NId = NI.GetId();
     const double DegCentr = UGraph->GetNI(NId).GetDeg();
     const double CloCentr = CloseH.GetDat(NId);
     const double BtwCentr = BtwH.GetDat(NId);
