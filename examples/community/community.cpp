@@ -5,8 +5,8 @@ int main(int argc, char* argv[]) {
   Env.PrepArgs(TStr::Fmt("Network community detection. build: %s, %s. Time: %s", __TIME__, __DATE__, TExeTm::GetCurTm()));
   TExeTm ExeTm;
   Try
-  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", "graph.txt", "Input graph (undirected graph)");
-  const TStr OutFNm = Env.GetIfArgPrefixStr("-o:", "communities.txt", "Output file");
+  const TStr InFNm = Env.GetIfArgPrefixStr("-i:", argv[2], "Input graph (undirected graph)");
+  const TStr OutFNm = Env.GetIfArgPrefixStr("-o:", argv[4], "Output file");
   const int CmtyAlg = Env.GetIfArgPrefixInt("-a:", 2, "Algorithm: 1:Girvan-Newman, 2:Clauset-Newman-Moore, 3:Infomap");
 
   PUNGraph Graph = TSnap::LoadEdgeList<PUNGraph>(InFNm, false);
