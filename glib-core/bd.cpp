@@ -13,6 +13,13 @@ int absolute(int n){
 		return -1*n;
 	return n;
 }
+struct __exception {
+    int    type;      /* Exception type */
+    char*  name;      /* Name of function causing exception */
+    double arg1;      /* 1st argument to function */
+    double arg2;      /* 2nd argument to function */
+    double retval;    /* Function return value */
+};
 /////////////////////////////////////////////////
 // Mathmatical-Errors
 #if defined(__BCPLUSPLUS__) && (__BCPLUSPLUS__==0x0530)

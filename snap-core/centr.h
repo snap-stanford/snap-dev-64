@@ -394,15 +394,19 @@ namespace TSnap {
         }
       }
 
-      TFlt64V PRankV(MxId+1);
-      TInt64V OutDegV(MxId+1);
+//      TFlt64V PRankV(MxId+1);
+      TFlt64V PRankV(NNodes+1);
+//      TInt64V OutDegV(MxId+1);
+      TInt64V OutDegV(NNodes+1);
 
 #pragma omp parallel for schedule(dynamic,10000)
       for (int64 j = 0; j < NNodes; j++) {
         typename PGraph::TObj::TNodeI NI = NV[j];
-        int64 Id = NI.GetId();
-        PRankV[Id] = 1.0/NNodes;
-        OutDegV[Id] = NI.GetOutDeg();
+        PRankV[j] = 1.0/NNodes;
+        OutDegV[j] = NI.GetOutDeg();
+//        int64 Id = NI.GetId();
+//        PRankV[Id] = 1.0/NNodes;
+//        OutDegV[Id] = NI.GetOutDeg();
       }
 
       TFlt64V TmpV(NNodes);
@@ -412,10 +416,11 @@ namespace TSnap {
           typename PGraph::TObj::TNodeI NI = NV[j];
           TFlt Tmp = 0;
           for (int64 e = 0; e < NI.GetInDeg(); e++) {
-            const int64 InNId = NI.GetInNId(e);
-            const int64 OutDeg = OutDegV[InNId];
+//            const int64 InNId = NI.GetInNId(e);
+//            const int64 OutDeg = OutDegV[InNId];
+            const int64 OutDeg = OutDegV[e];
             if (OutDeg > 0) {
-              Tmp += PRankV[InNId] / OutDeg;
+              Tmp += PRankV[e] / OutDeg;
             }
           }
           TmpV[j] =  C*Tmp; // Berkhin (the correct way of doing it)
@@ -430,9 +435,10 @@ namespace TSnap {
 #pragma omp parallel for reduction(+:diff) schedule(dynamic,10000)
         for (int64 i = 0; i < NNodes; i++) {
           double NewVal = TmpV[i] + Leaked; // Berkhin
-          int64 Id = NV[i].GetId();
-          diff += fabs(NewVal-PRankV[Id]);
-          PRankV[Id] = NewVal;
+//          int64 Id = NV[i].GetId();
+          diff += fabs(NewVal-PRankV[i]);
+//          diff += fabs(NewVal-PRankV[Id]);
+          PRankV[i] = NewVal;
         }
         if (diff < Eps) { break; }
       }
@@ -440,7 +446,8 @@ namespace TSnap {
 #pragma omp parallel for schedule(dynamic,10000)
       for (int64 i = 0; i < NNodes; i++) {
         typename PGraph::TObj::TNodeI NI = NV[i];
-        PRankH[i] = PRankV[NI.GetId()];
+        PRankH[i] = PRankV[i];
+//        PRankH[i] = PRankV[NI.GetId()];
       }
     }
 #endif // USE_OPENMP

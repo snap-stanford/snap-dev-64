@@ -1,6 +1,4 @@
-#Network: ../bidv.txt
-#Nodes: 3134,Edges: 37845
-#NodeId,Degree,Closeness,Betweennes,EigenVector,NetworkConstraint,ClusteringCoefficient,PageRank,HubScore,AuthorityScore
+NodeId,Degree,Closeness,Betweennes,EigenVector,NetworkConstraint,ClusteringCoefficient,PageRank,HubScore,AuthorityScore
 100000003326911,15.000000,0.251201,2976.733241,0.005283,0.133660,0.400000,0.000348,0.005283,0.005283
 100001614715252,11.000000,0.258355,803.919473,0.002611,0.153846,0.472727,0.000237,0.002611,0.002611
 100003181998141,5.000000,0.202983,211.693711,0.000142,0.363000,0.300000,0.000234,0.000142,0.000142

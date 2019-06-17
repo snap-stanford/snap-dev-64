@@ -1,0 +1,2 @@
+# Input: ../bidv.txt	Output: bidv_centrality.csv
+# Nodes: 3134	Edges: 37845

@@ -8,6 +8,7 @@ int main(int argc, char *argv[]) {
     Try
     const TStr InFNm = Env.GetIfArgPrefixStr("-i:", argv[2], "Input graph (undirected graph)");
     const TStr OutFNm = Env.GetIfArgPrefixStr("-o:", argv[4], "Output file");
+    const TStr OutMetaFNm = Env.GetIfArgPrefixStr("-m:", argv[6], "Output metadata file");
     const int CmtyAlg = Env.GetIfArgPrefixInt("-a:", 2,
                                               "Algorithm: 1:Girvan-Newman, 2:Clauset-Newman-Moore, 3:Infomap");
 
@@ -31,23 +32,24 @@ int main(int argc, char *argv[]) {
     } else { Fail; }
 
     FILE *F = fopen(OutFNm.CStr(), "wt");
-    fprintf(F, "# Input: %s\n", InFNm.CStr());
-    fprintf(F, "# Nodes: %s    Edges: %s\n",
+    FILE *Fmeta = fopen(OutMetaFNm.CStr(), "wt");
+    fprintf(Fmeta, "# Input: %s\tOutput: %s\n", InFNm.CStr(), OutFNm.CStr());
+    fprintf(Fmeta, "# Nodes: %s\tEdges: %s\n",
             TUInt64::GetStr(Graph->GetNodes()).CStr(),
             TUInt64::GetStr(Graph->GetEdges()).CStr());
 
-    fprintf(F, "# Algoritm: %s\n", CmtyAlgStr.CStr());
+    fprintf(Fmeta, "# Algoritm: %s\n", CmtyAlgStr.CStr());
     if (CmtyAlg != 3) {
-        fprintf(F, "# Modularity: %f\n", Q);
+        fprintf(Fmeta, "# Modularity: %f\n", Q);
     } else {
-        fprintf(F, "# Average code length: %f\n", Q);
+        fprintf(Fmeta, "# Average code length: %f\n", Q);
     }
-    fprintf(F, "# Communities: %s\n", TInt64::GetStr(CmtyV.Len()).CStr());
+    fprintf(Fmeta, "# Communities: %s\n", TInt64::GetStr(CmtyV.Len()).CStr());
 
-    fprintf(F, "# NId\tCommunityId\n");
+    fprintf(F, "NodeId,CommunityId\n");
     for (int64 c = 0; c < CmtyV.Len(); c++) {
         for (int64 i = 0; i < CmtyV[c].Len(); i++) {
-            fprintf(F, "%s\t%s\n",
+            fprintf(F, "%s,%s\n",
                     TInt64::GetStr(CmtyV[c][i].Val).CStr(),
                     TInt64::GetStr(c).CStr());
         }
